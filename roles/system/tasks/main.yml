@@ -1,0 +1,159 @@
+---
+- name: apt upgrade
+  become: yes
+  apt:
+    update_cache: yes
+    upgrade: dist
+    force_apt_get: yes
+    cache_valid_time: 3600
+
+- name: apt install dependencies
+  become: yes
+  apt:
+    pkg:
+      - zsh
+      - curl
+      - wget
+      - ca-certificates
+      - file
+      - bsdmainutils
+      - util-linux
+      - python3
+      - tar
+      - bzip2
+      - gzip
+      - unzip
+      - binutils
+      - bc
+      - jq
+      - tmux
+      - netcat
+      - lib32gcc1
+      - lib32stdc++6
+      - libcurl4-gnutls-dev:i386
+      - libtcmalloc-minimal4:i386
+
+- name: apt update
+  become: yes
+  apt:
+    name: "*"
+    update_cache: yes
+    state: latest
+
+- name: wget prometheus
+  become: yes
+  become_user: tf2server
+  unarchive:
+    src: https://github.com/prometheus/node_exporter/releases/download/v1.0.1/node_exporter-1.0.1.linux-amd64.tar.gz
+    dest: ~/
+    remote_src: yes
+    creates: node_exporter-1.0.1
+
+- name: cp prometheus
+  become: yes
+  become_user: tf2server
+  command: cp ~/node_exporter-1.0.1.linux-amd64/node_exporter ~/node_exporter
+  args:
+    creates: ~/node_exporter
+
+- name: tf2server.service
+  become: yes
+  copy:
+    src: tf2server.service
+    dest: /etc/systemd/system/tf2server.service
+    mode: '644'
+
+- name: prometheus.service
+  become: yes
+  copy:
+    src: node_exporter.service
+    dest: /etc/systemd/system/node_exporter.service
+    mode: '644'
+
+- name: discord_log_relay download
+  become: yes
+  become_user: tf2server
+  unarchive:
+    src: https://github.com/leighmacdonald/discord_log_relay/releases/download/v1.0.2/discord_log_relay-v1.0.2-linux64.zip
+    dest: ~/
+    remote_src: yes
+
+- name: discord_log_relay.service
+  become: yes
+  template:
+    src: discord_log_relay.service.j2
+    dest: /etc/systemd/system/discord_log_relay.service
+    mode: '644'
+
+- name: systemd reload
+  become: yes
+  systemd:
+    daemon_reload: yes
+
+- name: systemd enable prometheus
+  become: yes
+  systemd:
+    name: node_exporter.service
+    state: started
+    enabled: yes
+
+- name: systemd enable tf2server
+  become: yes
+  systemd:
+    name: tf2server.service
+    enabled: yes
+
+- name: systemd enable discord_log_relay
+  become: yes
+  systemd:
+    name: discord_log_relay.service
+    enabled: yes
+    state: restarted
+
+- name: crontab monitor
+  become: yes
+  cron:
+    name: "tf2server monitor"
+    minute: "*/2"
+    hour: "*"
+    day: "*"
+    month: "*"
+    weekday: "*"
+    user: tf2server
+    job: "/home/tf2server/tf2server monitor > /dev/null 2>&1"
+
+- name: crontab update
+  become: yes
+  cron:
+    name: "tf2server update"
+    minute: "*/5"
+    hour: "*"
+    day: "*"
+    month: "*"
+    weekday: "*"
+    user: tf2server
+    job: "/home/tf2server/tf2server update > /dev/null 2>&1"
+
+- name: crontab force-update
+  become: yes
+  cron:
+    name: "tf2server restart"
+    minute: "30"
+    hour: "4"
+    day: "*"
+    month: "*"
+    weekday: "*"
+    user: tf2server
+    job: "/home/tf2server/tf2server force-update > /dev/null 2>&1"
+
+- name: crontab update-lgsm
+  become: yes
+  cron:
+    name: "tf2server update-functions"
+    minute: "0"
+    hour: "0"
+    day: "*"
+    month: "*"
+    weekday: "0"
+    user: tf2server
+    job: "/home/tf2server/tf2server update-lgsm > /dev/null 2>&1"

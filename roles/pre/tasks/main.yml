@@ -1,0 +1,27 @@
+- name: git clone ohmyzsh
+  command: git clone https://github.com/ohmyzsh/ohmyzsh.git .oh-my-zsh
+  args:
+    creates: .oh-my-zsh
+
+- name: cp zshrc
+  copy:
+    src: zshrc
+    dest: ~/.zshrc
+    mode: 0664
+
+- name: wget linuxgsm
+  get_url:
+    url: https://linuxgsm.sh
+    dest: ~/linuxgsm.sh
+    mode: 0777
+
+- name: linuxgsm tf2server
+  shell: ~/linuxgsm.sh tf2server
+  args:
+    creates: tf2server
+
+- name: tf2server install
+  shell: ./tf2server ai
+  args:
+    creates: serverfiles/srcds_run
+

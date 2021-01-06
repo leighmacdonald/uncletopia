@@ -1,0 +1,105 @@
+---
+- name: apt install zsh
+  become: yes
+  apt:
+    pkg:
+      - zsh
+
+- name: addgroup tf2
+  group:
+    name: tf2
+    state: present
+
+- name: adduser tf2server
+  user:
+    name: tf2server
+    comment: TF2 Server User
+    group: tf2
+    shell: /bin/zsh
+    create_home: yes
+    state: present
+
+- name: sudoers.d
+  copy:
+    dest: "/etc/sudoers.d/devops"
+    content: "%tf2  ALL=(ALL)  NOPASSWD: ALL"
+
+- name: ufw allow 22
+  become: yes
+  ufw:
+    rule: allow
+    port: '22'
+    proto: tcp
+
+- name: ufw limit 22
+  become: yes
+  ufw:
+    comment: "TF2 Ansible"
+    rule: limit
+    port: '22'
+    proto: tcp
+
+- name: ufw allow 27015
+  become: yes
+  ufw:
+    rule: allow
+    port: '27015'
+
+- name: ufw allow 27020
+  become: yes
+  ufw:
+    rule: allow
+    port: '27020'
+
+- name: ufw allow 27005
+  become: yes
+  ufw:
+    rule: allow
+    port: '27005'
+
+- name: ufw allow 9100
+  become: yes
+  ufw:
+    rule: allow
+    port: '9100'
+
+- name: ufw enable
+  become: yes
+  ufw:
+    state: enabled
+    policy: deny
+    direction: incoming
+
+- name: mkdir .ssh
+  become: yes
+  become_user: tf2server
+  file:
+    path: ~/.ssh
+    state: directory
+    mode: '0700'
+
+- name: .ssh/authorized_keys
+  become: yes
+  become_user: tf2server
+  copy:
+    src: authorized_keys
+    dest: ~/.ssh/authorized_keys
+    mode: '0600'
+
+- name: etc/ssh/sshd_config
+  lineinfile:
+    dest=/etc/ssh/sshd_config
+    regexp='^PasswordAuthentication'
+    line="PasswordAuthentication no"
+    state=present
+    backup=yes
+
+- name: systemd restart ssh
+  lineinfile:
+    dest=/etc/ssh/sshd_config
+    regexp='^PermitRootLogin'
+    line="PermitRootLogin no"
+    state=present
+    backup=yes
+  notify:
+    - restart ssh

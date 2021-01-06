@@ -1,0 +1,7 @@
+.idea
+/testhosts.yml
+/localhosts.yml
+/uncletopia.iml
+/host_vars/172.16.1.52.yml
+*.log
+*Zone.Identifier

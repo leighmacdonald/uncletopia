@@ -1,0 +1,7 @@
+all:
+  hosts:
+  children:
+    tf2:
+      hosts:
+        ha[1:1].uncledane.com:
+          ansible_python_interpreter: python3

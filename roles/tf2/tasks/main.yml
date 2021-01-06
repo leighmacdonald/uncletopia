@@ -1,0 +1,122 @@
+
+- name: apt install steamcmd
+  become: yes
+  apt:
+    name: steamcmd
+    update_cache: yes
+    state: present
+
+- name: accept steam license
+  become: yes
+  debconf:
+    name: "steamcmd"
+    question: "steam/question"
+    value: "I AGREE"
+    vtype: "select"
+
+- name: tf/cfg/sourcemod/
+  synchronize:
+    src: tf/cfg/sourcemod
+    dest: serverfiles/tf/cfg/
+    owner: false
+    group: false
+    recursive: true
+    delete: true
+
+- name: tf/maps/
+  synchronize:
+    src: tf/maps/
+    dest: serverfiles/tf/maps/
+    owner: false
+    group: false
+    recursive: true
+    delete: false
+
+- name: tf/addons/
+  synchronize:
+    src: tf/addons/
+    dest: serverfiles/tf/addons/
+    owner: false
+    group: false
+    recursive: true
+    delete: true
+    rsync_opts:
+      - "--exclude=*.log"
+      - "--exclude=sourcemod/logs/"
+      - "--exclude=sourcemod/configs/gbans.cfg"
+
+- name: cfg/mapconfig/
+  synchronize:
+    src: tf/cfg/mapconfig
+    dest: serverfiles/tf/cfg/
+    owner: false
+    group: false
+    recursive: true
+    delete: true
+
+- name: tf/custom/
+  synchronize:
+    src: tf/custom/
+    dest: serverfiles/tf/custom/
+    owner: false
+    group: false
+    recursive: true
+    delete: true
+
+- name: tf/addons
+  file:
+    path: serverfiles/tf/addons
+    state: directory
+    recurse: yes
+    owner: tf2server
+    group: tf2
+
+- name: tf/cfg/mapcycle.txt
+  copy:
+    src: tf/cfg/mapcycle.txt
+    dest: ~/serverfiles/tf/cfg/mapcycle.txt
+    mode: 0660
+
+- name: tf/cfg/mapcycle_halloween.txt
+  copy:
+    src: tf/cfg/mapcycle_halloween.txt
+    dest: ~/serverfiles/tf/cfg/mapcycle_halloween.txt
+    mode: 0660
+
+- name: tf/cfg/pure_server_whitelist.txt
+  copy:
+    src: tf/cfg/pure_server_whitelist.txt
+    dest: ~/serverfiles/tf/cfg/pure_server_whitelist.txt
+    mode: 0660
+
+- name: tf/cfg/motd.txt
+  copy:
+    src: tf/cfg/motd.txt
+    dest: ~/serverfiles/tf/cfg/motd.txt
+    mode: 0660
+
+- name: tf/cfg/cronjobs.txt
+  copy:
+    src: tf/cfg/cronjobs.txt
+    dest: ~/serverfiles/tf/cfg/cronjobs.txt
+    mode: 0660
+
+- name: tf/cfg/tf2server.cfg
+  template:
+    src: tf2server.cfg.j2
+    dest: ~/serverfiles/tf/cfg/tf2server.cfg
+
+- name: config-lgsm/tf2server/tf2server.cfg
+  template:
+    src: lgsm-tf2server.cfg.j2
+    dest: lgsm/config-lgsm/tf2server/tf2server.cfg
+
+- name: tf/addons/sourcemod/configs/gbans.cfg
+  template:
+    src: gbans.cfg.j2
+    dest: ~/serverfiles/tf/addons/sourcemod/configs/gbans.cfg
+
+- name: start tf2server
+  command:
+    cmd: sudo systemctl start tf2server
+    creates: lgsm/lock/tf2server.lock

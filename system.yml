@@ -1,0 +1,4 @@
+---
+- hosts: tf2
+  roles:
+    - system

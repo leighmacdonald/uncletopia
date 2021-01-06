@@ -1,0 +1,58 @@
+"Games"
+{
+	"cstrike"
+	{
+		"Offsets"
+		{
+			"IsValidObserverTarget"
+			{
+				"windows"	"379"
+				"linux"		"380"
+			}
+		}
+	}
+	"tf"
+	{
+		"Offsets"
+		{
+			"IsValidObserverTarget"
+			{
+				"windows"	"378"
+				"linux"		"379"
+			}
+		}
+	}
+	"dod"
+	{
+		"Offsets"
+		{
+			"IsValidObserverTarget"
+			{
+				"windows"	"378"
+				"linux"		"379"
+			}
+		}
+	}
+	"hl2mp"
+	{
+		"Offsets"
+		{
+			"IsValidObserverTarget"
+			{
+				"windows"	"378"
+				"linux"		"379"
+			}
+		}
+	}
+	"csgo"
+	{
+		"Offsets"
+		{
+			"IsValidObserverTarget"
+			{
+				"windows"	"420"
+				"linux"		"421"
+			}
+		}
+	}
+}

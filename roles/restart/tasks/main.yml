@@ -1,0 +1,3 @@
+- name: restart tf2server
+  command:
+    cmd: /home/tf2server/tf2server restart

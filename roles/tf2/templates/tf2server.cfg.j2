@@ -1,0 +1,79 @@
+// Hostname for server.
+hostname "{{ server_name }}"
+
+// RCON - remote console password.
+rcon_password "{{ rcon_password }}"
+
+sv_tags "{{ sv_tags }}"
+
+sv_rcon_banpenalty 1440
+sv_rcon_minfailures 5
+sv_rcon_maxfailures 5
+
+// Server password - for private servers.
+sv_password "{{ server_password }}"
+
+// Server Logging
+log on
+sv_logbans 1
+sv_logecho 1
+sv_logfile 1
+sv_log_onefile 0
+
+sv_lan 0
+sv_region 1
+
+// Custom maps
+sv_downloadurl "{{ fastdl_url }}"
+sv_allowupload 1
+sv_allowdownload 1
+
+// Allow user modifications
+sv_pure {{ sv_pure }}
+sv_pure_kick_clients 0
+sv_allow_wait_command 1
+
+// Voice chat
+sv_voiceenable 1
+sv_voicecodec vaudio_celt_high
+tf_gravetalk 1
+sv_alltalk 0
+
+sv_cheats 0
+sv_pausable 0
+
+// AFK Kick after 3 mins
+mp_idlemaxtime 3
+
+// Server voting options
+sv_vote_issue_nextlevel_allowed 0
+sv_vote_issue_extendlevel_allowed 0
+sv_vote_issue_kick_allowed 1
+sv_vote_issue_scramble_teams_allowed 0
+sv_vote_kick_ban_duration 20
+
+// Vote scramble
+nano_votescramble_time 20.0
+nano_votescramble_delay 180.0
+nano_votescramble_chat_percentage 0.33
+nano_votescramble_menu_percentage 0.60
+nano_votescramble_minimum 1
+
+// Network stuff
+sv_minupdaterate 66
+sv_maxupdaterate 66
+sv_mincmdrate 66
+sv_maxcmdrate 66
+sv_minrate 100000
+sv_maxrate 100000
+
+// Chat settings
+sm_tidychat_on 1
+sm_tidychat_voice 1
+sm_tidychat_connect 1
+sm_tidychat_disconnect 0
+sm_tidychat_class 0
+sm_tidychat_team 1
+sm_tidychat_arena_resize 0
+sm_tidychat_arena_maxstreak 0
+sm_tidychat_cvar 1
