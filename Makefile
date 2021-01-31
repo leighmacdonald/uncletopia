@@ -3,22 +3,22 @@
 all: deploy
 
 adduser:
-	@ansible-playbook adduser.yml -u root
+	@ansible-playbook adduser.yml -u root -v
 
 pre:
-	@ansible-playbook pre.yml
+	@ansible-playbook pre.yml -v
 
 system:
-	@ansible-playbook system.yml
+	@ansible-playbook system.yml -v
 
 deploy:
-	@ansible-playbook deploy.yml
-
-debug:
 	@ansible-playbook deploy.yml -v
 
+debug:
+	@ansible-playbook deploy.yml -vvv
+
 ping:
-	@ansible tf2 -m ping
+	@ansible tf2 -m ping -v
 
 test_adduser:
 	@ansible-playbook -i testhost.yml adduser.yml -u root
