@@ -1,19 +1,4 @@
 
-- name: apt install steamcmd
-  become: yes
-  apt:
-    name: steamcmd
-    update_cache: yes
-    state: present
-
-- name: accept steam license
-  become: yes
-  debconf:
-    name: "steamcmd"
-    question: "steam/question"
-    value: "I AGREE"
-    vtype: "select"
-
 - name: tf/cfg/sourcemod/
   synchronize:
     src: tf/cfg/sourcemod
@@ -62,14 +47,6 @@
     group: false
     recursive: true
     delete: true
-
-- name: tf/addons
-  file:
-    path: serverfiles/tf/addons
-    state: directory
-    recurse: yes
-    owner: tf2server
-    group: tf2
 
 - name: tf/cfg/mapcycle.txt
   copy:
