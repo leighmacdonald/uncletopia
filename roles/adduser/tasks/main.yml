@@ -102,7 +102,7 @@
     state=present
     backup=yes
 
-- name: systemd restart ssh
+- name: systemctl restart ssh
   lineinfile:
     dest=/etc/ssh/sshd_config
     regexp='^PermitRootLogin'
