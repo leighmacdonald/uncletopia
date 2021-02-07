@@ -1,4 +1,12 @@
 ---
+- name: apt upgrade
+  become: yes
+  apt:
+    update_cache: yes
+    upgrade: dist
+    force_apt_get: yes
+    cache_valid_time: 3600
+
 - name: apt install zsh
   become: yes
   apt:
