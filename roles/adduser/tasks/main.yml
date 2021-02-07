@@ -81,8 +81,8 @@
 - name: .ssh/authorized_keys
   become: yes
   become_user: tf2server
-  copy:
-    src: authorized_keys
+  template:
+    src: authorized_keys.j2
     dest: ~/.ssh/authorized_keys
     mode: '0600'
 
