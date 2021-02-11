@@ -71,7 +71,7 @@ Unattended-Upgrade::Automatic-Reboot "true";
 // If automatic reboot is enabled and needed, reboot at the specific
 // time instead of immediately
 //  Default: "now"
-Unattended-Upgrade::Automatic-Reboot-Time "04:30";
+Unattended-Upgrade::Automatic-Reboot-Time "05:00";
 
 // Use apt bandwidth limit feature, this example limits the download
 // speed to 70kb/sec

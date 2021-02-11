@@ -47,8 +47,8 @@
 // Just write your Cronjobs below this Line!
 
 
-25 4 * * * console sm_csay Restart in 5 minutes
-25 4 * * * console sm_say Restart in 5 minutes
-29 4 * * * console sm_csay Restart in 1 minute
-29 4 * * * console sm_say Restart in 1 minute
-30 4 * * * console sm_kick @all Server restart
+55 4 * * * console sm_csay Automatic Restart in 5 minutes
+55 4 * * * console sm_say Automatic Restart in 5 minutes
+59 4 * * * console sm_csay Automatic Restart in 1 minute
+59 4 * * * console sm_say Automatic Restart in 1 minute
+0 5 * * * console sm_kick @all Server is restarting

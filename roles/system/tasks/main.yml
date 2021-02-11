@@ -128,7 +128,7 @@
   become: yes
   cron:
     name: "tf2server monitor"
-    minute: "*/2"
+    minute: "*/1"
     hour: "*"
     day: "*"
     month: "*"
@@ -152,8 +152,8 @@
   become: yes
   cron:
     name: "tf2server restart"
-    minute: "30"
-    hour: "4"
+    minute: "0"
+    hour: "5"
     day: "*"
     month: "*"
     weekday: "*"
