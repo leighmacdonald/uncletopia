@@ -1,4 +1,9 @@
 ---
+- name: sudo dpkg --add-architecture i386
+  become: yes
+  command:
+    cmd: /usr/bin/dpkg --add-architecture i386
+
 - name: apt upgrade
   become: yes
   apt:
