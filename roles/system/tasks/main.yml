@@ -37,6 +37,7 @@
       - lib32stdc++6
       - libcurl4-gnutls-dev:i386
       - libtcmalloc-minimal4:i386
+      - lib32tinfo5
 
 - name: apt update
   become: yes
