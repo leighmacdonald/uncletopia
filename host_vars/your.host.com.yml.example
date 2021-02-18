@@ -1,21 +1,6 @@
-# Long format name of server
-server_name: "YourServers | Frankfurt"
-# Short format name of server
-server_name_short: "eu-1"
-# https://steamcommunity.com/dev/managegameservers
-gslt: "xxx"
-# External IP
-ip: "10.10.10.10"
-# gbans server password
-gbans_key: "xxxxxxxxxxxxxxxxxxxx"
-# gbans host
-gbans_host: "https://bans.yourhost.com"
-# gbans port
-gbans_port: "443"
-# TF2 Server password
-server_password: ""
-# TF2 RCON password
-rcon_password: 
-fastdl_url: "https://jttm.us/tf/"
-sv_tags: "YourServers,nocrits,nodmgspread"
-sv_pure: 1
+server_name: "Uncletopia | Antarctica"
+server_name_short: "an-1"
+gslt: ""   # https://steamcommunity.com/dev/managegameservers
+ip: ""
+gbans_key: ""
+timezone: ""   # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
