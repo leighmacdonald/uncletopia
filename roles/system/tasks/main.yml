@@ -115,3 +115,8 @@
     name: discord_log_relay.service
     enabled: yes
     state: restarted
+
+- name: timedatectl set-timezone
+  become: yes
+  command:
+    cmd: /usr/bin/timedatectl set-timezone {{ timezone }}
