@@ -93,7 +93,69 @@
     src: gbans.cfg.j2
     dest: ~/serverfiles/tf/addons/sourcemod/configs/gbans.cfg
 
+- name: 20auto-upgrades
+  become: yes
+  copy:
+    src: 20auto-upgrades
+    dest: /etc/apt/apt.conf.d/20auto-upgrades
+    mode: '644'
+
+- name: 50unattended-upgrades
+  become: yes
+  copy:
+    src: 50unattended-upgrades
+    dest: /etc/apt/apt.conf.d/50unattended-upgrades
+    mode: '644'
+
 - name: start tf2server
   command:
     cmd: sudo systemctl start tf2server
     creates: lgsm/lock/tf2server.lock
+
+- name: crontab monitor
+  become: yes
+  cron:
+    name: "tf2server monitor"
+    minute: "*/1"
+    hour: "*"
+    day: "*"
+    month: "*"
+    weekday: "*"
+    user: tf2server
+    job: "/home/tf2server/tf2server monitor > /dev/null 2>&1"
+
+- name: crontab update
+  become: yes
+  cron:
+    name: "tf2server update"
+    minute: "*/5"
+    hour: "*"
+    day: "*"
+    month: "*"
+    weekday: "*"
+    user: tf2server
+    job: "/home/tf2server/tf2server update > /dev/null 2>&1"
+
+- name: crontab force-update
+  become: yes
+  cron:
+    name: "tf2server restart"
+    minute: "0"
+    hour: "5"
+    day: "*"
+    month: "*"
+    weekday: "*"
+    user: tf2server
+    job: "/home/tf2server/tf2server force-update > /dev/null 2>&1"
+
+- name: crontab update-lgsm
+  become: yes
+  cron:
+    name: "tf2server update-functions"
+    minute: "0"
+    hour: "0"
+    day: "*"
+    month: "*"
+    weekday: "0"
+    user: tf2server
+    job: "/home/tf2server/tf2server update-lgsm > /dev/null 2>&1"
