@@ -2,7 +2,7 @@ gbans_host: "https://gbans.uncledane.com"
 gbans_port: "443"
 server_password: ""
 rcon_password: "yepx2"
-fastdl_url: "https://jttm.us/tf/"
+fastdl_url: "https://uncletopia.com/maps/"
 sv_tags: "Uncletopia,nocrits,nodmgspread"
 sv_pure: 1
 lgsm_webhook_enabled: "on"
