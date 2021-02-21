@@ -20,10 +20,10 @@ jobs:
         # or valid Ansible directories according to the Ansible role
         # directory structure.
         # If you want to lint multiple ansible files, use the following syntax
-        targets: |
-          system.yml
-          deploy.yml
-          pre.yml
+        #targets: |
+        #  system.yml
+        #  deploy.yml
+        #  pre.yml
         targets: "./"
         # [optional]
         # Arguments to be passed to the ansible-lint
