@@ -24,7 +24,7 @@ jobs:
         #  system.yml
         #  deploy.yml
         #  pre.yml
-        targets: "./"
+        # targets: "./"
         # [optional]
         # Arguments to be passed to the ansible-lint
 
