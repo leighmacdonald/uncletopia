@@ -1,4 +1,3 @@
-
 - name: tf/cfg/sourcemod/
   synchronize:
     src: tf/cfg/sourcemod
@@ -29,6 +28,7 @@
       - "--exclude=*.log"
       - "--exclude=sourcemod/logs/"
       - "--exclude=sourcemod/configs/gbans.cfg"
+      - "--exclude=sourcemod/configs/admins_simple.ini"
 
 - name: cfg/mapconfig/
   synchronize:
@@ -47,6 +47,11 @@
     group: false
     recursive: true
     delete: true
+
+- name: admins_simple.ini
+  template:
+    src: admins_simple.ini.j2
+    dest: ~/serverfiles/tf/addons/sourcemod/configs/admins_simple.ini
 
 - name: tf/cfg/mapcycle.txt
   copy:
