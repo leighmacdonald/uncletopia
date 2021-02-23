@@ -3,24 +3,6 @@
   community.general.timezone:
     name: "{{ timezone }}"
 
-
-# - name: sudo dpkg --add-architecture i386
-#   become: yes
-#   command:
-#     cmd: /usr/bin/dpkg --add-architecture i386
-
-- name: Check if i386 is enabled
-  shell: |
-    set -o pipefail && dpkg --print-foreign-architectures | grep i386
-  pipefail: true
-  register: result_i386_check
-  changed_when: result_i386_check.rc == 1
-  failed_when: result_i386_check.rc > 1
-
-- name: Enable i386 architecture
-  command: dpkg --add-architecture i386
-  when: result_i386_check.rc == 1
-
 - name: apt upgrade
   become: yes
   apt:
