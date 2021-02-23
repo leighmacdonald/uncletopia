@@ -1,7 +1,9 @@
 - name: git clone ohmyzsh
-  command: git clone https://github.com/ohmyzsh/ohmyzsh.git .oh-my-zsh
-  args:
-    creates: .oh-my-zsh
+  git:
+    accept_hostkey: true
+    repo: https://github.com/ohmyzsh/ohmyzsh.git
+    version: master
+    dest: ~/.oh-my-zsh
 
 - name: cp zshrc
   copy:
@@ -16,12 +18,12 @@
     mode: 0777
 
 - name: linuxgsm tf2server
-  shell: ~/linuxgsm.sh tf2server
+  command: ~/linuxgsm.sh tf2server
   args:
     creates: tf2server
 
 - name: tf2server install
-  shell: ./tf2server ai
+  command: ./tf2server ai
   args:
     creates: serverfiles/srcds_run
 
