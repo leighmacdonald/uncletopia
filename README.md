@@ -71,7 +71,7 @@ Add your ssh public key for root `ssh-copy-id root@dane-eu2.jttm.us`
 - Setup firewall
 - Setup SSH
   
-`make adduser` or `ansible-playbook -u root adduser.yml`
+`make adduser` or `ansible-playbook -u your_ssh_username -i your_hosts.yml -K adduser.yml `
 
 Note that this will only ever run ONCE per server as it disables the mechanism it uses to login
 as the last step. Failures for the existing servers is expected behaviour.

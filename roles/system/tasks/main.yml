@@ -1,20 +1,28 @@
 ---
-- name: sudo dpkg --add-architecture i386
+- name: Set timezone
   become: yes
-  command:
-    cmd: /usr/bin/dpkg --add-architecture i386
+  community.general.timezone:
+    name: "{{ timezone }}"
 
-- name: apt upgrade
+- name: Check if i386 is enabled
+  become: yes
+  shell: dpkg --print-foreign-architectures | grep i386
+  register: result_i386_check
+  changed_when: result_i386_check.rc == 0
+  failed_when: result_i386_check.rc > 0
+
+- name: Enable i386 architecture
+  become: yes
+  command: dpkg --add-architecture i386
+  when: result_i386_check.rc == 1
+
+- name: Install OS Dependencies
   become: yes
   apt:
     update_cache: yes
-    upgrade: dist
     force_apt_get: yes
     cache_valid_time: 3600
-
-- name: apt install dependencies
-  become: yes
-  apt:
+    state: present
     pkg:
       - zsh
       - curl
@@ -39,37 +47,30 @@
       - libtcmalloc-minimal4:i386
       - lib32tinfo5
 
-- name: apt update
-  become: yes
-  apt:
-    name: "*"
-    update_cache: yes
-    state: latest
-
-- name: wget prometheus
+- name: Download Node Exporter
   become: yes
   become_user: tf2server
   unarchive:
-    src: https://github.com/prometheus/node_exporter/releases/download/v1.0.1/node_exporter-1.0.1.linux-amd64.tar.gz
+    src: https://github.com/prometheus/node_exporter/releases/download/v1.1.1/node_exporter-1.1.1.linux-amd64.tar.gz
     dest: ~/
     remote_src: yes
-    creates: node_exporter-1.0.1
+    creates: node_exporter-1.1.1
 
-- name: cp prometheus
+- name: Extract Node Exporter
   become: yes
   become_user: tf2server
-  command: cp ~/node_exporter-1.0.1.linux-amd64/node_exporter ~/node_exporter
+  command: cp ~/node_exporter-1.1.1.linux-amd64/node_exporter ~/node_exporter
   args:
     creates: ~/node_exporter
 
-- name: tf2server.service
+- name: Create tf2server.service
   become: yes
   copy:
     src: tf2server.service
     dest: /etc/systemd/system/tf2server.service
     mode: '644'
 
-- name: prometheus.service
+- name: Create prometheus.service
   become: yes
   copy:
     src: node_exporter.service
@@ -115,8 +116,3 @@
     name: discord_log_relay.service
     enabled: yes
     state: restarted
-
-- name: timedatectl set-timezone
-  become: yes
-  command:
-    cmd: /usr/bin/timedatectl set-timezone {{ timezone }}

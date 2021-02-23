@@ -1,3 +1,5 @@
+/group_vars/*.yml
+/host_vars/*.yml
 .idea
 /testhosts.yml
 /localhosts.yml
@@ -5,3 +7,4 @@
 /host_vars/172.16.1.52.yml
 *.log
 *Zone.Identifier
+/*.yml
