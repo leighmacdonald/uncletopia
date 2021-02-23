@@ -1,0 +1,29 @@
+{
+    "makefile.extensionOutputFolder": "./.vscode",
+    "triggerTaskOnSave.restart": true,
+    "triggerTaskOnSave.showNotifications": false,
+    "triggerTaskOnSave.showStatusBarToggle": false,
+    "triggerTaskOnSave.tasks": {
+      "ansible-lint": ["*.yml"]
+},
+"cSpell.words": [
+  "LGSM",
+  "binutils",
+  "bsdmainutils",
+  "bzip",
+  "dpkg",
+  "gnutls",
+  "hostkey",
+  "libcurl",
+  "libtcmalloc",
+  "linuxgsm",
+  "netcat",
+  "ohmyzsh",
+  "pipefail",
+  "serverfiles",
+  "srcds",
+  "stdc",
+  "teamfortress",
+  "tinfo"
+],
+}

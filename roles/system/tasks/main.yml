@@ -1,8 +1,26 @@
 ---
-- name: sudo dpkg --add-architecture i386
-  become: yes
-  command:
-    cmd: /usr/bin/dpkg --add-architecture i386
+- name: Set timezone
+  community.general.timezone:
+    name: "{{ timezone }}"
+
+
+# - name: sudo dpkg --add-architecture i386
+#   become: yes
+#   command:
+#     cmd: /usr/bin/dpkg --add-architecture i386
+
+- name: Check if i386 is enabled
+  shell: |
+    set -o pipefail
+    dpkg --print-foreign-architectures | grep i386
+  pipefail: true
+  register: result_i386_check
+  changed_when: result_i386_check.rc == 1
+  failed_when: result_i386_check.rc > 1
+
+- name: Enable i386 architecture
+  command: dpkg --add-architecture i386
+  when: result_i386_check.rc == 1
 
 - name: apt upgrade
   become: yes
@@ -12,9 +30,11 @@
     force_apt_get: yes
     cache_valid_time: 3600
 
+
 - name: apt install dependencies
   become: yes
   apt:
+    state: present
     pkg:
       - zsh
       - curl
@@ -38,13 +58,6 @@
       - libcurl4-gnutls-dev:i386
       - libtcmalloc-minimal4:i386
       - lib32tinfo5
-
-- name: apt update
-  become: yes
-  apt:
-    name: "*"
-    update_cache: yes
-    state: latest
 
 - name: wget prometheus
   become: yes
@@ -115,8 +128,3 @@
     name: discord_log_relay.service
     enabled: yes
     state: restarted
-
-- name: timedatectl set-timezone
-  become: yes
-  command:
-    cmd: /usr/bin/timedatectl set-timezone {{ timezone }}
