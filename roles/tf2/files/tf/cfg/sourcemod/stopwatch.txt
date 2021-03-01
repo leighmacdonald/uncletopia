@@ -1,0 +1,4 @@
+// List all maps for which Stopwatch should be enabled
+
+cp_*
+pl_*
