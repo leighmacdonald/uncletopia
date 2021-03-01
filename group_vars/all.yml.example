@@ -11,3 +11,13 @@ discord_log_relay_host: "hostname:7777"
 ssh_keys: |
   ssh-rsa xxxxxxxxxxxxxxxxxxx key-2017"
   ssh-rsa xxxxxxxxxxxxxxxxxxx key-2020"
+
+sm_permissions:
+  # Admins
+  - [ "STEAM_0:1:00000000", "z", "Admin #1" ]
+  - [ "STEAM_1:1:00000000", "z", "Admin #2" ]
+  # Mods
+  - [ "STEAM_1:1:00000000" , "abcdegjk", "Mod #1" ]
+  - [ "STEAM_0:1:00000000", "abcdegjk", "Mod #2" ]
+  # Reserved slots
+  - [ "STEAM_1:0:00000000", "a", "Reserved Slot #1" ]
