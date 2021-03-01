@@ -8,9 +8,9 @@ sv_pure: 1
 lgsm_webhook_enabled: "on"
 lgsm_webhook_url: https://discordapp.com/api/webhooks/1111111111111111111/xxxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxxxxxxxxxxxx
 discord_log_relay_host: "hostname:7777"
-ssh_keys: |
-  ssh-rsa xxxxxxxxxxxxxxxxxxx key-2017"
-  ssh-rsa xxxxxxxxxxxxxxxxxxx key-2020"
+ssh_keys:
+  - "ssh-rsa xxxxxxxxxxxxxxxxxxx key-2017"
+  - "ssh-rsa xxxxxxxxxxxxxxxxxxx key-2020"
 
 sm_permissions:
   # Admins
