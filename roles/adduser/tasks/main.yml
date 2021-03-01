@@ -4,8 +4,7 @@
   apt:
     update_cache: yes
     upgrade: dist
-    force_apt_get: yes
-    cache_valid_time: 3600
+    cache_valid_time: 0
 
 - name: apt install zsh
   become: yes
