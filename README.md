@@ -111,6 +111,53 @@ You are now ready to deploy the custom parts of the TF2 instance. This will:
 This repo is meant as a template / master. Your private customizations should be in your local repository only. Below 
 is a demonstration of the workflow for contributing changes back:
 
+
+## External config source
+
+To be able to use this repo with your own private configs, there is an included helper script included: `add_configs.sh`
+
+Your config dir should contain the host_vars and group_vars folders and all your configs you want inside those dirs.
+	
+For example: 
+
+	$ ls -la ../uncletopia-config 
+	drwxr-xr-x 5 leighm leighm 4096 Feb 28 21:01 .
+	drwxr-xr-x 6 leighm leighm 4096 Feb 28 20:55 ..
+	drwxr-xr-x 8 leighm leighm 4096 Feb 28 21:02 .git
+	drwxr-xr-x 2 leighm leighm 4096 Feb 28 21:00 group_vars
+	drwxr-xr-x 2 leighm leighm 4096 Feb 28 21:00 host_vars
+
+	# ls -la ../uncletopia-config/host_vars 
+	drwxr-xr-x 2 leighm leighm 4096 Feb 28 21:00 .
+	drwxr-xr-x 5 leighm leighm 4096 Feb 28 21:01 ..
+	-rw-r--r-- 1 leighm leighm  186 Feb 22 21:02 as1.uncledane.com.yml
+	-rw-r--r-- 1 leighm leighm  185 Feb 22 21:02 eu1.uncledane.com.yml
+	...
+
+
+Then link your configs with the following command, replacing the value with the path to your own config dir.
+
+	$ ./add_configs.sh ../uncletopia-config
+	Adding configs from ../uncletopia-config
+	Added hosts config: ../uncletopia-config/host_vars/us4.uncledane.com.yml
+	Added hosts config: ../uncletopia-config/host_vars/us5.uncledane.com.yml
+	Added hosts config: ../uncletopia-config/host_vars/us6.uncledane.com.yml
+	Added group config: ../uncletopia-config/group_vars/all.yml
+	...
+	
+You should now see your linked configs in the tree.
+
+	$ ls -la host_vars
+	total 16
+	drwxr-xr-x 2 leighm leighm 4096 Feb 28 21:18 .
+	drwxr-xr-x 8 leighm leighm 4096 Feb 28 21:20 ..
+	-rw-r--r-- 1 leighm leighm  281 Feb 22 22:17 192.168.0.210.yml
+	lrwxrwxrwx 1 leighm leighm   52 Feb 28 21:18 as1.uncledane.com.yml -> ../uncletopia-config/host_vars/as1.uncledane.com.yml
+	lrwxrwxrwx 1 leighm leighm   52 Feb 28 21:18 eu1.uncledane.com.yml -> ../uncletopia-config/host_vars/eu1.uncledane.com.yml
+	lrwxrwxrwx 1 leighm leighm   52 Feb 28 21:18 eu2.uncledane.com.yml -> ../uncletopia-config/host_vars/eu2.uncledane.com.yml
+	lrwxrwxrwx 1 leighm leighm   52 Feb 28 21:18 ha1.uncledane.com.yml -> ../uncletopia-config/host_vars/ha1.uncledane.com.yml			
+	...
+	
 ### Initial setup
 
 This will set your origin server to your private repo, and the upstream to the master uncletopia repo.
