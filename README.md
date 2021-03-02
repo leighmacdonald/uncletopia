@@ -1,6 +1,6 @@
 # Uncletopia
 
-This repo contains [Ansible](https://docs.ansible.com) playbooks and tasks for 
+This repo contains [Ansible](https://docs.ansible.com) playbooks and tasks for
 configuring and administering the uncletopia server cluster.
 
 ## Setup
@@ -9,12 +9,13 @@ Install Ansible & Clone playbooks
 
 - `sudo apt-add-repository --yes --update ppa:ansible/ansible`
 - `apt install ansible make git git-lfs sshpass -y` [or for macOS](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html#installing-ansible-on-macos)
-- `git clone git@github.com:leighmacdonald/uncletopia && cd uncletopia`  
+- `git clone git@github.com:leighmacdonald/uncletopia && cd uncletopia`
+- `ansible-galaxy collection install community.general`  
 
 ## Adding Servers
 
 1. Add a new entry under `./hosts.yml`
-2. Copy an existing host config from `./host_vars` and name it to the hostname you just 
+2. Copy an existing host config from `./host_vars` and name it to the hostname you just
 set in `./hosts.yml`
 3. `make`
 
@@ -36,7 +37,7 @@ These command should be run from the Uncletopia folder on your local host system
 
 
 ## New Server Setup
-    
+
 ### 1. Setup hostkey
 
 Add your hostkey for the new server to your local ssh config. Ansible cannot do this properly.
@@ -54,23 +55,23 @@ Add your ssh public key for root `ssh-copy-id root@dane-eu2.jttm.us`
     ➜  uncletopia git:(master) ✗ ssh-copy-id root@dane-eu2.jttm.us
     /usr/bin/ssh-copy-id: INFO: attempting to log in with the new key(s), to filter out any that are already installed
     /usr/bin/ssh-copy-id: INFO: 1 key(s) remain to be installed -- if you are prompted now it is to install the new keys
-    Enter passphrase for key '/home/leigh/.ssh/id_rsa': 
-    root@dane-eu2.jttm.us's password: 
-    
+    Enter passphrase for key '/home/leigh/.ssh/id_rsa':
+    root@dane-eu2.jttm.us's password:
+
     Number of key(s) added: 1
-    
+
     Now try logging into the machine, with:   "ssh 'root@dane-eu2.jttm.us'"
     and check to make sure that only the key(s) you wanted were added.
-    
-    ➜  uncletopia git:(master) ✗ 
-    
+
+    ➜  uncletopia git:(master) ✗
+
 ### 2. User / SSH Setup
 
 - Add tf2 group
 - Add tf2server user
 - Setup firewall
 - Setup SSH
-  
+
 `make adduser` or `ansible-playbook -u your_ssh_username -i your_hosts.yml -K adduser.yml `
 
 Note that this will only ever run ONCE per server as it disables the mechanism it uses to login
@@ -108,7 +109,7 @@ You are now ready to deploy the custom parts of the TF2 instance. This will:
 
 ## Git Workflow
 
-This repo is meant as a template / master. Your private customizations should be in your local repository only. Below 
+This repo is meant as a template / master. Your private customizations should be in your local repository only. Below
 is a demonstration of the workflow for contributing changes back:
 
 
@@ -117,17 +118,17 @@ is a demonstration of the workflow for contributing changes back:
 To be able to use this repo with your own private configs, there is an included helper script included: `add_configs.sh`
 
 Your config dir should contain the host_vars and group_vars folders and all your configs you want inside those dirs.
-	
-For example: 
 
-	$ ls -la ../uncletopia-config 
+For example:
+
+	$ ls -la ../uncletopia-config
 	drwxr-xr-x 5 leighm leighm 4096 Feb 28 21:01 .
 	drwxr-xr-x 6 leighm leighm 4096 Feb 28 20:55 ..
 	drwxr-xr-x 8 leighm leighm 4096 Feb 28 21:02 .git
 	drwxr-xr-x 2 leighm leighm 4096 Feb 28 21:00 group_vars
 	drwxr-xr-x 2 leighm leighm 4096 Feb 28 21:00 host_vars
 
-	# ls -la ../uncletopia-config/host_vars 
+	# ls -la ../uncletopia-config/host_vars
 	drwxr-xr-x 2 leighm leighm 4096 Feb 28 21:00 .
 	drwxr-xr-x 5 leighm leighm 4096 Feb 28 21:01 ..
 	-rw-r--r-- 1 leighm leighm  186 Feb 22 21:02 as1.uncledane.com.yml
@@ -144,7 +145,7 @@ Then link your configs with the following command, replacing the value with the 
 	Added hosts config: ../uncletopia-config/host_vars/us6.uncledane.com.yml
 	Added group config: ../uncletopia-config/group_vars/all.yml
 	...
-	
+
 You should now see your linked configs in the tree.
 
 	$ ls -la host_vars
@@ -157,13 +158,13 @@ You should now see your linked configs in the tree.
 	lrwxrwxrwx 1 leighm leighm   52 Feb 28 21:18 eu2.uncledane.com.yml -> ../uncletopia-config/host_vars/eu2.uncledane.com.yml
 	lrwxrwxrwx 1 leighm leighm   52 Feb 28 21:18 ha1.uncledane.com.yml -> ../uncletopia-config/host_vars/ha1.uncledane.com.yml			
 	...
-	
+
 ### Initial setup
 
 This will set your origin server to your private repo, and the upstream to the master uncletopia repo.
 
 - git clone git@github.com:leighmacdonald/uncletopia.git uncletopia-private
-- cd uncletopia-private 
+- cd uncletopia-private
 - git remote add upstream git@github.com:leighmacdonald/uncletopia.git
 - git remote set-url origin git@github.com:leighmacdonald/uncletopia-private.git
 - cp host_vars/your.host.com.yml.example host_vars/custom.host.com.yml

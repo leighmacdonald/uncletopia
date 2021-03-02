@@ -1,6 +1,10 @@
 ---
 - hosts: tf2
   roles:
+    - adduser
+
+- hosts: tf2
+  roles:
     - pre
 
 - hosts: tf2

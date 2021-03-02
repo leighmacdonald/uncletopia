@@ -8,20 +8,19 @@
   become: yes
   shell: dpkg --print-foreign-architectures | grep i386
   register: result_i386_check
-  changed_when: result_i386_check.rc == 0
-  failed_when: result_i386_check.rc > 0
+  changed_when: false
+  ignore_errors: true
 
 - name: Enable i386 architecture
   become: yes
   command: dpkg --add-architecture i386
-  when: result_i386_check.rc == 1
+  when: result_i386_check.rc != 0
 
 - name: Install OS Dependencies
   become: yes
   apt:
     update_cache: yes
-    force_apt_get: yes
-    cache_valid_time: 3600
+    cache_valid_time: 0
     state: present
     pkg:
       - zsh
