@@ -1,13 +1,13 @@
 // * * * * * * <typ> <command>
 // - - - - - - -     -
-// � � � � � � �     �
-// � � � � � � �     +-- The command to execute
-// � � � � � � +-------- Available types are: console (execute server command), system (execute system command with system2 extension), player (execute on player console)
-// � � � � � +---------- Weekday (0-7, Sunday is 0 or 7)
-// � � � � +------------ Month (1-12)
-// � � � +-------------- Day (1-31)
-// � � +---------------- Hour (0-23)
-// � +------------------ Minute (0-59)
+// ¦ ¦ ¦ ¦ ¦ ¦ ¦     ¦
+// ¦ ¦ ¦ ¦ ¦ ¦ ¦     +-- The command to execute
+// ¦ ¦ ¦ ¦ ¦ ¦ +-------- Available types are: console (execute server command), system (execute system command with system2 extension), player (execute on player console)
+// ¦ ¦ ¦ ¦ ¦ +---------- Weekday (0-7, Sunday is 0 or 7)
+// ¦ ¦ ¦ ¦ +------------ Month (1-12)
+// ¦ ¦ ¦ +-------------- Day (1-31)
+// ¦ ¦ +---------------- Hour (0-23)
+// ¦ +------------------ Minute (0-59)
 // +-------------------- Seconds (0-59) - Optional, zero if not given
 //
 // Allowed syntax:
@@ -34,9 +34,9 @@
 //
 // @<special> <typ> <command>
 // -          -     -
-// �          �     �
-// �          �     +-- The command to execute.
-// �          +-------- Available types are: console (execute server command), system (execute system command with system2 extension), player (execute on player console)
+// ¦          ¦     ¦
+// ¦          ¦     +-- The command to execute.
+// ¦          +-------- Available types are: console (execute server command), system (execute system command with system2 extension), player (execute on player console)
 // +------------------- The special time to execute the command at. Has to start with a @ following the special
 //
 // Allowed specials: plugin_start, plugin_end, map_start, map_end and every event available in the current game ( see https://wiki.alliedmods.net/Game_Events_(Source) )!
