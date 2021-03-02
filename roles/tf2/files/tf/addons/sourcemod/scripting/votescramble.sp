@@ -222,8 +222,13 @@ public int NativeVote_Handler(Handle vote, MenuAction action, int param1, int pa
 
 public Action Timer_Scramble(Handle timer) {
 	ServerCommand("mp_scrambleteams");
+	CreateTimer(6.0, Timer_RestartGame);
 
 	CPrintToChatAll("[{green}SM{default}] Scrambling the teams due to vote.");
+}
+
+public Action Timer_RestartGame(Handle timer) {
+	ServerCommand("mp_restartgame 1");
 }
 
 public Action Timer_DelayRTS(Handle timer, any mins)
