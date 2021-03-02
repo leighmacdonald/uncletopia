@@ -1,4 +1,13 @@
 // List all maps for which Stopwatch should be enabled
 
-cp_*
+cp_dustbowl
+cp_powerhouse
+cp_egypt_final
+cp_gorge
+cp_gravelpit
+cp_junction_final
+cp_mercenarypark
+cp_mossrock
+cp_mountainlab
+cp_steel
 pl_*
