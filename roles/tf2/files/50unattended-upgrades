@@ -30,7 +30,7 @@ Unattended-Upgrade::Package-Blacklist {
 Unattended-Upgrade::DevRelease "false";
 
 // This option allows you to control if on a unclean dpkg exit
-// unattended-upgrades will automatically run 
+// unattended-upgrades will automatically run
 //   dpkg --force-confold --configure -a
 // The default is true, to ensure updates keep getting installed
 Unattended-Upgrade::AutoFixInterruptedDpkg "true";
@@ -65,7 +65,7 @@ Unattended-Upgrade::Remove-Unused-Kernel-Packages "true";
 Unattended-Upgrade::Remove-Unused-Dependencies "true";
 
 // Automatically reboot *WITHOUT CONFIRMATION*
-//  if the file /var/run/reboot-required is found after the upgrade 
+//  if the file /var/run/reboot-required is found after the upgrade
 Unattended-Upgrade::Automatic-Reboot "true";
 
 // If automatic reboot is enabled and needed, reboot at the specific

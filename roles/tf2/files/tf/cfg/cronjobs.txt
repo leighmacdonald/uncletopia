@@ -1,13 +1,13 @@
 // * * * * * * <typ> <command>
 // - - - - - - -     -
-// ¦ ¦ ¦ ¦ ¦ ¦ ¦     ¦
-// ¦ ¦ ¦ ¦ ¦ ¦ ¦     +-- The command to execute
-// ¦ ¦ ¦ ¦ ¦ ¦ +-------- Available types are: console (execute server command), system (execute system command with system2 extension), player (execute on player console)
-// ¦ ¦ ¦ ¦ ¦ +---------- Weekday (0-7, Sunday is 0 or 7)
-// ¦ ¦ ¦ ¦ +------------ Month (1-12)
-// ¦ ¦ ¦ +-------------- Day (1-31)
-// ¦ ¦ +---------------- Hour (0-23)
-// ¦ +------------------ Minute (0-59)
+// ï¿½ ï¿½ ï¿½ ï¿½ ï¿½ ï¿½ ï¿½     ï¿½
+// ï¿½ ï¿½ ï¿½ ï¿½ ï¿½ ï¿½ ï¿½     +-- The command to execute
+// ï¿½ ï¿½ ï¿½ ï¿½ ï¿½ ï¿½ +-------- Available types are: console (execute server command), system (execute system command with system2 extension), player (execute on player console)
+// ï¿½ ï¿½ ï¿½ ï¿½ ï¿½ +---------- Weekday (0-7, Sunday is 0 or 7)
+// ï¿½ ï¿½ ï¿½ ï¿½ +------------ Month (1-12)
+// ï¿½ ï¿½ ï¿½ +-------------- Day (1-31)
+// ï¿½ ï¿½ +---------------- Hour (0-23)
+// ï¿½ +------------------ Minute (0-59)
 // +-------------------- Seconds (0-59) - Optional, zero if not given
 //
 // Allowed syntax:
@@ -34,9 +34,9 @@
 //
 // @<special> <typ> <command>
 // -          -     -
-// ¦          ¦     ¦
-// ¦          ¦     +-- The command to execute.
-// ¦          +-------- Available types are: console (execute server command), system (execute system command with system2 extension), player (execute on player console)
+// ï¿½          ï¿½     ï¿½
+// ï¿½          ï¿½     +-- The command to execute.
+// ï¿½          +-------- Available types are: console (execute server command), system (execute system command with system2 extension), player (execute on player console)
 // +------------------- The special time to execute the command at. Has to start with a @ following the special
 //
 // Allowed specials: plugin_start, plugin_end, map_start, map_end and every event available in the current game ( see https://wiki.alliedmods.net/Game_Events_(Source) )!
@@ -45,10 +45,3 @@
 // @player_death player say "Oh! Someone died!"
 //
 // Just write your Cronjobs below this Line!
-
-
-55 4 * * * console sm_csay Automatic Restart in 5 minutes
-55 4 * * * console sm_say Automatic Restart in 5 minutes
-59 4 * * * console sm_csay Automatic Restart in 1 minute
-59 4 * * * console sm_say Automatic Restart in 1 minute
-0 5 * * * console sm_kick @all Server is restarting

@@ -128,6 +128,7 @@
     weekday: "*"
     user: tf2server
     job: "/home/tf2server/tf2server monitor > /dev/null 2>&1"
+    state: present
 
 - name: crontab update
   become: yes
@@ -140,6 +141,7 @@
     weekday: "*"
     user: tf2server
     job: "/home/tf2server/tf2server update > /dev/null 2>&1"
+    state: present
 
 - name: crontab force-update
   become: yes
@@ -152,6 +154,7 @@
     weekday: "*"
     user: tf2server
     job: "/home/tf2server/tf2server force-update > /dev/null 2>&1"
+    state: absent
 
 - name: crontab update-lgsm
   become: yes
@@ -164,3 +167,4 @@
     weekday: "0"
     user: tf2server
     job: "/home/tf2server/tf2server update-lgsm > /dev/null 2>&1"
+    state: present
