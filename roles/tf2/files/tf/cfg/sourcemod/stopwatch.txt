@@ -1,7 +1,6 @@
 // List all maps for which Stopwatch should be enabled
 
 cp_dustbowl
-cp_powerhouse
 cp_egypt_final
 cp_gorge
 cp_gravelpit
