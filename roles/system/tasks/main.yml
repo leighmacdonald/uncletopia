@@ -16,6 +16,22 @@
   command: dpkg --add-architecture i386
   when: result_i386_check.rc != 0
 
+- name: Accept Steam license
+  become: yes
+  debconf:
+    name: steamcmd
+    question: steam/question
+    value: "I AGREE"
+    vtype: select
+
+- name: Accept Steam license 2
+  become: yes
+  debconf:
+    name: steamcmd
+    question: steam/license
+    value: ""
+    vtype: note
+
 - name: Install OS Dependencies
   become: yes
   apt:
@@ -23,7 +39,6 @@
     cache_valid_time: 0
     state: present
     pkg:
-      - zsh
       - curl
       - wget
       - ca-certificates
@@ -40,11 +55,12 @@
       - jq
       - tmux
       - netcat
+      - cpio
       - lib32gcc1
       - lib32stdc++6
+      - steamcmd
+      - libsdl2-2.0-0:i386
       - libcurl4-gnutls-dev:i386
-      - libtcmalloc-minimal4:i386
-      - lib32tinfo5
 
 - name: Download Node Exporter
   become: yes
