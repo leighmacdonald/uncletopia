@@ -98,13 +98,6 @@
     src: gbans.cfg.j2
     dest: ~/serverfiles/tf/addons/sourcemod/configs/gbans.cfg
 
-- name: 20auto-upgrades
-  become: yes
-  copy:
-    src: 20auto-upgrades
-    dest: /etc/apt/apt.conf.d/20auto-upgrades
-    mode: '644'
-
 - name: 50unattended-upgrades
   become: yes
   copy:
