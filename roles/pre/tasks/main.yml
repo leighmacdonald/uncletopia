@@ -1,16 +1,3 @@
-- name: git clone ohmyzsh
-  git:
-    accept_hostkey: true
-    repo: https://github.com/ohmyzsh/ohmyzsh.git
-    version: master
-    dest: ~/.oh-my-zsh
-
-- name: cp zshrc
-  copy:
-    src: zshrc
-    dest: ~/.zshrc
-    mode: 0664
-
 - name: wget linuxgsm
   get_url:
     url: https://linuxgsm.sh

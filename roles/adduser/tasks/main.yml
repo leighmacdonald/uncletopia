@@ -3,14 +3,8 @@
   become: yes
   apt:
     update_cache: yes
-    upgrade: dist
+    upgrade: yes
     cache_valid_time: 0
-
-- name: apt install zsh
-  become: yes
-  apt:
-    pkg:
-      - zsh
 
 - name: addgroup tf2
   become: yes
@@ -24,7 +18,7 @@
     name: tf2server
     comment: TF2 Server User
     group: tf2
-    shell: /bin/zsh
+    shell: /bin/bash
     create_home: yes
     state: present
 
