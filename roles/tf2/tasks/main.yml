@@ -7,15 +7,6 @@
     recursive: true
     delete: true
 
-- name: tf/maps/
-  synchronize:
-    src: tf/maps/
-    dest: serverfiles/tf/maps/
-    owner: false
-    group: false
-    recursive: true
-    delete: false
-
 - name: tf/addons/
   synchronize:
     src: tf/addons/
