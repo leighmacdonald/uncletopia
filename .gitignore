@@ -1,5 +1,5 @@
-/group_vars/*.yml
-/host_vars/*.yml
+/group_vars
+/host_vars
 .idea
 /testhosts.yml
 /localhosts.yml

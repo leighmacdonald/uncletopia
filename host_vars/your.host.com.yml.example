@@ -1,6 +1,11 @@
 server_name: "Uncletopia | Antarctica"
 server_name_short: "an-1"
-gslt: ""   # https://steamcommunity.com/dev/managegameservers
+# https://steamcommunity.com/dev/managegameservers
+gslt: ""
 ip: ""
 gbans_key: ""
-timezone: ""   # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+# https://en.wikipedia.org/wiki/List_of_tz_database_time_zone
+timezone: "America/Edmonton"
+# https://developer.valvesoftware.com/wiki/Sv_region
+sv_region: 1
+
