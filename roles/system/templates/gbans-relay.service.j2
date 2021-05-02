@@ -1,0 +1,13 @@
+[Unit]
+Description=gbans log relay
+After=network.target
+
+[Service]
+User=tf2server
+Group=tf2
+WorkingDirectory=/home/tf2server
+ExecStart=/home/tf2server/gbans/gbans relay -n "{{ server_name_short }}" -H {{ discord_log_relay_host }} -l /home/tf2server/serverfiles/tf/logs
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
