@@ -107,6 +107,22 @@
     dest: /etc/systemd/system/discord_log_relay.service
     mode: '644'
 
+
+- name: gbans download
+  become: yes
+  become_user: tf2server
+  unarchive:
+    src: https://github.com/leighmacdonald/gbans/releases/download/v0.1.0/gbans-v0.1.0-linux64.tar.gz
+    dest: ~/
+    remote_src: yes
+
+- name: gbans-relay.service
+  become: yes
+  template:
+    src: gbans-relay.service.j2
+    dest: /etc/systemd/system/gbans-relay.service
+    mode: '644'
+
 - name: systemd reload
   become: yes
   systemd:
@@ -129,5 +145,12 @@
   become: yes
   systemd:
     name: discord_log_relay.service
+    enabled: yes
+    state: restarted
+
+- name: systemd enable gbans-relay
+  become: yes
+  systemd:
+    name: gbans-relay.service
     enabled: yes
     state: restarted
