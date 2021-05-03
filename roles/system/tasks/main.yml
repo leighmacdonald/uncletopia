@@ -123,6 +123,18 @@
     dest: /etc/systemd/system/gbans-relay.service
     mode: '644'
 
+- name: gbans chmod
+  file:
+    path: /home/tf2server/gbans/gbans
+    mode: 0755
+
+- name: gbans.yml
+  become: yes
+  template:
+    src: gbans.yml.j2
+    dest: /home/tf2server/gbans.yml
+    mode: '644'
+
 - name: systemd reload
   become: yes
   systemd:
