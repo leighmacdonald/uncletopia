@@ -107,13 +107,12 @@
     dest: /etc/systemd/system/discord_log_relay.service
     mode: '644'
 
-
 - name: gbans download
   become: yes
   become_user: tf2server
   unarchive:
-    src: https://github.com/leighmacdonald/gbans/releases/download/v0.1.0/gbans-v0.1.0-linux64.tar.gz
-    dest: ~/
+    src: https://github.com/leighmacdonald/gbans/releases/download/v0.1.5/gbans--lin64.zip
+    dest: ~/gbans
     remote_src: yes
 
 - name: gbans-relay.service
