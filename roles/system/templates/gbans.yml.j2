@@ -1,0 +1,98 @@
+general:
+  site_name: "gbans"
+  steam_key: 
+  owner: 
+  # Run mode for the HTTP service
+  # Should normally be "release"
+  mode: "debug" # release, debug, test
+
+http:
+  # Listen on this ip address
+  # 0.0.0.0 = Any
+  host: 0.0.0.0
+  # Listen on this port
+  port: 6006
+  domain: https://gbans.uncledane.com
+  static_path: internal/service/dist
+  client_timeout: 20s
+  # Encryption key for cookies
+  cookie_key: this_is_not_used_for_relay
+
+database:
+  #  to your database
+  dsn: "postgresql://gbans:gbans@localhost:6001/gbans"
+
+
+relay:
+  # Enable/disable the log relay functionality
+  enabled: true
+  # Output messages to these channels
+  channel_ids:
+    - "493070900787281930"
+
+word_filter:
+  enabled: true
+  warnings: 2
+  ping_discord: true
+  external_enabled: false
+  external_sources:
+    - https://raw.githubusercontent.com/RobertJGabriel/Google-profanity-words/master/list.txt
+
+discord:
+  # Enable optional discord integration
+  enabled: false
+  app_id: 
+  guild_id: 
+  # Your discord bot token
+  # See: https://discord.com/developers/applications
+  token: ""
+  mod_role_id: 
+  # People in these channels automatically have moderator privilege
+  # To find these, Right click the channel -> copy id
+  mod_channel_ids:
+    - "493070900787281930"
+    - "492952075102060551"
+    - "729132501309718599"
+    - "813663285588656138"
+  # Commands all start with this character
+  prefix: "!"
+
+
+logging:
+  # Set the debug log level
+  level: debug
+  # Force console colours when it cant guess. This is mostly useful on windows
+  force_colours: true
+  # Force disable any colouring
+  disable_colours: false
+  # Show the function + line number where the log message was created
+  report_caller: false
+  # Show full timestamps in the logs
+  full_timestamp: false
+
+network_bans:
+  enabled: false
+  max_age: 1d
+  cache_path: .cache
+  sources:
+    - name: tf2bd
+      url: https://raw.githubusercontent.com/PazerOP/tf2_bot_detector/master/staging/cfg/playerlist.official.json
+      type: tf2bd
+#    - name: bdd
+#      url: https://tf2bdd.pazer.us/v1/steamids
+#      type: tf2bd
+#    - name: erjv
+#      url: https://raw.githubusercontent.com/ejrv/VPNs/master/vpn-ipv4.txt
+#      type: cidr
+#    - name: proxy-list-socks5
+#      url: https://raw.githubusercontent.com/TheSpeedX/PROXY-List/master/socks5.txt
+#      type: s5
+#    - name: proxy-list-socks4
+#      url: https://raw.githubusercontent.com/TheSpeedX/PROXY-List/master/socks4.txt
+#      type: s4
+#    - name: proxy-list-http
+#      url: https://raw.githubusercontent.com/TheSpeedX/PROXY-List/master/http.txt
+#      type: http
+#    - name: ET
+#      url: https://rules.emergingthreats.net/open-nogpl/snort-2.9.0/emerging.rules.tar.gz
+#      type: snort
