@@ -107,6 +107,14 @@
     dest: /etc/systemd/system/discord_log_relay.service
     mode: '644'
 
+- name: mkdir gbans
+  become: yes
+  become_user: tf2server
+  file:
+    path: ~/gbans
+    state: directory
+    mode: '0755'
+
 - name: gbans download
   become: yes
   become_user: tf2server
