@@ -1,8 +1,5 @@
 cp_dustbowl
 cp_gorge
-cp_granary
-cp_gullywash_final1
-cp_mercenarypark
 cp_metalworks
 cp_mossrock
 cp_mountainlab
@@ -10,10 +7,10 @@ cp_process_final
 cp_snakewater_final1
 cp_steel
 cp_sunshine
+koth_badlands
 koth_highpass
 koth_king
 koth_lakeside_final
-koth_lazarus
 koth_sawmill
 koth_suijin
 koth_viaduct
@@ -24,4 +21,5 @@ pl_borneo
 pl_frontier_final
 pl_snowycoast
 pl_swiftwater_final1
+pl_thundermountain
 pl_upward
