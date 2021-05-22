@@ -1,0 +1,9 @@
+all:
+  hosts:
+  children:
+    tf2:
+      hosts:
+        lax-[1:3].us.server.com:
+          ansible_python_interpreter: python3
+        sfo-1.us.server.com:
+          ansible_python_interpreter: python3
