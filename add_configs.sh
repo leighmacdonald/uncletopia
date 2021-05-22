@@ -8,3 +8,4 @@ for fn in $1/group_vars/*; do
 	ln -f $fn group_vars
 	echo "Added group config: $fn"
 done
+ln -f $1/hosts.yml hosts.yml
