@@ -92,21 +92,6 @@
     dest: /etc/systemd/system/node_exporter.service
     mode: '644'
 
-- name: discord_log_relay download
-  become: yes
-  become_user: tf2server
-  unarchive:
-    src: https://github.com/leighmacdonald/discord_log_relay/releases/download/v1.0.2/discord_log_relay-v1.0.2-linux64.zip
-    dest: ~/
-    remote_src: yes
-
-- name: discord_log_relay.service
-  become: yes
-  template:
-    src: discord_log_relay.service.j2
-    dest: /etc/systemd/system/discord_log_relay.service
-    mode: '644'
-
 - name: mkdir gbans
   become: yes
   become_user: tf2server
@@ -159,13 +144,6 @@
   systemd:
     name: tf2server.service
     enabled: yes
-
-- name: systemd enable discord_log_relay
-  become: yes
-  systemd:
-    name: discord_log_relay.service
-    enabled: yes
-    state: restarted
 
 - name: systemd enable gbans-relay
   become: yes
