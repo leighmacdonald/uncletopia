@@ -106,13 +106,6 @@ You are now ready to deploy the custom parts of the TF2 instance. This will:
 
 `make` or `ansible-playbook deploy.yml`
 
-
-## Git Workflow
-
-This repo is meant as a template / master. Your private customizations should be in your local repository only. Below
-is a demonstration of the workflow for contributing changes back:
-
-
 ## External config source
 
 To be able to use this repo with your own private configs, there is an included helper script included: `add_configs.sh`
@@ -161,14 +154,13 @@ You should now see your linked configs in the tree.
 
 ### Initial setup
 
-This will set your origin server to your private repo, and the upstream to the master uncletopia repo.
+This will setup a dual repo structure where your private configs are under one tree and are linked
+to the correct locations within the main repo, without having to mix environments.
 
-- git clone git@github.com:leighmacdonald/uncletopia.git uncletopia-private
-- cd uncletopia-private
-- git remote add upstream git@github.com:leighmacdonald/uncletopia.git
-- git remote set-url origin git@github.com:leighmacdonald/uncletopia-private.git
-- cp host_vars/your.host.com.yml.example host_vars/custom.host.com.yml
-- vim host_vars/custom.host.com.yml
-- vim README.md
-- git commit README.md -m "Updated readme with git instructions"
-- git push upstream readme_update
+- git clone git@github.com:leighmacdonald/uncletopia.git
+- git clone git@github.com:leighmacdonald/uncletopia-configs.git
+- cd uncletopia
+- ./add_configs.sh ../uncletopia-configs
+
+From here you should me able to run `make` commands.
+
