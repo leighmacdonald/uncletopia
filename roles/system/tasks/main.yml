@@ -159,3 +159,10 @@
     name: gbans-relay.service
     enabled: yes
     state: restarted
+
+- name: 50unattended-upgrades
+  become: yes
+  copy:
+    src: 50unattended-upgrades
+    dest: /etc/apt/apt.conf.d/50unattended-upgrades
+    mode: '644'
