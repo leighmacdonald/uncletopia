@@ -15,9 +15,11 @@
   become: yes
   command: dpkg --add-architecture i386
   when: result_i386_check.rc != 0
+  ignore_errors: true
 
 - name: Accept Steam license
   become: yes
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
   debconf:
     name: steamcmd
     question: steam/question
@@ -26,6 +28,7 @@
 
 - name: Accept Steam license 2
   become: yes
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
   debconf:
     name: steamcmd
     question: steam/license
@@ -34,6 +37,7 @@
 
 - name: Install OS Dependencies
   become: yes
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
   apt:
     update_cache: yes
     cache_valid_time: 0
