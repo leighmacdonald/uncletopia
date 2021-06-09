@@ -89,13 +89,6 @@
     src: gbans.cfg.j2
     dest: ~/serverfiles/tf/addons/sourcemod/configs/gbans.cfg
 
-- name: 50unattended-upgrades
-  become: yes
-  copy:
-    src: 50unattended-upgrades
-    dest: /etc/apt/apt.conf.d/50unattended-upgrades
-    mode: '644'
-
 - name: start tf2server
   command:
     cmd: sudo systemctl start tf2server
