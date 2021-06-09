@@ -1,94 +1,95 @@
 #pragma semicolon 1
+#pragma newdecls required
 #include <sourcemod>
 #include <sdktools>
 #include <dhooks>
 
 // int CBaseCombatCharacter::BloodColor(void)
-new Handle:hBloodColor;
+DynamicHook hBloodColor;
 
 // bool CBaseCombatCharacter::Weapon_CanUse(CBaseCombatWeapon *)
-new Handle:hHookCanUse;
+DynamicHook hHookCanUse;
 
 // Vector CBasePlayer::GetPlayerMaxs()
-new Handle:hGetMaxs;
+DynamicHook hGetMaxs;
 
 // string_t CBaseEntity::GetModelName(void)
-new Handle:hGetModelName;
+DynamicHook hGetModelName;
 
 // bool CGameRules::CanHaveAmmo(CBaseCombatCharacter *, int)
-new Handle:hCanHaveAmmo;
+DynamicHook hCanHaveAmmo;
 
 // void CBaseEntity::SetModel(char  const*)
-new Handle:hSetModel;
+DynamicHook hSetModel;
 
 //float CCSPlayer::GetPlayerMaxSpeed()
-new Handle:hGetSpeed;
+DynamicHook hGetSpeed;
 
 //int CCSPlayer::OnTakeDamage(CTakeDamageInfo const&)
-new Handle:hTakeDamage;
+DynamicHook hTakeDamage;
 
 // bool CBaseEntity::AcceptInput(char  const*, CBaseEntity*, CBaseEntity*, variant_t, int)
-new Handle:hAcceptInput;
+DynamicHook hAcceptInput;
 
 //int CBaseCombatCharacter::GiveAmmo(int, int, bool)
-new Handle:hGiveAmmo;
+DynamicHook hGiveAmmo;
 
 // CVEngineServer::ClientPrintf(edict_t *, char  const*)
-new Handle:hClientPrintf;
+DynamicHook hClientPrintf;
 
-public OnPluginStart()
+public void OnPluginStart()
 {
-	new Handle:temp = LoadGameConfigFile("dhooks-test.games");
+	GameData temp = new GameData("dhooks-test.games");
 	
 	if(temp == INVALID_HANDLE)
 	{
 		SetFailState("Why you no has gamedata?");
 	}
 	
-	new offset;
+	int offset;
 	
-	offset = GameConfGetOffset(temp, "BloodColor");
-	hBloodColor = DHookCreate(offset, HookType_Entity, ReturnType_Int, ThisPointer_CBaseEntity, BloodColorPost);
+	offset = temp.GetOffset("BloodColor");
+	hBloodColor = new DynamicHook(offset, HookType_Entity, ReturnType_Int, ThisPointer_CBaseEntity);
 	
-	offset = GameConfGetOffset(temp, "GetModelName");
-	hGetModelName = DHookCreate(offset, HookType_Entity, ReturnType_String, ThisPointer_CBaseEntity, GetModelName);
+	offset = temp.GetOffset("GetModelName");
+	hGetModelName = new DynamicHook(offset, HookType_Entity, ReturnType_String, ThisPointer_CBaseEntity);
 	
-	offset = GameConfGetOffset(temp, "GetMaxs");
-	hGetMaxs = DHookCreate(offset, HookType_Entity, ReturnType_Vector, ThisPointer_Ignore);
+	offset = temp.GetOffset("GetMaxs");
+	hGetMaxs = new DynamicHook(offset, HookType_Entity, ReturnType_Vector, ThisPointer_Ignore);
 	
-	offset = GameConfGetOffset(temp, "CanUse");
-	hHookCanUse = DHookCreate(offset, HookType_Entity, ReturnType_Bool, ThisPointer_CBaseEntity, CanUsePost);
-	DHookAddParam(hHookCanUse, HookParamType_CBaseEntity);
+	offset = temp.GetOffset("CanUse");
+	hHookCanUse = new DynamicHook(offset, HookType_Entity, ReturnType_Bool, ThisPointer_CBaseEntity);
+	hHookCanUse.AddParam(HookParamType_CBaseEntity);
 	
-	offset = GameConfGetOffset(temp, "CanHaveAmmo");
-	hCanHaveAmmo = DHookCreate(offset, HookType_GameRules, ReturnType_Bool, ThisPointer_Ignore, CanHaveAmmoPost);
-	DHookAddParam(hCanHaveAmmo, HookParamType_CBaseEntity);
-	DHookAddParam(hCanHaveAmmo, HookParamType_Int);
+	offset = temp.GetOffset("CanHaveAmmo");
+	hCanHaveAmmo = new DynamicHook(offset, HookType_GameRules, ReturnType_Bool, ThisPointer_Ignore);
+	hCanHaveAmmo.AddParam(HookParamType_CBaseEntity);
+	hCanHaveAmmo.AddParam(HookParamType_Int);
 	
-	offset = GameConfGetOffset(temp, "SetModel");
-	hSetModel = DHookCreate(offset, HookType_Entity, ReturnType_Void, ThisPointer_CBaseEntity, SetModel);
-	DHookAddParam(hSetModel, HookParamType_CharPtr);
+	offset = temp.GetOffset("SetModel");
+	hSetModel = new DynamicHook(offset, HookType_Entity, ReturnType_Void, ThisPointer_CBaseEntity);
+	hSetModel.AddParam(HookParamType_CharPtr);
 	
-	offset = GameConfGetOffset(temp, "AcceptInput");
-	hAcceptInput = DHookCreate(offset, HookType_Entity, ReturnType_Bool, ThisPointer_CBaseEntity, AcceptInput);
-	DHookAddParam(hAcceptInput, HookParamType_CharPtr);
-	DHookAddParam(hAcceptInput, HookParamType_CBaseEntity);
-	DHookAddParam(hAcceptInput, HookParamType_CBaseEntity);
-	DHookAddParam(hAcceptInput, HookParamType_Object, 20, DHookPass_ByVal|DHookPass_ODTOR|DHookPass_OCTOR|DHookPass_OASSIGNOP); //varaint_t is a union of 12 (float[3]) plus two int type params 12 + 8 = 20
-	DHookAddParam(hAcceptInput, HookParamType_Int);
+	offset = temp.GetOffset("AcceptInput");
+	hAcceptInput = new DynamicHook(offset, HookType_Entity, ReturnType_Bool, ThisPointer_CBaseEntity);
+	hAcceptInput.AddParam(HookParamType_CharPtr);
+	hAcceptInput.AddParam(HookParamType_CBaseEntity);
+	hAcceptInput.AddParam(HookParamType_CBaseEntity);
+	hAcceptInput.AddParam(HookParamType_Object, 20, DHookPass_ByVal|DHookPass_ODTOR|DHookPass_OCTOR|DHookPass_OASSIGNOP); //variant_t is a union of 12 (float[3]) plus two int type params 12 + 8 = 20
+	hAcceptInput.AddParam(HookParamType_Int);
 		
-	offset = GameConfGetOffset(temp, "GetMaxPlayerSpeed");
-	hGetSpeed = DHookCreate(offset, HookType_Entity, ReturnType_Float, ThisPointer_CBaseEntity);
+	offset = temp.GetOffset("GetMaxPlayerSpeed");
+	hGetSpeed = new DynamicHook(offset, HookType_Entity, ReturnType_Float, ThisPointer_CBaseEntity);
 		
-	offset = GameConfGetOffset(temp, "GiveAmmo");
-	hGiveAmmo = DHookCreate(offset, HookType_Entity, ReturnType_Int, ThisPointer_CBaseEntity, GiveAmmo);
-	DHookAddParam(hGiveAmmo, HookParamType_Int);
-	DHookAddParam(hGiveAmmo, HookParamType_Int);
-	DHookAddParam(hGiveAmmo, HookParamType_Bool);
+	offset = temp.GetOffset("GiveAmmo");
+	hGiveAmmo = new DynamicHook(offset, HookType_Entity, ReturnType_Int, ThisPointer_CBaseEntity);
+	hGiveAmmo.AddParam(HookParamType_Int);
+	hGiveAmmo.AddParam(HookParamType_Int);
+	hGiveAmmo.AddParam(HookParamType_Bool);
 		
-	offset = GameConfGetOffset(temp, "OnTakeDamage");
-	hTakeDamage = DHookCreate(offset, HookType_Entity, ReturnType_Int, ThisPointer_CBaseEntity, OnTakeDamage);
-	DHookAddParam(hTakeDamage, HookParamType_ObjectPtr, -1, DHookPass_ByRef);
+	offset = temp.GetOffset("OnTakeDamage");
+	hTakeDamage = new DynamicHook(offset, HookType_Entity, ReturnType_Int, ThisPointer_CBaseEntity);
+	hTakeDamage.AddParam(HookParamType_ObjectPtr, -1, DHookPass_ByRef);
 	
 	DHookAddEntityListener(ListenType_Created, EntityCreated);
 	
@@ -104,15 +105,15 @@ public OnPluginStart()
 	PrepSDKCall_AddParameter(SDKType_PlainOldData, SDKPass_Pointer, VDECODE_FLAG_ALLOWNULL);
 	PrepSDKCall_SetReturnInfo(SDKType_PlainOldData, SDKPass_Plain);
 	
-	new String:iface[64];
-	if(!GameConfGetKeyValue(temp, "EngineInterface", iface, sizeof(iface)))
+	char iface[64];
+	if(!temp.GetKeyValue("EngineInterface", iface, sizeof(iface)))
 	{
 		SetFailState("Failed to get engine interface name");
 		CloseHandle(temp);
 	}
 	
-	new Handle:call = EndPrepSDKCall();
-	new Address:addr = SDKCall(call, iface, 0);
+	Handle call = EndPrepSDKCall();
+	Address addr = SDKCall(call, iface, 0);
 	CloseHandle(call);
 	
 	if(!addr)
@@ -121,117 +122,116 @@ public OnPluginStart()
 	}
 	
 	offset = GameConfGetOffset(temp, "ClientPrintf");
-	hClientPrintf = DHookCreate(offset, HookType_Raw, ReturnType_Void, ThisPointer_Ignore, Hook_ClientPrintf);
-	DHookAddParam(hClientPrintf, HookParamType_Edict);
-	DHookAddParam(hClientPrintf, HookParamType_CharPtr);
-	DHookRaw(hClientPrintf, false, addr);
+	hClientPrintf = new DynamicHook(offset, HookType_Raw, ReturnType_Void, ThisPointer_Ignore);
+	hClientPrintf.AddParam(HookParamType_Edict);
+	hClientPrintf.AddParam(HookParamType_CharPtr);
+	hClientPrintf.HookRaw(Hook_Pre, addr, Hook_ClientPrintf);
 	
-	CloseHandle(temp);
-	
+	delete temp;
 }
 
-public MRESReturn:Hook_ClientPrintf(Handle:hParams)
+public MRESReturn Hook_ClientPrintf(DHookParam hParams)
 {
-	new client = DHookGetParam(hParams, 1);
-	decl String:buffer[1024];
-	DHookGetParamString(hParams, 2, buffer, sizeof(buffer));
+	int client = hParams.Get(1);
+	char buffer[1024];
+	hParams.GetString(2, buffer, sizeof(buffer));
 	PrintToChat(client, "BUFFER %s", buffer);
 	return MRES_Ignored;
 }
 
-public MRESReturn:AcceptInput(pThis, Handle:hReturn, Handle:hParams)
+public MRESReturn AcceptInput(int pThis, DHookReturn hReturn, DHookParam hParams)
 {
-	new String:command[128];
-	DHookGetParamString(hParams, 1, command, sizeof(command));
-	new type = DHookGetParamObjectPtrVar(hParams, 4, 16,ObjectValueType_Int);
-	new String:wtf[128];
-	DHookGetParamObjectPtrString(hParams, 4, 0, ObjectValueType_String, wtf, sizeof(wtf));
+	char command[128];
+	hParams.GetString(1, command, sizeof(command));
+	int type = hParams.GetObjectVar(4, 16, ObjectValueType_Int);
+	char wtf[128];
+	hParams.GetObjectVarString(4, 0, ObjectValueType_String, wtf, sizeof(wtf));
 	PrintToServer("Command %s Type %i String %s", command, type, wtf);
-	DHookSetReturn(hReturn, false);
+	hReturn.Value = false;
 	return MRES_Supercede;
 }
 
-public OnMapStart()
+public void OnMapStart()
 {
 	//Hook Gamerules function in map start
-	DHookGamerules(hCanHaveAmmo, true, RemovalCB);
+	hCanHaveAmmo.HookGamerules(Hook_Post, CanHaveAmmoPost, RemovalCB);
 }
 
-public OnClientPutInServer(client)
+public void OnClientPutInServer(int client)
 {
-	DHookEntity(hSetModel, false, client, RemovalCB);
-	DHookEntity(hHookCanUse, true, client, RemovalCB);
-	DHookEntity(hGetSpeed, true, client, RemovalCB, GetMaxPlayerSpeedPost);
-	DHookEntity(hGiveAmmo, false, client);
-	DHookEntity(hGetModelName, true, client);
-	DHookEntity(hTakeDamage, false, client);
-	DHookEntity(hGetMaxs, true, client, _ , GetMaxsPost);
-	DHookEntity(hBloodColor, true, client);
+	hSetModel.HookEntity(Hook_Pre, client, SetModel, RemovalCB);
+	hHookCanUse.HookEntity(Hook_Post, client, CanUsePost, RemovalCB);
+	hGetSpeed.HookEntity(Hook_Post, client, GetMaxPlayerSpeedPost, RemovalCB);
+	hGiveAmmo.HookEntity(Hook_Pre, client, GiveAmmo);
+	hGetModelName.HookEntity(Hook_Post, client, GetModelName);
+	hTakeDamage.HookEntity(Hook_Pre, client, OnTakeDamage);
+	hGetMaxs.HookEntity(Hook_Post, client, GetMaxsPost);
+	hBloodColor.HookEntity(Hook_Post, client, BloodColorPost);
 }
 
-public EntityCreated(entity, const String:classname[])
+public void EntityCreated(int entity, const char[] classname)
 {
 	if(strcmp(classname, "point_servercommand") == 0)
 	{
-		DHookEntity(hAcceptInput, false, entity);
+		hAcceptInput.HookEntity(Hook_Pre, entity, AcceptInput);
 	}
 }
 
 //int CCSPlayer::OnTakeDamage(CTakeDamageInfo const&)
-public MRESReturn:OnTakeDamage(pThis, Handle:hReturn, Handle:hParams)
+public MRESReturn OnTakeDamage(int pThis, DHookReturn hReturn, DHookParam hParams)
 {
-	PrintToServer("DHooksHacks = Victim %i, Attacker %i, Inflictor %i, Damage %f", pThis, DHookGetParamObjectPtrVar(hParams, 1, 40, ObjectValueType_Ehandle), DHookGetParamObjectPtrVar(hParams, 1, 36, ObjectValueType_Ehandle), DHookGetParamObjectPtrVar(hParams, 1, 48, ObjectValueType_Float));
+	PrintToServer("DHooksHacks = Victim %i, Attacker %i, Inflictor %i, Damage %f", pThis, hParams.GetObjectVar(1, 40, ObjectValueType_Ehandle), hParams.GetObjectVar(1, 36, ObjectValueType_Ehandle), hParams.GetObjectVar(1, 48, ObjectValueType_Float));
 	
 	if(pThis <= MaxClients && pThis > 0 && !IsFakeClient(pThis))
 	{
-		DHookSetParamObjectPtrVar(hParams, 1, 48, ObjectValueType_Float, 0.0);
+		hParams.SetObjectVar(1, 48, ObjectValueType_Float, 0.0);
 		PrintToChat(pThis, "Pimping your hp");
 	}
 }
 
 // int CBaseCombatCharacter::GiveAmmo(int, int, bool)
-public MRESReturn:GiveAmmo(pThis, Handle:hReturn, Handle:hParams)
+public MRESReturn GiveAmmo(int pThis, DHookReturn hReturn, DHookParam hParams)
 {
-	PrintToChat(pThis, "Giving %i of %i supress %i", DHookGetParam(hParams, 1), DHookGetParam(hParams, 2), DHookGetParam(hParams, 3));
+	PrintToChat(pThis, "Giving %i of %i supress %i", hParams.Get(1), hParams.Get(2), hParams.Get(3));
 	return MRES_Ignored;
 }
 
 // void CBaseEntity::SetModel(char  const*)
-public MRESReturn:SetModel(pThis, Handle:hParams)
+public MRESReturn SetModel(int pThis, DHookParam hParams)
 {
 	//Change all bot skins to phoenix one
 	if(IsFakeClient(pThis))
 	{
-		DHookSetParamString(hParams, 1, "models/player/t_phoenix.mdl");
+		hParams.SetString(1, "models/player/t_phoenix.mdl");
 		return MRES_ChangedHandled;
 	}
 	return MRES_Ignored;
 }
 
 //float CCSPlayer::GetPlayerMaxSpeed()
-public MRESReturn:GetMaxPlayerSpeedPost(pThis, Handle:hReturn)
+public MRESReturn GetMaxPlayerSpeedPost(int pThis, DHookReturn hReturn)
 {
 	//Make bots slow
 	if(IsFakeClient(pThis))
 	{
-		DHookSetReturn(hReturn, 100.0);
+		hReturn.Value = 100.0;
 		return MRES_Override;
 	}
 	return MRES_Ignored;
 }
 
 // bool CGameRules::CanHaveAmmo(CBaseCombatCharacter *, int)
-public MRESReturn:CanHaveAmmoPost(Handle:hReturn, Handle:hParams)
+public MRESReturn CanHaveAmmoPost(DHookReturn hReturn, DHookParam hParams)
 {
-	PrintToServer("Can has ammo? %s %i", DHookGetReturn(hReturn)?"true":"false", DHookGetParam(hParams, 2));
+	PrintToServer("Can has ammo? %s %i", hReturn.Value?"true":"false", hParams.Get(2));
 	return MRES_Ignored;
 }
 
 // string_t CBaseEntity::GetModelName(void)
-public MRESReturn:GetModelName(pThis, Handle:hReturn)
+public MRESReturn GetModelName(int pThis, DHookReturn hReturn)
 {
-	new String:returnval[128];
-	DHookGetReturnString(hReturn, returnval, sizeof(returnval));
+	char returnval[128];
+	hReturn.GetString(returnval, sizeof(returnval));
 	
 	if(IsFakeClient(pThis))
 	{
@@ -242,40 +242,40 @@ public MRESReturn:GetModelName(pThis, Handle:hReturn)
 }
 
 // Vector CBasePlayer::GetPlayerMaxs()
-public MRESReturn:GetMaxsPost(Handle:hReturn)
+public MRESReturn GetMaxsPost(DHookReturn hReturn)
 {
-	new Float:vec[3];
-	DHookGetReturnVector(hReturn, vec);
+	float vec[3];
+	hReturn.GetVector(vec);
 	PrintToServer("Get maxes %.3f, %.3f, %.3f", vec[0], vec[1], vec[2]);
 	
 	return MRES_Ignored;
 }
 
 // bool CBaseCombatCharacter::Weapon_CanUse(CBaseCombatWeapon *)
-public MRESReturn:CanUsePost(pThis, Handle:hReturn, Handle:hParams)
+public MRESReturn CanUsePost(int pThis, DHookReturn hReturn, DHookParam hParams)
 {
 	//Bots get nothing.
 	if(IsFakeClient(pThis))
 	{
-		DHookSetReturn(hReturn, false);
+		hReturn.Value = false;
 		return MRES_Override;
 	}
 	return MRES_Ignored;
 }
 
 // int CBaseCombatCharacter::BloodColor(void)
-public MRESReturn:BloodColorPost(pThis, Handle:hReturn)
+public MRESReturn BloodColorPost(int pThis, DHookReturn hReturn)
 {
 	//Change the bots blood color to goldish yellow
 	if(IsFakeClient(pThis))
 	{
-		DHookSetReturn(hReturn, 2);
+		hReturn.Value = 2;
 		return MRES_Supercede;
 	}
 	return MRES_Ignored;
 }
 
-public RemovalCB(hookid)
+public void RemovalCB(int hookid)
 {
 	PrintToServer("Removed hook %i", hookid);
 }
