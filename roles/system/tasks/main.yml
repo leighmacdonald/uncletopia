@@ -70,15 +70,15 @@
   become: yes
   become_user: tf2server
   unarchive:
-    src: https://github.com/prometheus/node_exporter/releases/download/v1.1.1/node_exporter-1.1.1.linux-amd64.tar.gz
+    src: https://github.com/prometheus/node_exporter/releases/download/v1.1.2/node_exporter-1.1.2.linux-amd64.tar.gz
     dest: ~/
     remote_src: yes
-    creates: node_exporter-1.1.1
+    creates: node_exporter-1.1.2
 
 - name: Extract Node Exporter
   become: yes
   become_user: tf2server
-  command: cp ~/node_exporter-1.1.1.linux-amd64/node_exporter ~/node_exporter
+  command: cp ~/node_exporter-1.1.2.linux-amd64/node_exporter ~/node_exporter
   args:
     creates: ~/node_exporter
 

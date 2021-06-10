@@ -2,44 +2,41 @@
 
 all: deploy
 
-adduser:
-	@ansible-playbook adduser.yml -u root
+deps:
+	@ansible-galaxy install -f -r requirements.yml
 
-pre:
-	@ansible-playbook pre.yml
+adduser: deps
+	@ansible-playbook adduser.yml -u root $(ARGS)
 
-system:
-	@ansible-playbook system.yml
+pre: deps
+	@ansible-playbook pre.yml $(ARGS)
 
-deploy:
-	@ansible-playbook deploy.yml
+system: deps
+	@ansible-playbook system.yml $(ARGS)
 
-debug:
-	@ansible-playbook deploy.yml -v
+deploy: deps
+	@ansible-playbook deploy.yml $(ARGS)
 
 ping:
-	@ansible tf2 -m ping
+	@ansible tf2 -m ping $(ARGS)
 
 test_adduser:
-	@ansible-playbook -i testhost.yml adduser.yml -u root
+	@ansible-playbook -i testhost.yml adduser.yml -u root $(ARGS)
 
 test_pre:
-	@ansible-playbook -i testhost.yml pre.yml
+	@ansible-playbook -i testhost.yml pre.yml $(ARGS)
 
 test_system:
-	@ansible-playbook -i testhost.yml system.yml
+	@ansible-playbook -i testhost.yml system.yml $(ARGS)
 
 test_deploy:
-	@ansible-playbook -i testhost.yml deploy.yml
-
-test_debug:
-	@ansible-playbook -i testhost.yml deploy.yml -v
+	@ansible-playbook -i testhost.yml deploy.yml $(ARGS)
 
 test_ping:
-	@ansible tf2 -m ping -i testhost.yml
+	@ansible tf2 -m ping -i testhost.yml $(ARGS)
 
 restart:
-	@ansible-playbook restart.yml
+	@ansible-playbook restart.yml $(ARGS)
 
-test_restart:
-	@ansible-playbook -i testhost.yml restart.yml
+rm:
+	ansible -m file -a "state=absent path=$(ARGS)"

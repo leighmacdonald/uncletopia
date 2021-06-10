@@ -11,6 +11,7 @@
   "binutils",
   "bsdmainutils",
   "bzip",
+  "cloudalchemy",
   "dpkg",
   "gbans",
   "gnutls",
