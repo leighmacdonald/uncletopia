@@ -82,13 +82,12 @@
     state: directory
     mode: '0700'
 
-- name: .ssh/authorized_keys
-  become: yes
-  become_user: tf2server
-  template:
-    src: authorized_keys.j2
-    dest: ~/.ssh/authorized_keys
-    mode: '0600'
+- name: ssh keys
+  ansible.posix.authorized_key:
+    user: tf2server
+    state: present
+    key: "{{ item }}"
+  loop: "{{ ssh_keys }}"
 
 - name: etc/ssh/sshd_config
   become: yes
