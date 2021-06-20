@@ -1,10 +1,15 @@
-/group_vars
-/host_vars
+# general IDE/OS stuff 
 .idea
+.vscode
+.DS_Store
+*Zone.Identifier
+
+# prevent logs from being committed accidentally
+*.log
+
+# everyone has their own testing setup, so ignore it!
 /testhosts.yml
 /localhosts.yml
-/uncletopia.iml
-/host_vars/172.16.1.52.yml
-*.log
-*Zone.Identifier
-/*.yml
+
+# plug in your own hosts based on hosts.yml.example
+hosts.yml
