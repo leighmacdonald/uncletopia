@@ -10,7 +10,8 @@ Install Ansible & Clone playbooks
 - `sudo apt-add-repository --yes --update ppa:ansible/ansible`
 - `apt install ansible make git git-lfs sshpass -y` [or for macOS](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html#installing-ansible-on-macos)
 - `git clone git@github.com:leighmacdonald/uncletopia && cd uncletopia`
-- `ansible-galaxy collection install community.general`  
+- `ansible-galaxy collection install community.general`
+- `ansible-galaxy collection install ansible.posix`
 
 ## Adding Servers
 
