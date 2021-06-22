@@ -7,14 +7,14 @@
 			// https://asherkin.github.io/vtable/
 			"Weapon_ShootPosition"
 			{
-				"windows" "268"
-				"linux"   "269"
+				"windows" "269"
+				"linux"   "270"
 			}
 			// https://asherkin.github.io/vtable/
 			"IsViewModelFlipped"
 			{
-				"windows" "432"
-				"linux"   "439"
+				"windows" "433"
+				"linux"   "440"
 			}
 		}
 	}
