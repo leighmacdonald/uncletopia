@@ -3,5 +3,5 @@ all:
   children:
     tf2:
       hosts:
-        ha[1:1].uncledane.com:
+        test-1:
           ansible_python_interpreter: python3
