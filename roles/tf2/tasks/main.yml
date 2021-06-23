@@ -6,7 +6,9 @@
     group: false
     recursive: true
     delete: true
-
+    rsync_opts:
+      - "--exclude=*.log"
+      - "--exclude=sourcemod/sourcemod.cfg"
 - name: tf/addons/
   synchronize:
     src: tf/addons/
@@ -20,6 +22,7 @@
       - "--exclude=sourcemod/logs/"
       - "--exclude=sourcemod/configs/gbans.cfg"
       - "--exclude=sourcemod/configs/admins_simple.ini"
+      - "--exclude=sourcemod/configs/admin_overrides.cfg"
 
 - name: cfg/mapconfig/
   synchronize:
@@ -84,10 +87,20 @@
     src: lgsm-tf2server.cfg.j2
     dest: lgsm/config-lgsm/tf2server/tf2server.cfg
 
+- name: tf/cfg/sourcemod/sourcemod.cfg
+  template:
+    src: sourcemod.cfg.j2
+    dest: ~/serverfiles/tf/cfg/sourcemod/sourcemod.cfg
+
+- name: tf/addons/sourcemod/configs/admin_overrides.cfg
+  template:
+    src: admin_overrides.cfg.j2
+    dest: ~/serverfiles/tf/addons/sourcemod/configs/admin_overrides.cfg
+
 - name: tf/addons/sourcemod/configs/gbans.cfg
   template:
     src: gbans.cfg.j2
-    dest: ~/serverfiles/tf/addons/sourcemod/configs/gbans.cfg
+    dest: ~/serverfiles/tf/addons/sourcemod/configs/gbans.cfg    
 
 - name: start tf2server
   command:
