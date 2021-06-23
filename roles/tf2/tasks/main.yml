@@ -46,6 +46,7 @@
   template:
     src: admins_simple.ini.j2
     dest: ~/serverfiles/tf/addons/sourcemod/configs/admins_simple.ini
+    mode: 0660
 
 - name: tf/cfg/mapcycle.txt
   copy:
@@ -81,26 +82,31 @@
   template:
     src: tf2server.cfg.j2
     dest: ~/serverfiles/tf/cfg/tf2server.cfg
+    mode: 0660
 
 - name: config-lgsm/tf2server/tf2server.cfg
   template:
     src: lgsm-tf2server.cfg.j2
     dest: lgsm/config-lgsm/tf2server/tf2server.cfg
+    mode: 0660
 
 - name: tf/cfg/sourcemod/sourcemod.cfg
   template:
     src: sourcemod.cfg.j2
     dest: ~/serverfiles/tf/cfg/sourcemod/sourcemod.cfg
+    mode: 0660
 
 - name: tf/addons/sourcemod/configs/admin_overrides.cfg
   template:
     src: admin_overrides.cfg.j2
     dest: ~/serverfiles/tf/addons/sourcemod/configs/admin_overrides.cfg
+    mode: 0660
 
 - name: tf/addons/sourcemod/configs/gbans.cfg
   template:
     src: gbans.cfg.j2
-    dest: ~/serverfiles/tf/addons/sourcemod/configs/gbans.cfg    
+    dest: ~/serverfiles/tf/addons/sourcemod/configs/gbans.cfg
+    mode: 0660
 
 - name: start tf2server
   command:
