@@ -2,6 +2,6 @@
 {
 	"Slot reserved"
 	{
-		"en"			"Dropped due to slot reservation"
+		"en"			"The server is full. Please try again later"
 	}
 }
