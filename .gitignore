@@ -14,4 +14,6 @@
 # plug in your own hosts based on hosts.yml.example
 hosts.yml
 
+roles/tf2/files/tf/addons/sourcemod/plugins/disabled/nominations.smx
+roles/tf2/files/tf/addons/sourcemod/plugins/disabled/rockthevote.smx
 roles/tf2/files/tf/addons/sourcemod/configs/admins_simple.ini
