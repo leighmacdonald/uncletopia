@@ -22,9 +22,8 @@ static void OnConVarChange(ConVar cvar, const char[] before, const char[] after)
 }
 
 static void OnEntityCreated(int entity, const char[] classname) {
-    int alpha = FindConVar("sm_rest_in_peace_rick_may").IntValue;
-
     if (StrEqual(classname, "entity_soldier_statue")) {
+        int alpha = FindConVar("sm_rest_in_peace_rick_may").IntValue;
         GhostifySoldierStatue(entity, alpha);
     }
 }
