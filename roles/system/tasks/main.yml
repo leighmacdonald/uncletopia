@@ -178,7 +178,7 @@
     value: 26214400
     sysctl_set: yes
     reload: yes
-    
+
 - name: Increase available memory for UDP send buffers
   become: yes
   ansible.posix.sysctl:
@@ -194,4 +194,4 @@
     value: 25000
     sysctl_set: yes
     reload: yes
-    
+
