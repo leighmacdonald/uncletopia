@@ -14,11 +14,11 @@ void LogDebug(const char[] format, any...) {
 
     VFormat(message, sizeof(message), format, 2);
 
-    if (g_cvar.IntValue > 1) {
+    if (g_cvar.IntValue >= 1) {
         LogMessage(message);
     }
 
-    if (g_cvar.IntValue > 2) {
+    if (g_cvar.IntValue >= 2) {
         PrintToChatAll("[TF2 Competitive Fixes] Debug: %s", message);
     }
 }

@@ -17,7 +17,8 @@ Overrides
 	 *
 	 * You can make a command completely public by using an empty flag string.
 	 */
-
-	 "admin_allspec_flag"    "b"
+{% for p in admin_overrides %}
+	"{{ p[0] }}"    "{{ p[1] }}"
+{% endfor %}
 }
 

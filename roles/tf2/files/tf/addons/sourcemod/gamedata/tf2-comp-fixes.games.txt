@@ -125,6 +125,22 @@
 					}
 				}
 			}
+
+			"CTFWeaponBaseGun::FirePipeBomb" {
+				// virtual CBaseEntity *FirePipeBomb( CTFPlayer *pPlayer, int iPipeBombType );
+				"signature" "CTFWeaponBaseGun::FirePipeBomb"
+				"callconv" "thiscall"
+				"return" "cbaseentity"
+				"this" "ignore"
+				"arguments" {
+					"player" {
+						"type" "objectptr"
+					}
+					"pipe_type" {
+						"type" "int"
+					}
+				}
+			}
 		}
 
 		"Keys" {
@@ -141,13 +157,13 @@
 
 		"Offsets" {
 			"CBaseCombatWeapon::Deploy" {
-				"linux" "260"
-				"windows" "254"
+				"linux" "261"
+				"windows" "255"
 			}
 
 			"CBaseProjectile::CanCollideWithTeammates" {
-				"linux" "223"
-				"windows" "222"
+				"linux" "224"
+				"windows" "223"
 			}
 
 			"CTeamplayRoundBasedRules::RestartTournament" {
@@ -161,13 +177,13 @@
 			}
 
 			"CTFGrenadePipebombProjectile::PipebombTouch" {
-				"linux" "254"
-				"windows" "253"
+				"linux" "255"
+				"windows" "254"
 			}
 
 			"CTFWeaponBase::SecondaryAttack" {
-				"linux" "286"
-				"windows" "280"
+				"linux" "287"
+				"windows" "281"
 			}
 		}
 
@@ -176,6 +192,12 @@
 			"CAttributeList::SetRuntimeAttributeValue" {
 				"linux" "@_ZN14CAttributeList24SetRuntimeAttributeValueEPK28CEconItemAttributeDefinitionf"
 				"windows" "\x55\x8B\xEC\x83\xEC\x2A\x33\x2A\x53\x8B\xD9\x56\x57\x8B\x2A\x2A\x8B\x2A\x2A"
+			}
+
+			// is called from CCurrencyPack::Spawn (contains string "mvm_cash_embers_red")
+			"CBaseEntity::SetCollisionBounds" {
+				"linux" "@_ZN11CBaseEntity18SetCollisionBoundsERK6VectorS2_"
+				"windows" "\x55\x8B\xEC\x81\xC1\x5C\x01\x00\x00"
 			}
 
 			// TODO
@@ -224,6 +246,12 @@
 			"GEconItemSchema" {
 				"linux" "@_Z15GEconItemSchemav"
 				"windows" "\xE8\x2A\x2A\x2A\x2A\x83\xC0\x04\xC3"
+			}
+
+			// contains string "projectile_spread_angle"
+			"CTFWeaponBaseGun::FirePipeBomb" {
+				"linux" "@_ZN16CTFWeaponBaseGun12FirePipeBombEP9CTFPlayeri"
+				"windows" "\x53\x8B\xDC\x83\xEC\x08\x83\xE4\xF0\x83\xC4\x04\x55\x8B\x6B\x04\x89\x6C\x24\x04\x8B\xEC\x81\xEC\x58\x01\x00\x00\x56\x8B\xF1\x57\x8B\x06"
 			}
 		}
 	}
