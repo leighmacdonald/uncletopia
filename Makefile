@@ -36,7 +36,7 @@ test_ping:
 	@ansible tf2 -m ping -i testhost.yml $(ARGS)
 
 restart:
-	@ansible-playbook restart.yml $(ARGS)
+	@ansible tf2 -a "/sbin/reboot now" -f 10 -u tf2server --become $(ARGS)
 
 rm:
 	ansible -m file -a "state=absent path=$(ARGS)"
