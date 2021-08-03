@@ -160,3 +160,21 @@
     weekday: "0"
     user: tf2server
     job: "/home/tf2server/tf2server update-lgsm > /dev/null 2>&1"
+
+- name: uploader.sh
+  copy:
+    src: home/uploader.sh
+    dest: /home/tf2server/chat-log-uploader.sh
+    mode: 0755
+
+- name: crontab uploader.sh
+  become: yes
+  cron:
+    name: "tf2server chat-log-uploader"
+    minute: "*/20"
+    hour: "*"
+    day: "*"
+    month: "*"
+    weekday: "*"
+    user: tf2server
+    job: "/home/tf2server/chat-log-uploader.sh '{{server_name_short}}' 'ALIVE.clarify.postman.decisive' > /dev/null 2>&1"
