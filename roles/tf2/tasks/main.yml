@@ -48,10 +48,16 @@
     dest: ~/serverfiles/tf/addons/sourcemod/configs/admins_simple.ini
     mode: 0660
 
-- name: tf/cfg/mapcycle.txt
-  copy:
-    src: tf/cfg/mapcycle.txt
+- name: mapcycle.txt
+  template:
+    src: mapcycle.txt.j2
     dest: ~/serverfiles/tf/cfg/mapcycle.txt
+    mode: 0660
+
+- name: motd.txt
+  template:
+    src: motd.txt.j2
+    dest: ~/serverfiles/tf/cfg/motd.txt
     mode: 0660
 
 - name: tf/cfg/mapcycle_halloween.txt
@@ -64,12 +70,6 @@
   copy:
     src: tf/cfg/pure_server_whitelist.txt
     dest: ~/serverfiles/tf/cfg/pure_server_whitelist.txt
-    mode: 0660
-
-- name: tf/cfg/motd.txt
-  copy:
-    src: tf/cfg/motd.txt
-    dest: ~/serverfiles/tf/cfg/motd.txt
     mode: 0660
 
 - name: tf/cfg/cronjobs.txt
