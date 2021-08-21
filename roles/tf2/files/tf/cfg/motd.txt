@@ -1,5 +1,0 @@
-Welcome to Uncletopia! If you enjoyed your time here, please add this server to your favorites via the server browser!
-
-This is Uncle Dane’s custom community server. The experience on this server is intended to be very similar to Casual Mode TF2. The settings, ruleset, and featured maps are essentially just what Uncle Dane likes. This includes things like the removal of random crits and random bullet spread, as well as a class limit of three each. If you’d like to read the full list of settings and the map list, visit -- uncletopia.com
-
-If teams are unbalanced, type !vscramble in chat to vote to scramble the teams. If you would like to change the current map, you can nominate a map with !nominate and rock the vote with !rtv. There is a no-tolerance policy against slurs and toxicity. Feel free to give feedback or discuss the Uncletopia servers in the Uncle Dane Community Discord (link is on the website). Thanks for playing!
