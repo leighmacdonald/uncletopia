@@ -15,15 +15,11 @@ all:
           ansible_python_interpreter: python3
         lax-[1:2].us.staging.uncletopia.com:
           ansible_python_interpreter: python3
-        lon-[1:2].uk.staging.uncletopia.com:
-          ansible_python_interpreter: python3
         nyc-[1:2].us.staging.uncletopia.com:
           ansible_python_interpreter: python3
         sao-1.br.staging.uncletopia.com:
           ansible_python_interpreter: python3
         sea-[1:2].us.staging.uncletopia.com:
           ansible_python_interpreter: python3
-        sfo-[1:2].us.staging.uncletopia.com:
-          ansible_python_interpreter: python3
         syd-[1:2].au.staging.uncletopia.com:
-          ansible_python_interpreter: python3        
+          ansible_python_interpreter: python3
