@@ -5,21 +5,21 @@ all:
       hosts:
         ams-[1:2].nl.staging.uncletopia.com:
           ansible_python_interpreter: python3
-        atl-[1:2].us.staging.uncletopia.com:
+        atl-2.us.staging.uncletopia.com:
           ansible_python_interpreter: python3
-        chi-[1:2].us.staging.uncletopia.com:
+        chi-2.us.staging.uncletopia.com:
           ansible_python_interpreter: python3
-        dal-[1:2].us.staging.uncletopia.com:
+        dal-2.us.staging.uncletopia.com:
           ansible_python_interpreter: python3
-        frk-[1:2].de.staging.uncletopia.com:
+        frk-2.de.staging.uncletopia.com:
           ansible_python_interpreter: python3
-        lax-[1:2].us.staging.uncletopia.com:
+        lax-2.us.staging.uncletopia.com:
           ansible_python_interpreter: python3
-        nyc-[1:2].us.staging.uncletopia.com:
+        nyc-2.us.staging.uncletopia.com:
           ansible_python_interpreter: python3
         sao-1.br.staging.uncletopia.com:
           ansible_python_interpreter: python3
-        sea-[1:2].us.staging.uncletopia.com:
+        sea-2.us.staging.uncletopia.com:
           ansible_python_interpreter: python3
         syd-[1:2].au.staging.uncletopia.com:
           ansible_python_interpreter: python3
