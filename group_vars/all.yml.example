@@ -5,6 +5,7 @@ rcon_password: ""
 fastdl_url: ""
 sv_tags: "nocrits,nodmgspread"
 sv_pure: 1
+chat_logs_token: "" # Internal ut tool, leave blank
 lgsm_webhook_enabled: "on"
 lgsm_webhook_url: "https://discord.com/api/webhooks/1111111111111111111/2222222222222222222222222222222222222222222222222222222222222222222"
 ssh_keys:
@@ -145,6 +146,40 @@ sourcemod:
   # Default: 0
   sm_vote_progress_client_console: 0
 
+
+motd: |
+  Welcome to a server! If you enjoyed your time here, remember to add this server to your favorites via the server browser!
+
+  This is Uncle Dane’s custom community server. The experience on Uncletopia is intended to be very similar to TF2 Casual Mode, with a few quality-of-life changes. If you’d like to learn more, please visit -- UNCLETOPIA.COM -- You can easily connect with the Uncletopia community, give feedback, report players, and access other resources by joining the official Uncletopia Discord at -- UNCLETOPIA.COM/DISCORD --
+
+  If teams are unbalanced, type !scramble in chat to vote to scramble the teams. If you would like to change the current map, you can nominate a map with !nominate and rock the vote with !rtv. There is a no-tolerance policy against slurs and toxicity. Thanks for playing!
+
+map_rotation:
+  - cp_dustbowl
+  - cp_gorge
+  - cp_metalworks
+  - cp_mossrock
+  - cp_mountainlab
+  - cp_process_final
+  - cp_snakewater_final1
+  - cp_steel
+  - cp_sunshine
+  - koth_badlands
+  - koth_highpass
+  - koth_king
+  - koth_lakeside_final
+  - koth_sawmill
+  - koth_suijin
+  - koth_viaduct
+  - pl_pier
+  - pl_badwater
+  - pl_barnblitz
+  - pl_borneo
+  - pl_frontier_final
+  - pl_snowycoast
+  - pl_swiftwater_final1
+  - pl_thundermountain
+  - pl_upward
 
 sm_permissions:
   # Admins

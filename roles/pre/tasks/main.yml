@@ -4,6 +4,7 @@
     dest: ~/linuxgsm.sh
     mode: 0777
 
+# Fetch failures are generally due to no curl installed yet
 - name: linuxgsm tf2server
   command: ~/linuxgsm.sh tf2server
   args:
