@@ -50,8 +50,8 @@
 
 - name: mapcycle.txt
   template:
-    src: mapcycle.txt.j2
-    dest: ~/serverfiles/tf/cfg/mapcycle.txt
+    src: umc_mapcycle.txt.j2
+    dest: ~/serverfiles/tf/umc_mapcycle.txt
     mode: 0660
 
 - name: motd.txt
