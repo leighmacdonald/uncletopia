@@ -1,0 +1,230 @@
+﻿//Translation Phrases for the UMC Admin Menu module.
+
+"Phrases"
+{    
+    "AM Stop Vote"
+    {
+        "pl"    "Wstrzymaj aktualne głosowanie"
+    }
+    
+    "AM Start Vote"
+    {
+        "pl"    "Rozpocznij głosowanie"
+    }
+    
+    "AM Vote Type"
+    {
+        "pl"    "Wybierz rodzaj głosowania"
+    }
+    
+    "Maps"
+    {
+        "pl"    "Mapy"
+    }
+    
+    "Groups"
+    {
+        "pl"    "Groupy"
+    }
+    
+    "Tiered"
+    {
+        "pl"    "Grupy>Mapy"
+    }
+    
+    "AM Populate Vote"
+    {
+        "pl"    "Dodaj mapy"
+    }
+    
+    "AM Vote Settings"
+    {
+        "pl"    "Ustawienia"
+    }
+    
+    "AM-VS Defaults"
+    {
+        "pl"    "Użyj domyślnych"
+    }
+    
+    "Manually Choose"
+    {
+        "pl"    "Wybierz ręcznie"
+    }
+    
+    "AM Scramble Menu"
+    {
+        "pl"    "Pomieszać kolejność?"
+    }
+    
+    "Default Yes"
+    {
+        "pl"    "Tak (domyślnie)"
+    }
+    
+    "Default No"
+    {
+        "pl"    "Nie (domyślnie)"
+    }
+    
+    "AM Threshold Menu"
+    {
+        "pl"    "Ustaw próg akceptacji"
+    }
+    
+    "AM Threshold Menu Message 1"
+    {
+        "pl"    "Wpisz w czacie jaki"
+    }
+    
+    "AM Threshold Menu Message 2"
+    {
+        "pl"    "chciałbyś próg [0 do 100]."
+    }
+    
+    "Default"
+    {
+        "pl"    "Domyślnie"
+    }
+    
+    "Previously Entered"
+    {
+        "pl"    "poprzednio dodane"
+    }
+    
+    "AM Fail Action Menu"
+    {
+        "pl"    "Ustaw akcje niepowodzenia"
+    }
+    
+    "Do Nothing"
+    {
+        "pl"    "Nic nie rób"
+    }
+    
+    "Perform Runoff Vote"
+    {
+        "pl"    "Przeprowadź ponowne głosowanie"
+    }
+    
+    "Default Do Nothing"
+    {
+        "pl"    "Nic nie rób (domyślnie)"
+    }
+    
+    "Default Perform Runoff Vote"
+    {
+        "pl"    "Przeprowadź ponowne głosowanie (domyślnie)"
+    }
+    
+    "AM Max Runoff Menu"
+    {
+        "pl"    "Ustaw max ilość ponownych głosowań"
+    }
+    
+    "AM Max Runoff Menu Message 1"
+    {
+        "pl"    "Wpisz w czacie ilosc"
+    }
+    
+    "AM Max Runoff Menu Message 2"
+    {
+        "pl"    "ponownych głosować (>= 0)."
+    }
+    
+    "AM Max Runoff Menu Message 3"
+    {
+        //Note to translators:  keep the leading space in this phrase.
+        "pl"    " 0 = bez limitu"
+    }
+    
+    "AM Runoff Fail Action Menu"
+    {
+        "pl"    "Ustaw akcje niepowodzenia"
+    }
+    
+    "Accept Winner"
+    {
+        "pl"    "Akceptuj zwycięzcę"
+    }
+    
+    "Default Accept Winner"
+    {
+        "pl"    "Akceptuj zwycięzcę (domyślnie)"
+    }
+    
+    "AM Extend Menu"
+    {
+        "pl"    "Dodać opcje przedłużenia mapy?"
+    }
+    
+    "AM Don't Change Menu"
+    {
+        "pl"    "Dodać opcję \"Nie zmieniaj\"?"
+    }
+    
+    "AM Admin Flag Menu"
+    {
+        "pl"    "Udostępnij głosowanie dla..."
+    }
+    
+    "Everyone"
+    {
+        "pl"    "Wszystkich"
+    }
+    
+    "Admins Only"
+    {
+        "pl"    "Tylko dla adminów"
+    }
+    
+    "AM Change When Menu"
+    {
+        "pl"    "Kiedy zmienić mapę?"
+    }
+    
+    "Now"
+    {
+        "pl"    "Natychmiast"
+    }
+    
+    "End of Round"
+    {
+        "pl"    "Na koniec rundy"
+    }
+    
+    "End of Map"
+    {
+        "pl"    "Na koniec mapy"
+    }
+    
+    "Select A Map"
+    {
+        "pl"    "Wybierz mapę"
+    }
+    
+    "Select A Group"
+    {
+        "pl"    "Wybierz grupę"
+    }
+    
+    "Auto Select"
+    {
+        "pl"    "Auto wybór"
+    }
+    
+    "Manual Select"
+    {
+        "pl"    "Wybór ręczny"
+    }
+    
+    "AM Change Map"
+    {
+        "pl"    "Zmień mapę"
+    }
+    
+    "AM Set Next Map"
+    {
+        "pl"    "Ustaw następna mapę"
+    }
+}

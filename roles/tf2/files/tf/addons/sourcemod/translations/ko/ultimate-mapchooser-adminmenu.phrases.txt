@@ -1,0 +1,230 @@
+﻿//Translation Phrases for the UMC Admin Menu module.
+
+"Phrases"
+{    
+    "AM Stop Vote"
+    {
+        "ko"    "현재 UMC 투표를 중지"
+    }
+    
+    "AM Start Vote"
+    {
+        "ko"    "맵 투표 시작"
+    }
+    
+    "AM Vote Type"
+    {
+        "ko"    "투표 종류 선택"
+    }
+    
+    "Maps"
+    {
+        "ko"    "맵"
+    }
+    
+    "Groups"
+    {
+        "ko"    "맵 그룹"
+    }
+    
+    "Tiered"
+    {
+        "ko"    "맵 배열"
+    }
+    
+    "AM Populate Vote"
+    {
+        "ko"    "투표할 맵 추가"
+    }
+    
+    "AM Vote Settings"
+    {
+        "ko"    "투표 설정"
+    }
+    
+    "AM-VS Defaults"
+    {
+        "ko"    "기본값 사용"
+    }
+    
+    "Manually Choose"
+    {
+        "ko"    "수동적으로 선택"
+    }
+    
+    "AM Scramble Menu"
+    {
+        "ko"    "투표 메뉴를 섞으시겠습니까?"
+    }
+    
+    "Default Yes"
+    {
+        "ko"    "예 (기본)"
+    }
+    
+    "Default No"
+    {
+        "ko"    "아니오 (기본)"
+    }
+    
+    "AM Threshold Menu"
+    {
+        "ko"    "투표 최댓값 설정"
+    }
+    
+    "AM Threshold Menu Message 1"
+    {
+        "ko"    "채팅창에 투표의 최댓값을 설정해주세요."
+    }
+    
+    "AM Threshold Menu Message 2"
+    {
+        "ko"    "투표 최댓값 설정 [0 ~ 100]."
+    }
+    
+    "Default"
+    {
+        "ko"    "기본"
+    }
+    
+    "Previously Entered"
+    {
+        "ko"    "이전에 입력됨."
+    }
+    
+    "AM Fail Action Menu"
+    {
+        "ko"    "실패 동작 설정"
+    }
+    
+    "Do Nothing"
+    {
+        "ko"    "투표 무산"
+    }
+    
+    "Perform Runoff Vote"
+    {
+        "ko"    "결승투표 실행"
+    }
+    
+    "Default Do Nothing"
+    {
+        "ko"    "투표 무산 (기본)"
+    }
+    
+    "Default Perform Runoff Vote"
+    {
+        "ko"    "결승투표 실행 (기본)"
+    }
+    
+    "AM Max Runoff Menu"
+    {
+        "ko"    "결승 투표의 횟수 설정"
+    }
+    
+    "AM Max Runoff Menu Message 1"
+    {
+        "ko"    "채팅창에 설정할 결승 투표 횟수를 적어주세요."
+    }
+    
+    "AM Max Runoff Menu Message 2"
+    {
+        "ko"    "결승 투표 횟수 설정 (0 이상)."
+    }
+    
+    "AM Max Runoff Menu Message 3"
+    {
+        //Note to translators:  keep the leading space in this phrase.
+        "ko"    " 0 = 무제한"
+    }
+    
+    "AM Runoff Fail Action Menu"
+    {
+        "ko"    "결승 투표 실패 동작"
+    }
+    
+    "Accept Winner"
+    {
+        "ko"    "수락자 승리"
+    }
+    
+    "Default Accept Winner"
+    {
+        "ko"    "수락자 승리 (default)"
+    }
+    
+    "AM Extend Menu"
+    {
+        "ko"    "맵 연장 옵션을 추가 하시겠습니까?"
+    }
+    
+    "AM Don't Change Menu"
+    {
+        "ko"    "맵 교체 방지 옵션을 추가 하시겠습니까?"
+    }
+    
+    "AM Admin Flag Menu"
+    {
+        "ko"    "투표 시작 권한 설정..."
+    }
+    
+    "Everyone"
+    {
+        "ko"    "모든 플레이어"
+    }
+    
+    "Admins Only"
+    {
+        "ko"    "오직 관리자만"
+    }
+    
+    "AM Change When Menu"
+    {
+        "ko"    "언제 맵을 바꿉니까?"
+    }
+    
+    "Now"
+    {
+        "ko"    "지금"
+    }
+    
+    "End of Round"
+    {
+        "ko"    "이 라운드가 끝나고"
+    }
+    
+    "End of Map"
+    {
+        "ko"    "이 맵이 끝나고"
+    }
+    
+    "Select A Map"
+    {
+        "ko"    "맵 선택"
+    }
+    
+    "Select A Group"
+    {
+        "ko"    "맵 그룹 선택"
+    }
+    
+    "Auto Select"
+    {
+        "ko"    "자동 선택"
+    }
+    
+    "Manual Select"
+    {
+        "ko"    "수동 선택"
+    }
+    
+    "AM Change Map"
+    {
+        "ko"    "맵 바꾸기"
+    }
+    
+    "AM Set Next Map"
+    {
+        "ko"    "다음 맵 설정"
+    }
+}

@@ -1,0 +1,208 @@
+﻿//Phrases for Ultimate Mapchooser by Steell
+
+"Phrases"
+{
+    "Slot Block Message 1"
+    {
+        "lt"    "Nuspreskite kuri MAP norite zaisti"
+    }
+
+    "Slot Block Message 2"
+    {
+        "lt"    "ir nespauskite pasirinkimu neapgalvotai."
+    }
+
+    "Map Vote Menu Title"
+    {
+        "lt"    "Balsuokite uz kita MAP!"
+    }
+
+    "Group Vote Menu Title"
+    {
+        "lt"    "Balsuokite uz kito MAP grupe!"
+    }
+
+    "Extend Map"
+    {
+        "lt"    "Pratesti MAP"
+    }
+
+    "Don't Change"
+    {
+        "lt"    "Nekeisti"
+    }
+
+    "End of Map Vote Over"
+    {
+        "lt"    "MAP balsavimas pasibaige."
+    }
+
+    "Map Extended"
+    {
+        "lt"    "Dabartinis MAP bus pratestas."
+    }
+
+    "End of Map Vote Map Won"
+    {
+        "lt"    "Kitas map: {1}."
+    }
+
+    "Vote Win Percentage"
+    {
+        //There are supposed to be two percent signs here.
+        //If there is only one, no percent sign will be displayed.
+        "lt"    "Surinkta {1}%% is {2} balsu"
+    }
+
+    "Map Unchanged"
+    {
+        "lt"    "MAP nebus pakeistas."
+    }
+
+    "Map Change in 5"
+    {
+        "lt"    "MAP keiciasi po 5s."
+    }
+
+    "Map Change at Round End"
+    {
+        "lt"    "MAP keiciasi, pasibaigus siam roundui."
+    }
+
+    "End of Map Vote Group Won"
+    {
+        "lt"    "Kitas MAP bus:'{1},' isrinktas is MAP grupes: '{2}.'"
+    }
+
+    "Runoff Msg"
+    {
+        "lt"    "Balsavimas nepavyko! Nesurinktas reikiamas balsu skaicius."
+    }
+
+    "Another Vote"
+    {
+        "lt"    "Pakartotinis balsavimas po {1} sekundziu."
+    }
+
+    "Player Disconnect RTV"
+    {
+        "lt"    "Zaidejas atsijunge, panaudojes Rock The Vote."
+    }
+
+    "Not Enough Players"
+    {
+        "lt"    "Neuztektinai zaideju serveryje, dabartiniam MAP. ({1} maziausiai)"
+    }
+
+    "Too Many Players"
+    {
+        "lt"    "Per daug zaideju serveryje, dabartiniam MAP. ({1} daugiausiai)"
+    }
+
+    "No RTV Player Count"
+    {
+        "lt"    "Negalima naudoti Rock The Vote kol {1} zaidejai neprisijungs i serveri."
+    }
+
+    "No RTV Nextmap"
+    {
+        "lt"    "Negalima Rock The Vote iki kito MAP."
+    }
+
+    "No RTV Time"
+    {
+        "lt"    "Negalima Rock The Vote dar {1} sekundes."
+    }
+
+    "More Required"
+    {
+        "lt"    "Reikalinga dar {1}"
+    }
+
+    "RTV Entered"
+    {
+        "lt"    "{1} nori kviesti Rock The Vote."
+    }
+
+    "RTV Info Msg"
+    {
+        "lt"    "Rasyk 'rtv' noredamas kviesti RTV, arba 'nominate', kad pasiulytum savo varianta."
+    }
+
+    "RTV Start"
+    {
+        "lt"    "RTV balsavimas pradetas!"
+    }
+
+    "Vote In Progress"
+    {
+        "lt"    "Balsavimas jau pradetas."
+    }
+
+    "RTV Already Entered"
+    {
+        "lt"    "Jus jau naudojote Rock The Vote."
+    }
+
+    "No Nominate Nextmap"
+    {
+        "lt"    "Negalima nominuoti, iki kito MAP."
+    }
+
+    "Pending Vote"
+    {
+        "lt"    "Laukiamas balsavimas"
+    }
+
+    "Next Map"
+    {
+        "lt"    "Kitas MAP: {1}"
+    }
+
+    "Player Nomination"
+    {
+        "lt"    "{1} nominavo {2}."
+    }
+
+    "Nomination Menu Title"
+    {
+        "lt"    "Pasiulyk savo MAP."
+    }
+
+    "Yes/No Menu Title"
+    {
+        "lt"    "Pakeisti MAP i {1}?"
+    }
+
+    "Yes"
+    {
+        "lt"    "Taip"
+    }
+
+    "No"
+    {
+        "lt"    "Ne"
+    }
+
+    "Starting Map Vote"
+    {
+        "lt"    "Pradedamas MAP balsavimas. Zemelapis pasikeis, vos tik pasibaigs balsavimas."
+    }
+
+    "Default Warning"
+    {
+        //{TIME} is where the time in seconds is going to be placed.
+        //Please keep {TIME} in this string in english, it is not an error.
+        "lt"    "{TIME} sekundziu iki balsavimo."
+    }
+    
+    "Vote Failed"
+    {
+        "lt"    "MAP balsavimas nesekmingas. Laimejas MAP nesurinko reikalingo procentinio balsu skaiciaus."
+    }
+    
+    "Selective Runoff"
+    {
+        "lt"    "Balsavimas pradedamas nebalsavusiems zaidejams, arba tiems, kuriu balsai buvo neuzskaityti."
+    }
+}

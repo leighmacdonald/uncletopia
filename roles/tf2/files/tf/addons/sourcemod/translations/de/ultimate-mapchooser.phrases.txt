@@ -1,0 +1,181 @@
+//Phrases for Ultimate Mapchooser by Steell
+//German translation by elninjo
+
+"Phrases"
+{
+    "Slot Block Message 1"
+    {
+            "de"    "Überlege, welche Karte du spielen möchtest"
+    }
+    "Slot Block Message 2"
+    {
+            "de"    "Tasten nicht gedankenlos drücken."
+    }
+    "Map Vote Menu Title"
+    {
+            "de"    "Stimme für die nächste Karte!"
+    }
+    "Group Vote Menu Title"
+    {
+            "de"    "Stimme für die nächste Kartengruppe!"
+    }
+    "Extend Map"
+    {
+            "de"    "verlängere Karte"
+    }
+    "Don't Change"
+    {
+            "de"    "nicht ändern"
+    }
+    "End of Map Vote Over"
+    {
+            "de"    "Kartenabstimmung ist abgeschlossen."
+    }
+    "Map Extended"
+    {
+            "de"    "Die aktuelle Karte wird verlängert."
+    }
+    "End of Map Vote Map Won"
+    {
+            "de"    "Die nächste Karte wird {1}."
+    }
+    "Vote Win Percentage"
+    {
+        //There are supposed to be two percent signs here.
+        //If there is only one, no percent sign will be displayed.
+            "de"    "{1} Prozent von {2} Stimmen erhalten"
+    }
+    "Map Unchanged"
+    {
+            "de"    "Die Karte wird nicht geändert."
+    }
+    "RTV Map Won"
+    {
+            "de"    "Ändere Karte zu {1}."
+    }
+    "Map Change in 5"
+    {
+            "de"    "Kartenwechsel in 5 Sekunden."
+    }
+    "Map Change at Round End"
+    {
+            "de"    "Karte wird am Ende dieser Runde wechseln."
+    }
+    "End of Map Vote Group Won"
+    {
+            "de"    "Die nächste Karte wird '{1},' ausgewählt aus Kartengruppe '{2}.'"
+    }
+    "RTV Group Won"
+    {
+            "de"    "Ändere Karte zu '{1},' ausgewählt aus Kartengruppe '{2}.'"
+    }
+    "Runoff Msg"
+    {
+            "de"    "Abstimmung gescheitert! Keine Mehrheit erreicht."
+    }
+    "Another Vote"
+    {
+            "de"    "Eine weitere Abstimmung findet in {1} Sekunden statt."
+    }
+    "Player Disconnect RTV"
+    {
+            "de"    "Spieler getrennt, Rock the Vote ausgelöst."
+    }
+    "Not Enough Players"
+    {
+            "de"    "Nicht genügend Spieler auf dem Server für die aktuelle Karte. ({1} benötigt)"
+    }
+    "Too Many Players"
+    {
+            "de"    "Zu viele Spieler auf dem Server für die aktuelle Karte. ({1} maximal)"
+    }
+    "No RTV Player Count"
+    {
+            "de"    "Kein Rock the Vote möglich, bis {1} Spieler mehr mit dem Server verbunden sind."
+    }
+    "No RTV Nextmap"
+    {
+            "de"    "Kein Rock the Vote bis zur nächsten Karte möglich."
+    }
+    "No RTV Time"
+    {
+            "de"    "Kein Rock the Vote für {1} Sekunden möglich."
+    }
+    "More Required"
+    {
+            "de"    "{1} mehr erforderlich"
+    }
+    "RTV Entered"
+    {
+            "de"    "{1} will ein Rock the Vote."
+    }
+    "RTV Info Msg"
+    {
+            "de"    "Gebe 'rtv' oder 'nominate' ein um für eine neue Karte abzustimmen."
+    }
+    "RTV Start"
+    {
+            "de"    "Rocking the Vote!"
+    }
+    "Vote In Progress"
+    {
+            "de"    "Abstimmung bereits im Gange."
+    }
+    "RTV Already Entered"
+    {
+            "de"    "Du hast bereits Rock the Vote eingegeben."
+    }
+    "No Nominate Nextmap"
+    {
+            "de"    "Kann nicht abstimmen bis zur nächsten Karte."
+    }
+    "Pending Vote"
+    {
+            "de"    "bevorstehende Abstimmung"
+    }
+    "Next Map"
+    {
+            "de"    "Nächste Karte: {1}"
+    }
+    "Player Nomination"
+    {
+            "de"    "{1} hat {2} nominiert."
+    }
+    "Nomination Menu Title"
+    {
+            "de"    "Stimme für eine Karte."
+    }
+    "Yes/No Menu Title"
+    {
+            "de"    "Mapwechsel zu {1}?"
+    }
+    "Yes"
+    {
+            "de"    "Ja"
+    }
+    "No"
+    {
+            "de"    "Nein"
+    }
+    "Starting Map Vote"
+    {
+            "de"    "Kartenabstimmung gestartet. Karte ändert sich, sobald die Abstimmung vorbei ist."
+    }
+    
+    "Default Warning"
+    {
+        //{TIME} is where the time in seconds is going to be placed.
+        //Please keep {TIME} in this string, it is not an error.
+            "de"    "{TIME} Sekunden bis zur Abstimmung."
+    }
+    
+    "No RTV Admin"
+    {
+            "de"    "Nicht genügend Rechte für 'Rock the Vote'."
+    }
+    
+    "No Nominate Admin"
+    {
+            "de"    "Nicht genügend Rechte zum Nominieren einer Karte."
+    }
+}
