@@ -1,5 +1,3 @@
-// Mapcycle definition for Ultimate Mapchooser v3.1 by Steell
-
 "umc_mapcycle"
 {
     "Uncletopia Map Rotation"
@@ -14,21 +12,19 @@
     "Random Choice"
     {
         "maps_invote"   "1"
-        // Only let admins nominate maps from this pool
-        "nominate_flags" "b"
         "display-template" "Mystery map!"
 
         {% for map in map_rotation %}
         "{{ map }}" {
             "weight" "1"
-            "nominate_flags" "b"
+            "nominate_flags" "z"
         }
         {% endfor %}
 
         {% for map in secret_rotation %}
         "{{ map[0] }}" {
             "weight" "{{ map[1] }}"
-            "nominate_flags" "b"
+            "nominate_flags" "z"
         }
         {% endfor %}
     }

@@ -411,7 +411,7 @@ public Action:Command_Nominate(client, args)
                 if (adminFlags[0] != '\0' && !(clientFlags & ReadFlagString(adminFlags)))
                 {
                     //TODO: Change to translation phrase
-                    ReplyToCommand(client, "[UMC] Could not find map \"%s\"", arg);
+                    ReplyToCommand(client, "[UMC] \"%s\" has been played recently or is not in the rotation", arg);
                 }
                 else
                 {
@@ -516,8 +516,12 @@ Handle:BuildNominationMenu(client, const String:cat[]=INVALID_GROUP)
     GetConVarString(cvar_flags, dAdminFlags, sizeof(dAdminFlags));
     new clientFlags = GetUserFlagBits(client);
 
+    MapNominationStyle[] menuStyles = new MapNominationStyle[size];
+
     for (new i = 0; i < size; i++)
     {
+        menuStyles[i] = Normal;
+
         mapTrie = GetArrayCell(mapArray, i);
         GetTrieString(mapTrie, MAP_TRIE_MAP_KEY, mapBuff, sizeof(mapBuff));
         GetTrieString(mapTrie, MAP_TRIE_GROUP_KEY, groupBuff, sizeof(groupBuff));
@@ -533,8 +537,7 @@ Handle:BuildNominationMenu(client, const String:cat[]=INVALID_GROUP)
 
         if (UMC_IsMapNominated(mapBuff, group))
         {
-            KvGoBack(map_kv);
-            continue;
+            menuStyles[i] = Nominated;
         }
 
         KvGetString(map_kv, NOMINATE_ADMINFLAG_KEY, gAdminFlags, sizeof(gAdminFlags), dAdminFlags);
@@ -569,7 +572,7 @@ Handle:BuildNominationMenu(client, const String:cat[]=INVALID_GROUP)
     }
 
     //Add all maps from the nominations array to the menu.
-    AddArrayToMenu(menu, menuItems, menuItemDisplay);
+    AddArrayToMenuStyled(menu, menuItems, menuItemDisplay, menuStyles);
 
     //No longer need the arrays.
     CloseHandle(menuItems);

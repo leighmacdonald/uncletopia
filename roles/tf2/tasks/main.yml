@@ -54,6 +54,12 @@
     dest: ~/serverfiles/tf/umc_mapcycle.txt
     mode: 0660
 
+- name: mapcycle_nominate.txt
+  template:
+    src: umc_mapcycle_nominate.txt.j2
+    dest: ~/serverfiles/tf/umc_mapcycle_nominate.txt
+    mode: 0660
+
 - name: motd.txt
   template:
     src: motd.txt.j2

@@ -1,0 +1,11 @@
+"umc_mapcycle"
+{
+    "Uncletopia Map Rotation"
+    {
+        "maps_invote"   "3"
+
+        {% for map in map_rotation %}
+        "{{ map }}" {}
+        {% endfor %}
+    }
+}
