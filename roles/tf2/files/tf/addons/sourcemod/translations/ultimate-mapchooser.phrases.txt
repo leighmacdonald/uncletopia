@@ -1,0 +1,232 @@
+//Phrases for Ultimate Mapchooser by Steell
+
+"Phrases"
+{
+    "Slot Block Message 1"
+    {
+        "en"    "Consider which map you want to play"
+    }
+
+    "Slot Block Message 2"
+    {
+        "en"    "and don't hit buttons thoughtlessly."
+    }
+
+    "Map Vote Menu Title"
+    {
+        "en"    "Vote for the next map!"
+    }
+
+    "Group Vote Menu Title"
+    {
+        "en"    "Vote for the next map group!"
+    }
+
+    "Extend Map"
+    {
+        "en"    "Extend Map"
+    }
+
+    "Don't Change"
+    {
+        "en"    "Don't Change"
+    }
+
+    "End of Map Vote Over"
+    {
+        "en"    "Map Voting has finished."
+    }
+
+    "Map Extended"
+    {
+        "en"    "The current map will be extended."
+    }
+
+    "End of Map Vote Map Won"
+    {
+        "#format"   "{1:s}"
+        "en"    "The next map will be {1}."
+    }
+
+    "Vote Win Percentage"
+    {
+        "#format"   "{1:.f},{2:i}"
+
+        //There are supposed to be two percent signs here.
+        //If there is only one, no percent sign will be displayed.
+        "en"    "Received {1}%% of {2} votes"
+    }
+
+    "Map Unchanged"
+    {
+        "en"    "The map will not be changed."
+    }
+
+    "Map Change in 5"
+    {
+        "en"    "Map changing in 5 seconds."
+    }
+
+    "Map Change at Round End"
+    {
+        "en"    "Map will change at the end of this round."
+    }
+
+    "End of Map Vote Group Won"
+    {
+        "#format"   "{1:s},{2:s}"
+        "en"    "The next map will be '{1},' chosen from map group '{2}.'"
+    }
+
+    "Runoff Msg"
+    {
+        "en"    "Vote Failed! No majority has been reached."
+    }
+
+    "Another Vote"
+    {
+        "#format"   "{1:i}"
+        "en"    "Another vote is on the way in {1} seconds."
+    }
+
+    "Player Disconnect RTV"
+    {
+        "en"    "Player disconnect triggered Rock the Vote."
+    }
+
+    "Not Enough Players"
+    {
+        "#format"   "{1:i}"
+        "en"    "Not enough players on the server for the current map. ({1} required)"
+    }
+
+    "Too Many Players"
+    {
+        "#format"   "{1:i}"
+        "en"    "Too many players on the server for the current map. ({1} maximum)"
+    }
+
+    "No RTV Player Count"
+    {
+        "#format"   "{1:i}"
+        "en"    "Cannot Rock the Vote until {1} more players are connected to the server."
+    }
+
+    "No RTV Nextmap"
+    {
+        "en"    "Cannot Rock the Vote until the next map."
+    }
+
+    "No RTV Time"
+    {
+        "#format"   "{1:.f}"
+        "en"    "Cannot Rock the Vote for {1} more seconds."
+    }
+
+    "More Required"
+    {
+        "#format"   "{1:i}"
+        "en"    "{1} more required"
+    }
+
+    "RTV Entered"
+    {
+        "#format"   "{1:s}"
+        "en"    "{1} wants to Rock the Vote."
+    }
+
+    "RTV Info Msg"
+    {
+        "en"    "Type 'rtv' to join, or type 'nominate' to nominate a map."
+    }
+
+    "RTV Start"
+    {
+        "en"    "Rocking the Vote!"
+    }
+
+    "Vote In Progress"
+    {
+        "en"    "Vote already in progress."
+    }
+
+    "RTV Already Entered"
+    {
+        "en"    "You have already entered Rock the Vote."
+    }
+
+    "No Nominate Nextmap"
+    {
+        "en"    "Cannot nominate until the next map."
+    }
+
+    "Pending Vote"
+    {
+        "en"    "Pending Vote"
+    }
+
+    "Next Map"
+    {
+        "#format"   "{1:s}"
+        "en"    "Next Map: {1}"
+    }
+
+    "Player Nomination"
+    {
+        "#format"   "{1:s},{2:s}"
+        "en"    "{1} has nominated {2}."
+    }
+
+    "Nomination Menu Title"
+    {
+        "en"    "Nominate a map."
+    }
+
+    "Yes/No Menu Title"
+    {
+        "#format"   "{1:s}"
+        "en"    "Change map to {1}?"
+    }
+
+    "Yes"
+    {
+        "en"    "Yes"
+    }
+
+    "No"
+    {
+        "en"    "No"
+    }
+
+    "Starting Map Vote"
+    {
+        "en"    "Starting map vote. Map will change once voting is over."
+    }
+
+    "Default Warning"
+    {
+        //{TIME} is where the time in seconds is going to be placed.
+        //Please keep {TIME} in this phrase in english.
+        "en"    "{TIME} seconds until vote."
+    }
+    
+    "Vote Failed"
+    {
+        "en"    "Map voting has failed. The winning option did not receive a high enough percentage of the votes."
+    }
+    
+    "Selective Runoff"
+    {
+        "en"    "Presenting vote menu to players who did not vote or whose votes were eliminated."
+    }
+    
+    "No RTV Admin"
+    {
+        "en"    "You do not have the required priveleges to enter Rock the Vote."
+    }
+    
+    "No Nominate Admin"
+    {
+        "en"    "You do not have the required priveleges to nominate a map."
+    }
+}

@@ -1,0 +1,31 @@
+"umc_mapcycle"
+{
+    "Uncletopia Map Rotation"
+    {
+        "maps_invote"   "3"
+
+        {% for map in map_rotation %}
+        "{{ map }}" {}
+        {% endfor %}
+    }
+
+    "Random Choice"
+    {
+        "maps_invote"   "1"
+        "display-template" "Mystery map!"
+
+        {% for map in map_rotation %}
+        "{{ map }}" {
+            "weight" "20"
+            "nominate_flags" "z"
+        }
+        {% endfor %}
+
+        {% for map in secret_rotation %}
+        "{{ map[0] }}" {
+            "weight" "{{ map[1] }}"
+            "nominate_flags" "z"
+        }
+        {% endfor %}
+    }
+}

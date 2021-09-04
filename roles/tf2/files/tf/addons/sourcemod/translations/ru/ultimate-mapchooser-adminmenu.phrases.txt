@@ -1,0 +1,238 @@
+﻿"Phrases"
+{
+    "AM Change Map"
+    {
+        "ru"    "Сменить карту"
+    }
+    
+    "AM Set Next Map"
+    {
+        "ru"    "Выбрать следующую карту"
+    }
+    
+    "AM Stop Vote"
+    {
+        "ru"    "Остановить текущее UMC голосование"
+    }
+    
+    "AM Start Vote"
+    {
+        "ru"    "Начать голосование за карту"
+    }
+    
+    "AM Vote Type"
+    {
+        "ru"    "Выбрать тип голосования"
+    }
+    
+    "Maps"
+    {
+        "ru"    "Карты"
+    }
+    
+    "Groups"
+    {
+        "ru"    "Группы"
+    }
+    
+    "Tiered"
+    {
+        "ru"    "Ярусы"
+    }
+    
+    "AM Populate Vote"
+    {
+        "ru"    "Добавить карты в голосование"
+    }
+    
+    "AM Vote Settings"
+    {
+        "ru"    "Настройки голосования"
+    }
+    
+    "AM-VS Defaults"
+    {
+        "ru"    "По умолчанию"
+    }
+    
+    "Manually Choose"
+    {
+        "ru"    "Выбрать вручную"
+    }
+    
+    "AM Scramble Menu"
+    {
+        "ru"    "Перемешать меню голосования?"
+    }
+    
+    "Default Yes"
+    {
+        "ru"    "Да (по умолчанию)"
+    }
+    
+    "Default No"
+    {
+        "ru"    "Нет (по умолчанию)"
+    }
+    
+    "AM Threshold Menu"
+    {
+        "ru"    "Установить порог голосования"
+    }
+    
+    "AM Threshold Menu Message 1"
+    {
+        "ru"    "Напишите в чат какой порог вы хотите установить."
+    }
+    
+    "AM Threshold Menu Message 2"
+    {
+       "ru"    "Выберите значение для голосования [0 до 100]."
+    }
+    
+    "Default"
+    {
+        "ru"    "по умолчанию"
+    }
+    
+    "Previously Entered"
+    {
+        "ru"    "введено ранее"
+    }
+    
+    "AM Fail Action Menu"
+    {
+        "ru"    "Установить неисправность"
+    }
+    
+    "Do Nothing"
+    {
+        "ru"    "Ничего не делать"
+    }
+    
+    "Perform Runoff Vote"
+    {
+        "ru"    "Выполнить сточное голосование"
+    }
+    
+    "Default Do Nothing"
+    {
+        "ru"    "Ничего не делать (по умолчанию)"
+    }
+    
+    "Default Perform Runoff Vote"
+    {
+        "ru"    "Выполнить сточное голосование (по умолчанию)"
+    }
+    
+    "AM Max Runoff Menu"
+    {
+        "ru"    "Установить максимальное количество стоков"
+    }
+    
+    "AM Max Runoff Menu Message 1"
+    {
+        "ru"    "Напишите в чат какое максимальное количество"
+    }
+    
+    "AM Max Runoff Menu Message 2"
+    {
+        "ru"    "стоков вы хотите задать (>= 0)."
+    }
+    
+    "AM Max Runoff Menu Message 3"
+    {
+        //Note to translators:  keep the leading space in this phrase.
+        "ru"    " 0 = бесконечно"
+    }
+    
+    "AM Runoff Fail Action Menu"
+    {
+        "ru"    "Установить сточную неисправность"
+    }
+    
+    "Accept Winner"
+    {
+        "ru"    "Подтвердить победителя"
+    }
+    
+    "Default Accept Winner"
+    {
+        "ru"    "Подтвердить победителя (по умолчанию)"
+    }
+    
+    "AM Extend Menu"
+    {
+        "ru"    "Добавить опцию - продолжить карту?"
+    }
+    
+    "AM Don't Change Menu"
+    {
+        "ru"    "Добавить опцию - не менять карту?"
+    }
+    
+    "AM Admin Flag Menu"
+    {
+        "ru"    "Разрешить голосование для..."
+    }
+    
+    "Everyone"
+    {
+        "ru"    "Все пользователи"
+    }
+    
+    "Admins Only"
+    {
+        "ru"    "Только администраторы"
+    }
+    
+    "AM Change When Menu"
+    {
+        "ru"    "Когда сменить карту?"
+    }
+    
+    "Now"
+    {
+        "ru"    "Сейчас"
+    }
+    
+    "End of Round"
+    {
+        "ru"    "Конец текущего раунда"
+    }
+    
+    "End of Map"
+    {
+        "ru"    "Конец карты"
+    }
+    
+    "Select A Map"
+    {
+        "ru"    "Выбрать карту"
+    }
+    
+    "Select A Group"
+    {
+        "ru"    "Выбрать группу"
+    }
+    
+    "Auto Select"
+    {
+        "ru"    "Автоматический выбор"
+    }
+    
+    "Manual Select"
+    {
+        "ru"    "Выбрать вручную"
+    }
+    
+    "AM Change Map"
+    {
+        "ru"    "Сменить карту"
+    }
+                                
+    "AM Set Next Map"
+    {
+        "ru"    "Выбрать следующую карту"
+    }
+}

@@ -1,0 +1,218 @@
+﻿//Phrases for Ultimate Mapchooser by Steell
+
+"Phrases"
+{
+    "Slot Block Message 1"
+    {
+        "ko"    "즐기고 싶은 맵을 선택해주세요"
+    }
+
+    "Slot Block Message 2"
+    {
+        "ko"    "생각없이 투표하지 말아주세요."
+    }
+
+    "Map Vote Menu Title"
+    {
+        "ko"    "다음 맵을 투표해주세요!"
+    }
+
+    "Group Vote Menu Title"
+    {
+        "ko"    "다음 맵 그룹을 투표해주세요!"
+    }
+
+    "Extend Map"
+    {
+        "ko"    "현재 맵 연장"
+    }
+
+    "Don't Change"
+    {
+        "ko"    "바꾸지 않음"
+    }
+
+    "End of Map Vote Over"
+    {
+        "ko"    "맵 투표가 끝났습니다."
+    }
+
+    "Map Extended"
+    {
+        "ko"    "현재 맵이 연장됩니다."
+    }
+
+    "End of Map Vote Map Won"
+    {
+        "ko"    "다음 맵은 {1} 입니다."
+    }
+
+    "Vote Win Percentage"
+    {
+        //There are supposed to be two percent signs here.
+        //If there is only one, no percent sign will be displayed.
+        "ko"    "{2}명 중 {1}%% 의 표를 받았습니다."
+    }
+
+    "Map Unchanged"
+    {
+        "ko"    "맵을 바꾸지 않습니다."
+    }
+
+    "Map Change in 5"
+    {
+        "ko"    "맵이 5초 후 바뀝니다."
+    }
+
+    "Map Change at Round End"
+    {
+        "ko"    "이번 라운드가 끝나면 맵이 바뀝니다."
+    }
+
+    "End of Map Vote Group Won"
+    {
+        "ko"    "맵 그룹 '{2}' 이 선택되었습니다. 다음 맵은 '{1}' 입니다."
+    }
+
+    "Runoff Msg"
+    {
+        "ko"    "투표 실패! 특정 득표수에 이르지 못했습니다."
+    }
+
+    "Another Vote"
+    {
+        "ko"    "다른 투표가 {1}초 동안 진행중입니다."
+    }
+
+    "Player Disconnect RTV"
+    {
+        "ko"    "플레이어 퇴장을 계기로 투표를 시작합니다."
+    }
+
+    "Not Enough Players"
+    {
+        "ko"    "현재 맵에 필요한 플레이어가 충분하지 않습니다. ({1}명 필수)"
+    }
+
+    "Too Many Players"
+    {
+        "ko"    "현재 맵에 플레이어가 너무 많습니다. (최대 {1}명)"
+    }
+
+    "No RTV Player Count"
+    {
+        "ko"    "{1}명의 플레이어가 더 접속할 때 까지 투표할 수 없습니다."
+    }
+
+    "No RTV Nextmap"
+    {
+        "ko"    "다음맵이 될 때 까지 투표할 수 없습니다."
+    }
+
+    "No RTV Time"
+    {
+        "ko"    "{1}초가 지날 때 까지 투표할 수 없습니다."
+    }
+
+    "More Required"
+    {
+        "ko"    "{1}명이 더 필요합니다."
+    }
+
+    "RTV Entered"
+    {
+        "ko"    "{1}님이 맵 투표를 원하십니다."
+    }
+
+    "RTV Info Msg"
+    {
+        "ko"    "입장하려면 'rtv' 를 입력하세요, 맵 추천을 하시려면 'nominate' 를 입력하세요."
+    }
+
+    "RTV Start"
+    {
+        "ko"    "투표 시작!"
+    }
+
+    "Vote In Progress"
+    {
+        "ko"    "투표가 이미 진행중입니다."
+    }
+
+    "RTV Already Entered"
+    {
+        "ko"    "이미 투표를 요구하셨습니다."
+    }
+
+    "No Nominate Nextmap"
+    {
+        "ko"    "다음맵이 될 때 까지 맵을 추천할 수 없습니다."
+    }
+
+    "Pending Vote"
+    {
+        "ko"    "투표가 임박했습니다."
+    }
+
+    "Next Map"
+    {
+        "ko"    "다음 맵: {1}"
+    }
+
+    "Player Nomination"
+    {
+        "ko"    "{1}님이 맵 {2}를 추천했습니다.."
+    }
+
+    "Nomination Menu Title"
+    {
+        "ko"    "맵 추천."
+    }
+
+    "Yes/No Menu Title"
+    {
+        "ko"    "맵을 {1} (으)로 바꾸시겠습니까?"
+    }
+
+    "Yes"
+    {
+        "ko"    "예"
+    }
+
+    "No"
+    {
+        "ko"    "아니오"
+    }
+
+    "Starting Map Vote"
+    {
+        "ko"    "맵 투표가 시작되었습니다. 투표가 끝날 때 맵이 바뀝니다."
+    }
+
+    "Default Warning"
+    {
+        //{TIME} is where the time in seconds is going to be placed.
+        //Please keep {TIME} in this string in english, it is not an error.
+        "ko"    "투표까지 {TIME}초."
+    }
+    
+    "Vote Failed"
+    {
+        "ko"    "맵 투표에 실패했습니다. 수락에 필요한 충분한 표를 얻어내지 못했습니다."
+    }
+    
+    "Selective Runoff"
+    {
+        "ko"    "투표를 하지않은 플레이어나, 투표가 제거된 플레이어에게 투표 메뉴를 띄웁니다."
+    }
+    
+    "No RTV Admin"
+    {
+        "ko"    "맵 투표를 요구할 수 있는 권한이 없습니다."
+    }
+    
+    "No Nominate Admin"
+    {
+        "ko"    "맵을 추천할 수 있는 권한이 없습니다."
+    }
+}

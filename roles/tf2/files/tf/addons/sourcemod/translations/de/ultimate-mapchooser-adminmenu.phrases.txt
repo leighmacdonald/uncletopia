@@ -1,0 +1,230 @@
+//German translation by elninjo
+
+"Phrases"
+{
+    "AM Stop Vote"
+    {
+        "de"    "Aktuellen Wahl abbrechen"
+    }
+    
+    "AM Start Vote"
+    {
+        "de"    "Kartenwahl starten"
+    }
+    
+    "AM Vote Type"
+    {
+        "de"    "Auswahl des Wahl-Typs"
+    }
+    
+    "Maps"
+    {
+        "de"    "Karten"
+    }
+    
+    "Groups"
+    {
+        "de"    "Gruppen"
+    }
+    
+    "Tiered"
+    {
+        "de"    "Ebenen"
+    }
+    
+    "AM Populate Vote"
+    {
+        "de"    "Karte zur Wahl hinzufügen"
+    }
+    
+    "AM Vote Settings"
+    {
+        "de"    "Wahl-Einstellungen"
+    }
+    
+    "AM-VS Defaults"
+    {
+        "de"    "Standards benutzen"
+    }
+    
+    "Manually Choose"
+    {
+        "de"    "Manuelle Auswahl"
+    }
+    
+    "AM Scramble Menu"
+    {
+        "de"    "Mischen-Option hinzufügen?"
+    }
+    
+    "Default Yes"
+    {
+        "de"    "Ja (Standard)"
+    }
+    
+    "Default No"
+    {
+        "de"    "Nein (Standard)"
+    }
+    
+    "AM Threshold Menu"
+    {
+        "de"    "Grenzwert für eine erfolgreiche Wahl"
+    }
+    
+    "AM Threshold Menu Message 1"
+    {
+        "de"    "Gebe den Grenzwert für die Wahl ein"
+    }
+    
+    "AM Threshold Menu Message 2"
+    {
+        "de"    "im Bereich von [0 to 100]."
+    }
+    
+    "Default"
+    {
+        "de"    "Standard"
+    }
+    
+    "Previously Entered"
+    {
+        "de"    "vorherige Eingabe"
+    }
+    
+    "AM Fail Action Menu"
+    {
+        "de"    "Einstellung beim nicht Erreichen"
+    }
+    
+    "Do Nothing"
+    {
+        "de"    "Nichts tun"
+    }
+    
+    "Perform Runoff Vote"
+    {
+        "de"    "Führe Stichwahl durch"
+    }
+    
+    "Default Do Nothing"
+    {
+        "de"    "Nichts tun (Standard)"
+    }
+    
+    "Default Perform Runoff Vote"
+    {
+        "de"    "Führe Stichwahl durch (Standard)"
+    }
+    
+    "AM Max Runoff Menu"
+    {
+        "de"    "Maximalanzahl der Stichwahlen"
+    }
+    
+    "AM Max Runoff Menu Message 1"
+    {
+        "de"    "Schreibe im Chat die gewünschte Maximalanzahl"
+    }
+    
+    "AM Max Runoff Menu Message 2"
+    {
+        "de"    "der Stichwahlen (>= 0)."
+    }
+    
+    "AM Max Runoff Menu Message 3"
+    {
+        //Note to translators:  keep the leading space in this phrase.
+        "de"    " 0 = unendlich"
+    }
+    
+    "AM Runoff Fail Action Menu"
+    {
+        "de"    "Stichwahlabbruchbedingung"
+    }
+    
+    "Accept Winner"
+    {
+        "de"    "Akzeptiere Wahlsieger"
+    }
+    
+    "Default Accept Winner"
+    {
+        "de"    "Akzeptiere Wahlsieger (Standard)"
+    }
+    
+    "AM Extend Menu"
+    {
+        "de"    "Füge die Option 'Karte verlängern' hinzu"
+    }
+    
+    "AM Don't Change Menu"
+    {
+        "de"    "Füge die Option 'Nichts ändern' hinzu"
+    }
+    
+    "AM Admin Flag Menu"
+    {
+        "de"    "Karte auswählen ermöglichen für..."
+    }
+    
+    "Everyone"
+    {
+        "de"    "Jeden"
+    }
+    
+    "Admins Only"
+    {
+        "de"    "Nur Administratoren"
+    }
+    
+    "AM Change When Menu"
+    {
+        "de"    "Karte soll wann geändert werden?"
+    }
+    
+    "Now"
+    {
+        "de"    "Jetzt"
+    }
+    
+    "End of Round"
+    {
+        "de"    "Nachdem die Runde zu Ende gespielt ist"
+    }
+    
+    "End of Map"
+    {
+        "de"    "Nachdem die Karte zu Ende gespielt ist"
+    }
+    
+    "Select A Map"
+    {
+        "de"    "Wähle eine Karte aus"
+    }
+    
+    "Select A Group"
+    {
+        "de"    "Wähle eine Gruppe aus"
+    }
+    
+    "Auto Select"
+    {
+        "de"    "Automatische Auswahl"
+    }
+    
+    "Manual Select"
+    {
+        "de"    "Manuelle Auswahl"
+    }
+    
+    "AM Change Map"
+    {
+        "de"    "Änderung Karte"
+    }
+    
+    "AM Set Next Map"
+    {
+        "de"    "Nächsten Karte festsetzen"
+    }
+}

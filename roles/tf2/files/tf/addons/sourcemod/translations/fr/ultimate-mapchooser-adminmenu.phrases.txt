@@ -1,0 +1,230 @@
+//Translation Phrases for the UMC Admin Menu module. 
+
+"Phrases"
+{    
+    "AM Stop Vote"
+    {
+        "fr"    "Stop Current UMC Vote"
+    }
+    
+    "AM Start Vote"
+    {
+        "fr"    "Start a Map Vote"
+    }
+    
+    "AM Vote Type"
+    {
+        "fr"    "Select Vote Type"
+    }
+    
+    "Maps"
+    {
+        "fr"    "Maps"
+    }
+    
+    "Groups"
+    {
+        "fr"    "Groups"
+    }
+    
+    "Tiered"
+    {
+        "fr"    "Tiered"
+    }
+    
+    "AM Populate Vote"
+    {
+        "fr"    "Add Maps To Vote"
+    }
+    
+    "AM Vote Settings"
+    {
+        "fr"    "Vote Settings"
+    }
+    
+    "AM-VS Defaults"
+    {
+        "fr"    "Use Defaults"
+    }
+    
+    "Manually Choose"
+    {
+        "fr"    "Manually Choose"
+    }
+    
+    "AM Scramble Menu"
+    {
+        "fr"    "Scramble Vote Menu?"
+    }
+    
+    "Default Yes"
+    {
+        "fr"    "Yes (default)"
+    }
+    
+    "Default No"
+    {
+        "fr"    "No (default)"
+    }
+    
+    "AM Threshold Menu"
+    {
+        "fr"    "Set Vote Threshold"
+    }
+    
+    "AM Threshold Menu Message 1"
+    {
+        "fr"    "Type in chat what threshold you would"
+    }
+    
+    "AM Threshold Menu Message 2"
+    {
+        "fr"    "like to set the vote to [0 to 100]."
+    }
+    
+    "Default"
+    {
+        "fr"    "default"
+    }
+    
+    "Previously Entered"
+    {
+        "fr"    "previously entered"
+    }
+    
+    "AM Fail Action Menu"
+    {
+        "fr"    "Set Fail Action"
+    }
+    
+    "Do Nothing"
+    {
+        "fr"    "Do Nothing"
+    }
+    
+    "Perform Runoff Vote"
+    {
+        "fr"    "Perform Runoff Vote"
+    }
+    
+    "Default Do Nothing"
+    {
+        "fr"    "Do Nothing (default)"
+    }
+    
+    "Default Perform Runoff Vote"
+    {
+        "fr"    "Perform Runoff Vote (default)"
+    }
+    
+    "AM Max Runoff Menu"
+    {
+        "fr"    "Set Maximum Amount of Runoffs"
+    }
+    
+    "AM Max Runoff Menu Message 1"
+    {
+        "fr"    "Type in chat what maximum you would like"
+    }
+    
+    "AM Max Runoff Menu Message 2"
+    {
+        "fr"    "to set the number of runoffs to (>= 0)."
+    }
+    
+    "AM Max Runoff Menu Message 3"
+    {
+        //Note to translators:  keep the leading space in this phrase.
+        "fr"    " 0 = unlimited"
+    }
+    
+    "AM Runoff Fail Action Menu"
+    {
+        "fr"    "Set Runoff Fail Action"
+    }
+    
+    "Accept Winner"
+    {
+        "fr"    "Accept Winner"
+    }
+    
+    "Default Accept Winner"
+    {
+        "fr"    "Accept Winner (default)"
+    }
+    
+    "AM Extend Menu"
+    {
+        "fr"    "Add Extend Map Option?"
+    }
+    
+    "AM Don't Change Menu"
+    {
+        "fr"    "Add Don't Change Option?"
+    }
+    
+    "AM Admin Flag Menu"
+    {
+        "fr"    "Make vote available to..."
+    }
+    
+    "Everyone"
+    {
+        "fr"    "Everyone"
+    }
+    
+    "Admins Only"
+    {
+        "fr"    "Admins Only"
+    }
+    
+    "AM Change When Menu"
+    {
+        "fr"    "Change Map When?"
+    }
+    
+    "Now"
+    {
+        "fr"    "Now"
+    }
+    
+    "End of Round"
+    {
+        "fr"    "End Of This Round"
+    }
+    
+    "End of Map"
+    {
+        "fr"    "End Of Map"
+    }
+    
+    "Select A Map"
+    {
+        "fr"    "Select a Map"
+    }
+    
+    "Select A Group"
+    {
+        "fr"    "Select a Group"
+    }
+    
+    "Auto Select"
+    {
+        "fr"    "Auto Select"
+    }
+    
+    "Manual Select"
+    {
+        "fr"    "Manual Select"
+    }
+    
+    "AM Change Map"
+    {
+        "fr"    "Change Map"
+    }
+    
+    "AM Set Next Map"
+    {
+        "fr"    "Set Next Map"
+    }
+}
