@@ -1,0 +1,16 @@
+version: '3.7'
+
+# Maybe possible to do with scaling mode?
+services:
+{% for service in services %}
+  srcds-{{ service.server_name_short }}:
+    image: leighmacdonald/uncletopia-srcds
+    ports:
+      - {{ service.port }}:{{ service.port }}
+    environment:
+      - SRCDS_TOKEN="{{ service.gslt }}"
+      - SRCDS_PORT="{{ service.port }}"
+      - SRCDS_REGION="{{ sv_region }}"
+      - SRCDS_HOSTNAME="{{ service.name }}"
+
+{% endfor %}

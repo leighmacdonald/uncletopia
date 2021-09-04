@@ -1,168 +1,22 @@
-- name: tf/cfg/sourcemod/
-  synchronize:
-    src: tf/cfg/sourcemod
-    dest: serverfiles/tf/cfg/
-    owner: false
-    group: false
-    recursive: true
-    delete: true
-    rsync_opts:
-      - "--exclude=*.log"
-      - "--exclude=sourcemod/sourcemod.cfg"
-- name: tf/addons/
-  synchronize:
-    src: tf/addons/
-    dest: serverfiles/tf/addons/
-    owner: false
-    group: false
-    recursive: true
-    delete: true
-    rsync_opts:
-      - "--exclude=*.log"
-      - "--exclude=sourcemod/logs/"
-      - "--exclude=sourcemod/configs/gbans.cfg"
-      - "--exclude=sourcemod/configs/admins_simple.ini"
-      - "--exclude=sourcemod/configs/admin_overrides.cfg"
+- name: debug
+  ansible.builtin.debug:
+    msg: "{{ hostvars[item]['services'] }}"
+  loop: "{{ groups['all'] }}"
 
-- name: cfg/mapconfig/
-  synchronize:
-    src: tf/cfg/mapconfig
-    dest: serverfiles/tf/cfg/
-    owner: false
-    group: false
-    recursive: true
-    delete: true
 
-- name: tf/custom/
-  synchronize:
-    src: tf/custom/
-    dest: serverfiles/tf/custom/
-    owner: false
-    group: false
-    recursive: true
-    delete: true
-
-- name: admins_simple.ini
+- name: docker-compose.yml
   template:
-    src: admins_simple.ini.j2
-    dest: ~/serverfiles/tf/addons/sourcemod/configs/admins_simple.ini
-    mode: 0660
+    src: docker-compose.yml.j2
+    dest: ~/docker-compose.yml
+    mode: '775'
 
-- name: mapcycle.txt
-  template:
-    src: umc_mapcycle.txt.j2
-    dest: ~/serverfiles/tf/umc_mapcycle.txt
-    mode: 0660
+- name: Stop docker-compose
+  docker_compose:
+    project_src: .
+    stopped: yes
 
-- name: mapcycle_nominate.txt
-  template:
-    src: umc_mapcycle_nominate.txt.j2
-    dest: ~/serverfiles/tf/umc_mapcycle_nominate.txt
-    mode: 0660
-
-- name: motd.txt
-  template:
-    src: motd.txt.j2
-    dest: ~/serverfiles/tf/cfg/motd.txt
-    mode: 0660
-
-- name: tf/cfg/mapcycle_halloween.txt
-  copy:
-    src: tf/cfg/mapcycle_halloween.txt
-    dest: ~/serverfiles/tf/cfg/mapcycle_halloween.txt
-    mode: 0660
-
-- name: tf/cfg/pure_server_whitelist.txt
-  copy:
-    src: tf/cfg/pure_server_whitelist.txt
-    dest: ~/serverfiles/tf/cfg/pure_server_whitelist.txt
-    mode: 0660
-
-- name: tf/cfg/cronjobs.txt
-  copy:
-    src: tf/cfg/cronjobs.txt
-    dest: ~/serverfiles/tf/cfg/cronjobs.txt
-    mode: 0660
-
-- name: tf/cfg/tf2server.cfg
-  template:
-    src: tf2server.cfg.j2
-    dest: ~/serverfiles/tf/cfg/tf2server.cfg
-    mode: 0660
-
-- name: config-lgsm/tf2server/tf2server.cfg
-  template:
-    src: lgsm-tf2server.cfg.j2
-    dest: lgsm/config-lgsm/tf2server/tf2server.cfg
-    mode: 0660
-
-- name: tf/cfg/sourcemod/sourcemod.cfg
-  template:
-    src: sourcemod.cfg.j2
-    dest: ~/serverfiles/tf/cfg/sourcemod/sourcemod.cfg
-    mode: 0660
-
-- name: tf/addons/sourcemod/configs/admin_overrides.cfg
-  template:
-    src: admin_overrides.cfg.j2
-    dest: ~/serverfiles/tf/addons/sourcemod/configs/admin_overrides.cfg
-    mode: 0660
-
-- name: tf/addons/sourcemod/configs/gbans.cfg
-  template:
-    src: gbans.cfg.j2
-    dest: ~/serverfiles/tf/addons/sourcemod/configs/gbans.cfg
-    mode: 0660
-
-- name: start tf2server
-  command:
-    cmd: sudo systemctl start tf2server
-    creates: lgsm/lock/tf2server.lock
-
-- name: crontab monitor
-  become: yes
-  cron:
-    name: "tf2server monitor"
-    minute: "*/1"
-    hour: "*"
-    day: "*"
-    month: "*"
-    weekday: "*"
-    user: tf2server
-    job: "/home/tf2server/tf2server monitor > /dev/null 2>&1"
-
-- name: crontab update
-  become: yes
-  cron:
-    name: "tf2server update"
-    minute: "*/5"
-    hour: "*"
-    day: "*"
-    month: "*"
-    weekday: "*"
-    user: tf2server
-    job: "/home/tf2server/tf2server update > /dev/null 2>&1"
-
-- name: crontab force-update
-  become: yes
-  cron:
-    name: "tf2server restart"
-    minute: "0"
-    hour: "5"
-    day: "*"
-    month: "*"
-    weekday: "*"
-    user: tf2server
-    job: "/home/tf2server/tf2server force-update > /dev/null 2>&1"
-
-- name: crontab update-lgsm
-  become: yes
-  cron:
-    name: "tf2server update-functions"
-    minute: "0"
-    hour: "0"
-    day: "*"
-    month: "*"
-    weekday: "0"
-    user: tf2server
-    job: "/home/tf2server/tf2server update-lgsm > /dev/null 2>&1"
+- name: Start docker-compose
+  docker_compose:
+    project_src: .
+    pull: yes
+    state: present

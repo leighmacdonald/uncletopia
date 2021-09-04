@@ -22,8 +22,8 @@ ping:
 
 
 stage_adduser:
-	@ansible-playbook -i staginghosts.yml adduser.yml -u root $(ARGS)
-#	@ansible-playbook -i staginghosts.yml adduser.yml -u ubuntu $(ARGS)
+#	@ansible-playbook -i staginghosts.yml adduser.yml -u root $(ARGS)
+	@ansible-playbook -i staginghosts.yml adduser.yml -u ubuntu $(ARGS)
 #	@ansible-playbook -i staginghosts.yml adduser.yml -u danethebrain $(ARGS)
 
 stage_pre:
