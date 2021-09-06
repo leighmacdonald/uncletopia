@@ -3,6 +3,66 @@
     msg: "{{ hostvars[item]['services'] }}"
   loop: "{{ groups['all'] }}"
 
+- name: build output
+  file:
+    path: ~/build/{{ item.server_name_short }}
+    state: directory
+  loop: "{{ services }}"
+
+- name: admins_simple.ini
+  template:
+    src: admins_simple.ini.j2
+    dest: ~/build/admins_simple.ini
+    mode: 0660
+
+- name: Generate admin_overrides.cfg
+  template:
+    src: admin_overrides.cfg.j2
+    dest: ~/build/admin_overrides.cfg
+    mode: 0660
+
+- name: Generate sourcemod.cfg
+  template:
+    src: sourcemod.cfg.j2
+    dest: ~/build/sourcemod.cfg
+    mode: 0660
+
+- name: tf/cfg/server.cfg
+  template:
+    src: tf2server.cfg.j2
+    dest: ~/build/{{ item.server_name_short }}/server.cfg
+    mode: 0660
+  loop: "{{ services }}"
+
+- name: mapcycle.txt
+  template:
+    src: umc_mapcycle.txt.j2
+    dest: ~/build/umc_mapcycle.txt
+    mode: 0660
+
+- name: mapcycle_nominate.txt
+  template:
+    src: umc_mapcycle_nominate.txt.j2
+    dest: ~/build/umc_mapcycle_nominate.txt
+    mode: 0660
+
+- name: motd.txt
+  template:
+    src: motd.txt.j2
+    dest: ~/build/motd.txt
+    mode: 0660
+
+- name: tf/cfg/mapcycle_halloween.txt
+  copy:
+    src: tf/cfg/mapcycle_halloween.txt
+    dest: ~/build/mapcycle_halloween.txt
+    mode: 0660
+
+- name: tf/cfg/pure_server_whitelist.txt
+  copy:
+    src: tf/cfg/pure_server_whitelist.txt
+    dest: ~/build/pure_server_whitelist.txt
+    mode: 0660
 
 - name: docker-compose.yml
   template:
@@ -10,13 +70,13 @@
     dest: ~/docker-compose.yml
     mode: '775'
 
-- name: Stop docker-compose
-  docker_compose:
-    project_src: .
-    stopped: yes
+# - name: Stop docker-compose
+#   docker_compose:
+#     project_src: .
+#     stopped: yes
 
-- name: Start docker-compose
-  docker_compose:
-    project_src: .
-    pull: yes
-    state: present
+# - name: Start docker-compose
+#   docker_compose:
+#     project_src: .
+#     pull: yes
+#     state: present

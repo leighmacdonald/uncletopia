@@ -5,6 +5,7 @@ rcon_password: ""
 fastdl_url: ""
 sv_tags: "nocrits,nodmgspread"
 sv_pure: 1
+start_map: pl_badwater
 chat_logs_token: "" # Internal ut tool, leave blank
 lgsm_webhook_enabled: "on"
 lgsm_webhook_url: "https://discord.com/api/webhooks/1111111111111111111/2222222222222222222222222222222222222222222222222222222222222222222"
