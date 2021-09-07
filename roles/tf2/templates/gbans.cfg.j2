@@ -7,8 +7,8 @@
 	"port"	"{{ gbans_port }}"
 
 	// Unique server name for this server
-	"server_name"	"{{ server_name_short }}"
+	"server_name"	"{{ services[0].server_name_short }}"
 
 	// The authentication key used to retrieve a auth token
-    "server_key"	"{{ gbans_key }}"
+    "server_key"	"{{ services[0].gbans_key }}"
 }

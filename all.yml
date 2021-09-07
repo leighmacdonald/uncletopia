@@ -5,10 +5,6 @@
 
 - hosts: tf2
   roles:
-    - pre
-
-- hosts: tf2
-  roles:
     - system
 
 - hosts: tf2

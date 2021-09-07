@@ -1,6 +1,7 @@
-server_name: "Your Server | Antarctica"
-server_name_short: "an-1"
-gslt: ""   # https://steamcommunity.com/dev/managegameservers
-sv_region: 255  # https://developer.valvesoftware.com/wiki/Sv_region 
-gbans_key: ""
-timezone: ""   # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+timezone: "Europe/Warsaw"
+sv_region: 3
+services:
+  - name: "Server | Location | 1"
+    server_name_short: "srv-1"
+    gslt: ""
+    gbans_key: ""

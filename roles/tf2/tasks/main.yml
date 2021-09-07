@@ -3,80 +3,138 @@
     msg: "{{ hostvars[item]['services'] }}"
   loop: "{{ groups['all'] }}"
 
-- name: build output
+- name: build dir
+  become: yes
+  become_user: root
   file:
-    path: ~/build/{{ item.server_name_short }}
+    path: /build
     state: directory
+    owner: tf2server
+    mode: 0777
+  loop: "{{ services }}"
+
+- name: build output
+  become: yes
+  become_user: root
+  file:
+    path: /build/{{ item.server_name_short }}
+    state: directory
+    owner: tf2server
+    mode: 0777
   loop: "{{ services }}"
 
 - name: admins_simple.ini
   template:
     src: admins_simple.ini.j2
-    dest: ~/build/admins_simple.ini
-    mode: 0660
+    dest: /build/admins_simple.ini
+    mode: 0777
 
 - name: Generate admin_overrides.cfg
   template:
     src: admin_overrides.cfg.j2
-    dest: ~/build/admin_overrides.cfg
-    mode: 0660
+    dest: /build/admin_overrides.cfg
+    mode: 0777
 
 - name: Generate sourcemod.cfg
   template:
     src: sourcemod.cfg.j2
-    dest: ~/build/sourcemod.cfg
-    mode: 0660
+    dest: /build/sourcemod.cfg
+    mode: 0777
 
 - name: tf/cfg/server.cfg
   template:
     src: tf2server.cfg.j2
-    dest: ~/build/{{ item.server_name_short }}/server.cfg
-    mode: 0660
+    dest: /build/{{ item.server_name_short }}/server.cfg
+    mode: 0777
   loop: "{{ services }}"
 
 - name: mapcycle.txt
   template:
     src: umc_mapcycle.txt.j2
-    dest: ~/build/umc_mapcycle.txt
-    mode: 0660
+    dest: /build/umc_mapcycle.txt
+    mode: 0777
 
 - name: mapcycle_nominate.txt
   template:
     src: umc_mapcycle_nominate.txt.j2
-    dest: ~/build/umc_mapcycle_nominate.txt
-    mode: 0660
+    dest: /build/umc_mapcycle_nominate.txt
+    mode: 0777
 
 - name: motd.txt
   template:
     src: motd.txt.j2
-    dest: ~/build/motd.txt
-    mode: 0660
+    dest: /build/motd.txt
+    mode: 0777
 
 - name: tf/cfg/mapcycle_halloween.txt
   copy:
     src: tf/cfg/mapcycle_halloween.txt
-    dest: ~/build/mapcycle_halloween.txt
-    mode: 0660
+    dest: /build/mapcycle_halloween.txt
+    mode: 0777
 
 - name: tf/cfg/pure_server_whitelist.txt
   copy:
     src: tf/cfg/pure_server_whitelist.txt
-    dest: ~/build/pure_server_whitelist.txt
-    mode: 0660
+    dest: /build/pure_server_whitelist.txt
+    mode: 0777
 
-- name: docker-compose.yml
-  template:
-    src: docker-compose.yml.j2
-    dest: ~/docker-compose.yml
-    mode: '775'
+- name: srcds
+  docker_container:
+    name: srcds-{{ item.server_name_short }}
+    image: leighmacdonald/uncletopia-srcds:latest
+    state: started
+    restart: yes
+    network_mode: host
+    pull: yes
+    restart_policy: always
+    cpuset_cpus: "{{ loop0 * 2 }},{{ (loop0 * 2)+1 }}"
+    ports:
+      - "{{ srcds_base_port + (loop0 * 10) }}:{{ srcds_base_port + (loop0 * 10) }}/tcp"
+      - "{{ srcds_base_port + (loop0 * 10) }}:{{ srcds_base_port + (loop0 * 10) }}/udp"
+      - "{{ srcds_base_port + (loop0 * 10) + 1 }}:{{ srcds_base_port + (loop0 * 10) + 1 }}/udp"
+    env:
+      SRCDS_TOKEN: "{{ item.gslt }}"
+      SRCDS_PORT: "{{ srcds_base_port + (loop0 * 10) }}"
+      SRCDS_TV_PORT: "{{ srcds_base_port + 100 }}"
+      SRCDS_REGION: "{{ sv_region|quote }}"
+      SRCDS_HOSTNAME: "{{ item.name }}"
+      SRCDS_PW: "{{ server_password }}"
+      SRCDS_STARTMAP: "{{ start_map }}"
+      SRCDS_RCONPW: "{{ rcon_password }}"
+      SRCDS_IP: "{{ ip }}"
+      SRCDS_MAXPLAYERS: "32"
+    volumes:
+      - /build/{{ item.server_name_short }}/server.cfg:/home/steam/tf-dedicated/tf/cfg/server.cfg
+      - /build/admins_simple.ini:/home/steam/tf-dedicated/tf/addons/sourcemod/configs/admins_simple.ini
+      - /build/umc_mapcycle.txt:/home/steam/tf-dedicated/tf/umc_mapcycle.txt
+      - /build/umc_mapcycle_nominate.txt:/home/steam/tf-dedicated/tf/umc_mapcycle_nominate.txt
+      - /build/motd.txt:/home/steam/tf-dedicated/tf/cfg/motd.txt
+      - /build/mapcycle_halloween.txt:/home/steam/tf-dedicated/tf/cfg/mapcycle_halloween.txt
+      - /build/pure_server_whitelist.txt:/home/steam/tf-dedicated/tf/cfg/pure_server_whitelist.txt
+      - /build/cronjobs.txt:/home/steam/tf-dedicated/tf/cfg/cronjobs.txt
+      - /build/sourcemod.cfg:/home/steam/tf-dedicated/tf/cfg/sourcemod/sourcemod.cfg
+      - /build/admin_overrides.cfg:/home/steam/tf-dedicated/tf/addons/sourcemod/configs/admin_overrides.cfg
+      - /build/gbans.cfg:/home/steam/tf-dedicated/tf/addons/sourcemod/configs/gbans.cfg
+  loop: "{{ services }}"
+  loop_control:
+    index_var: loop0
 
-# - name: Stop docker-compose
-#   docker_compose:
-#     project_src: .
-#     stopped: yes
+- name: srcds-fw
+  become: yes
+  ufw:
+    rule: allow
+    port: "{{ srcds_base_port + (loop0 * 10) }}"
+    proto: any
 
-# - name: Start docker-compose
-#   docker_compose:
-#     project_src: .
-#     pull: yes
-#     state: present
+  loop: "{{ services }}"
+  loop_control:
+    index_var: loop0
+
+- name: prometheus-fw
+  become: yes
+  ufw:
+    rule: allow
+    port: "{{ item }}"
+  with_items:
+    - "9000"
+    - "9100"

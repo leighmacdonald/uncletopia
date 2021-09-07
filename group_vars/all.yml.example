@@ -1,6 +1,7 @@
 gbans_host: "https://gbans.host.com"
 gbans_port: "443"
 server_password: ""
+srcds_base_port: 27015
 rcon_password: ""
 fastdl_url: ""
 sv_tags: "nocrits,nodmgspread"
