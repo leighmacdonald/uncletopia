@@ -4,6 +4,40 @@ hostname "{{ item.name }}"
 // RCON - remote console password.
 rcon_password "{{ rcon_password }}"
 
+// Dont spectate other team
+mp_forcecamera 1
+
+// Remove random crits
+tf_weapon_criticals 0
+tf_use_fixed_weaponspreads 1
+
+// Extra time for map voting
+mp_enableroundwaittime 1
+mp_restartround 0
+mp_bonusroundtime 15
+mp_chattime 20
+
+// No spectators team
+mp_allowspectators 0
+mp_forceautoteam 1
+
+// Dont push same team
+tf_avoidteammates_pushaway 0
+
+// Rocket jump during preround
+tf_preround_push_from_damage_enable 1
+
+tf_classlimit 3
+sv_vote_issue_classlimits_allowed 0
+sv_vote_issue_classlimits_max 3
+
+// Ask autobalance
+mp_autoteambalance 0
+mp_teams_unbalance_limit 1
+tf_autobalance_ask_candidates_maxtime 10
+tf_autobalance_dead_candidates_maxtime 0
+tf_autobalance_force_candidates_maxtime 0
+tf_autobalance_xp_bonus 0
 
 sv_tags "{{ sv_tags }}"
 

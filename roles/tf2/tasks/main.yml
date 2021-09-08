@@ -1,8 +1,3 @@
-- name: debug
-  ansible.builtin.debug:
-    msg: "{{ hostvars[item]['services'] }}"
-  loop: "{{ groups['all'] }}"
-
 - name: build dir
   become: yes
   become_user: root
@@ -111,7 +106,6 @@
       - /build/motd.txt:/home/steam/tf-dedicated/tf/cfg/motd.txt
       - /build/mapcycle_halloween.txt:/home/steam/tf-dedicated/tf/cfg/mapcycle_halloween.txt
       - /build/pure_server_whitelist.txt:/home/steam/tf-dedicated/tf/cfg/pure_server_whitelist.txt
-      - /build/cronjobs.txt:/home/steam/tf-dedicated/tf/cfg/cronjobs.txt
       - /build/sourcemod.cfg:/home/steam/tf-dedicated/tf/cfg/sourcemod/sourcemod.cfg
       - /build/admin_overrides.cfg:/home/steam/tf-dedicated/tf/addons/sourcemod/configs/admin_overrides.cfg
       - /build/gbans.cfg:/home/steam/tf-dedicated/tf/addons/sourcemod/configs/gbans.cfg
@@ -125,7 +119,6 @@
     rule: allow
     port: "{{ srcds_base_port + (loop0 * 10) }}"
     proto: any
-
   loop: "{{ services }}"
   loop_control:
     index_var: loop0
