@@ -36,6 +36,12 @@
     dest: /build/sourcemod.cfg
     mode: 0777
 
+- name: Generate gbans.cfg
+  template:
+    src: gbans.cfg.j2
+    dest: /build/gbans.cfg
+    mode: 0777
+
 - name: tf/cfg/server.cfg
   template:
     src: tf2server.cfg.j2
