@@ -4,6 +4,16 @@
   community.general.timezone:
     name: "{{ timezone }}"
 
+- name: Install gpg
+  become: yes
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+  apt:
+    update_cache: yes
+    cache_valid_time: 0
+    state: present
+    pkg:
+      - gpg
+
 - name: Add an Apt signing key, uses whichever key is at the URL
   become: yes
   ansible.builtin.apt_key:
@@ -28,6 +38,7 @@
       - unzip
       - apt-transport-https
       - ca-certificates
+      - gpg
       - curl
       - gnupg
       - docker-ce
@@ -64,14 +75,6 @@
     src: node_exporter.service
     dest: /etc/systemd/system/node_exporter.service
     mode: '644'
-
-- name: mkdir gbans
-  become: yes
-  become_user: tf2server
-  file:
-    path: ~/gbans
-    state: directory
-    mode: '0755'
 
 - name: mkdir gbans
   become: yes
@@ -131,21 +134,14 @@
   become: yes
   systemd:
     name: gbans-relay.service
-    enabled: yes
-    state: restarted
-
-- name: 50unattended-upgrades
-  become: yes
-  copy:
-    src: 50unattended-upgrades
-    dest: /etc/apt/apt.conf.d/50unattended-upgrades
-    mode: '644'
+    enabled: no
+    state: stopped
 
 - name: Increase available memory for UDP receive buffers
   become: yes
   ansible.posix.sysctl:
     name: net.core.rmem_max
-    value: 26214400
+    value: "26214400"
     sysctl_set: yes
     reload: yes
 
@@ -153,7 +149,7 @@
   become: yes
   ansible.posix.sysctl:
     name: net.core.wmem_max
-    value: 26214400
+    value: "26214400"
     sysctl_set: yes
     reload: yes
 
@@ -161,7 +157,15 @@
   become: yes
   ansible.posix.sysctl:
     name: net.core.netdev_max_backlog
-    value: 25000
+    value: "25000"
     sysctl_set: yes
     reload: yes
 
+- name: srcds-fw
+  become: yes
+  ufw:
+    rule: allow
+    port: "{{ item }}"
+  with_items:
+    - "9000"
+    - "9100"

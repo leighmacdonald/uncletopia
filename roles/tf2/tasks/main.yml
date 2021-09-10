@@ -1,4 +1,4 @@
-- name: build dir
+- name: create build output dirs
   become: yes
   become_user: root
   file:
@@ -18,38 +18,38 @@
     mode: 0777
   loop: "{{ services }}"
 
-- name: admins_simple.ini
+- name: Generate /build/admins_simple.ini
   template:
     src: admins_simple.ini.j2
     dest: /build/admins_simple.ini
     mode: 0777
 
-- name: Generate admin_overrides.cfg
+- name: Generate /build/admin_overrides.cfg
   template:
     src: admin_overrides.cfg.j2
     dest: /build/admin_overrides.cfg
     mode: 0777
 
-- name: Generate sourcemod.cfg
+- name: Generate /build/sourcemod.cfg
   template:
     src: sourcemod.cfg.j2
     dest: /build/sourcemod.cfg
     mode: 0777
 
-- name: Generate gbans.cfg
+- name: Generate /build/gbans.cfg
   template:
     src: gbans.cfg.j2
     dest: /build/gbans.cfg
     mode: 0777
 
-- name: tf/cfg/server.cfg
+- name: Generate tf/cfg/server.cfg
   template:
     src: tf2server.cfg.j2
     dest: /build/{{ item.server_name_short }}/server.cfg
     mode: 0777
   loop: "{{ services }}"
 
-- name: mapcycle.txt
+- name: Generate /build/umc_mapcycle.txt
   template:
     src: umc_mapcycle.txt.j2
     dest: /build/umc_mapcycle.txt
@@ -61,23 +61,23 @@
     dest: /build/umc_mapcycle_nominate.txt
     mode: 0777
 
-- name: motd.txt
+- name: Generate /build/motd.txt
   template:
     src: motd.txt.j2
     dest: /build/motd.txt
     mode: 0777
 
-- name: tf/cfg/mapcycle_halloween.txt
-  copy:
-    src: tf/cfg/mapcycle_halloween.txt
-    dest: /build/mapcycle_halloween.txt
-    mode: 0777
+# - name: Generate /build/mapcycle_halloween.txt
+#   copy:
+#     src: tf/cfg/mapcycle_halloween.txt
+#     dest: /build/mapcycle_halloween.txt
+#     mode: 0777
 
-- name: tf/cfg/pure_server_whitelist.txt
-  copy:
-    src: tf/cfg/pure_server_whitelist.txt
-    dest: /build/pure_server_whitelist.txt
-    mode: 0777
+# - name: Generate /build/pure_server_whitelist.txt
+#   copy:
+#     src: tf/cfg/pure_server_whitelist.txt
+#     dest: /build/pure_server_whitelist.txt
+#     mode: 0777
 
 - name: srcds
   docker_container:
@@ -87,6 +87,8 @@
     restart: yes
     network_mode: host
     pull: yes
+    interactive: yes
+    tty: yes
     restart_policy: always
     cpuset_cpus: "{{ loop0 * 2 }},{{ (loop0 * 2)+1 }}"
     ports:
@@ -110,8 +112,8 @@
       - /build/umc_mapcycle.txt:/home/steam/tf-dedicated/tf/umc_mapcycle.txt
       - /build/umc_mapcycle_nominate.txt:/home/steam/tf-dedicated/tf/umc_mapcycle_nominate.txt
       - /build/motd.txt:/home/steam/tf-dedicated/tf/cfg/motd.txt
-      - /build/mapcycle_halloween.txt:/home/steam/tf-dedicated/tf/cfg/mapcycle_halloween.txt
-      - /build/pure_server_whitelist.txt:/home/steam/tf-dedicated/tf/cfg/pure_server_whitelist.txt
+      # - /build/mapcycle_halloween.txt:/home/steam/tf-dedicated/tf/cfg/mapcycle_halloween.txt
+      # - /build/pure_server_whitelist.txt:/home/steam/tf-dedicated/tf/cfg/pure_server_whitelist.txt
       - /build/sourcemod.cfg:/home/steam/tf-dedicated/tf/cfg/sourcemod/sourcemod.cfg
       - /build/admin_overrides.cfg:/home/steam/tf-dedicated/tf/addons/sourcemod/configs/admin_overrides.cfg
       - /build/gbans.cfg:/home/steam/tf-dedicated/tf/addons/sourcemod/configs/gbans.cfg
@@ -128,12 +130,3 @@
   loop: "{{ services }}"
   loop_control:
     index_var: loop0
-
-- name: prometheus-fw
-  become: yes
-  ufw:
-    rule: allow
-    port: "{{ item }}"
-  with_items:
-    - "9000"
-    - "9100"
