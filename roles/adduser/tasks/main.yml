@@ -52,16 +52,12 @@
     direction: incoming
 
 - name: mkdir .ssh
-  become: yes
-  become_user: tf2server
   file:
     path: ~/.ssh
     state: directory
     mode: '0700'
 
 - name: ssh keys
-  become: yes
-  become_user: tf2server
   ansible.posix.authorized_key:
     user: tf2server
     state: present

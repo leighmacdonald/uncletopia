@@ -14,6 +14,9 @@ pre: deps
 system: deps
 	@ansible-playbook system.yml $(ARGS)
 
+wg: deps
+	@ansible-playbook wg.yml $(ARGS)
+
 deploy: deps
 	@ansible-playbook deploy.yml $(ARGS)
 
@@ -22,8 +25,8 @@ ping:
 
 
 stage_adduser:
-#	@ansible-playbook -i staginghosts.yml adduser.yml -u root $(ARGS)
-	@ansible-playbook -i staginghosts.yml adduser.yml -u ubuntu $(ARGS)
+	@ansible-playbook -i staginghosts.yml adduser.yml -u root $(ARGS)
+#	@ansible-playbook -i staginghosts.yml adduser.yml -u ubuntu $(ARGS)
 #	@ansible-playbook -i staginghosts.yml adduser.yml -u danethebrain $(ARGS)
 
 stage_pre:

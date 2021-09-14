@@ -111,6 +111,15 @@
     dest: /home/tf2server/gbans.yml
     mode: '644'
 
+- name: Enable TCP docker listener
+  become: yes
+  lineinfile:
+    dest=/etc/systemd/system/multi-user.target.wants/docker.service
+    regexp='^ExecStart='
+    line="ExecStart=/usr/bin/dockerd -H tcp://0.0.0.0:2000 -H fd:// --containerd=/run/containerd/containerd.sock"
+    state=present
+    backup=yes
+
 - name: systemd reload
   become: yes
   systemd:
@@ -161,11 +170,26 @@
     sysctl_set: yes
     reload: yes
 
-- name: srcds-fw
+- name: fw-docker
   become: yes
   ufw:
     rule: allow
     port: "{{ item }}"
+    from_ip: "{{ docker_host_master }}"
   with_items:
-    - "9000"
+    - "2000"
+
+- name: fw-prom
+  become: yes
+  ufw:
+    rule: allow
+    port: "{{ item }}"
+    from_ip: "{{ prometheus_host }}"
+  with_items:
     - "9100"
+
+- name: Enable UFW
+  become: yes
+  ufw:
+    state: reloaded
+    policy: deny
