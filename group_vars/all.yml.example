@@ -16,16 +16,16 @@ ssh_keys:
 start_map: pl_badwater
 
 # Host running prometheus to allow through firewall
-prometheus_host: "168.119.150.113"
-# Host running as docker master w/portainer to allow through firewall
-docker_host_master: "168.119.150.113"
+prometheus_host: "10.69.69.10"
+# Host running as docker master
+docker_host_master: "10.69.69.5"
 
 
 # wireguard network config
 # Public key of the wg server
 vpn_server_public_key: "eRKgSIrnVUNYBtn1fHa0NkGr+xCiuHtpm+4YvNMh9Tc="
 # hostname/IP of wg server
-vpn_host: "mtl-1.ca.uncletopia.com"
+vpn_host: "50.50.50.50"
 # Port of wg server
 vpn_port: 41194
 # Route these ips through the vpn
