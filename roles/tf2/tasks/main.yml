@@ -98,7 +98,7 @@
     env:
       SRCDS_TOKEN: "{{ item.gslt }}"
       SRCDS_PORT: "{{ srcds_base_port + (loop0 * 10) }}"
-      SRCDS_TV_PORT: "{{ srcds_base_port + 100 }}"
+      SRCDS_TV_PORT: "{{ srcds_base_port + (loop0 * 10) + 1 }}"
       SRCDS_REGION: "{{ sv_region|quote }}"
       SRCDS_HOSTNAME: "{{ item.name }}"
       SRCDS_PW: "{{ server_password }}"

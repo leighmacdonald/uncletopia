@@ -35,6 +35,9 @@ stage_pre:
 stage_system:
 	@ansible-playbook -i staginghosts.yml system.yml $(ARGS)
 
+stage_wg:
+	@ansible-playbook -i staginghosts.yml wg.yml $(ARGS)
+
 stage_deploy:
 	@ansible-playbook -i staginghosts.yml deploy.yml $(ARGS)
 

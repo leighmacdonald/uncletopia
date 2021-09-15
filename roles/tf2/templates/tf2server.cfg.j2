@@ -119,3 +119,15 @@ sm_fix_ghost_crossbow_bolts 1
 sm_fix_slope_bug 1
 sm_fix_sticky_delay 1
 
+{% if stv_enable %}
+tv_enable 1
+tv_autorecord 1
+tv_maxclients 0
+tv_transmitall 1
+tv_delaymapchange 0
+tv_delay 0
+//tv_port
+tv_allow_camera_man 1
+tv_password {{ stv_password }}
+tv_name "{{ stv_name }}"
+{% endif %}

@@ -8,11 +8,38 @@ sv_tags: "nocrits,nodmgspread"
 sv_pure: 1
 start_map: pl_badwater
 chat_logs_token: "" # Internal ut tool, leave blank
-lgsm_webhook_enabled: "on"
-lgsm_webhook_url: "https://discord.com/api/webhooks/1111111111111111111/2222222222222222222222222222222222222222222222222222222222222222222"
 ssh_keys:
   - "https://github.com/username.keys"
   - "ssh-rsa xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+
+# Initial map when starting a srcds instance
+start_map: pl_badwater
+
+# Host running prometheus to allow through firewall
+prometheus_host: "168.119.150.113"
+# Host running as docker master w/portainer to allow through firewall
+docker_host_master: "168.119.150.113"
+
+
+# wireguard network config
+# Public key of the wg server
+vpn_server_public_key: "eRKgSIrnVUNYBtn1fHa0NkGr+xCiuHtpm+4YvNMh9Tc="
+# hostname/IP of wg server
+vpn_host: "mtl-1.ca.uncletopia.com"
+# Port of wg server
+vpn_port: 41194
+# Route these ips through the vpn
+vpn_allowed_ips: "10.69.69.0/24"
+# All hosts default to having a vpn client. The server should override this on their local host config.
+is_vpn_client: true
+# Extra external wg keys to add
+vpn_clients_extra:
+  - public_key: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx=
+    client_addr: 10.69.69.69/32
+    name: roto
+  - public_key: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx=
+    client_addr: 10.69.69.96/32
+    name: viora
 
 # Params to generate /tf/addons/sourcemod/configs/admin_overrides.cfg
 admin_overrides:

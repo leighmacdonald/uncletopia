@@ -3,8 +3,11 @@ all:
   children:
     tf2:
       hosts:
-        mtl-1.ca.uncletopia.com:
+        atl-1.us.uncletopia.com:
           ansible_python_interpreter: python3
-        frk-1.de.uncletopia.com:
-          ansible_python_interpreter: python3
-      
+        chi-1.us.uncletopia.com:
+           ansible_python_interpreter: python3
+        dal-1.us.uncletopia.com:
+           ansible_python_interpreter: python3
+        sea-1.us.uncletopia.com:
+           ansible_python_interpreter: python3
