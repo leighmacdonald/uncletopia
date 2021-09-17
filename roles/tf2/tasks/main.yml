@@ -67,17 +67,13 @@
     dest: /build/motd.txt
     mode: 0777
 
-# - name: Generate /build/mapcycle_halloween.txt
-#   copy:
-#     src: tf/cfg/mapcycle_halloween.txt
-#     dest: /build/mapcycle_halloween.txt
-#     mode: 0777
+- name: prepare chown hack (roto pls fix)
+  shell: 'getent passwd "1000" | cut -d: -f1'
+  register: poop
 
-# - name: Generate /build/pure_server_whitelist.txt
-#   copy:
-#     src: tf/cfg/pure_server_whitelist.txt
-#     dest: /build/pure_server_whitelist.txt
-#     mode: 0777
+- name: chown hack all the things! (roto pls fix)
+  become: yes
+  shell: 'chown -R {{ poop.stdout }} /build'
 
 - name: srcds
   docker_container:
@@ -120,6 +116,11 @@
   loop: "{{ services }}"
   loop_control:
     index_var: loop0
+
+- name: yet another hack! (roto pls fix)
+  become: yes
+  shell: 'docker exec -u 0 srcds-{{ item.server_name_short }} /bin/chown -R steam:steam /home/steam/tf-dedicated'
+  loop: "{{ services }}"
 
 - name: srcds-fw
   become: yes
