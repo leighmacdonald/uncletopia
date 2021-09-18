@@ -45,6 +45,7 @@
       - docker-ce-cli
       - containerd.io
       - python3-docker
+      - python3-distutils
 
 - name: adding user to docker group
   become: yes
