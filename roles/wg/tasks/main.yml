@@ -36,7 +36,6 @@
     rule: allow
     port: "{{ vpn_port }}"
     proto: udp
-  when: not is_vpn_client | bool
 
 - name: systemd reload
   become: yes
