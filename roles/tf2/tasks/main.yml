@@ -102,6 +102,25 @@
       SRCDS_RCONPW: "{{ rcon_password }}"
       SRCDS_IP: "{{ ip }}"
       SRCDS_MAXPLAYERS: "32"
+      # This will opt out ofo the new handshake for A2S_INFO packets to address the reflection attack. At this
+      # time, it is primarily intended for testing 3rd party query clients. Since not all players may have an updated
+      # Steam client and understand this handshake, it is not recommend to enable this at this time, except for testing. 
+      # We will post again when the vast majority of users are running clients that understand the new protocol, and 
+      # enabling the new protocol is safe.
+      STEAM_GAMESERVER_A2S_INFO_STRICT_LEGACY_PROTOCOL: "0"
+      # This will drop any connectionless packets (A2S_INFO, A2S_RULES, A2S_PLAYERS) from a given IP after more than 
+      # N are received in a 200ms window. By default, rate limiting is disabled, but a reasonable value might be 
+      # somewhere around 25-75.
+      STEAM_GAMESERVER_RATE_LIMIT_200MS: "25"
+      # If this variable is set, then the Steamworks packet handling calls will use a “fast path”. In the 
+      # Steamworks SDK, most API calls are serialized over an IPC, and in fact execute in the steam client process.
+      # A dedicated server does not communicate with a steam client (there usually isn’t one running), but the same 
+      # basic design is used – there are two threads, and all API calls are serialized and executed in the Steam thread. 
+      # Turning on this environment variable will bypass this serialization and thread context switch, which makes these 
+      # calls, much, much faster. Note that this only affects a server in “shared socket mode” – meaning the game port 
+      # and the query port are the same.
+      STEAM_GAMESERVER_PACKET_HANDLER_NO_IPC: "1"
+
     volumes:
       - /build/{{ item.server_name_short }}/server.cfg:/home/steam/tf-dedicated/tf/cfg/server.cfg
       - /build/admins_simple.ini:/home/steam/tf-dedicated/tf/addons/sourcemod/configs/admins_simple.ini
