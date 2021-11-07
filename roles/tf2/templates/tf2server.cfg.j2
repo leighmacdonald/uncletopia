@@ -55,6 +55,7 @@ sv_logecho 1
 sv_logfile 1
 sv_log_onefile 0
 
+
 sv_lan 0
 sv_region {{ sv_region }}
 
@@ -130,4 +131,10 @@ tv_delay 0
 tv_allow_camera_man 1
 tv_password {{ stv_password }}
 tv_name "{{ stv_name }}"
+{% endif %}
+
+{% if log.net_enable %}
+{% for host in log.net_hosts %}
+logaddress_add {{ host }}
+{% endfor %}
 {% endif %}
