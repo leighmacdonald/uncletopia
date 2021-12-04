@@ -117,7 +117,7 @@
   lineinfile:
     dest=/etc/systemd/system/multi-user.target.wants/docker.service
     regexp='^ExecStart='
-    line="ExecStart=/usr/bin/dockerd -H tcp://0.0.0.0:2000 -H fd:// --containerd=/run/containerd/containerd.sock"
+    line="ExecStart=/usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock"
     state=present
     backup=yes
 

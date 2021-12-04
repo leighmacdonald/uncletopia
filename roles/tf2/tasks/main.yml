@@ -1,3 +1,13 @@
+- name: srcds-fw-disable
+  become: yes
+  ufw:
+    rule: deny
+    port: "{{ srcds_base_port + (loop0 * 10) }}"
+    proto: any
+  loop: "{{ services }}"
+  loop_control:
+    index_var: loop0
+
 - name: create build output dirs
   become: yes
   become_user: root
@@ -23,24 +33,32 @@
     src: admins_simple.ini.j2
     dest: /build/admins_simple.ini
     mode: 0777
+  tags:
+    - game_config
 
 - name: Generate /build/admin_overrides.cfg
   template:
     src: admin_overrides.cfg.j2
     dest: /build/admin_overrides.cfg
     mode: 0777
+  tags:
+    - game_config
 
 - name: Generate /build/sourcemod.cfg
   template:
     src: sourcemod.cfg.j2
     dest: /build/sourcemod.cfg
     mode: 0777
+  tags:
+    - game_config
 
 - name: Generate /build/gbans.cfg
   template:
     src: gbans.cfg.j2
     dest: /build/gbans.cfg
     mode: 0777
+  tags:
+    - game_config
 
 - name: Generate tf/cfg/server.cfg
   template:
@@ -48,24 +66,32 @@
     dest: /build/{{ item.server_name_short }}/server.cfg
     mode: 0777
   loop: "{{ services }}"
+  tags:
+    - game_config
 
 - name: Generate /build/umc_mapcycle.txt
   template:
     src: umc_mapcycle.txt.j2
     dest: /build/umc_mapcycle.txt
     mode: 0777
+  tags:
+    - game_config
 
 - name: mapcycle_nominate.txt
   template:
     src: umc_mapcycle_nominate.txt.j2
     dest: /build/umc_mapcycle_nominate.txt
     mode: 0777
+  tags:
+    - game_config
 
 - name: Generate /build/motd.txt
   template:
     src: motd.txt.j2
     dest: /build/motd.txt
     mode: 0777
+  tags:
+    - game_config
 
 - name: prepare chown hack (roto pls fix)
   shell: 'getent passwd "1000" | cut -d: -f1'
@@ -74,6 +100,13 @@
 - name: chown hack all the things! (roto pls fix)
   become: yes
   shell: 'chown -R {{ poop.stdout }} /build'
+  
+- name: Prune containers older than 24h
+  docker_prune:
+    containers: yes
+    containers_filters:
+      # only consider containers created more than 24 hours ago
+      until: 24h
 
 - name: srcds
   docker_container:
