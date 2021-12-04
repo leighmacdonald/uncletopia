@@ -4,36 +4,27 @@
   community.general.timezone:
     name: "{{ timezone }}"
 
-- name: Check if i386 is enabled
-  become: yes
-  shell: dpkg --print-foreign-architectures | grep i386
-  register: result_i386_check
-  changed_when: false
-  ignore_errors: true
-
-- name: Enable i386 architecture
-  become: yes
-  command: dpkg --add-architecture i386
-  when: result_i386_check.rc != 0
-  ignore_errors: true
-
-- name: Accept Steam license
+- name: Install gpg
   become: yes
   when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
-  debconf:
-    name: steamcmd
-    question: steam/question
-    value: "I AGREE"
-    vtype: select
+  apt:
+    update_cache: yes
+    cache_valid_time: 0
+    state: present
+    pkg:
+      - gpg
 
-- name: Accept Steam license 2
+- name: Add an Apt signing key, uses whichever key is at the URL
   become: yes
-  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
-  debconf:
-    name: steamcmd
-    question: steam/license
-    value: ""
-    vtype: note
+  ansible.builtin.apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    state: present
+
+- name: Add specified repository into sources list
+  become: yes
+  ansible.builtin.apt_repository:
+    repo: deb https://download.docker.com/linux/ubuntu focal stable
+    state: present
 
 - name: Install OS Dependencies
   become: yes
@@ -43,28 +34,25 @@
     cache_valid_time: 0
     state: present
     pkg:
-      - curl
       - wget
-      - ca-certificates
-      - file
-      - bsdmainutils
-      - util-linux
-      - python3
-      - tar
-      - bzip2
-      - gzip
       - unzip
-      - binutils
-      - bc
-      - jq
-      - tmux
-      - netcat
-      - cpio
-      - lib32gcc1
-      - lib32stdc++6
-      - steamcmd
-      - libsdl2-2.0-0:i386
-      - libcurl4-gnutls-dev:i386
+      - apt-transport-https
+      - ca-certificates
+      - gpg
+      - curl
+      - gnupg
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+      - python3-docker
+      - python3-distutils
+
+- name: adding user to docker group
+  become: yes
+  user:
+    name: tf2server
+    groups: docker
+    append: yes
 
 - name: Download Node Exporter
   become: yes
@@ -82,27 +70,12 @@
   args:
     creates: ~/node_exporter
 
-- name: Create tf2server.service
-  become: yes
-  copy:
-    src: tf2server.service
-    dest: /etc/systemd/system/tf2server.service
-    mode: '644'
-
 - name: Create prometheus.service
   become: yes
   copy:
     src: node_exporter.service
     dest: /etc/systemd/system/node_exporter.service
     mode: '644'
-
-- name: mkdir gbans
-  become: yes
-  become_user: tf2server
-  file:
-    path: ~/gbans
-    state: directory
-    mode: '0755'
 
 - name: mkdir gbans
   become: yes
@@ -139,10 +112,26 @@
     dest: /home/tf2server/gbans.yml
     mode: '644'
 
+- name: Enable TCP docker listener
+  become: yes
+  lineinfile:
+    dest=/etc/systemd/system/multi-user.target.wants/docker.service
+    regexp='^ExecStart='
+    line="ExecStart=/usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock"
+    state=present
+    backup=yes
+
 - name: systemd reload
   become: yes
   systemd:
     daemon_reload: yes
+
+- name: systemd enable docker
+  become: yes
+  systemd:
+    name: docker
+    state: started
+    enabled: yes
 
 - name: systemd enable prometheus
   become: yes
@@ -151,31 +140,18 @@
     state: started
     enabled: yes
 
-- name: systemd enable tf2server
-  become: yes
-  systemd:
-    name: tf2server.service
-    enabled: yes
-
 - name: systemd enable gbans-relay
   become: yes
   systemd:
     name: gbans-relay.service
-    enabled: yes
-    state: restarted
-
-- name: 50unattended-upgrades
-  become: yes
-  copy:
-    src: 50unattended-upgrades
-    dest: /etc/apt/apt.conf.d/50unattended-upgrades
-    mode: '644'
+    enabled: no
+    state: stopped
 
 - name: Increase available memory for UDP receive buffers
   become: yes
   ansible.posix.sysctl:
     name: net.core.rmem_max
-    value: 26214400
+    value: "26214400"
     sysctl_set: yes
     reload: yes
 
@@ -183,7 +159,7 @@
   become: yes
   ansible.posix.sysctl:
     name: net.core.wmem_max
-    value: 26214400
+    value: "26214400"
     sysctl_set: yes
     reload: yes
 
@@ -191,7 +167,30 @@
   become: yes
   ansible.posix.sysctl:
     name: net.core.netdev_max_backlog
-    value: 25000
+    value: "25000"
     sysctl_set: yes
     reload: yes
 
+- name: fw-docker
+  become: yes
+  ufw:
+    rule: allow
+    port: "{{ item }}"
+    from_ip: "{{ docker_host_master }}"
+  with_items:
+    - "2000"
+
+- name: fw-prom
+  become: yes
+  ufw:
+    rule: allow
+    port: "{{ item }}"
+    from_ip: "{{ prometheus_host }}"
+  with_items:
+    - "9100"
+
+- name: Enable UFW
+  become: yes
+  ufw:
+    state: reloaded
+    policy: deny

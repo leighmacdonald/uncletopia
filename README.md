@@ -27,15 +27,12 @@ the `mapcycle.txt` config file below.
 
 ## Setting configs
 
-All the static configs are copies from `roles/tf2/files/tf/cfg`
-
 To change dynamic values (values that are unique to each host), you can edit the files
 under host_vars. eg: `dane-us1.jttm.us.yml`.
 
 ## Commands
 
 These command should be run from the Uncletopia folder on your local host system, NOT on the servers themselves.
-
 
 ## New Server Setup
 
@@ -86,24 +83,13 @@ as the last step. Failures for the existing servers is expected behaviour.
 
 `make system` or `ansible-playbook system.yml`
 
-### 4. `pre.yml`
-
-Next you can install the prerequisites for the tf2 server itself. This will do:
-
-- Install [LinuxGSM](https://linuxgsm.com/lgsm/tf2server)
-- Install TF2 base files under `~/serverfiles`
-
-`make pre` or `ansible-playbook pre.yml`
-
-
-### 5. `deploy.yml`
+### 4. `deploy.yml`
 
 You are now ready to deploy the custom parts of the TF2 instance. This will:
 
-- Copy the sourcemod folders (addons/sourcemod)
-- Copy maps stores in `roles/tf2/files/tf/maps`
 - Generate a custom tf2server.cfg from the template
-- Install & Start the tf2server.service systemd service
+- Download and configure N+1 docker containers for each instance using `leighmacdonald/uncletopia-srcds:latest`
+- Allow the ports for each instance in the firewall
 
 `make` or `ansible-playbook deploy.yml`
 

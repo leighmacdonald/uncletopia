@@ -44,30 +44,6 @@
     port: '22'
     proto: tcp
 
-- name: ufw allow 27015
-  become: yes
-  ufw:
-    rule: allow
-    port: '27015'
-
-- name: ufw allow 27020
-  become: yes
-  ufw:
-    rule: allow
-    port: '27020'
-
-- name: ufw allow 27005
-  become: yes
-  ufw:
-    rule: allow
-    port: '27005'
-
-- name: ufw allow 9100
-  become: yes
-  ufw:
-    rule: allow
-    port: '9100'
-
 - name: ufw enable
   become: yes
   ufw:
@@ -76,16 +52,12 @@
     direction: incoming
 
 - name: mkdir .ssh
-  become: yes
-  become_user: tf2server
   file:
     path: ~/.ssh
     state: directory
     mode: '0700'
 
 - name: ssh keys
-  become: yes
-  become_user: tf2server
   ansible.posix.authorized_key:
     user: tf2server
     state: present

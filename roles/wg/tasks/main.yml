@@ -1,0 +1,50 @@
+- name: Install wireguard package
+  become: yes
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+  apt:
+    update_cache: yes
+    cache_valid_time: 0
+    state: present
+    pkg:
+      - wireguard
+
+- name: /etc/wireguard
+  become: yes
+  file:
+    path: /etc/wireguard
+    mode: 0700
+
+- name: wg.conf server
+  become: yes
+  template:
+    src: srv-wg0.conf.j2
+    dest: /etc/wireguard/wg0.conf
+    mode: 0700
+  when: not is_vpn_client | bool
+
+- name: wg.conf client
+  become: yes
+  template:
+    src: wg0.conf.j2
+    dest: /etc/wireguard/wg0.conf
+    mode: 0700
+  when: is_vpn_client | bool
+
+- name: wg-fw
+  become: yes
+  ufw:
+    rule: allow
+    port: "{{ vpn_port }}"
+    proto: udp
+
+- name: systemd reload
+  become: yes
+  systemd:
+    daemon_reload: yes
+
+- name: systemctl enable wg-quick@wg0
+  become: yes
+  systemd:
+    name: 'wg-quick@wg0'
+    state: restarted
+    enabled: yes

@@ -14,16 +14,25 @@ pre: deps
 system: deps
 	@ansible-playbook system.yml $(ARGS)
 
+wg: deps
+	@ansible-playbook wg.yml $(ARGS)
+
 deploy: deps
 	@ansible-playbook deploy.yml $(ARGS)
+
+# Only deploy new game config files, skipping container redeploy/restart steps
+config: deps
+	@ansible-playbook deploy.yml --tags "game_config" $(ARGS)
 
 ping:
 	@ansible tf2 -m ping $(ARGS)
 
+mge_deploy:
+	@ansible-playbook -i mgehosts.yml deploy.yml $(ARGS)
 
 stage_adduser:
-	@ansible-playbook -i staginghosts.yml adduser.yml -u root $(ARGS)
-#	@ansible-playbook -i staginghosts.yml adduser.yml -u ubuntu $(ARGS)
+#   @ansible-playbook -i staginghosts.yml adduser.yml -u root $(ARGS)
+	@ansible-playbook -i staginghosts.yml adduser.yml -u ubuntu $(ARGS)
 #	@ansible-playbook -i staginghosts.yml adduser.yml -u danethebrain $(ARGS)
 
 stage_pre:
@@ -31,6 +40,9 @@ stage_pre:
 
 stage_system:
 	@ansible-playbook -i staginghosts.yml system.yml $(ARGS)
+
+stage_wg:
+	@ansible-playbook -i staginghosts.yml wg.yml $(ARGS)
 
 stage_deploy:
 	@ansible-playbook -i staginghosts.yml deploy.yml $(ARGS)

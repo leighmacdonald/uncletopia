@@ -1,0 +1,23 @@
+[Interface]
+PrivateKey = {{ vpn.private_key }}
+Address = {{ vpn.client_addr }}
+ListenPort = {{ vpn_port }}
+
+{% for v in hostvars %}
+{% if hostvars[v].is_vpn_client %}
+## {{ hostvars[v].services[0].server_name_short }}
+
+[Peer]
+PublicKey = {{ hostvars[v].vpn.public_key }}
+AllowedIPs = {{ hostvars[v].vpn.client_addr }}
+
+{% endif %}
+{% endfor %}
+
+{% for v in vpn_clients_extra %}
+## {{ v.name }}
+[Peer]
+PublicKey = {{ v.public_key }}
+AllowedIPs = {{ v.client_addr }}
+
+{% endfor %}

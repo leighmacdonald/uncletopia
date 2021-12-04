@@ -1,168 +1,185 @@
-- name: tf/cfg/sourcemod/
-  synchronize:
-    src: tf/cfg/sourcemod
-    dest: serverfiles/tf/cfg/
-    owner: false
-    group: false
-    recursive: true
-    delete: true
-    rsync_opts:
-      - "--exclude=*.log"
-      - "--exclude=sourcemod/sourcemod.cfg"
-- name: tf/addons/
-  synchronize:
-    src: tf/addons/
-    dest: serverfiles/tf/addons/
-    owner: false
-    group: false
-    recursive: true
-    delete: true
-    rsync_opts:
-      - "--exclude=*.log"
-      - "--exclude=sourcemod/logs/"
-      - "--exclude=sourcemod/configs/gbans.cfg"
-      - "--exclude=sourcemod/configs/admins_simple.ini"
-      - "--exclude=sourcemod/configs/admin_overrides.cfg"
+- name: srcds-fw-disable
+  become: yes
+  ufw:
+    rule: deny
+    port: "{{ srcds_base_port + (loop0 * 10) }}"
+    proto: any
+  loop: "{{ services }}"
+  loop_control:
+    index_var: loop0
 
-- name: cfg/mapconfig/
-  synchronize:
-    src: tf/cfg/mapconfig
-    dest: serverfiles/tf/cfg/
-    owner: false
-    group: false
-    recursive: true
-    delete: true
+- name: create build output dirs
+  become: yes
+  become_user: root
+  file:
+    path: /build
+    state: directory
+    owner: tf2server
+    mode: 0777
+  loop: "{{ services }}"
 
-- name: tf/custom/
-  synchronize:
-    src: tf/custom/
-    dest: serverfiles/tf/custom/
-    owner: false
-    group: false
-    recursive: true
-    delete: true
+- name: build output
+  become: yes
+  become_user: root
+  file:
+    path: /build/{{ item.server_name_short }}
+    state: directory
+    owner: tf2server
+    mode: 0777
+  loop: "{{ services }}"
 
-- name: admins_simple.ini
+- name: Generate /build/admins_simple.ini
   template:
     src: admins_simple.ini.j2
-    dest: ~/serverfiles/tf/addons/sourcemod/configs/admins_simple.ini
-    mode: 0660
+    dest: /build/admins_simple.ini
+    mode: 0777
+  tags:
+    - game_config
 
-- name: mapcycle.txt
+- name: Generate /build/admin_overrides.cfg
+  template:
+    src: admin_overrides.cfg.j2
+    dest: /build/admin_overrides.cfg
+    mode: 0777
+  tags:
+    - game_config
+
+- name: Generate /build/sourcemod.cfg
+  template:
+    src: sourcemod.cfg.j2
+    dest: /build/sourcemod.cfg
+    mode: 0777
+  tags:
+    - game_config
+
+- name: Generate /build/gbans.cfg
+  template:
+    src: gbans.cfg.j2
+    dest: /build/gbans.cfg
+    mode: 0777
+  tags:
+    - game_config
+
+- name: Generate tf/cfg/server.cfg
+  template:
+    src: tf2server.cfg.j2
+    dest: /build/{{ item.server_name_short }}/server.cfg
+    mode: 0777
+  loop: "{{ services }}"
+  tags:
+    - game_config
+
+- name: Generate /build/umc_mapcycle.txt
   template:
     src: umc_mapcycle.txt.j2
-    dest: ~/serverfiles/tf/umc_mapcycle.txt
-    mode: 0660
+    dest: /build/umc_mapcycle.txt
+    mode: 0777
+  tags:
+    - game_config
 
 - name: mapcycle_nominate.txt
   template:
     src: umc_mapcycle_nominate.txt.j2
-    dest: ~/serverfiles/tf/umc_mapcycle_nominate.txt
-    mode: 0660
+    dest: /build/umc_mapcycle_nominate.txt
+    mode: 0777
+  tags:
+    - game_config
 
-- name: motd.txt
+- name: Generate /build/motd.txt
   template:
     src: motd.txt.j2
-    dest: ~/serverfiles/tf/cfg/motd.txt
-    mode: 0660
+    dest: /build/motd.txt
+    mode: 0777
+  tags:
+    - game_config
 
-- name: tf/cfg/mapcycle_halloween.txt
-  copy:
-    src: tf/cfg/mapcycle_halloween.txt
-    dest: ~/serverfiles/tf/cfg/mapcycle_halloween.txt
-    mode: 0660
+- name: prepare chown hack (roto pls fix)
+  shell: 'getent passwd "1000" | cut -d: -f1'
+  register: poop
 
-- name: tf/cfg/pure_server_whitelist.txt
-  copy:
-    src: tf/cfg/pure_server_whitelist.txt
-    dest: ~/serverfiles/tf/cfg/pure_server_whitelist.txt
-    mode: 0660
-
-- name: tf/cfg/cronjobs.txt
-  copy:
-    src: tf/cfg/cronjobs.txt
-    dest: ~/serverfiles/tf/cfg/cronjobs.txt
-    mode: 0660
-
-- name: tf/cfg/tf2server.cfg
-  template:
-    src: tf2server.cfg.j2
-    dest: ~/serverfiles/tf/cfg/tf2server.cfg
-    mode: 0660
-
-- name: config-lgsm/tf2server/tf2server.cfg
-  template:
-    src: lgsm-tf2server.cfg.j2
-    dest: lgsm/config-lgsm/tf2server/tf2server.cfg
-    mode: 0660
-
-- name: tf/cfg/sourcemod/sourcemod.cfg
-  template:
-    src: sourcemod.cfg.j2
-    dest: ~/serverfiles/tf/cfg/sourcemod/sourcemod.cfg
-    mode: 0660
-
-- name: tf/addons/sourcemod/configs/admin_overrides.cfg
-  template:
-    src: admin_overrides.cfg.j2
-    dest: ~/serverfiles/tf/addons/sourcemod/configs/admin_overrides.cfg
-    mode: 0660
-
-- name: tf/addons/sourcemod/configs/gbans.cfg
-  template:
-    src: gbans.cfg.j2
-    dest: ~/serverfiles/tf/addons/sourcemod/configs/gbans.cfg
-    mode: 0660
-
-- name: start tf2server
-  command:
-    cmd: sudo systemctl start tf2server
-    creates: lgsm/lock/tf2server.lock
-
-- name: crontab monitor
+- name: chown hack all the things! (roto pls fix)
   become: yes
-  cron:
-    name: "tf2server monitor"
-    minute: "*/1"
-    hour: "*"
-    day: "*"
-    month: "*"
-    weekday: "*"
-    user: tf2server
-    job: "/home/tf2server/tf2server monitor > /dev/null 2>&1"
+  shell: 'chown -R {{ poop.stdout }} /build'
+  
+- name: Prune containers older than 24h
+  docker_prune:
+    containers: yes
+    containers_filters:
+      # only consider containers created more than 24 hours ago
+      until: 24h
 
-- name: crontab update
-  become: yes
-  cron:
-    name: "tf2server update"
-    minute: "*/5"
-    hour: "*"
-    day: "*"
-    month: "*"
-    weekday: "*"
-    user: tf2server
-    job: "/home/tf2server/tf2server update > /dev/null 2>&1"
+- name: srcds
+  docker_container:
+    name: srcds-{{ item.server_name_short }}
+    image: leighmacdonald/uncletopia-srcds:latest
+    state: started
+    restart: yes
+    network_mode: host
+    pull: yes
+    interactive: yes
+    tty: yes
+    restart_policy: always
+    cpuset_cpus: "{{ loop0 * 2 }},{{ (loop0 * 2)+1 }}"
+    ports:
+      - "{{ srcds_base_port + (loop0 * 10) }}:{{ srcds_base_port + (loop0 * 10) }}/tcp"
+      - "{{ srcds_base_port + (loop0 * 10) }}:{{ srcds_base_port + (loop0 * 10) }}/udp"
+      - "{{ srcds_base_port + (loop0 * 10) + 1 }}:{{ srcds_base_port + (loop0 * 10) + 1 }}/udp"
+    env:
+      SRCDS_TOKEN: "{{ item.gslt }}"
+      SRCDS_PORT: "{{ srcds_base_port + (loop0 * 10) }}"
+      SRCDS_TV_PORT: "{{ srcds_base_port + (loop0 * 10) + 1 }}"
+      SRCDS_REGION: "{{ sv_region|quote }}"
+      SRCDS_HOSTNAME: "{{ item.name }}"
+      SRCDS_PW: "{{ server_password }}"
+      SRCDS_STARTMAP: "{{ start_map }}"
+      SRCDS_RCONPW: "{{ rcon_password }}"
+      SRCDS_IP: "{{ ip }}"
+      SRCDS_MAXPLAYERS: "32"
+      # This will opt out ofo the new handshake for A2S_INFO packets to address the reflection attack. At this
+      # time, it is primarily intended for testing 3rd party query clients. Since not all players may have an updated
+      # Steam client and understand this handshake, it is not recommend to enable this at this time, except for testing. 
+      # We will post again when the vast majority of users are running clients that understand the new protocol, and 
+      # enabling the new protocol is safe.
+      STEAM_GAMESERVER_A2S_INFO_STRICT_LEGACY_PROTOCOL: "0"
+      # This will drop any connectionless packets (A2S_INFO, A2S_RULES, A2S_PLAYERS) from a given IP after more than 
+      # N are received in a 200ms window. By default, rate limiting is disabled, but a reasonable value might be 
+      # somewhere around 25-75.
+      STEAM_GAMESERVER_RATE_LIMIT_200MS: "25"
+      # If this variable is set, then the Steamworks packet handling calls will use a “fast path”. In the 
+      # Steamworks SDK, most API calls are serialized over an IPC, and in fact execute in the steam client process.
+      # A dedicated server does not communicate with a steam client (there usually isn’t one running), but the same 
+      # basic design is used – there are two threads, and all API calls are serialized and executed in the Steam thread. 
+      # Turning on this environment variable will bypass this serialization and thread context switch, which makes these 
+      # calls, much, much faster. Note that this only affects a server in “shared socket mode” – meaning the game port 
+      # and the query port are the same.
+      STEAM_GAMESERVER_PACKET_HANDLER_NO_IPC: "1"
 
-- name: crontab force-update
-  become: yes
-  cron:
-    name: "tf2server restart"
-    minute: "0"
-    hour: "5"
-    day: "*"
-    month: "*"
-    weekday: "*"
-    user: tf2server
-    job: "/home/tf2server/tf2server force-update > /dev/null 2>&1"
+    volumes:
+      - /build/{{ item.server_name_short }}/server.cfg:/home/steam/tf-dedicated/tf/cfg/server.cfg
+      - /build/admins_simple.ini:/home/steam/tf-dedicated/tf/addons/sourcemod/configs/admins_simple.ini
+      - /build/umc_mapcycle.txt:/home/steam/tf-dedicated/tf/umc_mapcycle.txt
+      - /build/umc_mapcycle_nominate.txt:/home/steam/tf-dedicated/tf/umc_mapcycle_nominate.txt
+      - /build/motd.txt:/home/steam/tf-dedicated/tf/cfg/motd.txt
+      # - /build/mapcycle_halloween.txt:/home/steam/tf-dedicated/tf/cfg/mapcycle_halloween.txt
+      # - /build/pure_server_whitelist.txt:/home/steam/tf-dedicated/tf/cfg/pure_server_whitelist.txt
+      - /build/sourcemod.cfg:/home/steam/tf-dedicated/tf/cfg/sourcemod/sourcemod.cfg
+      - /build/admin_overrides.cfg:/home/steam/tf-dedicated/tf/addons/sourcemod/configs/admin_overrides.cfg
+      - /build/gbans.cfg:/home/steam/tf-dedicated/tf/addons/sourcemod/configs/gbans.cfg
+  loop: "{{ services }}"
+  loop_control:
+    index_var: loop0
 
-- name: crontab update-lgsm
+- name: yet another hack! (roto pls fix)
   become: yes
-  cron:
-    name: "tf2server update-functions"
-    minute: "0"
-    hour: "0"
-    day: "*"
-    month: "*"
-    weekday: "0"
-    user: tf2server
-    job: "/home/tf2server/tf2server update-lgsm > /dev/null 2>&1"
+  shell: 'docker exec -u 0 srcds-{{ item.server_name_short }} /bin/chown -R steam:steam /home/steam/tf-dedicated'
+  loop: "{{ services }}"
+
+- name: srcds-fw
+  become: yes
+  ufw:
+    rule: allow
+    port: "{{ srcds_base_port + (loop0 * 10) }}"
+    proto: any
+  loop: "{{ services }}"
+  loop_control:
+    index_var: loop0

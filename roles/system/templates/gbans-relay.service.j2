@@ -6,7 +6,7 @@ After=network.target
 User=tf2server
 Group=tf2
 WorkingDirectory=/home/tf2server
-ExecStart=/home/tf2server/gbans/gbans relay -n "{{ server_name_short }}" -H {{ gbans_host }}:{{ gbans_port }} -l /home/tf2server/serverfiles/tf/logs
+ExecStart=/home/tf2server/gbans/gbans relay -n "{{ services[0].server_name_short }}" -H {{ gbans_host }}:{{ gbans_port }} -l /home/tf2server/serverfiles/tf/logs
 Restart=always
 
 [Install]
