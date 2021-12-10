@@ -2,4 +2,3 @@
 collections:
   - community.general
   - ansible.posix
-  - cloudalchemy.node_exporter
