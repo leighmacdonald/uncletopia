@@ -1,84 +1,94 @@
 import logging
 import json
-from os.path import dirname, abspath, join
-import _thread
+from os import environ
 import websocket
 import requests
 
-# Url to a instance of https://github.com/xPaw/SteamWebPipes
+# Url to an instance of https://github.com/xPaw/SteamWebPipes
 ANNOUNCE_URL = "wss://update.uncletopia.com"
 AWX_URL = "https://deploy.uncletopia.com/api/v2"
+TEMPLATE_CONFIG = "Deploy TF2 Config"
 
 # Trigger update for specific app id's
 # TF2 should be 232250 for the server component, not 440 which is the client
 APP_ID = "232250"
 
-USERNAME = ""
-PASSWORD = "!"
-
-SCRIPT_DIR = dirname(join(abspath(__file__), ".."))
-ROOT_DIR = dirname(SCRIPT_DIR)
 
 update_running = False
+
 log = logging.getLogger(__name__)
-log.setLevel(logging.DEBUG)
 
 
-def api_request(path, data):
+class WatcherException(Exception):
+    pass
+
+
+def api_request(method, path, data=None):
     u = AWX_URL + path
-    print(u)
-    resp = requests.post(u, json=data, headers={"content-type": "application/json"})
-    return resp
+    resp = getattr(requests, method.lower())(u, json=data, headers={
+        "Content-Type": "application/json",
+        "Authorization": "Bearer {}".format(PAT)})
+    if not resp.ok:
+        raise WatcherException("Invalid http response: {}".format(resp.status_code))
+    return resp.json()
 
 
-def trigger_playbook(args: object) -> None:
-    global update_running
-    log.info("Running TF2 playbook")
-    update_running = True
+def find_template(name: str):
+    for res in api_request("get", "/job_templates/")["results"]:
+        if res["name"].lower() == name.lower():
+            return res
+    raise WatcherException("Failed to find matching template")
 
-    authResp = api_request("/authtoken/", {"username": USERNAME, "password": PASSWORD})
 
+def run_template(template_name: str):
     try:
-        sess = requests.Session()
-        sess.get("")
-    finally:
-        update_running = False
+        tpl = find_template(template_name)
+        api_request("post", "/job_templates/{}/launch/".format(tpl["id"]))
+    except WatcherException:
+        log.exception("Application error", exc_info=True)
+    except Exception:
+        log.exception("Unhandled exception", exc_info=True)
 
 
-def on_message(ws, message):
-    global update_running
+def on_message(_, message):
     try:
         data = json.loads(message)
         if data["Type"] == "Changelist":
             if APP_ID in data["Apps"]:
-                print("Appid update triggered: {} {}".format(data["ChangeNumber"], data["Apps"].keys()))
-                if update_running:
-                    log.error("Failed to start update, exiting update still in progress")
-                else:
-                    _thread.start_new_thread(trigger_playbook, (data,))
+                log.info("Appid update triggered: {} {}".format(data["ChangeNumber"], data["Apps"].keys()))
+                run_template(TEMPLATE_CONFIG)
             else:
-                print("Appid update skipped: {} {}".format(data["ChangeNumber"], ",".join(data["Apps"].keys())))
+                log.debug("Appid update skipped: {} {}".format(data["ChangeNumber"], ",".join(data["Apps"].keys())))
         elif data["Type"] == "UsersOnline":
-            print("Users online: {}".format(data["Users"]))
+            log.debug("Users online: {}".format(data["Users"]))
         elif data["Type"] == "LogOn":
-            print("Steam logon")
+            log.info("Steam logon")
         elif data["Type"] == "LogOff":
-            print("Steam logoff")
+            log.info("Steam logoff")
         else:
-            print("Unsupported key: {}".format(data["Type"]))
+            raise WatcherException("Unsupported key: {}".format(data["Type"]))
     except KeyError as err:
-        print(err)
+        log.exception("Unhandled exception", exc_info=True)
 
-def on_error(ws, error):
-    print("Connection error: {}", error)
 
-def on_close(ws, close_status_code, close_msg):
-    print("Connection closed: {} {}".format(close_status_code, close_msg))
+def on_error(_, error):
+    log.exception("Connection error: {}", exc_info=True)
 
-def on_open(ws):
-    print("Connection opened")
+
+def on_close(_, close_status_code, close_msg):
+    log.info("Connection closed: {} {}".format(close_status_code, close_msg))
+
+
+def on_open(_):
+    log.info("Connection opened")
+
 
 if __name__ == "__main__":
-    print(api_request("/authtoken/", {"username": USERNAME, "password": PASSWORD}))
-    ws = websocket.WebSocketApp(ANNOUNCE_URL, on_open=on_open, on_message=on_message, on_error=on_error, on_close=on_close)
-    ws.run_forever()
+    logging.basicConfig()
+    log.setLevel(logging.INFO)
+    PAT = environ.get("PAT")
+    if PAT == "":
+        log.fatal("Must set PAT env var to personal access token")
+    conn = websocket.WebSocketApp(ANNOUNCE_URL, on_open=on_open, on_message=on_message, on_error=on_error,
+                                  on_close=on_close)
+    conn.run_forever()
