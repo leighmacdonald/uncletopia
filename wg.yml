@@ -1,4 +1,4 @@
 ---
-- hosts: tf2
+- hosts: all
   roles:
     - wg

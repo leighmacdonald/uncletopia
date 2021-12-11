@@ -103,6 +103,7 @@
   
 - name: Prune containers older than 24h
   docker_prune:
+    images: true
     containers: yes
     containers_filters:
       # only consider containers created more than 24 hours ago
@@ -137,7 +138,7 @@
       SRCDS_MAXPLAYERS: "32"
       # This will opt out ofo the new handshake for A2S_INFO packets to address the reflection attack. At this
       # time, it is primarily intended for testing 3rd party query clients. Since not all players may have an updated
-      # Steam client and understand this handshake, it is not recommend to enable this at this time, except for testing. 
+      # Steam client and understand this handshake, it is not recommend enabling this at this time, except for testing.
       # We will post again when the vast majority of users are running clients that understand the new protocol, and 
       # enabling the new protocol is safe.
       STEAM_GAMESERVER_A2S_INFO_STRICT_LEGACY_PROTOCOL: "0"
