@@ -1,10 +1,10 @@
 ---
 galaxy_info:
   author: Leigh MacDonald
-  description: Setup TF2 using LGSM
+  description: Setup TF2
   # company: your company (optional)
 
-  issue_tracker_url: http://github.com/leighmacdonald/uncletopia/issues
+  issue_tracker_url: https://github.com/leighmacdonald/uncletopia/issues
 
   license: MIT
 

@@ -3,10 +3,10 @@
 all: deploy
 
 deps:
-	@ansible-galaxy install -f -r collections/requirements.yml
+	@ansible-galaxy collection install -r collections/requirements.yml
 
 adduser: deps
-	@ansible-playbook adduser.yml -u ubuntu $(ARGS)
+	@ansible-playbook adduser.yml -u root $(ARGS)
 
 pre: deps
 	@ansible-playbook pre.yml $(ARGS)
@@ -30,20 +30,23 @@ ping:
 mge_deploy:
 	@ansible-playbook -i mgehosts.yml deploy.yml $(ARGS)
 
+restart:
+	@ansible all -m reboot -a reboot_timeout=3600 -u tf2server -i hosts.yml -b
+
 test_adduser:
-	@ansible-playbook --limit test adduser.yml -u root $(ARGS)
+	@ansible-playbook -i testhost.yml adduser.yml -u root $(ARGS)
 
 test_pre:
-	@ansible-playbook --limit test pre.yml $(ARGS)
+	@ansible-playbook -i testhost.yml pre.yml $(ARGS)
 
 test_system:
-	@ansible-playbook --limit test system.yml $(ARGS)
+	@ansible-playbook -i testhost.yml system.yml $(ARGS)
 
 test_deploy:
-	@ansible-playbook --limit test deploy.yml $(ARGS)
+	@ansible-playbook -i testhost.yml deploy.yml $(ARGS)
 
 test_ping:
-	@ansible tf2 -m ping --limit test $(ARGS)
+	@ansible tf2 -m ping -i testhost.yml $(ARGS)
 
-restart:
-	@ansible tf2 -a "/sbin/reboot now" -f 10 -u tf2server --become $(ARGS)
+rm:
+	ansible -m file -a "state=absent path=$(ARGS)"
