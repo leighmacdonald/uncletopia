@@ -138,3 +138,7 @@ tv_name "{{ stv_name }}"
 logaddress_add {{ host }}
 {% endfor %}
 {% endif %}
+
+// fix issue with servers getting stuck in medieval mode
+tf_medieval 0
+tf_medieval_autorp 0
