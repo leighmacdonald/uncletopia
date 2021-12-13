@@ -1,0 +1,258 @@
+"Games" {
+	"tf" {
+		"Functions" {
+			"CBaseCombatWeapon::Deploy" {
+				// virtual bool Deploy()
+				"offset" "CBaseCombatWeapon::Deploy"
+				"hooktype" "entity"
+				"return" "bool"
+				"this" "entity"
+			}
+
+			"CBaseProjectile::CanCollideWithTeammates" {
+				// virtual bool CanCollideWithTeammates() const
+				"offset" "CBaseProjectile::CanCollideWithTeammates"
+				"hooktype" "entity"
+				"return" "bool"
+				"this" "entity"
+			}
+
+			"CEconItemSystem::ReloadWhitelist" {
+				// void ReloadWhitelist()
+				"signature" "CEconItemSystem::ReloadWhitelist"
+				"callconv" "thiscall"
+				"return" "void"
+				"this" "address"
+			}
+
+			"CTeamplayRoundBasedRules::RestartTournament" {
+				// virtual void RestartTournament()
+				"offset" "CTeamplayRoundBasedRules::RestartTournament"
+				"hooktype" "gamerules"
+				"return" "void"
+				"this" "address"
+			}
+
+			"CTFGameMovement::SetGroundEntity" {
+				// virtual void SetGroundEntity( trace_t *pm )
+				"signature" "CTFGameMovement::SetGroundEntity"
+				"callconv" "thiscall"
+				"return" "void"
+				"this" "address"
+				"arguments" {
+					"trace" {
+						"type" "objectptr"
+					}
+				}
+			}
+
+			"CTFGameRules::ApplyOnDamageAliveModifyRules" {
+				// float ApplyOnDamageAliveModifyRules( const CTakeDamageInfo &info, CBaseEntity *pVictimBaseEntity, DamageModifyExtras_t& outParams )
+				"signature" "CTFGameRules::ApplyOnDamageAliveModifyRules"
+				"callconv" "thiscall"
+				"return" "float"
+				"this" "address"
+				"arguments" {
+					"take_damage_info" {
+						"type" "objectptr"
+					}
+					"victim" {
+						"type" "cbaseentity"
+					}
+					"out_params" {
+						"type" "objectptr"
+					}
+				}
+			}
+
+			"CTFGameRules::DropHalloweenSoulPack" {
+				// void DropHalloweenSoulPack( int nAmount, const Vector& vecSource, CBaseEntity *pTarget, int nSourceTeam )
+				"signature" "CTFGameRules::DropHalloweenSoulPack"
+				"callconv" "thiscall"
+				"return" "void"
+				"this" "address"
+				"arguments" {
+					"amount" {
+						"type" "int"
+					}
+					"position" {
+						"type" "vectorptr"
+					}
+					"target" {
+						"type" "cbaseentity"
+					}
+					"source_team" {
+						"type" "int"
+					}
+				}
+			}
+
+			"CTFGameRules::FlPlayerFallDamage" {
+				// virtual float FlPlayerFallDamage( CBasePlayer *pPlayer )
+				"signature" "CTFGameRules::FlPlayerFallDamage"
+				"callconv" "thiscall"
+				"return" "float"
+				"this" "address"
+				"arguments" {
+					"player" {
+						"type" "cbaseentity"
+					}
+				}
+			}
+
+			"CTFGrenadePipebombProjectile::PipebombTouch" {
+				// virtual void PipebombTouch( CBaseEntity *pOther )
+				"offset" "CTFGrenadePipebombProjectile::PipebombTouch"
+				"hooktype" "entity"
+				"return" "void"
+				"this" "entity"
+				"arguments" {
+					"other" {
+						"type" "cbaseentity"
+					}
+				}
+			}
+
+			"CTFPlayer::TeamFortress_CalculateMaxSpeed" {
+				// float TeamFortress_CalculateMaxSpeed( bool bIgnoreSpecialAbility /*= false*/ ) const
+				"signature" "CTFPlayer::TeamFortress_CalculateMaxSpeed"
+				"callconv" "thiscall"
+				"return" "float"
+				"this" "entity"
+				"arguments" {
+					"ignore_special_ability" {
+						"type" "bool"
+					}
+				}
+			}
+
+			"CTFWeaponBaseGun::FirePipeBomb" {
+				// virtual CBaseEntity *FirePipeBomb( CTFPlayer *pPlayer, int iPipeBombType );
+				"signature" "CTFWeaponBaseGun::FirePipeBomb"
+				"callconv" "thiscall"
+				"return" "cbaseentity"
+				"this" "ignore"
+				"arguments" {
+					"player" {
+						"type" "objectptr"
+					}
+					"pipe_type" {
+						"type" "int"
+					}
+				}
+			}
+		}
+
+		"Keys" {
+			"OS" {
+				"linux" "linux"
+				"mac" "mac"
+				"windows" "windows"
+			}
+
+			"CBaseTrace::plane::normal" "24"
+			"CGameMovement::player" "4"
+			"CTakeDamageInfo::m_iDamagedOtherPlayers" "76"
+		}
+
+		"Offsets" {
+			"CBaseCombatWeapon::Deploy" {
+				"linux" "261"
+				"windows" "255"
+			}
+
+			"CBaseProjectile::CanCollideWithTeammates" {
+				"linux" "224"
+				"windows" "223"
+			}
+
+			"CTeamplayRoundBasedRules::RestartTournament" {
+				"linux" "209"
+				"windows" "207"
+			}
+
+			"CTeamplayRules::SetWinningTeam" {
+				"linux" "161"
+				"windows" "160"
+			}
+
+			"CTFGrenadePipebombProjectile::PipebombTouch" {
+				"linux" "255"
+				"windows" "254"
+			}
+
+			"CTFWeaponBase::SecondaryAttack" {
+				"linux" "287"
+				"windows" "281"
+			}
+		}
+
+		"Signatures" {
+			// TODO
+			"CAttributeList::SetRuntimeAttributeValue" {
+				"linux" "@_ZN14CAttributeList24SetRuntimeAttributeValueEPK28CEconItemAttributeDefinitionf"
+				"windows" "\x55\x8B\xEC\x83\xEC\x2A\x33\x2A\x53\x8B\xD9\x56\x57\x8B\x2A\x2A\x8B\x2A\x2A"
+			}
+
+			// is called from CCurrencyPack::Spawn (contains string "mvm_cash_embers_red")
+			"CBaseEntity::SetCollisionBounds" {
+				"linux" "@_ZN11CBaseEntity18SetCollisionBoundsERK6VectorS2_"
+				"windows" "\x55\x8B\xEC\x81\xC1\x5C\x01\x00\x00"
+			}
+
+			// TODO
+			"CEconItemSchema::GetAttributeDefinition" {
+				"linux" "@_ZN15CEconItemSchema22GetAttributeDefinitionEi"
+				"windows" "\x55\x8B\xEC\x83\xEC\x2A\x53\x56\x8B\xD9\x8D\x2A\x2A\x57"
+			}
+
+			// contains string "item_whitelist"
+			"CEconItemSystem::ReloadWhitelist" {
+				"linux" "@_ZN15CEconItemSystem15ReloadWhitelistEv"
+				"windows" "\x55\x8B\xEC\x83\xEC\x0C\x53\x56\x57\x8B\xD9\xC6\x45\x2A\x01"
+			}
+
+			// contains string "BumperCar.JumpLand"
+			"CTFGameMovement::SetGroundEntity" {
+				"linux" "@_ZN15CTFGameMovement15SetGroundEntityEP10CGameTrace"
+				"windows" "\x55\x8B\xEC\x56\x8B\xF1\x57\x6A\x52"
+			}
+
+			// contains string "uber_on_damage_taken"
+			"CTFGameRules::ApplyOnDamageAliveModifyRules" {
+				"linux" "@_ZN12CTFGameRules29ApplyOnDamageAliveModifyRulesERK15CTakeDamageInfoP11CBaseEntityRNS_20DamageModifyExtras_tE"
+				"windows" "\x55\x8B\xEC\x81\xEC\xD4\x00\x00\x00\x53\x8B\x5D\x0C"
+			}
+
+			// contains string "cancel_falling_damage"
+			"CTFGameRules::FlPlayerFallDamage" {
+				"linux" "@_ZN12CTFGameRules18FlPlayerFallDamageEP11CBasePlayer"
+				"windows" "\x55\x8B\xEC\x51\x53\x56\x8B\x75\x08\x8B\xD9\x85\xF6\x0F\x84\x2A\x2A\x2A\x2A"
+			}
+
+			// contains string "halloween_souls_pack"
+			"CTFGameRules::DropHalloweenSoulPack" {
+				"linux" "@_ZN12CTFGameRules21DropHalloweenSoulPackEiRK6VectorP11CBaseEntityi"
+				"windows" "\x55\x8B\xEC\x83\xEC\x0C\x56\x6A\x00\x8D\x45\x2A"
+			}
+
+			// contains string "mult_player_aiming_movespeed"
+			"CTFPlayer::TeamFortress_CalculateMaxSpeed" {
+				"linux" "@_ZNK9CTFPlayer30TeamFortress_CalculateMaxSpeedEb"
+				"windows" "\x55\x8B\xEC\x83\xEC\x18\x83\x3D\x2A\x2A\x2A\x2A\x00"
+			}
+
+			// TODO
+			"GEconItemSchema" {
+				"linux" "@_Z15GEconItemSchemav"
+				"windows" "\xE8\x2A\x2A\x2A\x2A\x83\xC0\x04\xC3"
+			}
+
+			// contains string "projectile_spread_angle"
+			"CTFWeaponBaseGun::FirePipeBomb" {
+				"linux" "@_ZN16CTFWeaponBaseGun12FirePipeBombEP9CTFPlayeri"
+				"windows" "\x53\x8B\xDC\x83\xEC\x08\x83\xE4\xF0\x83\xC4\x04\x55\x8B\x6B\x04\x89\x6C\x24\x04\x8B\xEC\x81\xEC\x58\x01\x00\x00\x56\x8B\xF1\x57\x8B\x06"
+			}
+		}
+	}
+}

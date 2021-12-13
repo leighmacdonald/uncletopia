@@ -1,0 +1,21 @@
+"Games"
+{
+	"tf"
+	{
+		"Offsets"
+		{
+			// https://asherkin.github.io/vtable/
+			"Weapon_ShootPosition"
+			{
+				"windows" "269"
+				"linux"   "270"
+			}
+			// https://asherkin.github.io/vtable/
+			"IsViewModelFlipped"
+			{
+				"windows" "433"
+				"linux"   "440"
+			}
+		}
+	}
+}

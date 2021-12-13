@@ -1,0 +1,23 @@
+- name: create build directory
+  file:
+    path: /build/srcds
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: copy Dockerfile
+  copy:
+    src: ./Dockerfile
+    dest: /build/srcds/Dockerfile
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: build container image
+  docker_image:
+    name: base-srcds:latest
+    build:
+      path: /root/demo-dockerfile
+      source: build
+    state: present

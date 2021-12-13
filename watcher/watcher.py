@@ -1,3 +1,6 @@
+"""
+Basic script to watch for
+"""
 import logging
 import json
 from os import environ
@@ -6,7 +9,11 @@ import requests
 
 # Url to an instance of https://github.com/xPaw/SteamWebPipes
 ANNOUNCE_URL = "wss://update.uncletopia.com"
+
+# Tower/AWX api url https://github.com/ansible/awx
 AWX_URL = "https://deploy.uncletopia.com/api/v2"
+
+# Name of AWX job template to execute
 TEMPLATE_CONFIG = "Deploy TF2 Config"
 
 # Trigger update for specific app id's
@@ -55,7 +62,7 @@ def on_message(_, message):
         data = json.loads(message)
         if data["Type"] == "Changelist":
             if APP_ID in data["Apps"]:
-                log.info("Appid update triggered: {} {}".format(data["ChangeNumber"], data["Apps"].keys()))
+                log.info("Appid update triggered: {} {}".format(data["ChangeNumber"], ",".join(data["Apps"].keys())))
                 run_template(TEMPLATE_CONFIG)
             else:
                 log.debug("Appid update skipped: {} {}".format(data["ChangeNumber"], ",".join(data["Apps"].keys())))
