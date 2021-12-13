@@ -7,8 +7,8 @@
 # prevent logs from being committed accidentally
 *.log
 
-roles/tf2/files/tf/addons/sourcemod/plugins/disabled/nominations.smx
-roles/tf2/files/tf/addons/sourcemod/plugins/disabled/rockthevote.smx
+*.smx
 roles/tf2/files/tf/addons/sourcemod/configs/admins_simple.ini
 roles/tf2/files/tf/addons/sourcemod/configs/admin_overrides.ini
 roles/tf2/files/tf/cfg/sourcemod/sourcemod.cfg
+/sourcemod/plugins/
