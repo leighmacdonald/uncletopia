@@ -238,6 +238,7 @@ enum NativeVotesOverride
 	NativeVotesOverride_AutoBalance,
 	NativeVotesOverride_ClassLimits,
 	NativeVotesOverride_Extend,
+	NativeVotesOverride_Count,
 }
 
 methodmap NativeVote < KeyValues

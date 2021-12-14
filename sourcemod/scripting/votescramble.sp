@@ -5,9 +5,7 @@
 
 #include <sourcemod>
 #include <sdktools>
-#include <morecolors>
 #include <nativevotes>
-
 
 public Plugin myinfo =
 {
@@ -102,12 +100,12 @@ void AttemptVoteScramble(int client)
 {
 	if (g_bScrambleTeams)
 	{
-		CReplyToCommand(client, "[{green}SM{default}] A previous vote scramble has succeeded. Teams will be scrambled next round.");
+		ReplyToCommand(client, "A previous vote scramble has succeeded. Teams will be scrambled next round.");
 		return;
 	}
 	if (g_bVoteCooldown)
 	{
-		CReplyToCommand(client, "[{green}SM{default}] Sorry, votescramble is currently on cool-down.");
+		ReplyToCommand(client, "Sorry, votescramble is currently on cool-down.");
 		return;
 	}
 
@@ -116,13 +114,13 @@ void AttemptVoteScramble(int client)
 
 	if (g_bVoted[client])
 	{
-		CReplyToCommandEx(client, client, "[{green}SM{default}] {teamcolor}You {default}have already voted for a team scramble. [{lightgreen}%d{default}/{lightgreen}%d {default}votes required]", g_iVotes, g_iVotesNeeded);
+		ReplyToCommand(client, "You have already voted for a team scramble. [%d/%d votes required]", g_iVotes, g_iVotesNeeded);
 		return;
 	}
 
 	g_iVotes++;
 	g_bVoted[client] = true;
-	CPrintToChatAllEx(client, "[{green}SM{default}] {teamcolor}%s {default}wants to scramble teams. [{lightgreen}%d{default}/{lightgreen}%d {default}votes required]", name, g_iVotes, g_iVotesNeeded);
+	PrintToChatAll("%s wants to scramble teams. [%d/%d votes required]", name, g_iVotes, g_iVotesNeeded);
 
 	if (g_iVotes >= g_iVotesNeeded)
 	{
@@ -154,7 +152,7 @@ void VoteScrambleMenu()
 	if (NativeVotes_IsVoteInProgress())
 	{
 		CreateTimer(10.0, Timer_Retry, _, TIMER_FLAG_NO_MAPCHANGE);
-		PrintToConsoleAll("[SM] Can't vote scramble because there is already a vote in progress. Retrying in 10 seconds...");
+		PrintToConsoleAll("Can't vote scramble because there is already a vote in progress. Retrying in 10 seconds...");
 		return;
 	}
 
@@ -223,7 +221,7 @@ public int NativeVote_Handler(Handle vote, MenuAction action, int param1, int pa
 public Action Timer_Scramble(Handle timer) {
 	ServerCommand("mp_scrambleteams");
 
-	CPrintToChatAll("[{green}SM{default}] Scrambling the teams due to vote.");
+	PrintToChatAll("Scrambling the teams due to vote.");
 }
 
 public Action Timer_DelayRTS(Handle timer, any mins)
