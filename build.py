@@ -10,8 +10,8 @@ INCLUDE_PATHS = [
 ]
 PLUGINS = [
     "SendToSpec", 
-    "admin-allspec", 
-    "cronjobs", 
+    "admin-allspec",
+    "cronjobs",
     "nativevotes-basecommands", 
     "nativevotes-basevotes", 
     "nativevotes",
@@ -49,7 +49,7 @@ def compile_sp(input_name, out_path):
     out_file = join(out_path, input_name)
     if exists(out_file):
         unlink(out_file)
-    cmd = [COMPILER, input_name + ".sp", "-v0",  "-o{}.smx".format(out_file)]
+    cmd = [COMPILER, input_name + ".sp", "-v1",  "-o{}.smx".format(out_file)]
     includes = ["-i{}".format(i) for i in INCLUDE_PATHS]
     print("sp: {}".format(" ".join(cmd + includes)))
     res = subprocess.call(cmd + includes, shell=False)
