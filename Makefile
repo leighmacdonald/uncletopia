@@ -2,6 +2,12 @@
 
 all: deploy
 
+compile_sm: build_sm
+	docker run -it leighmacdonald/uncletopia-build-sm:latest
+
+build_sm:
+	docker build -t leighmacdonald/uncletopia-build-sm:latest -f docker/sourcemod.Dockerfile .
+
 deps:
 	@ansible-galaxy collection install -r collections/requirements.yml
 
