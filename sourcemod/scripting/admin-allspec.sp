@@ -49,7 +49,7 @@ public OnPluginStart()
 	
 	g_bCheckNullPtr = (GetFeatureStatus(FeatureType_Native, "DHookIsNullParam") == FeatureStatus_Available);
 	
-	CreateConVar("admin_allspec_version", PLUGIN_VERSION, "Plugin version", FCVAR_PLUGIN|FCVAR_SPONLY|FCVAR_REPLICATED|FCVAR_NOTIFY|FCVAR_DONTRECORD);
+	CreateConVar("admin_allspec_version", PLUGIN_VERSION, "Plugin version", FCVAR_SPONLY|FCVAR_REPLICATED|FCVAR_NOTIFY|FCVAR_DONTRECORD);
 }
 public OnClientPostAdminCheck(client)
 {
@@ -62,14 +62,14 @@ public OnClientPostAdminCheck(client)
 		DHookEntity(hIsValidTarget, true, client);
 	}
 }
-public MRESReturn:IsValidTarget(this, Handle:hReturn, Handle:hParams)
+public MRESReturn:IsValidTarget(pThis, Handle:hReturn, Handle:hParams)
 {
 	// As of DHooks 1.0.12 we must check for a null param.
 	if (g_bCheckNullPtr && DHookIsNullParam(hParams, 1))
 		return MRES_Ignored;
 	
 	new target = DHookGetParam(hParams, 1);
-	if(target <= 0 || target > MaxClients || !IsClientInGame(this) || !IsClientInGame(target) || !IsPlayerAlive(target) || IsPlayerAlive(this) || GetClientTeam(this) <= 1 || GetClientTeam(target) <= 1)
+	if(target <= 0 || target > MaxClients || !IsClientInGame(pThis) || !IsClientInGame(target) || !IsPlayerAlive(target) || IsPlayerAlive(pThis) || GetClientTeam(pThis) <= 1 || GetClientTeam(target) <= 1)
 	{
 		return MRES_Ignored;
 	}
