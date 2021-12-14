@@ -1,5 +1,4 @@
 #include <sourcemod>
-#include <morecolors>
 
 public Plugin:myinfo =
 {
@@ -29,7 +28,7 @@ public Action:ForceSendPlayerAFK(client, args)
 {
 	if(args > 2 || args  == 0)
 	{
-		CPrintToChat(client, "{green}[SPEC]{default} Usage : sm_fspec [TARGET] \'\'[optional:REASON]\'\'");
+		PrintToChat(client, "[SPEC] Usage : sm_fspec [TARGET] \'\'[optional:REASON]\'\'");
 		return Plugin_Handled;
 	}
 
@@ -44,6 +43,7 @@ public Action:ForceSendPlayerAFK(client, args)
 	{
 		Format(arg2, sizeof(arg2), "Not specified");
 	}
+
 
 	if ((target_count = ProcessTargetString(
 			arg1,
@@ -61,7 +61,7 @@ public Action:ForceSendPlayerAFK(client, args)
 
 	if(target_count == 1)
 	{
-		CPrintToChatAll("{green}[SPEC]{default} Player %s moved to spectator, reason : '%s' !", target_name, arg2);
+		PrintToChatAll("[SPEC] Player %s moved to spectator, reason : '%s' !", target_name, arg2);
 		SendToSpec(target_list[0], false);
 	}
 	else
@@ -70,8 +70,9 @@ public Action:ForceSendPlayerAFK(client, args)
 		{
 			SendToSpec(target_list[i], false);
 		}
+		
 
-		CPrintToChatAll("{green}[SPEC]{default} Some players as been moved to spectator, reason : '%s' !", arg2);
+		PrintToChatAll("[SPEC] Some players as been moved to spectator, reason : '%s' !", arg2);
 	}
 
 	return Plugin_Handled;
@@ -85,6 +86,6 @@ stock SendToSpec(client, bool:user_choice)
 	}
 	else if(user_choice == true)
 	{
-		CPrintToChat(client, "{green}[SPEC]{default} You are already a spectator !");
+		PrintToChat(client, "[SPEC] You are already a spectator !");
 	}
 }

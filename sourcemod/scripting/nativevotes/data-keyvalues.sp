@@ -2,7 +2,11 @@
  * vim: set ts=4 :
  * =============================================================================
  * NativeVotes
- * Copyright (C) 2011-2012 Ross Bemrose (Powerlord).  All rights reserved.
+ * NativeVotes is a voting API plugin for L4D, L4D2, TF2, and CS:GO.
+ * Based on the SourceMod voting API
+ * 
+ * NativeVotes (C) 2011-2014 Ross Bemrose (Powerlord). All rights reserved.
+ * SourceMod (C)2004-2008 AlliedModders LLC.  All rights reserved.
  * =============================================================================
  *
  * This program is free software; you can redistribute it and/or modify it under
@@ -41,274 +45,295 @@
 #define INFO "item_info"
 #define DISPLAY "item_display"
 
-bool:Data_GetItemInfo(Handle:vote, item, String:choice[], choiceSize)
+bool Data_GetItemInfo(KeyValues vote, int item, char[] choice, int choiceSize)
 {
 	if (item >= Data_GetItemCount(vote))
 	{
 		return false;
 	}
 	
-	new Handle:array = Handle:KvGetNum(vote, INFO, _:INVALID_HANDLE);
+	ArrayList array = view_as<ArrayList>(vote.GetNum(INFO, view_as<int>(INVALID_HANDLE)));
 
 	// Shouldn't happen, but just in case...
-	if (array == INVALID_HANDLE)
+	if (array == null)
 	{
 		return false;
 	}
 	
-	GetArrayString(array, item, choice, choiceSize);
+	array.GetString(item, choice, choiceSize);
 	return true;
 }
 
-bool:Data_GetItemDisplay(Handle:vote, item, String:choice[], choiceSize)
+bool Data_GetItemDisplay(KeyValues vote, int item, char[] choice, int choiceSize)
 {
 	if (item >= Data_GetItemCount(vote))
 	{
 		return false;
 	}
 	
-	new Handle:array = Handle:KvGetNum(vote, DISPLAY, _:INVALID_HANDLE);
+	ArrayList array = view_as<ArrayList>(vote.GetNum(DISPLAY, view_as<int>(INVALID_HANDLE)));
 
 	// Shouldn't happen, but just in case...
-	if (array == INVALID_HANDLE)
+	if (array == null)
 	{
 		return false;
 	}
 	
-	GetArrayString(array, item, choice, choiceSize);
+	array.GetString(item, choice, choiceSize);
 	return true;
 }
 
-Data_GetItemCount(Handle:vote)
+int Data_GetItemCount(KeyValues vote)
 {
-	new Handle:array = Handle:KvGetNum(vote, INFO, _:INVALID_HANDLE);
-	if (array == INVALID_HANDLE)
+	ArrayList array = view_as<ArrayList>(vote.GetNum(INFO, view_as<int>(INVALID_HANDLE)));
+	if (array == null)
 	{
 		return 0;
 	}
 	
-	return GetArraySize(array);
+	return array.Length;
 }
 
-Data_GetTeam(Handle:vote)
+int Data_GetTeam(KeyValues vote)
 {
-	return KvGetNum(vote, "team", NATIVEVOTES_ALL_TEAMS);
+	return vote.GetNum("team", NATIVEVOTES_ALL_TEAMS);
 }
 
-Data_SetTeam(Handle:vote, team)
+void Data_SetTeam(KeyValues vote, int team)
 {
-	KvSetNum(vote, "team", team);
+	vote.SetNum("team", team);
 }
 
-Data_GetInitiator(Handle:vote)
+int Data_GetInitiator(KeyValues vote)
 {
-	return KvGetNum(vote, "initiator", NATIVEVOTES_SERVER_INDEX);
+	return vote.GetNum("initiator", NATIVEVOTES_SERVER_INDEX);
 }
 
-Data_SetInitiator(Handle:vote, initiator)
+void Data_SetInitiator(KeyValues vote, int initiator)
 {
-	KvSetNum(vote, "initiator", initiator);
+	vote.SetNum("initiator", initiator);
 }
 
-Data_GetDetails(Handle:vote, String:details[], maxlength)
+void Data_GetDetails(KeyValues vote, char[] details, int maxlength)
 {
-	KvGetString(vote, "details", details, maxlength);
+	vote.GetString("details", details, maxlength);
 }
 
-Data_SetDetails(Handle:vote, const String:details[])
+void Data_SetDetails(KeyValues vote, const char[] details)
 {
-	KvSetString(vote, "details", details);
+	vote.SetString("details", details);
 }
 
-Data_GetTitle(Handle:vote, String:title[], maxlength)
+void Data_GetTitle(KeyValues vote, char[] title, int maxlength)
 {
 	// Shim for older code that sets custom vote titles in details
-	KvGetString(vote, "custom_title", title, maxlength);
+	vote.GetString("custom_title", title, maxlength);
 	if (strlen(title) == 0)
 	{
-		KvGetString(vote, "details", title, maxlength);
+		vote.GetString("details", title, maxlength);
 	}
 }
 
-Data_SetTitle(Handle:vote, const String:title[])
+void Data_SetTitle(KeyValues vote, const char[] title)
 {
-	KvSetString(vote, "custom_title", title);
+	vote.SetString("custom_title", title);
 }
 
-Data_GetTarget(Handle:vote)
+int Data_GetTarget(KeyValues vote)
 {
-	return KvGetNum(vote, "target");
+	return vote.GetNum("target");
 }
 
-Data_SetTarget(Handle:vote, target)
+void Data_SetTarget(KeyValues vote, int target)
 {
-	KvSetNum(vote, "target", target);
+	vote.SetNum("target", target);
 }
 
-Data_GetTargetSteam(Handle:vote, String:steamId[], maxlength)
+void Data_GetTargetSteam(KeyValues vote, char[] steamId, int maxlength)
 {
-	KvGetString(vote, "target_steam", steamId, maxlength);
+	vote.GetString("target_steam", steamId, maxlength);
 }
 
-Data_SetTargetSteam(Handle:vote, const String:steamId[])
+void Data_SetTargetSteam(KeyValues vote, const char[] steamId)
 {
-	KvSetString(vote, "target_steam", steamId);	
+	vote.SetString("target_steam", steamId);	
 }
 
-NativeVotesType:Data_GetType(Handle:vote)
+NativeVotesType Data_GetType(KeyValues vote)
 {
-	return NativeVotesType:KvGetNum(vote, "vote_type", _:NativeVotesType_Custom_YesNo);
+	return view_as<NativeVotesType>(vote.GetNum("vote_type", view_as<int>(NativeVotesType_Custom_YesNo)));
 }
 
-Handle:Data_GetHandler(Handle:vote)
+Handle Data_GetHandler(KeyValues vote)
 {
-	if (vote == INVALID_HANDLE)
-		return INVALID_HANDLE;
+	if (vote == null)
+		return null;
 	
-	return Handle:KvGetNum(vote, "handler_callback");
+	return view_as<Handle>(vote.GetNum("handler_callback"));
 }
 
-Handle:Data_GetResultCallback(Handle:vote)
+Handle Data_GetResultCallback(KeyValues vote)
 {
-	if (vote == INVALID_HANDLE)
-		return INVALID_HANDLE;
+	if (vote == null)
+		return null;
 	
-	return Handle:KvGetNum(vote, "result_callback");
+	return view_as<Handle>(vote.GetNum("result_callback"));
 }
 
-Handle:Data_CreateVote(NativeVotesType:voteType, MenuAction:actions)
+int Data_GetFlags(KeyValues vote)
 {
-	new Handle:handler = CreateForward(ET_Single, Param_Cell, Param_Cell, Param_Cell, Param_Cell);
-	new Handle:voteResults = CreateForward(ET_Ignore, Param_Cell, Param_Cell, Param_Cell, Param_Array, Param_Array, Param_Cell, Param_Array, Param_Array);
-	
-	new Handle:vote = CreateKeyValues("NativeVote");
+	return vote.GetNum("flags");
+}
 
-	KvSetNum(vote, "handler_callback", _:handler);
-	KvSetNum(vote, "vote_type", _:voteType);
-	KvSetString(vote, "details", "");
-	KvSetNum(vote, "target", 0);
-	KvSetString(vote, "target_steam", "");
-	KvSetNum(vote, "actions", _:actions);
-	KvSetNum(vote, "result_callback", _:voteResults);
-	KvSetNum(vote, "initiator", NATIVEVOTES_SERVER_INDEX);
+void Data_SetFlags(KeyValues vote, int flags)
+{
+	if (flags & MENUFLAG_BUTTON_NOVOTE)
+	{
+		NativeVotesType voteType = Data_GetType(vote);
+		
+		// Strip novote if this is a YesNo vote
+		if (Game_IsVoteTypeYesNo(voteType))
+		{
+			flags &= ~MENUFLAG_BUTTON_NOVOTE;
+		}
+	}
+	
+	vote.SetNum("flags", flags);
+}
+
+NativeVote Data_CreateVote(NativeVotesType voteType, MenuAction actions)
+{
+	Handle handler = CreateForward(ET_Single, Param_Cell, Param_Cell, Param_Cell, Param_Cell);
+	Handle voteResults = CreateForward(ET_Ignore, Param_Cell, Param_Cell, Param_Cell, Param_Array, Param_Array, Param_Cell, Param_Array, Param_Array);
+	
+	KeyValues vote = CreateKeyValues("NativeVote");
+
+	vote.SetNum("handler_callback", view_as<int>(handler));
+	vote.SetNum("vote_type", view_as<int>(voteType));
+	vote.SetString("details", "");
+	vote.SetNum("target", -1);
+	vote.SetString("target_steam", "");
+	vote.SetNum("actions", view_as<int>(actions));
+	vote.SetNum("result_callback", view_as<int>(voteResults));
+	vote.SetNum("initiator", NATIVEVOTES_SERVER_INDEX);
 	if (g_EngineVersion == Engine_TF2)
 	{
-		KvSetNum(vote, "team", NATIVEVOTES_TF2_ALL_TEAMS);
+		vote.SetNum("team", NATIVEVOTES_TF2_ALL_TEAMS);
 	}
 	else
 	{
-		KvSetNum(vote, "team", NATIVEVOTES_ALL_TEAMS);
+		vote.SetNum("team", NATIVEVOTES_ALL_TEAMS);
 	}
-	KvSetString(vote, "custom_title", "");
+	vote.SetNum("flags", 0);
+	vote.SetString("custom_title", "");
 	
-	KvSetNum(vote, INFO, _:CreateArray(ByteCountToCells(INFO_LENGTH)));
-	KvSetNum(vote, DISPLAY, _:CreateArray(ByteCountToCells(INFO_LENGTH)));
+	vote.SetNum(INFO, view_as<int>(new ArrayList(ByteCountToCells(INFO_LENGTH))));
+	vote.SetNum(DISPLAY, view_as<int>(new ArrayList(ByteCountToCells(INFO_LENGTH))));
 	
-	return vote;
+	return view_as<NativeVote>(vote);
 }
 
-MenuAction:Data_GetActions(Handle:vote)
+MenuAction Data_GetActions(KeyValues vote)
 {
-	return MenuAction:KvGetNum(vote, "actions");
+	return view_as<MenuAction>(vote.GetNum("actions"));
 }
 
-bool:Data_AddItem(Handle:vote, const String:info[], const String:display[])
+bool Data_AddItem(KeyValues vote, const char[] info, const char[] display)
 {
-	new Handle:infoArray = Handle:KvGetNum(vote, INFO, _:INVALID_HANDLE);
-	new Handle:displayArray = Handle:KvGetNum(vote, DISPLAY, _:INVALID_HANDLE);
+	ArrayList infoArray = view_as<ArrayList>(vote.GetNum(INFO, view_as<int>(INVALID_HANDLE)));
+	ArrayList displayArray = view_as<ArrayList>(vote.GetNum(DISPLAY, view_as<int>(INVALID_HANDLE)));
 	
-	if (infoArray == INVALID_HANDLE || displayArray == INVALID_HANDLE ||
-		GetArraySize(infoArray) >= Game_GetMaxItems() ||
-		GetArraySize(displayArray) >= Game_GetMaxItems())
+	if (infoArray == null || displayArray == null ||
+		infoArray.Length >= Game_GetMaxItems() ||
+		displayArray.Length >= Game_GetMaxItems())
 	{
 		return false;
 	}
 	
-	PushArrayString(infoArray, info);
-	PushArrayString(displayArray, display);
+	infoArray.PushString(info);
+	displayArray.PushString(display);
 	
 	return true;
 }
 
-bool:Data_InsertItem(Handle:vote, position, const String:info[], const String:display[])
+bool Data_InsertItem(KeyValues vote, int position, const char[] info, const char[] display)
 {
-	new Handle:infoArray = Handle:KvGetNum(vote, INFO, _:INVALID_HANDLE);
-	new Handle:displayArray = Handle:KvGetNum(vote, DISPLAY, _:INVALID_HANDLE);
+	ArrayList infoArray = view_as<ArrayList>(vote.GetNum(INFO, view_as<int>(INVALID_HANDLE)));
+	ArrayList displayArray = view_as<ArrayList>(vote.GetNum(DISPLAY, view_as<int>(INVALID_HANDLE)));
 	
-	if (infoArray == INVALID_HANDLE || displayArray == INVALID_HANDLE ||
-		GetArraySize(infoArray) >= Game_GetMaxItems() ||
-		GetArraySize(displayArray) >= Game_GetMaxItems() ||
-		position >= GetArraySize(infoArray))
+	if (infoArray == null || displayArray == null ||
+		infoArray.Length >= Game_GetMaxItems() ||
+		displayArray.Length >= Game_GetMaxItems() ||
+		position >= infoArray.Length)
 	{
 		return false;
 	}
 	
-	ShiftArrayUp(infoArray, position);
-	ShiftArrayUp(displayArray, position);
+	infoArray.ShiftUp(position);
+	displayArray.ShiftUp(position);
 
-	SetArrayString(infoArray, position, info);
-	SetArrayString(displayArray, position, display);
+	infoArray.SetString(position, info);
+	displayArray.SetString(position, display);
 	
 	return true;
 }
 
-bool:Data_RemoveItem(Handle:vote, position)
+bool Data_RemoveItem(KeyValues vote, int position)
 {
-	new Handle:infoArray = Handle:KvGetNum(vote, INFO, _:INVALID_HANDLE);
-	new Handle:displayArray = Handle:KvGetNum(vote, DISPLAY, _:INVALID_HANDLE);
+	ArrayList infoArray = view_as<ArrayList>(vote.GetNum(INFO, view_as<int>(INVALID_HANDLE)));
+	ArrayList displayArray = view_as<ArrayList>(vote.GetNum(DISPLAY, view_as<int>(INVALID_HANDLE)));
 	
-	if (infoArray == INVALID_HANDLE || displayArray == INVALID_HANDLE ||
-		position >= GetArraySize(infoArray) || position < 0)
+	if (infoArray == null || displayArray == null ||
+		position >= infoArray.Length || position < 0)
 	{
 		return false;
 	}
 	
-	RemoveFromArray(infoArray, position);
-	RemoveFromArray(displayArray, position);
+	infoArray.Erase(position);
+	displayArray.Erase(position);
 
 	return true;
 }
 
-Data_RemoveAllItems(Handle:vote)
+void Data_RemoveAllItems(KeyValues vote)
 {
-	new Handle:infoArray = Handle:KvGetNum(vote, INFO, _:INVALID_HANDLE);
-	new Handle:displayArray = Handle:KvGetNum(vote, DISPLAY, _:INVALID_HANDLE);
+	ArrayList infoArray = view_as<ArrayList>(vote.GetNum(INFO, view_as<int>(INVALID_HANDLE)));
+	ArrayList displayArray = view_as<ArrayList>(vote.GetNum(DISPLAY, view_as<int>(INVALID_HANDLE)));
 	
-	ClearArray(infoArray);
-	ClearArray(displayArray);
+	infoArray.Clear();
+	displayArray.Clear();
 }
 
-Data_CloseVote(Handle:vote)
+void Data_CloseVote(KeyValues vote)
 {
-	if (vote == INVALID_HANDLE)
+	if (vote == null)
 	{
 		return;
 	}
 	
-	new Handle:handler = Handle:KvGetNum(vote, "handler_callback", _:INVALID_HANDLE);
-	if (handler != INVALID_HANDLE)
+	Handle handler = Data_GetHandler(vote);
+	if (handler != null)
 	{
-		CloseHandle(handler);
+		delete handler;
 	}
 	
-	new Handle:voteResults = Handle:KvGetNum(vote, "results_callback", _:INVALID_HANDLE);
-	if (voteResults != INVALID_HANDLE)
+	Handle voteResults = Data_GetResultCallback(vote);
+	if (voteResults != null)
 	{
-		CloseHandle(voteResults);
+		delete voteResults;
 	}
 	
-	new Handle:infoArray = Handle:KvGetNum(vote, INFO, _:INVALID_HANDLE);
-	
-	if (infoArray != INVALID_HANDLE)
+	ArrayList infoArray = view_as<ArrayList>(vote.GetNum(INFO, view_as<int>(INVALID_HANDLE)));
+	if (infoArray != null)
 	{
-		CloseHandle(infoArray);
+		delete infoArray;
 	}
 	
-	new Handle:displayArray = Handle:KvGetNum(vote, DISPLAY, _:INVALID_HANDLE);
-	if (displayArray != INVALID_HANDLE)
+	ArrayList displayArray = view_as<ArrayList>(vote.GetNum(DISPLAY, view_as<int>(INVALID_HANDLE)));
+	if (displayArray != null)
 	{
-		CloseHandle(displayArray);
+		delete displayArray;
 	}
 	
-	CloseHandle(vote);
+	delete vote;
 }
