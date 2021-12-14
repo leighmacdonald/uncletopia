@@ -42,7 +42,7 @@
 #define CRON_HOUR "hours"
 #define CRON_DAY "days"
 #define CRON_MONTH "months"
-#define CRON_WEEK "weeks"c
+#define CRON_WEEK "weeks"
 
 // All keys of a cronjob map
 #define CRON_SPECIAL "special"
