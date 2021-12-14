@@ -5,17 +5,19 @@ from os.path import join, exists
 COMPILER = "spcomp"
 OUTPUT_PATH = "../plugins"
 INCLUDE_PATHS = [
-    "/build/sourcemod/addons/sourcemod/scripting/include",
-    "./include",
+    "/build/sourcemod/addons/sourcemod/scripting/include"
 ]
 PLUGINS = [
-    "SendToSpec", 
     "admin-allspec",
+    "classrestrict",
     "cronjobs",
+    "medicstats",
     "nativevotes-basecommands", 
     "nativevotes-basevotes", 
     "nativevotes",
+    "SendToSpec",
     "stac", 
+    "supstats2",
     "system2_http",
     "tf2-comp-fixes", 
     "tf2attributes",
