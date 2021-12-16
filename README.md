@@ -13,6 +13,12 @@ Install Ansible & Clone playbooks
 - `ansible-galaxy collection install community.general`
 - `ansible-galaxy collection install ansible.posix`
 
+
+For contributors, you should also enable the git hooks:
+
+	git config core.hooksPath .hooks
+
+
 ## Adding Servers
 
 1. Add a new entry under `./hosts.yml`
