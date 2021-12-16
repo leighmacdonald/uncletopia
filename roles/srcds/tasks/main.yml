@@ -1,0 +1,47 @@
+- name: create build directory
+  become: yes
+  file:
+    path: /build_srcds
+    state: directory
+    owner: root
+    group: root
+    mode: '0777'
+
+- name: copy build sources 
+  copy:
+    src: .
+    dest: /build_srcds/
+    # owner: root
+    # group: root
+    mode: '0644'
+
+- name: build sourcemod image
+  community.docker.docker_image:
+    name: leighmacdonald/uncletopia-sourcemod
+    tag: latest
+    source: build
+    force_tag: yes
+    build:
+      dockerfile: /build_srcds/sourcemod.Dockerfile
+      path: /build_srcds/
+    state: present
+
+
+- name: Log into DockerHub
+  community.docker.docker_login:
+    username: docker
+    password: rekcod
+
+
+- name: build srcds image
+  docker_image:
+    name: leighmacdonald/srcds:latest
+    tag: latest
+    source: build
+    force_tag: yes
+    build:
+      nocache: yes
+      pull: false
+      dockerfile: /build_srcds/srcds.Dockerfile
+      path: /build_srcds/
+    state: present
