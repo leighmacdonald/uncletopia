@@ -7,14 +7,18 @@ import sys
 
 ENCRYPTED_PATH = ["hosts.yml", "group_vars", "host_vars"]
 
+
 class ValidationError(Exception):
     pass
+
 
 def repo_dir():
     resp = subprocess.run(["git","rev-parse", "--show-toplevel"], stdout=subprocess.PIPE)
     return resp.stdout.decode('utf-8').rstrip()
 
+
 ROOT = repo_dir()
+
 
 def ensure_encrypted():
     def check(fp):
@@ -30,8 +34,10 @@ def ensure_encrypted():
             check(join(ROOT, root_dir))
     return True
 
+
 def ensure_ansible_lint():
     return False
+
 
 def main():
     ret_val = 255
@@ -44,7 +50,7 @@ def main():
     else:
         ret_val = 0
     finally:
-        ret_val    
+        return ret_val
 
 
 if __name__ == "__main__":
