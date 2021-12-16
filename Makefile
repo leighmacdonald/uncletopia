@@ -3,10 +3,16 @@
 all: deploy
 
 compile_sm: build_sm
-	docker run -it leighmacdonald/uncletopia-build-sm:latest
+	docker run -it leighmacdonald/uncletopia-sourcemod:latest
 
 build_sm:
-	docker build -t leighmacdonald/uncletopia-build-sm:latest -f docker/sourcemod.Dockerfile .
+	docker build -t leighmacdonald/uncletopia-sourcemod:latest -f docker/sourcemod.Dockerfile .
+
+build_srcds: build_sm
+	docker build -t leighmacdonald/uncletopia:latest -f docker/srcds.Dockerfile .
+
+shell_srcds: build_srcds
+	docker run -it leighmacdonald/uncletopia:latest
 
 deps:
 	@ansible-galaxy collection install -r collections/requirements.yml
@@ -18,7 +24,7 @@ pre: deps
 	@ansible-playbook playbooks/pre.yml $(ARGS)
 
 srcds: deps
-	@ansible-playbook playbooks/srcds.yml $(ARGS)
+	@ansible-playbook playbooks/srcds.yml $(ARGS) 
 
 system: deps
 	@ansible-playbook playbooks/system.yml $(ARGS)
@@ -50,6 +56,9 @@ test_pre:
 
 test_system:
 	@ansible-playbook -i testhost.yml playbooks/system.yml $(ARGS)
+
+test_srcds:
+	@ansible-playbook -i testhost.yml playbooks/srcds.yml $(ARGS)
 
 test_deploy:
 	@ansible-playbook -i testhost.yml playbooks/deploy.yml $(ARGS)

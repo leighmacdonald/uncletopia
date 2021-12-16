@@ -14,7 +14,7 @@ Install Ansible & Clone playbooks
 - `ansible-galaxy collection install ansible.posix`
 
 
-For contributors, you should also enable the git hooks:
+For contributors, you should also enable the git hooks for the repo:
 
 	git config core.hooksPath .hooks
 
