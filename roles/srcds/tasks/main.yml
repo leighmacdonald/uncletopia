@@ -39,6 +39,7 @@
     tag: latest
     source: build
     force_tag: yes
+    push: true
     build:
       nocache: yes
       pull: false
