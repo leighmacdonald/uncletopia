@@ -23,6 +23,9 @@ adduser:
 pre:
 	@ansible-playbook playbooks/pre.yml $(ARGS)
 
+list_hosts:
+	ansible all --list-hosts --vault-password-file $(VAULT_PASS_PATH)
+
 srcds:
 	@ansible-playbook --limit "flk-1.de.uncletopia.com" --vault-password-file $(VAULT_PASS_PATH) playbooks/srcds.yml $(ARGS) 
 
