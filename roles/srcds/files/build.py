@@ -1,11 +1,17 @@
+#!/usr/bin/env python3
 import subprocess
-from os import makedirs, unlink
-from os.path import join, exists
+from os import makedirs, unlink, chdir
+from os.path import join, exists, realpath, dirname
 
+
+BASE_DIR = dirname(realpath(__file__))
+OUTPUT_PATH = join(BASE_DIR, "addons", "sourcemod", "plugins")
+SRC_PATH = join(BASE_DIR, "addons", "sourcemod", "scripting")
 COMPILER = "spcomp"
-OUTPUT_PATH = "../plugins"
 INCLUDE_PATHS = [
-    "/build/sourcemod/addons/sourcemod/scripting/include"
+    # Docker container build path
+    "/build/sourcemod/addons/sourcemod/scripting/include",
+    join(BASE_DIR, "addons", "sourcemod", "scripting", "include")
 ]
 PLUGINS = [
     "admin-allspec",
@@ -53,13 +59,12 @@ PLUGINS = [
 
 
 def compile_sp(input_name, out_path):
-    print("Compiling {}.sp".format(input_name))
     out_file = join(out_path, input_name)
     if exists(out_file):
         unlink(out_file)
     cmd = [COMPILER, input_name + ".sp", "-v1",  "-o{}.smx".format(out_file)]
     includes = ["-i{}".format(i) for i in INCLUDE_PATHS]
-    print("sp: {}".format(" ".join(cmd + includes)))
+    print("{}".format(" ".join(cmd + includes)))
     res = subprocess.call(cmd + includes, shell=False)
     if res == 0:
         print("Successfully built {}".format(input_name))
@@ -70,6 +75,7 @@ def compile_sp(input_name, out_path):
 def main():
     if not exists(OUTPUT_PATH):
         makedirs(OUTPUT_PATH)
+    chdir(SRC_PATH)
     ok = 0
     for plugin_name in PLUGINS:
         try:
@@ -78,7 +84,7 @@ def main():
         except Exception as err:
             print("Error compiling plugin: {}".format(err))
             return 1
-    print("\nCompilation status: {}/{} Plugins successfully built".format(ok, len(PLUGINS)))
+    print("\nCompilation status: {}/{} Plugins successfully built [{}]".format(ok, len(PLUGINS), OUTPUT_PATH))
     return 0
 
 

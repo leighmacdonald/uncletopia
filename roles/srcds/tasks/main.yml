@@ -8,12 +8,21 @@
     mode: '0777'
 
 - name: copy build sources 
-  copy:
-    src: .
+  synchronize:
+    src: ./
     dest: /build_srcds/
+    archive: no
+    recursive: yes
     # owner: root
     # group: root
-    mode: '0644'
+    #mode: '0644'
+
+
+- name: Log into DockerHub
+  community.docker.docker_login:
+    username: "{{ dockerhub.username }}"
+    password: "{{ dockerhub.password }}"
+
 
 - name: build sourcemod image
   community.docker.docker_image:
@@ -21,25 +30,20 @@
     tag: latest
     source: build
     force_tag: yes
+    push: yes
     build:
       dockerfile: /build_srcds/sourcemod.Dockerfile
       path: /build_srcds/
     state: present
 
 
-- name: Log into DockerHub
-  community.docker.docker_login:
-    username: docker
-    password: rekcod
-
-
 - name: build srcds image
-  docker_image:
-    name: leighmacdonald/srcds:latest
+  community.docker.docker_image:
+    name: leighmacdonald/uncletopia-srcds
     tag: latest
     source: build
     force_tag: yes
-    push: true
+    push: yes
     build:
       nocache: yes
       pull: false

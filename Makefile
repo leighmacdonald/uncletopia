@@ -1,5 +1,5 @@
 .PHONY: all pre system deploy
-
+VAULT_PASS_PATH := ~/.vault_pass.txt
 all: deploy
 
 compile_sm: build_sm
@@ -17,26 +17,29 @@ shell_srcds: build_srcds
 deps:
 	@ansible-galaxy collection install -r collections/requirements.yml
 
-adduser: deps
+adduser:
 	@ansible-playbook playbooks/adduser.yml -u root $(ARGS)
 
-pre: deps
+pre:
 	@ansible-playbook playbooks/pre.yml $(ARGS)
 
-srcds: deps
-	@ansible-playbook playbooks/srcds.yml $(ARGS) 
+srcds:
+	@ansible-playbook --limit "flk-1.de.uncletopia.com" --vault-password-file $(VAULT_PASS_PATH) playbooks/srcds.yml $(ARGS) 
 
-system: deps
+system:
 	@ansible-playbook playbooks/system.yml $(ARGS)
 
-wg: deps
+sourcemod:
+	@./roles/srcds/files/build.py
+
+wg:
 	@ansible-playbook playbooks/wg.yml $(ARGS)
 
-deploy: deps
+deploy:
 	@ansible-playbook playbooks/deploy.yml $(ARGS)
 
 # Only deploy new game config files, skipping container redeploy/restart steps
-config: deps
+config:
 	@ansible-playbook deploy.yml --tags "game_config" $(ARGS)
 
 ping:
