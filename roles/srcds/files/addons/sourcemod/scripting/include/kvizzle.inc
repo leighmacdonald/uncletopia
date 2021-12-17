@@ -2,7 +2,6 @@
 Kvizzle
 By F2
 
-
 Features:
 - Supports having several KVs open simultaneously
 - Pseudo-Classes (like :first-child, :nth-child(n), :any-child)
