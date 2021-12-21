@@ -1,0 +1,21 @@
+(cf_cfg) {
+        tls {
+                dns cloudflare {{ caddy.cloudflare.api_key }}
+        }
+}
+
+{% for host in caddy.hosts %}
+{{ host }} {
+    {% if caddy.hosts[host].forward %}
+    reverse_proxy /* {{ caddy.hosts[host].address }} {
+                header_up Host {host}
+                header_up X-Real-IP {remote_host}                       
+                header_up X-Forwarded-For {remote_host}
+                header_up X-Forwarded-Proto {scheme}
+        }
+    {% else %}
+    reverse_proxy /* {{ caddy.hosts[host].address }}
+    {% endif %}
+    import cf_cfg
+}
+{% endfor %}

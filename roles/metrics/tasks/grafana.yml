@@ -1,0 +1,36 @@
+---
+- name: grafana data volume
+  docker_volume:
+    name: grafana_data
+    state: present
+
+- name: grafana
+  docker_container:
+    name: grafana
+    image: grafana/grafana-oss:latest-ubuntu
+    restart: yes
+    recreate: yes
+    volumes:
+      - grafana_data:/var/lib/grafana
+    ports:
+      - 3000:3000
+
+- name: Join metrics network
+  community.docker.docker_network:
+    name: metrics_net
+    connected:
+      - grafana
+    appends: yes
+
+- name: Join caddy network
+  community.docker.docker_network:
+    name: caddy_net
+    connected:
+      - grafana
+    appends: yes
+
+- name: Reload networks
+  docker_container:
+    name: grafana
+    restart: yes
+    

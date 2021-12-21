@@ -1,0 +1,50 @@
+- name: caddy data volume
+  docker_volume:
+    name: caddy_data
+    state: present
+
+- name: caddy config volume
+  docker_volume:
+    name: caddy_config
+    state: present
+
+- name: Generate /etc/Caddyfile
+  become: yes
+  template:
+    src: Caddyfile.j2
+    dest: /etc/Caddyfile
+    mode: 0775
+
+- name: caddy network
+  community.docker.docker_network:
+    name: caddy_net
+
+- name: caddy
+  docker_container:
+    name: caddy
+    image: slothcroissant/caddy-cloudflaredns:latest
+    restart: yes
+    recreate: yes
+    volumes:
+      - caddy_data:/data
+      - caddy_config:/config
+      - /etc/Caddyfile:/etc/caddy/Caddyfile
+    env:
+      CLOUDFLARE_EMAIL: "{{ caddy.cloudflare.email }}"
+      CLOUDFLARE_API_TOKEN: "{{ caddy.cloudflare.api_key }}"
+      ACME_AGREE: "true"
+    ports:
+      - 443:443
+      - 80:80
+
+- name: Join caddy network
+  community.docker.docker_network:
+    name: caddy_net
+    connected:
+      - caddy
+    appends: yes
+
+- name: Reload networks
+  docker_container:
+    name: caddy
+    restart: yes
