@@ -2,6 +2,9 @@
   community.docker.docker_network:
     name: metrics_net
 
+- name: Install portainer
+  import_tasks: portainer.yml
+
 - name: Install prometheus
   import_tasks: prometheus.yml
 

@@ -1,0 +1,31 @@
+---
+- name: portainer data volume
+  docker_volume:
+    name: portainer_data
+    state: present
+
+- name: portainer
+  docker_container:
+    name: portainer
+    image: portainer/portainer-ce:latest
+    restart: yes
+    recreate: yes
+    pull: yes
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+    ports:
+      - 9000:9000
+
+- name: Join caddy network
+  community.docker.docker_network:
+    name: caddy_net
+    connected:
+      - portainer
+    appends: yes
+
+- name: Reload networks
+  docker_container:
+    name: portainer
+    restart: yes
+    

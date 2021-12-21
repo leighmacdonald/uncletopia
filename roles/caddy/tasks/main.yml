@@ -25,6 +25,7 @@
     image: slothcroissant/caddy-cloudflaredns:latest
     restart: yes
     recreate: yes
+    pull: yes
     volumes:
       - caddy_data:/data
       - caddy_config:/config

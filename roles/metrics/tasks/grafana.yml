@@ -10,6 +10,7 @@
     image: grafana/grafana-oss:latest-ubuntu
     restart: yes
     recreate: yes
+    pull: yes
     volumes:
       - grafana_data:/var/lib/grafana
     ports:
