@@ -29,6 +29,9 @@ list_hosts:
 srcds:
 	@ansible-playbook --limit "flk-1.de.uncletopia.com" --vault-password-file $(VAULT_PASS_PATH) playbooks/srcds.yml $(ARGS) 
 
+metrics:
+	@ansible-playbook --vault-password-file $(VAULT_PASS_PATH) playbooks/metrics.yml $(ARGS) 
+
 system:
 	@ansible-playbook playbooks/system.yml $(ARGS)
 

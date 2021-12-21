@@ -1,0 +1,36 @@
+---
+- name: metrics network
+  community.docker.docker_network:
+    name: metrics_net
+
+
+- name: prometheus
+  docker_container:
+    name: prometheus
+    image: prom/prometheus:latest
+    restart: yes
+    recreate: yes
+    volumes:
+      - caddy_data:/data
+      - caddy_config:/config
+      - /etc/Caddyfile:/etc/caddy/Caddyfile
+    env:
+      CLOUDFLARE_EMAIL: "{{ caddy.cloudflare.email }}"
+      CLOUDFLARE_API_TOKEN: "{{ caddy.cloudflare.api_key }}"
+      ACME_AGREE: "true"
+    ports:
+      - 9090:9090
+
+
+- name: Join metrics network
+  community.docker.docker_network:
+    name: metrics_net
+    connected:
+      - prometheus
+    appends: yes
+
+- name: Reload networks
+  docker_container:
+    name: prometheus
+    restart: yes
+    

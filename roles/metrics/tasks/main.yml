@@ -1,0 +1,9 @@
+- name: metrics network
+  community.docker.docker_network:
+    name: metrics_net
+
+- name: Install prometheus
+  import_tasks: prometheus.yml
+
+- name: Install grafana
+  import_tasks: grafana.yml
