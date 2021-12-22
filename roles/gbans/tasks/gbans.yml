@@ -1,0 +1,46 @@
+- name: gbans_cache_data volume
+  docker_volume:
+    name: gbans_cache_data
+    state: present
+
+- name: Generate /etc/gbans.yml
+  become: yes
+  template:
+    src: gbans.yml.j2
+    dest: /etc/gbans.yml
+    mode: 0775
+
+- name: gbans-service
+  docker_container:
+    name: gbans-service
+    image: leighmacdonald/gbans:latest
+    restart: yes
+    recreate: yes
+    pull: yes
+    volumes:
+      - /etc/gbans.yml:/app/gbans.yml
+      - gbans_cache_data:/app/.cache
+    env:
+      GBANS_DATABASE_DSN: "{{ gbans.dsn }}"
+      GBANS_GENERAL_STEAM_KEY: "{{ steam_key }}"
+    ports:
+      - 127.0.0.1:6006:6006
+
+- name: Join gbans network
+  community.docker.docker_network:
+    name: gbans_net
+    connected:
+      - gbans-service
+    appends: yes
+
+- name: Join caddy network
+  community.docker.docker_network:
+    name: caddy_net
+    connected:
+      - gbans-service
+    appends: yes
+
+- name: Reload networks
+  docker_container:
+    name: gbans-service
+    restart: yes

@@ -1,0 +1,102 @@
+general:
+  site_name: "gbans"
+  steam_key: {{ steam_key }}
+  owner: {{ gbans.owner }}
+  # Run mode for the HTTP service
+  # Should normally be "release"
+  mode: "release" # release, debug, test
+  server_status_update_freq: {{ gbans.update_freq }}
+  map_changer_enabled: false
+  default_maps: ["pl_badwater", "pl_upward", "pl_snowycoast"]
+
+http:
+  # Listen on this ip address
+  # 0.0.0.0 = Any
+  host: 0.0.0.0
+  # Listen on this port
+  port: {{ gbans.port }}
+  domain: {{ gbans.address }}
+  static_path: ./dist/
+  client_timeout: 20s
+  # Encryption key for cookies
+  cookie_key: {{ gbans.cookie_key }}
+
+database:
+  #  to your database
+  dsn: {{ gbans.dsn }}
+
+rpc:
+  enabled: true
+  addr: "0.0.0.0:7779"
+  log_addr: "0.0.0.0:7777"
+
+relay:
+  # Enable/disable the log relay functionality
+  enabled: true
+  # Output messages to these channels
+  channel_ids:
+{% for cid in gbans.relay.channel_ids %}
+    - {{ cid }}
+{% endfor %}
+
+word_filter:
+  enabled: true
+  warnings: 2
+  ping_discord: true
+  external_enabled: false
+  external_sources:
+{% for src in gbans.word_filter.sources %}
+    - {{ src }}
+{% endfor %}
+
+discord:
+  # Enable optional discord integration
+  enabled: true
+  app_id: {{ gbans.discord.app_id }}
+  guild_id: {{ gbans.discord.guild_id }}
+  # Your discord bot token
+  # See: https://discord.com/developers/applications
+  token: {{ gbans.discord.token }}
+  mod_role_ids:
+{% for rid in gbans.discord.roles %}
+    - {{ rid }}
+{% endfor %}
+  # People in these channels automatically have moderator privilege
+  # To find these, Right click the channel -> copy id
+  mod_channel_ids:
+{% for cid in gbans.discord.mod_channel_ids %}
+    - {{ cid }}
+{% endfor %}
+  public_log_channel_enable: {{ gbans.discord.public_log_enabled }}
+  public_log_channel_id: {{ gbans.discord.public_log_channel_id }}
+
+
+logging:
+  # Set the debug log level
+  level: debug
+  # Force console colours when it cant guess. This is mostly useful on windows
+  force_colours: true
+  # Force disable any colouring
+  disable_colours: false
+  # Show the function + line number where the log message was created
+  report_caller: false
+  # Show full timestamps in the logs
+  full_timestamp: false
+
+
+network_bans:
+  enabled: {{ gbans.network_bans_enabled }}
+  max_age: 1d
+  cache_path: .cache
+  ip2location:
+    enabled: {{ gbans.ip2location.enabled }}
+    token: {{ gbans.ip2location.api_key }}
+    asn_enabled: true
+    ip_enabled: true
+    proxy_enabled: true
+  sources:
+{% for r in gbans.network_bans_list %}
+    - name: {{ r.name }}
+      url: {{ r.url }}
+      type: {{ r.type }}
+{% endfor %}

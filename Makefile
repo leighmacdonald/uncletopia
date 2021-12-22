@@ -32,6 +32,9 @@ srcds:
 metrics:
 	@ansible-playbook --vault-password-file $(VAULT_PASS_PATH) playbooks/metrics.yml $(ARGS) 
 
+gbans:
+	@ansible-playbook --vault-password-file $(VAULT_PASS_PATH) playbooks/gbans.yml $(ARGS) 
+
 system:
 	@ansible-playbook playbooks/system.yml $(ARGS)
 

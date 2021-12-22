@@ -1,0 +1,32 @@
+- name: gbans_postgres_data volume
+  docker_volume:
+    name: gbans_postgres_data
+    state: present
+    
+- name: gbans-postgres
+  docker_container:
+    name: gbans-postgres
+    image: postgis/postgis:latest
+    restart: yes
+    recreate: yes
+    pull: yes
+    volumes:
+      - gbans_postgres_data:/var/lib/postgresql/data
+    env:
+      POSTGRES_DB: "gbans"
+      POSTGRES_PASSWORD: "gbans"
+      POSTGRES_USER: "gbans"
+    ports:
+      - 127.0.0.1:5432:5432
+
+- name: Join gbans network
+  community.docker.docker_network:
+    name: gbans_net
+    connected:
+      - gbans-postgres
+    appends: yes
+
+- name: Reload networks
+  docker_container:
+    name: gbans-postgres
+    restart: yes

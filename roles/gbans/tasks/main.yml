@@ -1,0 +1,9 @@
+- name: gbans network
+  community.docker.docker_network:
+    name: gbans_net
+
+- name: Install postgres
+  import_tasks: postgres.yml
+
+- name: Install gbans
+  import_tasks: gbans.yml
