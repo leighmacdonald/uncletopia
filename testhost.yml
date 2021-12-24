@@ -1,7 +1,0 @@
-all:
-  hosts:
-  children:
-    tf2:
-      hosts:
-        test-1:
-          ansible_python_interpreter: python3

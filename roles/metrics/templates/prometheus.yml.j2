@@ -21,6 +21,7 @@ scrape_configs:
   - job_name: 'node'
     http_sd_configs:
       - url: '{{ service_discovery.prometheus }}'
+    # Renames instances to just the hostname
     relabel_configs:
       - source_labels: [__address__]
         target_label: instance
