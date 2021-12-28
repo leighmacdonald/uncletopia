@@ -8,6 +8,9 @@ PLAYBOOK_PATH := ./playbooks
 
 all: deploy
 
+build_remote:
+	@ansible-playbook $(STAGING_OPTS) $(PLAYBOOK_PATH)/srcds.yml $(ARGS)
+
 deps:
 	@ansible-galaxy collection install -r collections/requirements.yml
 
@@ -41,6 +44,9 @@ config:
 
 mge_deploy:
 	@ansible-playbook $(MGE_OPTS) $(PLAYBOOK_PATH)/deploy.yml $(ARGS)
+
+stage_deploy:
+	@ansible-playbook $(STAGING_OPTS) $(PLAYBOOK_PATH)/deploy.yml $(ARGS)
 
 test_adduser:
 	@ansible-playbook $(TESTING_OPTS) $(PLAYBOOK_PATH)/adduser.yml -u root $(ARGS)

@@ -30,17 +30,17 @@
     tag: latest
     source: build
     force_tag: yes
-    push: yes
+    push: no
     build:
       dockerfile: /build_srcds/sourcemod.Dockerfile
       path: /build_srcds/
     state: present
 
 
-- name: build srcds image
+- name: build & publish srcds image
   community.docker.docker_image:
     name: leighmacdonald/uncletopia-srcds
-    tag: latest
+    tag: test
     source: build
     force_tag: yes
     push: yes
@@ -50,3 +50,4 @@
       dockerfile: /build_srcds/srcds.Dockerfile
       path: /build_srcds/
     state: present
+

@@ -14,7 +14,7 @@
     volumes:
       - grafana_data:/var/lib/grafana
     ports:
-      - 3000:3000
+      - 127.0.0.1:3000:3000
 
 - name: Join metrics network
   community.docker.docker_network:

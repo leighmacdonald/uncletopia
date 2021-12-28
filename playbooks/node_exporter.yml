@@ -1,0 +1,4 @@
+- hosts: all
+  roles:
+    # ansible-galaxy install cloudalchemy.node_exporter
+    - cloudalchemy.node_exporter

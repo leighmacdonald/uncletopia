@@ -14,3 +14,4 @@ roles/tf2/files/tf/cfg/sourcemod/sourcemod.cfg
 
 host_vars/*
 group_vars/*
+roles/cloudalchemy.*

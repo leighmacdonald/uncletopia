@@ -1,6 +1,6 @@
 - name: gbans_postgres_data volume
   docker_volume:
-    name: gbans_postgres_data
+    name: gbans_db
     state: present
     
 - name: gbans-postgres
@@ -11,7 +11,7 @@
     recreate: yes
     pull: yes
     volumes:
-      - gbans_postgres_data:/var/lib/postgresql/data
+      - gbans_db:/var/lib/postgresql/data
     env:
       POSTGRES_DB: "gbans"
       POSTGRES_PASSWORD: "gbans"

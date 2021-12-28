@@ -3,3 +3,4 @@ collections:
   - community.general
   - community.docker
   - ansible.posix
+#  - community.node_exporter
