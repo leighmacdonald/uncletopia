@@ -1,4 +1,4 @@
----
+
 - name: metrics network
   community.docker.docker_network:
     name: metrics_net
@@ -19,7 +19,7 @@
       CLOUDFLARE_API_TOKEN: "{{ caddy.cloudflare.api_key }}"
       ACME_AGREE: "true"
     ports:
-      - 9090:9090
+      - 127.0.0.1:9090:9090
 
 
 - name: Join metrics network
@@ -29,8 +29,8 @@
       - prometheus
     appends: yes
 
+
 - name: Reload networks
   docker_container:
     name: prometheus
     restart: yes
-    

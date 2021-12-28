@@ -53,73 +53,16 @@
     name: tf2server
     groups: docker
     append: yes
+  state: present
 
-- name: Download Node Exporter
-  become: yes
-  become_user: tf2server
-  unarchive:
-    src: https://github.com/prometheus/node_exporter/releases/download/v1.1.2/node_exporter-1.1.2.linux-amd64.tar.gz
-    dest: ~/
-    remote_src: yes
-    creates: node_exporter-1.1.2
-
-- name: Extract Node Exporter
-  become: yes
-  become_user: tf2server
-  command: cp ~/node_exporter-1.1.2.linux-amd64/node_exporter ~/node_exporter
-  args:
-    creates: ~/node_exporter
-
-- name: Create prometheus.service
-  become: yes
-  copy:
-    src: node_exporter.service
-    dest: /etc/systemd/system/node_exporter.service
-    mode: '644'
-
-- name: mkdir gbans
-  become: yes
-  become_user: tf2server
-  file:
-    path: ~/gbans
-    state: directory
-    mode: '0755'
-
-- name: gbans download
-  become: yes
-  become_user: tf2server
-  unarchive:
-    src: https://github.com/leighmacdonald/gbans/releases/download/v0.1.5/gbans--lin64.zip
-    dest: ~/gbans
-    remote_src: yes
-
-- name: gbans-relay.service
-  become: yes
-  template:
-    src: gbans-relay.service.j2
-    dest: /etc/systemd/system/gbans-relay.service
-    mode: '644'
-
-- name: gbans chmod
-  file:
-    path: /home/tf2server/gbans/gbans
-    mode: 0755
-
-- name: gbans.yml
-  become: yes
-  template:
-    src: gbans.yml.j2
-    dest: /home/tf2server/gbans.yml
-    mode: '644'
-
-- name: Enable TCP docker listener
-  become: yes
-  lineinfile:
-    dest=/etc/systemd/system/multi-user.target.wants/docker.service
-    regexp='^ExecStart='
-    line="ExecStart=/usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock"
-    state=present
-    backup=yes
+# - name: Enable TCP docker listener
+#   become: yes
+#   lineinfile:
+#     dest=/etc/systemd/system/multi-user.target.wants/docker.service
+#     regexp='^ExecStart='
+#     line="ExecStart=/usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock"
+#     state=present
+#     backup=yes
 
 - name: systemd reload
   become: yes
@@ -132,20 +75,6 @@
     name: docker
     state: started
     enabled: yes
-
-- name: systemd enable prometheus
-  become: yes
-  systemd:
-    name: node_exporter.service
-    state: started
-    enabled: yes
-
-- name: systemd enable gbans-relay
-  become: yes
-  systemd:
-    name: gbans-relay.service
-    enabled: no
-    state: stopped
 
 - name: Increase available memory for UDP receive buffers
   become: yes
@@ -163,7 +92,7 @@
     sysctl_set: yes
     reload: yes
 
-- name: Increase the maximum amount of packages in the kernel queue
+- name: Increase the maximum amount of packets in the kernel queue
   become: yes
   ansible.posix.sysctl:
     name: net.core.netdev_max_backlog
@@ -171,23 +100,14 @@
     sysctl_set: yes
     reload: yes
 
-- name: fw-docker
-  become: yes
-  ufw:
-    rule: allow
-    port: "{{ item }}"
-    from_ip: "{{ docker_host_master }}"
-  with_items:
-    - "2000"
-
-- name: fw-prom
-  become: yes
-  ufw:
-    rule: allow
-    port: "{{ item }}"
-    from_ip: "{{ prometheus_host }}"
-  with_items:
-    - "9100"
+# - name: fw-docker
+#   become: yes
+#   ufw:
+#     rule: allow
+#     port: "{{ item }}"
+#     from_ip: "{{ docker_host_master }}"
+#   with_items:
+#     - "2000"
 
 - name: Enable UFW
   become: yes

@@ -25,6 +25,7 @@
       GBANS_GENERAL_STEAM_KEY: "{{ steam_key }}"
     ports:
       - 127.0.0.1:6006:6006
+      - 27115:27115/udp
 
 - name: Join gbans network
   community.docker.docker_network:
@@ -44,3 +45,10 @@
   docker_container:
     name: gbans-service
     restart: yes
+
+- name: srcds-log-fw
+  become: yes
+  ufw:
+    rule: allow
+    port: "27115"
+    proto: udp

@@ -15,7 +15,7 @@
       - /var/run/docker.sock:/var/run/docker.sock
       - portainer_data:/data
     ports:
-      - 9000:9000
+      - 127.0.0.1:9000:9000
 
 - name: Join caddy network
   community.docker.docker_network:
