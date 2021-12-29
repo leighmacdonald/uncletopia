@@ -19,14 +19,47 @@
     ports:
       - 127.0.0.1:5432:5432
 
+- name: gbans-postgres_exporter container
+  docker_container:
+    name: gbans-postgres_exporter
+    image: quay.io/prometheuscommunity/postgres-exporter:latest
+    restart: yes
+    recreate: yes
+    pull: yes
+    env:
+      DATA_SOURCE_NAME: postgresql://gbans:gbans@gbans-postgres/gbans?sslmode=disable
+    ports:
+      - 127.0.0.1:9187:9187
+
+- name: Join caddy network
+  community.docker.docker_network:
+    name: gbans_net
+    connected:
+      - gbans-postgres_exporter
+    appends: yes
+
 - name: Join gbans network
   community.docker.docker_network:
     name: gbans_net
     connected:
       - gbans-postgres
+      - gbans-postgres_exporter
+    appends: yes
+
+- name: Join metrics network
+  community.docker.docker_network:
+    name: metrics_net
+    connected:
+      - gbans-service
+      - gbans-postgres_exporter
     appends: yes
 
 - name: Reload networks
   docker_container:
     name: gbans-postgres
+    restart: yes
+
+- name: Reload networks
+  docker_container:
+    name: gbans-postgres_exporter
     restart: yes

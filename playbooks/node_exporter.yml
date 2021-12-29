@@ -2,3 +2,10 @@
   roles:
     # ansible-galaxy install cloudalchemy.node_exporter
     - cloudalchemy.node_exporter
+  tasks:
+    - name: node-exporter-fw
+      become: yes
+      ufw:
+        rule: allow
+        port: "9100"
+        proto: tcp

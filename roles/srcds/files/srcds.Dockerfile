@@ -78,7 +78,8 @@ ENV SRCDS_FPSMAX=300 \
 	SRCDS_PW="" \
 	SRCDS_STARTMAP="ctf_2fort" \
 	SRCDS_REGION=3 \
-    SRCDS_HOSTNAME="TF2"
+    SRCDS_HOSTNAME="TF2" \
+	SRCSD_LOG_SECRET=""
 
 WORKDIR /home/steam
 USER root
@@ -91,7 +92,12 @@ CMD ["bash", "../entry.sh"]
 
 VOLUME ${STEAMAPPDIR}/tf/logs
 
-VOLUME ${STEAMAPPDIR}/tf/addons/sourcemod/data/sqlite
+VOLUME ${STEAMAPPDIR}/tf/addons/sourcemod/data
+VOLUME ${STEAMAPPDIR}/tf/addons/sourcemod/gamedata
+VOLUME ${STEAMAPPDIR}/tf/addons/sourcemod/logs
+VOLUME ${STEAMAPPDIR}/tf/downloads
+VOLUME ${STEAMAPPDIR}/tf/cache
+VOLUME ${STEAMAPPDIR}/tf/logs
 
 EXPOSE 27015/tcp 27015/udp 27020/udp
 
