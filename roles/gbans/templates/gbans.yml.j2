@@ -25,20 +25,6 @@ database:
   #  to your database
   dsn: {{ gbans.dsn }}
 
-rpc:
-  enabled: true
-  addr: "0.0.0.0:7779"
-  log_addr: "0.0.0.0:7777"
-
-relay:
-  # Enable/disable the log relay functionality
-  enabled: true
-  # Output messages to these channels
-  channel_ids:
-{% for cid in gbans.relay.channel_ids %}
-    - {{ cid }}
-{% endfor %}
-
 word_filter:
   enabled: true
   warnings: 2
@@ -82,7 +68,8 @@ logging:
   report_caller: false
   # Show full timestamps in the logs
   full_timestamp: false
-
+  srcds_log_addr: "{{ gbans.logging.srcds_log_addr}}"
+  srcds_log_external_host: "{{ gbans.logging.srcds_log_external_host}}"
 
 network_bans:
   enabled: {{ gbans.network_bans_enabled }}
