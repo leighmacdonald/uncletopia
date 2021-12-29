@@ -23,6 +23,9 @@ pre:
 srcds:
 	@ansible-playbook $(PROD_OPTS) $(PLAYBOOK_PATH)/srcds.yml $(ARGS) 
 
+node_exporter:
+	@ansible-playbook $(PROD_OPTS) $(PLAYBOOK_PATH)/node_exporter.yml $(ARGS) 
+
 metrics:
 	@ansible-playbook $(PROD_OPTS) $(PLAYBOOK_PATH)/metrics.yml $(ARGS) 
 
