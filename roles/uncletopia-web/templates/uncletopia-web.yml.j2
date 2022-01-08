@@ -1,0 +1,26 @@
+steam:
+  key: "{{ steam.key }}"
+hook:
+  discord_announcement: "{{ hook.discord_announcement }}"
+
+database:
+  dsn: "{{ database.dsn }}"
+
+http:
+  listen_http: "{{ http.listen_http }}"
+  domain: "{{ http.domain }}"
+  static_path: "{{ http.static_path }}"
+  cookie_key: "{{ http.cookie_key }}"
+
+
+paypal:
+  client_id: "{{ paypal.client_id }}"
+  secret: "{{ paypal.secret }}"
+  url: "{{ paypal.url }}"
+
+# Live
+patreon:
+  client_id: "{{ patreon.client_id }}"
+  client_secret: "{{ patreon.client_secret }}"
+  access_token: "{{ patreon.access_token }}"
+  refresh_token: "{{ patreon.refresh_token }}"
