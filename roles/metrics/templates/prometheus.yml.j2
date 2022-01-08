@@ -19,6 +19,9 @@ scrape_configs:
       - targets: ['localhost:9090']
 
   - job_name: 'node'
+    static_configs:
+      - targets: ['node.roto.su:9100']
+
     http_sd_configs:
       - url: '{{ service_discovery.prometheus }}'
     # Renames instances to just the hostname
