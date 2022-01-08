@@ -1,6 +1,7 @@
 .PHONY: all pre system deploy
 VAULT_PASS_PATH := ~/.vault_pass.txt
 PROD_OPTS := -l production --vault-password-file $(VAULT_PASS_PATH)
+BUILD_OPTS := -l build --vault-password-file $(VAULT_PASS_PATH)
 STAGING_OPTS := -l staging --vault-password-file $(VAULT_PASS_PATH)
 TESTING_OPTS := -l testing --vault-password-file $(VAULT_PASS_PATH)
 MGE_OPTS := -l mge --vault-password-file $(VAULT_PASS_PATH)
@@ -9,7 +10,7 @@ PLAYBOOK_PATH := ./playbooks
 all: deploy
 
 build_remote:
-	@ansible-playbook $(STAGING_OPTS) $(PLAYBOOK_PATH)/srcds.yml $(ARGS)
+	@ansible-playbook $(BUILD_OPTS) $(PLAYBOOK_PATH)/srcds.yml $(ARGS)
 
 deps:
 	@ansible-galaxy collection install -r collections/requirements.yml
@@ -28,6 +29,9 @@ node_exporter:
 
 metrics:
 	@ansible-playbook $(PROD_OPTS) $(PLAYBOOK_PATH)/metrics.yml $(ARGS) 
+
+uncletopia-web:
+	@ansible-playbook $(PROD_OPTS) $(PLAYBOOK_PATH)/uncletopia-web.yml $(ARGS) 
 
 gbans:
 	@ansible-playbook $(PROD_OPTS) $(PLAYBOOK_PATH)/gbans.yml $(ARGS) 
