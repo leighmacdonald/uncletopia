@@ -7,15 +7,15 @@ from os.path import join, exists, realpath, dirname
 BASE_DIR = dirname(realpath(__file__))
 OUTPUT_PATH = join(BASE_DIR, "addons", "sourcemod", "plugins")
 SRC_PATH = join(BASE_DIR, "addons", "sourcemod", "scripting")
-COMPILER = "spcomp"
+COMPILER = "/build/addons/sourcemod/scripting/spcomp64"
 INCLUDE_PATHS = [
     # Docker container build path
-    "/build/sourcemod/addons/sourcemod/scripting/include",
+    # "/build/sourcemod/addons/sourcemod/scripting/include",
     join(BASE_DIR, "addons", "sourcemod", "scripting", "include")
 ]
 PLUGINS = [
     "admin-allspec",
-    "classrestrict",
+    #"classrestrict",
     "cronjobs",
     "disableautokick",
     "extendedmapconfig",
@@ -75,7 +75,7 @@ def compile_sp(input_name, out_path):
 def main():
     if not exists(OUTPUT_PATH):
         makedirs(OUTPUT_PATH)
-    chdir(SRC_PATH)
+    chdir(BASE_DIR)
     ok = 0
     for plugin_name in PLUGINS:
         try:
