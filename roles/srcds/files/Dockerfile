@@ -57,11 +57,9 @@ LABEL maintainer="leigh.macdonald@gmail.com"
 ARG PUID=1000
 ENV USER steam
 ENV HOMEDIR "/home/${USER}"
-
 ENV STEAMAPPID 232250
 ENV STEAMAPP tf
 ENV STEAMAPPDIR "${HOMEDIR}/${STEAMAPP}-dedicated"
-
 
 RUN set -x \
 	&& dpkg --add-architecture i386 \
