@@ -30,8 +30,8 @@ node_exporter:
 metrics:
 	@ansible-playbook $(PROD_OPTS) $(PLAYBOOK_PATH)/metrics.yml $(ARGS) 
 
-uncletopia-web:
-	@ansible-playbook $(PROD_OPTS) $(PLAYBOOK_PATH)/uncletopia-web.yml $(ARGS) 
+uncletopiaweb:
+	@ansible-playbook $(PROD_OPTS) $(PLAYBOOK_PATH)/uncletopiaweb.yml $(ARGS) 
 
 gbans:
 	@ansible-playbook $(PROD_OPTS) $(PLAYBOOK_PATH)/gbans.yml $(ARGS) 
