@@ -2,4 +2,4 @@
 - hosts: web
   roles:
     - caddy
-    - uncletopia-web
+    - uncletopiaweb
