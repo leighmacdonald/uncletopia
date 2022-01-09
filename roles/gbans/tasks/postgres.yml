@@ -2,7 +2,7 @@
   docker_volume:
     name: gbans_db
     state: present
-    
+
 - name: gbans-postgres
   docker_container:
     name: gbans-postgres

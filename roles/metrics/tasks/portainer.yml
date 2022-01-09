@@ -28,4 +28,3 @@
   docker_container:
     name: portainer
     restart: yes
-    

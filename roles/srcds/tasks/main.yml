@@ -7,7 +7,7 @@
     group: root
     mode: '0777'
 
-- name: copy build sources 
+- name: copy build sources
   synchronize:
     src: ./
     dest: /build_srcds/
@@ -17,12 +17,10 @@
     # group: root
     #mode: '0644'
 
-
 - name: Log into DockerHub
   community.docker.docker_login:
     username: "{{ dockerhub.username }}"
     password: "{{ dockerhub.password }}"
-
 
 - name: build & publish srcds image
   community.docker.docker_image:
@@ -39,4 +37,3 @@
       dockerfile: /build_srcds/Dockerfile
       path: /build_srcds/
     state: present
-

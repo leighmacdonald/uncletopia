@@ -2,7 +2,7 @@
   docker_volume:
     name: uncletopia-web_db
     state: present
-    
+
 - name: uncletopia-web-postgres container
   docker_container:
     name: uncletopia-web-postgres
