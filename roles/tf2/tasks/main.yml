@@ -1,13 +1,15 @@
-- name: pre-download images
-  community.general.docker_image:
-    source: pull
-    name: "{{ item.image_tag|default(image_tag) }}"
-  # loop: "{{ services }}"
-  # loop_control:
-  #   index_var: loop0
+- name: srcds-fw-disable
+  become: yes
+  ufw:
+    rule: deny
+    port: "{{ srcds_base_port + (loop0 * 10) }}"
+    proto: any
+  loop: "{{ services }}"
+  loop_control:
+    index_var: loop0
 
 - name: create build output dirs
-  become: true
+  become: yes
   become_user: root
   file:
     path: /build
@@ -17,7 +19,7 @@
   loop: "{{ services }}"
 
 - name: build output
-  become: true
+  become: yes
   become_user: root
   file:
     path: /build/{{ item.server_name_short }}
@@ -60,98 +62,25 @@
 
 - name: Generate tf/cfg/server.cfg
   template:
-    src: server.cfg.j2
+    src: tf2server.cfg.j2
     dest: /build/{{ item.server_name_short }}/server.cfg
     mode: 0777
   loop: "{{ services }}"
   tags:
     - game_config
 
-- name: mapcycle.txt
+- name: Generate /build/umc_mapcycle.txt
   template:
-    src: mapcycle.txt.j2
-    dest: /build/{{ item.server_name_short }}/mapcycle.txt
-    mode: 0777
-  tags:
-    - game_config
-  loop: "{{ services }}"
-  loop_control:
-    index_var: loop0
-
-- name: Generate /build/mapchooser.cfg
-  template:
-    src: mapchooser.cfg.j2
-    dest: /build/mapchooser.cfg
+    src: umc_mapcycle.txt.j2
+    dest: /build/umc_mapcycle.txt
     mode: 0777
   tags:
     - game_config
 
-- name: Generate /build/autorecorder.cfg
+- name: mapcycle_nominate.txt
   template:
-    src: autorecorder.cfg.j2
-    dest: /build/autorecorder.cfg
-    mode: 0777
-  tags:
-    - game_config
-
-- name: Generate /build/maplists.cfg
-  template:
-    src: maplists.cfg.j2
-    dest: /build/{{ item.server_name_short }}/maplists.cfg
-    mode: 0777
-  tags:
-    - game_config
-  loop: "{{ services }}"
-  loop_control:
-    index_var: loop0
-
-- name: Generate /build/autoexec.cfg
-  template:
-    src: autoexec.cfg.j2
-    dest: /build/{{ item.server_name_short }}/autoexec.cfg
-    mode: 0777
-  tags:
-    - game_config
-  loop: "{{ services }}"
-  loop_control:
-    index_var: loop0
-
-- name: Generate /build/core.cfg
-  ansible.builtin.template:
-    src: core.cfg.j2
-    dest: /build/core.cfg
-    mode: 0777
-  tags:
-    - game_config
-
-- name: Generate /build/discord.cfg
-  ansible.builtin.template:
-    src: discord.cfg.j2
-    dest: /build/discord.cfg
-    mode: 0777
-  tags:
-    - game_config
-
-- name: Generate /build/nativevotes.cfg
-  template:
-    src: nativevotes.cfg.j2
-    dest: /build/nativevotes.cfg
-    mode: 0777
-  tags:
-    - game_config
-  
-- name: Generate /build/randomcycle.cfg
-  template:
-    src: randomcycle.cfg.j2
-    dest: /build/randomcycle.cfg
-    mode: 0777
-  tags:
-    - game_config
-
-- name: Generate /build/rtv.cfg
-  template:
-    src: rtv.cfg.j2
-    dest: /build/rtv.cfg
+    src: umc_mapcycle_nominate.txt.j2
+    dest: /build/umc_mapcycle_nominate.txt
     mode: 0777
   tags:
     - game_config
@@ -164,6 +93,14 @@
   tags:
     - game_config
 
+# - name: prepare chown hack (roto pls fix)
+#   shell: 'getent passwd "1000" | cut -d: -f1'
+#   register: poop
+
+# - name: chown hack all the things! (roto pls fix)
+#   become: yes
+#   shell: 'chown -R {{ poop.stdout }} /build'
+  
 - name: Prune containers older than 24h
   docker_prune:
     images: true
@@ -175,22 +112,20 @@
 - name: srcds
   docker_container:
     name: srcds-{{ item.server_name_short }}
-    image: "{{ item.image_tag|default(image_tag) }}"
+    image: leighmacdonald/uncletopia-srcds:test
     state: started
     restart: yes
     network_mode: host
-    pull: no
+    pull: yes
     interactive: yes
     tty: yes
     recreate: yes
     restart_policy: always
     cpuset_cpus: "{{ loop0 * 2 }},{{ (loop0 * 2)+1 }}"
-    memory: 6000m
-    memory_reservation: 4000m
-    # ports:
-    #   - "{{ srcds_base_port + (loop0 * 10) }}:{{ srcds_base_port + (loop0 * 10) }}/tcp"
-    #   - "{{ srcds_base_port + (loop0 * 10) }}:{{ srcds_base_port + (loop0 * 10) }}/udp"
-    #   - "{{ srcds_base_port + (loop0 * 10) + 1 }}:{{ srcds_base_port + (loop0 * 10) + 1 }}/udp"
+    ports:
+      - "{{ srcds_base_port + (loop0 * 10) }}:{{ srcds_base_port + (loop0 * 10) }}/tcp"
+      - "{{ srcds_base_port + (loop0 * 10) }}:{{ srcds_base_port + (loop0 * 10) }}/udp"
+      - "{{ srcds_base_port + (loop0 * 10) + 1 }}:{{ srcds_base_port + (loop0 * 10) + 1 }}/udp"
     env:
       SRCDS_TOKEN: "{{ item.gslt }}"
       SRCDS_PORT: "{{ srcds_base_port + (loop0 * 10) }}"
@@ -222,56 +157,31 @@
       STEAM_GAMESERVER_PACKET_HANDLER_NO_IPC: "1"
 
     volumes:
-      - /home/steam/tf-dedicated/tf/addons/sourcemod/gamedata
-      - /home/steam/tf-dedicated/tf/logs
-      - /demos/{{ item.server_name_short }}:/home/steam/tf-dedicated/tf/stv_demos
-      - /build/{{ item.server_name_short }}/autoexec.cfg:/home/steam/tf-dedicated/tf/cfg/autoexec.cfg
       - /build/{{ item.server_name_short }}/server.cfg:/home/steam/tf-dedicated/tf/cfg/server.cfg
       - /build/admins_simple.ini:/home/steam/tf-dedicated/tf/addons/sourcemod/configs/admins_simple.ini
-      - /build/{{ item.server_name_short }}/mapcycle.txt:/home/steam/tf-dedicated/tf/cfg/mapcycle.txt
+      - /build/umc_mapcycle.txt:/home/steam/tf-dedicated/tf/umc_mapcycle.txt
+      - /build/umc_mapcycle_nominate.txt:/home/steam/tf-dedicated/tf/umc_mapcycle_nominate.txt
       - /build/motd.txt:/home/steam/tf-dedicated/tf/cfg/motd.txt
+      # - /build/mapcycle_halloween.txt:/home/steam/tf-dedicated/tf/cfg/mapcycle_halloween.txt
+      # - /build/pure_server_whitelist.txt:/home/steam/tf-dedicated/tf/cfg/pure_server_whitelist.txt
       - /build/sourcemod.cfg:/home/steam/tf-dedicated/tf/cfg/sourcemod/sourcemod.cfg
       - /build/admin_overrides.cfg:/home/steam/tf-dedicated/tf/addons/sourcemod/configs/admin_overrides.cfg
       - /build/gbans.cfg:/home/steam/tf-dedicated/tf/addons/sourcemod/configs/gbans.cfg
-      - /build/mapchooser.cfg:/home/steam/tf-dedicated/tf/cfg/sourcemod/mapchooser.cfg
-      - /build/autorecorder.cfg:/home/steam/tf-dedicated/tf/cfg/sourcemod/autorecorder.cfg
-      - /build/nativevotes.cfg:/home/steam/tf-dedicated/tf/cfg/sourcemod/nativevotes.cfg
-      - /build/randomcycle.cfg:/home/steam/tf-dedicated/tf/cfg/sourcemod/randomcycle.cfg
-      - /build/rtv.cfg:/home/steam/tf-dedicated/tf/cfg/sourcemod/rtv.cfg
-      - /build/discord.cfg:/home/steam/tf-dedicated/tf/addons/sourcemod/configs/discord.cfg
-      - /build/core.cfg:/home/steam/tf-dedicated/tf/addons/sourcemod/configs/core.cfg
-      - /build/{{ item.server_name_short }}/maplists.cfg:/home/steam/tf-dedicated/tf/addons/sourcemod/configs/maplists.cfg
-
   loop: "{{ services }}"
   loop_control:
     index_var: loop0
 
-- name: yet another hack! (roto pls fix)
-  become: true
-  ansible.builtin.shell: docker exec -u 0 srcds-{{ item.server_name_short }} /bin/chown -R steam:steam /home/steam/tf-dedicated
-  loop: "{{ services }}"
-  tags: ['skip_ansible_lint']
+# - name: yet another hack! (roto pls fix)
+#   become: yes
+#   shell: 'docker exec -u 0 srcds-{{ item.server_name_short }} /bin/chown -R steam:steam /home/steam/tf-dedicated'
+#   loop: "{{ services }}"
 
 - name: srcds-fw
-  become: true
+  become: yes
   ufw:
     rule: allow
     port: "{{ srcds_base_port + (loop0 * 10) }}"
-    # rcon/game (tcp/udp) share same port
     proto: any
   loop: "{{ services }}"
   loop_control:
     index_var: loop0
-  when: ansible_distribution == 'Ubuntu'
-
-- name: srcdstv-fw
-  become: true
-  ufw:
-    rule: allow
-    port: "{{ srcds_base_port + (loop0 * 10) + 1 }}"
-    proto: udp
-  loop: "{{ services }}"
-  loop_control:
-    index_var: loop0
-  when: ansible_distribution == 'Ubuntu'
-  

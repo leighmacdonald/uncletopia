@@ -22,6 +22,7 @@ COPY addons/sourcemod/translations addons/sourcemod/translations/
 
 WORKDIR /build/addons/sourcemod/scripting
 COPY build.py .
+
 RUN python3 build.py
 
 # Download tf2 game engine+assets to /build/game_data
@@ -31,10 +32,6 @@ WORKDIR /build
 ENV STEAMAPPID 232250
 
 RUN set -x \
-	&& apt-get update \
-	&& apt-get install -y --no-install-recommends --no-install-suggests locales \
-	&& sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen \
-	&& dpkg-reconfigure --frontend=noninteractive locales \
 	&& apt-get update \
 	&& apt-get install -y wget apt-transport-https \
 	&& wget https://packages.microsoft.com/config/debian/10/packages-microsoft-prod.deb -O packages-microsoft-prod.deb \
@@ -54,12 +51,15 @@ RUN set -x \
 FROM debian:buster-slim
 
 LABEL maintainer="leigh.macdonald@gmail.com"
-ARG PUID=1000
-ENV USER steam
+
+ARG PUID=3000
+ARG PGID=3000
+ENV USER saxton
+ENV GROUP hale
 ENV HOMEDIR "/home/${USER}"
 ENV STEAMAPPID 232250
 ENV STEAMAPP tf
-ENV STEAMAPPDIR "${HOMEDIR}/${STEAMAPP}-dedicated"
+ENV STEAMAPPDIR "${HOMEDIR}/${STEAMAPP}"
 
 RUN set -x \
 	&& dpkg --add-architecture i386 \
@@ -81,14 +81,14 @@ RUN set -x \
 		lib32stdc++6 \
 		libtinfo5:i386 \
 		libcurl3-gnutls:i386 \
-	&& useradd -u "${PUID}" -m "${USER}" 
+	&& groupadd -g "${PGID}" "${GROUP}" && useradd -u "${PUID}" -g "${GROUP}" -m "${USER}" 
 
-COPY entry.sh ${HOMEDIR}/entry.sh
-RUN chmod +x "${HOMEDIR}/entry.sh" \
-        && chown -R "${USER}:${USER}" "${HOMEDIR}/entry.sh"
+WORKDIR "${HOMEDIR}"
+
+COPY entry.sh .
+RUN chmod +x entry.sh && chown -R "${USER}:${GROUP}" entry.sh
 
 USER ${USER}
-WORKDIR ${HOMEDIR}
 
 ENV SRCDS_FPSMAX=300 \
 	SRCDS_TICKRATE=66 \
@@ -105,23 +105,21 @@ ENV SRCDS_FPSMAX=300 \
     SRCDS_HOSTNAME="TF2" \
 	SRCSD_LOG_SECRET=""
 
-WORKDIR /home/steam
-USER root
-
-RUN chown -R "${USER}:${USER}" . && chmod -R 777 .
-USER ${USER}
-WORKDIR "${STEAMAPPDIR}"
-
 EXPOSE 27015/tcp 27015/udp 27020/udp
 
-COPY --from=download_tf2 /build/game_data/* ${STEAMAPPDIR}/
-COPY --from=sm_build /build/addons/* ${STEAMAPPDIR}/tf/addons/
+COPY --from=download_tf2 /build/game_data/ /game/
+COPY --from=sm_build /build/addons/ /addons/
 
-VOLUME ${STEAMAPPDIR}/tf/addons/sourcemod/data
-VOLUME ${STEAMAPPDIR}/tf/addons/sourcemod/gamedata
-VOLUME ${STEAMAPPDIR}/tf/addons/sourcemod/logs
-VOLUME ${STEAMAPPDIR}/tf/downloads
-VOLUME ${STEAMAPPDIR}/tf/cache
-VOLUME ${STEAMAPPDIR}/tf/logs
+RUN ls -la /game/
+RUN ls -la /addons/
 
-CMD ["bash", "../entry.sh"]
+VOLUME ${HOMEDIR}/tf/addons/sourcemod/data
+VOLUME ${HOMEDIR}/tf/addons/sourcemod/gamedata
+VOLUME ${HOMEDIR}/tf/addons/sourcemod/logs
+VOLUME ${HOMEDIR}/tf/downloads
+VOLUME ${HOMEDIR}/tf/cache
+VOLUME ${HOMEDIR}/tf/logs
+
+ENTRYPOINT [ "bash" ]
+
+CMD ["../entry.sh"]

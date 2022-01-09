@@ -1,66 +1,63 @@
 ---
 - name: apt upgrade
-  become: true
-  ansible.builtin.apt:
-    update_cache: true
-    upgrade: true
-    cache_valid_time: 00
+  become: yes
+  apt:
+    update_cache: yes
+    upgrade: yes
+    cache_valid_time: 0
 
 - name: addgroup tf2
-  become: true
-  ansible.builtin.group:
+  become: yes
+  group:
     name: tf2
     state: present
 
 - name: adduser tf2server
-  become: true
-  ansible.builtin.user:
+  become: yes
+  user:
     name: tf2server
     comment: TF2 Server User
     group: tf2
     shell: /bin/bash
-    create_home: true
+    create_home: yes
     state: present
 
 - name: sudoers.d
-  become: true
-  ansible.builtin.copy:
-    dest: /etc/sudoers.d/devops
+  become: yes
+  copy:
+    dest: "/etc/sudoers.d/devops"
     content: "%tf2  ALL=(ALL)  NOPASSWD: ALL"
     mode: 0600
 
 - name: ufw allow 22
-  become: true
-  community.general.ufw:
+  become: yes
+  ufw:
     rule: allow
-    port: "22"
+    port: '22'
     proto: tcp
 
 - name: ufw limit 22
-  become: true
-  community.general.ufw:
-    comment: TF2 Ansible
+  become: yes
+  ufw:
+    comment: "TF2 Ansible"
     rule: limit
-    port: "22"
+    port: '22'
     proto: tcp
 
 - name: ufw enable
-  become: true
-  community.general.ufw:
+  become: yes
+  ufw:
     state: enabled
     policy: deny
     direction: incoming
 
 - name: mkdir .ssh
-  become: true
-  ansible.builtin.file:
-    owner: tf2server
+  file:
     path: ~/.ssh
     state: directory
-    mode: "0700"
+    mode: '0700'
 
 - name: ssh keys
-  become: true
   ansible.posix.authorized_key:
     user: tf2server
     state: present
@@ -68,21 +65,21 @@
   loop: "{{ ssh_keys }}"
 
 - name: etc/ssh/sshd_config
-  become: true
-  ansible.builtin.lineinfile:
+  become: yes
+  lineinfile:
     dest: /etc/ssh/sshd_config
     regexp: '^PasswordAuthentication'
     line: "PasswordAuthentication no"
     state: present
-    backup: true
+    backup: yes
 
 - name: systemctl restart ssh
-  become: true
-  ansible.builtin.lineinfile:
+  become: yes
+  lineinfile:
     dest: /etc/ssh/sshd_config
     regexp: '^PermitRootLogin'
     line: "PermitRootLogin no"
     state: present
-    backup: true
+    backup: yes
   notify:
     - restart ssh
