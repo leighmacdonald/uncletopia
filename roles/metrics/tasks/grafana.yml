@@ -34,4 +34,3 @@
   docker_container:
     name: grafana
     restart: yes
-    
