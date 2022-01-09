@@ -24,19 +24,6 @@
     password: "{{ dockerhub.password }}"
 
 
-- name: build sourcemod image
-  community.docker.docker_image:
-    name: leighmacdonald/uncletopia-sourcemod
-    tag: latest
-    source: build
-    force_tag: yes
-    push: no
-    build:
-      dockerfile: /build_srcds/sourcemod.Dockerfile
-      path: /build_srcds/
-    state: present
-
-
 - name: build & publish srcds image
   community.docker.docker_image:
     name: leighmacdonald/uncletopia-srcds
@@ -44,10 +31,12 @@
     source: build
     force_tag: yes
     push: yes
+    force_source: yes
     build:
       nocache: yes
-      pull: false
-      dockerfile: /build_srcds/srcds.Dockerfile
+      pull: yes
+      rm: yes
+      dockerfile: /build_srcds/Dockerfile
       path: /build_srcds/
     state: present
 

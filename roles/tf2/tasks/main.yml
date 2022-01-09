@@ -93,13 +93,13 @@
   tags:
     - game_config
 
-- name: prepare chown hack (roto pls fix)
-  shell: 'getent passwd "1000" | cut -d: -f1'
-  register: poop
+# - name: prepare chown hack (roto pls fix)
+#   shell: 'getent passwd "1000" | cut -d: -f1'
+#   register: poop
 
-- name: chown hack all the things! (roto pls fix)
-  become: yes
-  shell: 'chown -R {{ poop.stdout }} /build'
+# - name: chown hack all the things! (roto pls fix)
+#   become: yes
+#   shell: 'chown -R {{ poop.stdout }} /build'
   
 - name: Prune containers older than 24h
   docker_prune:
@@ -112,13 +112,14 @@
 - name: srcds
   docker_container:
     name: srcds-{{ item.server_name_short }}
-    image: leighmacdonald/uncletopia-srcds:latest
+    image: leighmacdonald/uncletopia-srcds:test
     state: started
     restart: yes
     network_mode: host
     pull: yes
     interactive: yes
     tty: yes
+    recreate: yes
     restart_policy: always
     cpuset_cpus: "{{ loop0 * 2 }},{{ (loop0 * 2)+1 }}"
     ports:
@@ -170,10 +171,10 @@
   loop_control:
     index_var: loop0
 
-- name: yet another hack! (roto pls fix)
-  become: yes
-  shell: 'docker exec -u 0 srcds-{{ item.server_name_short }} /bin/chown -R steam:steam /home/steam/tf-dedicated'
-  loop: "{{ services }}"
+# - name: yet another hack! (roto pls fix)
+#   become: yes
+#   shell: 'docker exec -u 0 srcds-{{ item.server_name_short }} /bin/chown -R steam:steam /home/steam/tf-dedicated'
+#   loop: "{{ services }}"
 
 - name: srcds-fw
   become: yes

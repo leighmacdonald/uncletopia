@@ -67,19 +67,19 @@
 - name: etc/ssh/sshd_config
   become: yes
   lineinfile:
-    dest=/etc/ssh/sshd_config
-    regexp='^PasswordAuthentication'
-    line="PasswordAuthentication no"
-    state=present
-    backup=yes
+    dest: /etc/ssh/sshd_config
+    regexp: '^PasswordAuthentication'
+    line: "PasswordAuthentication no"
+    state: present
+    backup: yes
 
 - name: systemctl restart ssh
   become: yes
   lineinfile:
-    dest=/etc/ssh/sshd_config
-    regexp='^PermitRootLogin'
-    line="PermitRootLogin no"
-    state=present
-    backup=yes
+    dest: /etc/ssh/sshd_config
+    regexp: '^PermitRootLogin'
+    line: "PermitRootLogin no"
+    state: present
+    backup: yes
   notify:
     - restart ssh
