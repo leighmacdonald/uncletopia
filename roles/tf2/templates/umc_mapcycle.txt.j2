@@ -4,7 +4,7 @@
     {
         "maps_invote"   "4"
 
-        {% for map in map_rotation %}
+        {% for map in map_rotation[services[loop0]['rotation']] %}
         "{{ map }}" {}
         {% endfor %}
     }
@@ -14,7 +14,7 @@
         "maps_invote"   "1"
         "display-template" "Mystery map!"
 
-        {% for map in map_rotation %}
+        {% for map in map_rotation[services[loop0]['rotation']] %}
         "{{ map }}" {
             "weight" "20"
             "nominate_flags" "z"

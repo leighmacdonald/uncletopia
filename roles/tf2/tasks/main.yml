@@ -1,4 +1,4 @@
-- name: srcds-fw-disable
+- name: srcds-fw-deny
   become: yes
   ufw:
     rule: deny
@@ -60,28 +60,51 @@
   tags:
     - game_config
 
-- name: Generate tf/cfg/server.cfg
+- name: Generate tf/cfg/autoexec.cfg
   template:
-    src: tf2server.cfg.j2
-    dest: /build/{{ item.server_name_short }}/server.cfg
+    src: autoexec.cfg.j2
+    dest: /build/{{ item.server_name_short }}/autoexec.cfg
     mode: 0777
   loop: "{{ services }}"
+  loop_control:
+    index_var: loop0
+  vars:
+    tv_port: "{{ srcds_base_port + (loop0 * 10) + 5 }}"
   tags:
     - game_config
 
-- name: Generate /build/umc_mapcycle.txt
+- name: Generate tf/cfg/server.cfg
+  template:
+    src: server.cfg.j2
+    dest: /build/{{ item.server_name_short }}/server.cfg
+    mode: 0777
+  loop: "{{ services }}"
+  loop_control:
+    index_var: loop0
+  vars:
+    tv_port: "{{ srcds_base_port + (loop0 * 10) + 5 }}"
+  tags:
+    - game_config
+
+- name: Generate /build/{{ item.server_name_short }}/umc_mapcycle.txt
   template:
     src: umc_mapcycle.txt.j2
-    dest: /build/umc_mapcycle.txt
+    dest: /build/{{ item.server_name_short }}/umc_mapcycle.txt
     mode: 0777
+  loop: "{{ services }}"
+  loop_control:
+    index_var: loop0
   tags:
     - game_config
 
 - name: mapcycle_nominate.txt
   template:
     src: umc_mapcycle_nominate.txt.j2
-    dest: /build/umc_mapcycle_nominate.txt
+    dest: /build/{{ item.server_name_short }}/umc_mapcycle_nominate.txt
     mode: 0777
+  loop: "{{ services }}"
+  loop_control:
+    index_var: loop0
   tags:
     - game_config
 
@@ -111,7 +134,7 @@
 - name: srcds
   docker_container:
     name: srcds-{{ item.server_name_short }}
-    image: leighmacdonald/uncletopia-srcds:latest
+    image: "{{ image_tag }}"
     state: started
     restart: yes
     network_mode: host
@@ -123,11 +146,14 @@
     ports:
       - "{{ srcds_base_port + (loop0 * 10) }}:{{ srcds_base_port + (loop0 * 10) }}/tcp"
       - "{{ srcds_base_port + (loop0 * 10) }}:{{ srcds_base_port + (loop0 * 10) }}/udp"
-      - "{{ srcds_base_port + (loop0 * 10) + 1 }}:{{ srcds_base_port + (loop0 * 10) + 1 }}/udp"
+      - "{{ srcds_base_port + (loop0 * 10) + 5 }}:{{ srcds_base_port + (loop0 * 10) + 5 }}/udp"
     env:
+      SRCDS_FPSMAX: "300"
+      SRCDS_TICKRATE: "67"
       SRCDS_TOKEN: "{{ item.gslt }}"
       SRCDS_PORT: "{{ srcds_base_port + (loop0 * 10) }}"
-      SRCDS_TV_PORT: "{{ srcds_base_port + (loop0 * 10) + 1 }}"
+      SRCDS_CLIENT_PORT: "{{ srcds_base_port + (loop0 * 10) + 3 }}"
+      SRCDS_TV_PORT: "{{ srcds_base_port + (loop0 * 10) + 5 }}"
       SRCDS_REGION: "{{ sv_region|quote }}"
       SRCDS_HOSTNAME: "{{ item.name }}"
       SRCDS_PW: "{{ server_password }}"
@@ -135,16 +161,18 @@
       SRCDS_RCONPW: "{{ rcon_password }}"
       SRCDS_IP: "{{ ip }}"
       SRCDS_MAXPLAYERS: "32"
+      SRCDS_LOG_SECRET: "{{ item.log_secret }}"
+      
       # This will opt out ofo the new handshake for A2S_INFO packets to address the reflection attack. At this
       # time, it is primarily intended for testing 3rd party query clients. Since not all players may have an updated
       # Steam client and understand this handshake, it is not recommend to enable this at this time, except for testing. 
       # We will post again when the vast majority of users are running clients that understand the new protocol, and 
       # enabling the new protocol is safe.
-      STEAM_GAMESERVER_A2S_INFO_STRICT_LEGACY_PROTOCOL: "0"
+      #STEAM_GAMESERVER_A2S_INFO_STRICT_LEGACY_PROTOCOL: "0"
       # This will drop any connectionless packets (A2S_INFO, A2S_RULES, A2S_PLAYERS) from a given IP after more than 
       # N are received in a 200ms window. By default, rate limiting is disabled, but a reasonable value might be 
       # somewhere around 25-75.
-      STEAM_GAMESERVER_RATE_LIMIT_200MS: "25"
+      #STEAM_GAMESERVER_RATE_LIMIT_200MS: "25"
       # If this variable is set, then the Steamworks packet handling calls will use a “fast path”. In the 
       # Steamworks SDK, most API calls are serialized over an IPC, and in fact execute in the steam client process.
       # A dedicated server does not communicate with a steam client (there usually isn’t one running), but the same 
@@ -152,13 +180,14 @@
       # Turning on this environment variable will bypass this serialization and thread context switch, which makes these 
       # calls, much, much faster. Note that this only affects a server in “shared socket mode” – meaning the game port 
       # and the query port are the same.
-      STEAM_GAMESERVER_PACKET_HANDLER_NO_IPC: "1"
+      #STEAM_GAMESERVER_PACKET_HANDLER_NO_IPC: "1"
 
     volumes:
+      - /build/{{ item.server_name_short }}/autoexec.cfg:/home/steam/tf-dedicated/tf/cfg/autoexec.cfg
       - /build/{{ item.server_name_short }}/server.cfg:/home/steam/tf-dedicated/tf/cfg/server.cfg
       - /build/admins_simple.ini:/home/steam/tf-dedicated/tf/addons/sourcemod/configs/admins_simple.ini
-      - /build/umc_mapcycle.txt:/home/steam/tf-dedicated/tf/umc_mapcycle.txt
-      - /build/umc_mapcycle_nominate.txt:/home/steam/tf-dedicated/tf/umc_mapcycle_nominate.txt
+      - /build/{{ item.server_name_short }}/umc_mapcycle.txt:/home/steam/tf-dedicated/tf/umc_mapcycle.txt
+      - /build/{{ item.server_name_short }}/umc_mapcycle_nominate.txt:/home/steam/tf-dedicated/tf/umc_mapcycle_nominate.txt
       - /build/motd.txt:/home/steam/tf-dedicated/tf/cfg/motd.txt
       # - /build/mapcycle_halloween.txt:/home/steam/tf-dedicated/tf/cfg/mapcycle_halloween.txt
       # - /build/pure_server_whitelist.txt:/home/steam/tf-dedicated/tf/cfg/pure_server_whitelist.txt
@@ -180,6 +209,26 @@
     rule: allow
     port: "{{ srcds_base_port + (loop0 * 10) }}"
     proto: any
+  loop: "{{ services }}"
+  loop_control:
+    index_var: loop0
+
+- name: srcds-client-fw
+  become: yes
+  ufw:
+    rule: allow
+    port: "{{ srcds_base_port + (loop0 * 10) + 3 }}"
+    proto: udp
+  loop: "{{ services }}"
+  loop_control:
+    index_var: loop0
+
+- name: srcds-tv-fw
+  become: yes
+  ufw:
+    rule: allow
+    port: "{{ srcds_base_port + (loop0 * 10) + 5 }}"
+    proto: udp
   loop: "{{ services }}"
   loop_control:
     index_var: loop0
