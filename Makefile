@@ -1,6 +1,6 @@
 .PHONY: all pre system deploy
 
-all: deploysssswwwwwwwwwwwwwwwww
+all: deploy
 
 deps:
 	@ansible-galaxy install -f -r collections/requirements.yml
@@ -47,4 +47,3 @@ test_ping:
 
 restart:
 	@ansible tf2 -a "/sbin/reboot now" -f 10 -u tf2server --become $(ARGS)
-
