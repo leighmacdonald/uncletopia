@@ -117,7 +117,7 @@
     - game_config
 
 - name: prepare chown hack (roto pls fix)
-  shell: 'getent passwd "1000" | cut -d: -f1'
+  shell: 'getent passwd "tf2server" | cut -d: -f1'
   register: poop
 
 - name: chown hack all the things! (roto pls fix)
@@ -143,10 +143,11 @@
     tty: yes
     restart_policy: always
     cpuset_cpus: "{{ loop0 * 2 }},{{ (loop0 * 2)+1 }}"
-    ports:
-      - "{{ srcds_base_port + (loop0 * 10) }}:{{ srcds_base_port + (loop0 * 10) }}/tcp"
-      - "{{ srcds_base_port + (loop0 * 10) }}:{{ srcds_base_port + (loop0 * 10) }}/udp"
-      - "{{ srcds_base_port + (loop0 * 10) + 5 }}:{{ srcds_base_port + (loop0 * 10) + 5 }}/udp"
+    # Ports do nothing when running in host networking mode. Uncomment for bridge mode.
+    # ports:
+    #   - "{{ srcds_base_port + (loop0 * 10) }}:{{ srcds_base_port + (loop0 * 10) }}/tcp"
+    #   - "{{ srcds_base_port + (loop0 * 10) }}:{{ srcds_base_port + (loop0 * 10) }}/udp"
+    #   - "{{ srcds_base_port + (loop0 * 10) + 5 }}:{{ srcds_base_port + (loop0 * 10) + 5 }}/udp"
     env:
       SRCDS_FPSMAX: "300"
       SRCDS_TICKRATE: "67"
