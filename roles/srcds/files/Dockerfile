@@ -1,24 +1,19 @@
 # Build sourcemod plugins
 # Compiled plugins are output to /build/addons/sourcemod/plugins
 FROM python:3-slim as sm_build
-
 ENV METAMOD_VERSION 1.11
 ENV SOURCEMOD_VERSION 1.10
 ENV PATH="${PATH}:/build/addons/sourcemod/scripting"
-
 WORKDIR /build
 RUN set -x \
     && apt-get update \
-    && apt-get install wget -y \
-	&& wget -qO- https://mms.alliedmods.net/mmsdrop/1.11/mmsource-1.11.0-git1145-linux.tar.gz | tar xvzf - -C . \
-	&& wget -qO- https://sm.alliedmods.net/smdrop/1.10/sourcemod-1.10.0-git6528-linux.tar.gz | tar xvzf - -C . \
-    && chmod 777 /build/addons/sourcemod/scripting/spcomp
-COPY addons/sourcemod/data addons/sourcemod/data/
-COPY addons/sourcemod/extensions addons/sourcemod/extensions/
-COPY addons/sourcemod/gamedata addons/sourcemod/gamedata/
-COPY addons/sourcemod/plugins addons/sourcemod/plugins/
-COPY addons/sourcemod/scripting addons/sourcemod/scripting/
-COPY addons/sourcemod/translations addons/sourcemod/translations/
+    && apt-get install curl -y \
+	&& curl -ssL https://mms.alliedmods.net/mmsdrop/${METAMOD_VERSION}/`curl -ssL "https://mms.alliedmods.net/mmsdrop/1.11/mmsource-latest-linux"` | tar xvzf - -C . \
+	&& curl -ssL https://sm.alliedmods.net/smdrop/${SOURCEMOD_VERSION}/`curl -ssL "https://sm.alliedmods.net/smdrop/1.10/sourcemod-latest-linux"` | tar xvzf - -C . \
+    && chmod +x /build/addons/sourcemod/scripting/spcomp
+COPY addons/sourcemod addons/sourcemod/
+
+RUN ls -la addons/sourcemod
 
 WORKDIR /build/addons/sourcemod/scripting
 COPY build.py .
@@ -26,9 +21,9 @@ COPY build.py .
 RUN python3 build.py
 
 # Download tf2 game engine+assets to /build/game_data
-FROM debian:buster-slim as download_tf2
+FROM debian:buster-slim as game_build
 WORKDIR /build
-
+ENV GAME_PATH ./game_data
 ENV STEAMAPPID 232250
 
 RUN set -x \
@@ -39,14 +34,13 @@ RUN set -x \
 	&& rm packages-microsoft-prod.deb \
 	&& apt-get update \
     && apt-get install -y --no-install-recommends --no-install-suggests \
-		aspnetcore-runtime-5.0 unzip ca-certificates 
+		aspnetcore-runtime-5.0 unzip ca-certificates
 
 RUN set -x \
 	&& wget https://github.com/SteamRE/DepotDownloader/releases/download/DepotDownloader_2.4.5/depotdownloader-2.4.5.zip \
 	&& unzip depotdownloader-2.4.5.zip \
-	&& mkdir -p game_data \
-	&& dotnet ./DepotDownloader.dll -app "${STEAMAPPID}" -dir ./game_data -max-downloads 16 -max-servers 32
-
+	&& mkdir -p "${GAME_PATH}" \
+	&& dotnet ./DepotDownloader.dll -app "${STEAMAPPID}" -dir "${GAME_PATH}" -max-downloads 16 -max-servers 32
 
 FROM debian:buster-slim
 
@@ -107,11 +101,10 @@ ENV SRCDS_FPSMAX=300 \
 
 EXPOSE 27015/tcp 27015/udp 27020/udp
 
-COPY --from=download_tf2 /build/game_data/ /game/
-COPY --from=sm_build /build/addons/ /addons/
+RUN mkdir -p ${STEAMAPPDIR}/tf/logs
 
-RUN ls -la /game/
-RUN ls -la /addons/
+COPY --from=game_build --chown=$USERNAME /build/game_data/ /game/
+COPY --from=sm_build --chown=$USERNAME /build/addons/ /addons/
 
 VOLUME ${HOMEDIR}/tf/addons/sourcemod/data
 VOLUME ${HOMEDIR}/tf/addons/sourcemod/gamedata
