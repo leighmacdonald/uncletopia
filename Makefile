@@ -2,12 +2,16 @@
 VAULT_PASS_PATH := ~/.vault_pass.txt
 PROD_OPTS := -l production --vault-password-file $(VAULT_PASS_PATH)
 BUILD_OPTS := -l build --vault-password-file $(VAULT_PASS_PATH)
+LOCAL_OPTS := -l local --vault-password-file $(VAULT_PASS_PATH)
 STAGING_OPTS := -l staging --vault-password-file $(VAULT_PASS_PATH)
 TESTING_OPTS := -l testing --vault-password-file $(VAULT_PASS_PATH)
 MGE_OPTS := -l mge --vault-password-file $(VAULT_PASS_PATH)
 PLAYBOOK_PATH := ./playbooks
 
 all: deploy
+
+build_local:
+	@ansible-playbook $(BUILD_OPTS) $(PLAYBOOK_PATH)/srcds.yml $(ARGS)
 
 build_remote:
 	@ansible-playbook $(BUILD_OPTS) $(PLAYBOOK_PATH)/srcds.yml $(ARGS)
@@ -73,16 +77,22 @@ test_deploy:
 test_ping:
 	@ansible tf2 -m ping -i testhost.yml $(ARGS)
 
-compile_sm: build_sm
+compile_sm: docker_build_sm
 	docker run -it leighmacdonald/uncletopia-sourcemod:latest
 
-build_sm:
-	docker build -t leighmacdonald/uncletopia-sourcemod:latest -f docker/sourcemod.Dockerfile .
+docker_build_game:
+	docker build -t leighmacdonald/uncletopia:latest --target game_build -f ./roles/srcds/files/Dockerfile ./roles/srcds/files/
 
-build_srcds: build_sm
-	docker build -t leighmacdonald/uncletopia:latest -f docker/srcds.Dockerfile .
+docker_build_sm:
+	docker build -t leighmacdonald/uncletopia:latest --no-cache --target sm_build -f ./roles/srcds/files/Dockerfile ./roles/srcds/files/
 
-shell_srcds: build_srcds
+docker_build:
+	docker build -t leighmacdonald/uncletopia:latest -f ./roles/srcds/files/Dockerfile ./roles/srcds/files/
+
+rebuild_srcds:
+	docker build -t leighmacdonald/uncletopia:latest --no-cache -f ./roles/srcds/files/Dockerfile ./roles/srcds/files/
+
+shell_srcds: docker_build_srcds
 	docker run -it leighmacdonald/uncletopia:latest
 
 list_hosts:
@@ -96,4 +106,3 @@ ping:
 
 restart:
 	@ansible all -m reboot -a reboot_timeout=3600 -u tf2server -i hosts.yml -b
-	
