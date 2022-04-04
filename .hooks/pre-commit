@@ -5,7 +5,11 @@ from os.path import join
 import subprocess
 import sys
 
-ENCRYPTED_PATH = ["inventories", "group_vars", "host_vars"]
+ENCRYPTED_PATH = [
+    "hosts.yml",
+    "group_vars",
+    "host_vars"
+]
 
 
 class ValidationError(Exception):
@@ -13,7 +17,7 @@ class ValidationError(Exception):
 
 
 def repo_dir():
-    resp = subprocess.run(["git","rev-parse", "--show-toplevel"], stdout=subprocess.PIPE)
+    resp = subprocess.run(["git", "rev-parse", "--show-toplevel"], stdout=subprocess.PIPE)
     return resp.stdout.decode('utf-8').rstrip()
 
 
@@ -42,11 +46,15 @@ def ensure_ansible_lint():
 def main():
     ret_val = 255
     try:
+        print("Checking encrypted")
         ensure_encrypted()
+        print("Checking ansible-lint")
         ensure_ansible_lint()
     except ValidationError as err:
         print("[ERROR] {}".format(err))
         ret_val = 1
+    except Exception as err:
+        print("[Exc] {}".format(err))
     else:
         ret_val = 0
     finally:
