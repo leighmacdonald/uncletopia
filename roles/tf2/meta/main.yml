@@ -1,3 +1,4 @@
+---
 galaxy_info:
   author: Leigh MacDonald
   description: Setup TF2 using LGSM
@@ -13,13 +14,13 @@ galaxy_info:
   # min_ansible_container_version:
 
   platforms:
-  - name: Ubuntu
-    versions:
-    - 20.04
+    - name: Ubuntu
+      versions:
+        - 20.04
 
   galaxy_tags:
-    - "tf2"
-    - "teamfortress2"
+    - tf2
+    - teamfortress2
 
 dependencies: []
   # List your role dependencies here, one per line. Be sure to remove the '[]' above,

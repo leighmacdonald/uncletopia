@@ -1,6 +1,7 @@
+---
 - name: srcds-fw-deny
-  become: yes
-  ufw:
+  become: true
+  community.general.ufw:
     rule: deny
     port: "{{ srcds_base_port + (loop0 * 10) }}"
     proto: any
@@ -9,9 +10,9 @@
     index_var: loop0
 
 - name: create build output dirs
-  become: yes
+  become: true
   become_user: root
-  file:
+  ansible.builtin.file:
     path: /build
     state: directory
     owner: tf2server
@@ -19,9 +20,9 @@
   loop: "{{ services }}"
 
 - name: build output
-  become: yes
+  become: true
   become_user: root
-  file:
+  ansible.builtin.file:
     path: /build/{{ item.server_name_short }}
     state: directory
     owner: tf2server
@@ -29,7 +30,7 @@
   loop: "{{ services }}"
 
 - name: Generate /build/admins_simple.ini
-  template:
+  ansible.builtin.template:
     src: admins_simple.ini.j2
     dest: /build/admins_simple.ini
     mode: 0777
@@ -37,7 +38,7 @@
     - game_config
 
 - name: Generate /build/admin_overrides.cfg
-  template:
+  ansible.builtin.template:
     src: admin_overrides.cfg.j2
     dest: /build/admin_overrides.cfg
     mode: 0777
@@ -45,7 +46,7 @@
     - game_config
 
 - name: Generate /build/sourcemod.cfg
-  template:
+  ansible.builtin.template:
     src: sourcemod.cfg.j2
     dest: /build/sourcemod.cfg
     mode: 0777
@@ -53,7 +54,7 @@
     - game_config
 
 - name: Generate /build/gbans.cfg
-  template:
+  ansible.builtin.template:
     src: gbans.cfg.j2
     dest: /build/gbans.cfg
     mode: 0777
@@ -61,7 +62,7 @@
     - game_config
 
 - name: Generate tf/cfg/autoexec.cfg
-  template:
+  ansible.builtin.template:
     src: autoexec.cfg.j2
     dest: /build/{{ item.server_name_short }}/autoexec.cfg
     mode: 0777
@@ -74,7 +75,7 @@
     - game_config
 
 - name: Generate tf/cfg/server.cfg
-  template:
+  ansible.builtin.template:
     src: server.cfg.j2
     dest: /build/{{ item.server_name_short }}/server.cfg
     mode: 0777
@@ -87,7 +88,7 @@
     - game_config
 
 - name: Generate /build/{{ item.server_name_short }}/umc_mapcycle.txt
-  template:
+  ansible.builtin.template:
     src: umc_mapcycle.txt.j2
     dest: /build/{{ item.server_name_short }}/umc_mapcycle.txt
     mode: 0777
@@ -98,7 +99,7 @@
     - game_config
 
 - name: mapcycle_nominate.txt
-  template:
+  ansible.builtin.template:
     src: umc_mapcycle_nominate.txt.j2
     dest: /build/{{ item.server_name_short }}/umc_mapcycle_nominate.txt
     mode: 0777
@@ -109,7 +110,7 @@
     - game_config
 
 - name: Generate /build/motd.txt
-  template:
+  ansible.builtin.template:
     src: motd.txt.j2
     dest: /build/motd.txt
     mode: 0777
@@ -117,30 +118,32 @@
     - game_config
 
 - name: prepare chown hack (roto pls fix)
-  shell: 'getent passwd "tf2server" | cut -d: -f1'
+  ansible.builtin.shell: 'getent passwd "tf2server" | cut -d: -f1'
   register: poop
+  tags: ['skip_ansible_lint']
 
 - name: chown hack all the things! (roto pls fix)
-  become: yes
-  shell: 'chown -R {{ poop.stdout }} /build'
-  
+  become: true
+  ansible.builtin.shell: chown -R {{ poop.stdout }} /build
+  tags: ['skip_ansible_lint']
+
 - name: Prune containers older than 24h
-  docker_prune:
-    containers: yes
+  community.docker.docker_prune:
+    containers: true
     containers_filters:
       # only consider containers created more than 24 hours ago
       until: 24h
 
 - name: srcds
-  docker_container:
+  community.docker.docker_container:
     name: srcds-{{ item.server_name_short }}
     image: "{{ image_tag }}"
     state: started
-    restart: yes
+    restart: true
     network_mode: host
-    pull: yes
-    interactive: yes
-    tty: yes
+    pull: true
+    interactive: true
+    tty: true
     restart_policy: always
     cpuset_cpus: "{{ loop0 * 2 }},{{ (loop0 * 2)+1 }}"
     # Ports do nothing when running in host networking mode. Uncomment for bridge mode.
@@ -163,25 +166,27 @@
       SRCDS_IP: "{{ ip }}"
       SRCDS_MAXPLAYERS: "32"
       SRCDS_LOG_SECRET: "{{ item.log_secret }}"
-      
-      # This will opt out ofo the new handshake for A2S_INFO packets to address the reflection attack. At this
-      # time, it is primarily intended for testing 3rd party query clients. Since not all players may have an updated
-      # Steam client and understand this handshake, it is not recommend to enable this at this time, except for testing. 
-      # We will post again when the vast majority of users are running clients that understand the new protocol, and 
-      # enabling the new protocol is safe.
-      #STEAM_GAMESERVER_A2S_INFO_STRICT_LEGACY_PROTOCOL: "0"
-      # This will drop any connectionless packets (A2S_INFO, A2S_RULES, A2S_PLAYERS) from a given IP after more than 
-      # N are received in a 200ms window. By default, rate limiting is disabled, but a reasonable value might be 
-      # somewhere around 25-75.
-      #STEAM_GAMESERVER_RATE_LIMIT_200MS: "25"
-      # If this variable is set, then the Steamworks packet handling calls will use a “fast path”. In the 
-      # Steamworks SDK, most API calls are serialized over an IPC, and in fact execute in the steam client process.
-      # A dedicated server does not communicate with a steam client (there usually isn’t one running), but the same 
-      # basic design is used – there are two threads, and all API calls are serialized and executed in the Steam thread. 
-      # Turning on this environment variable will bypass this serialization and thread context switch, which makes these 
-      # calls, much, much faster. Note that this only affects a server in “shared socket mode” – meaning the game port 
-      # and the query port are the same.
-      #STEAM_GAMESERVER_PACKET_HANDLER_NO_IPC: "1"
+
+    # This will opt out ofo the new handshake for A2S_INFO packets to address the reflection attack. At this
+    # time, it is primarily intended for testing 3rd party query clients. Since not all players may have an updated
+    # Steam client and understand this handshake, it is not recommend to enable this at this time, except for testing.
+    # We will post again when the vast majority of users are running clients that understand the new protocol, and
+    # enabling the new protocol is safe.
+    # STEAM_GAMESERVER_A2S_INFO_STRICT_LEGACY_PROTOCOL: "0"
+    #
+    # This will drop any connectionless packets (A2S_INFO, A2S_RULES, A2S_PLAYERS) from a given IP after more than
+    # N are received in a 200ms window. By default, rate limiting is disabled, but a reasonable value might be
+    # somewhere around 25-75.
+    # STEAM_GAMESERVER_RATE_LIMIT_200MS: "25"
+    #
+    # If this variable is set, then the Steamworks packet handling calls will use a “fast path”. In the
+    # Steamworks SDK, most API calls are serialized over an IPC, and in fact execute in the steam client process.
+    # A dedicated server does not communicate with a steam client (there usually isn’t one running), but the same
+    # basic design is used – there are two threads, and all API calls are serialized and executed in the Steam thread.
+    # Turning on this environment variable will bypass this serialization and thread context switch, which makes these
+    # calls, much, much faster. Note that this only affects a server in “shared socket mode” – meaning the game port
+    # and the query port are the same.
+    # STEAM_GAMESERVER_PACKET_HANDLER_NO_IPC: "1"
 
     volumes:
       - /build/{{ item.server_name_short }}/autoexec.cfg:/home/steam/tf-dedicated/tf/cfg/autoexec.cfg
@@ -200,13 +205,14 @@
     index_var: loop0
 
 - name: yet another hack! (roto pls fix)
-  become: yes
-  shell: 'docker exec -u 0 srcds-{{ item.server_name_short }} /bin/chown -R steam:steam /home/steam/tf-dedicated'
+  become: true
+  ansible.builtin.shell: docker exec -u 0 srcds-{{ item.server_name_short }} /bin/chown -R steam:steam /home/steam/tf-dedicated
   loop: "{{ services }}"
+  tags: ['skip_ansible_lint']
 
 - name: srcds-fw
-  become: yes
-  ufw:
+  become: true
+  community.general.ufw:
     rule: allow
     port: "{{ srcds_base_port + (loop0 * 10) }}"
     proto: any
@@ -215,8 +221,8 @@
     index_var: loop0
 
 - name: srcds-client-fw
-  become: yes
-  ufw:
+  become: true
+  community.general.ufw:
     rule: allow
     port: "{{ srcds_base_port + (loop0 * 10) + 3 }}"
     proto: udp
@@ -225,8 +231,8 @@
     index_var: loop0
 
 - name: srcds-tv-fw
-  become: yes
-  ufw:
+  become: true
+  community.general.ufw:
     rule: allow
     port: "{{ srcds_base_port + (loop0 * 10) + 5 }}"
     proto: udp
