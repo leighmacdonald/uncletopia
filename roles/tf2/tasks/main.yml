@@ -8,6 +8,7 @@
   loop: "{{ services }}"
   loop_control:
     index_var: loop0
+  when: ansible_distribution == 'Ubuntu'
 
 - name: create build output dirs
   become: true
@@ -219,6 +220,7 @@
   loop: "{{ services }}"
   loop_control:
     index_var: loop0
+  when: ansible_distribution == 'Ubuntu'
 
 - name: srcds-client-fw
   become: true
@@ -229,6 +231,7 @@
   loop: "{{ services }}"
   loop_control:
     index_var: loop0
+  when: ansible_distribution == 'Ubuntu'
 
 - name: srcds-tv-fw
   become: true
@@ -239,3 +242,4 @@
   loop: "{{ services }}"
   loop_control:
     index_var: loop0
+  when: ansible_distribution == 'Ubuntu'
