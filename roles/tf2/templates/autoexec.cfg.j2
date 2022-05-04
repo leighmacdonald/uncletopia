@@ -43,13 +43,31 @@ sv_voicecodec vaudio_celt_high
 mp_idlemaxtime 3
 
 // Network stuff
-sv_minrate 80000
+{# sv_minrate 80000
 sv_minupdaterate 20
 net_splitpacket_maxrate 1048576
 sv_maxrate 0
 sv_maxupdaterate 66
 sv_mincmdrate 30
+sv_maxcmdrate 66 #}
+fps_max 300 
+
+{# sv_minupdaterate 20
+sv_maxupdaterate 66
+sv_mincmdrate 20
 sv_maxcmdrate 66
+sv_minrate 7500
+sv_maxrate 20000 #}
+
+sv_maxrate		"0" // Set this same as min. rate if you not have enough upload bandwidth
+sv_minrate		"59400"
+sv_maxupdaterate	"66" 
+sv_minupdaterate	"20"
+sv_maxcmdrate		"66" // Use if you like
+sv_mincmdrate		"30"
+net_splitpacket_maxrate			"1048576"
+
+net_maxfilesize 1
 
 // Server Logging
 log on
