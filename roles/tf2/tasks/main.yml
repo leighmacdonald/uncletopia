@@ -62,6 +62,14 @@
   tags:
     - game_config
 
+- name: Generate /build/discord.cfg
+  ansible.builtin.template:
+    src: discord.cfg.j2
+    dest: /build/discord.cfg
+    mode: 0777
+  tags:
+    - game_config
+
 - name: Generate tf/cfg/autoexec.cfg
   ansible.builtin.template:
     src: autoexec.cfg.j2
@@ -201,6 +209,7 @@
       - /build/sourcemod.cfg:/home/steam/tf-dedicated/tf/cfg/sourcemod/sourcemod.cfg
       - /build/admin_overrides.cfg:/home/steam/tf-dedicated/tf/addons/sourcemod/configs/admin_overrides.cfg
       - /build/gbans.cfg:/home/steam/tf-dedicated/tf/addons/sourcemod/configs/gbans.cfg
+      - /build/discord.cfg:/home/steam/tf-dedicated/tf/addons/sourcemod/configs/discord.cfg
   loop: "{{ services }}"
   loop_control:
     index_var: loop0
