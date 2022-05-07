@@ -107,10 +107,10 @@
   tags:
     - game_config
 
-- name: mapcycle_nominate.txt
+- name: Generate /build/{{ item.server_name_short }}/umc-nominate.cfg
   ansible.builtin.template:
-    src: umc_mapcycle_nominate.txt.j2
-    dest: /build/{{ item.server_name_short }}/umc_mapcycle_nominate.txt
+    src: umc-nominate.cfg.j2
+    dest: /build/{{ item.server_name_short }}/umc-nominate.cfg
     mode: 0777
   loop: "{{ services }}"
   loop_control:
@@ -202,14 +202,13 @@
       - /build/{{ item.server_name_short }}/server.cfg:/home/steam/tf-dedicated/tf/cfg/server.cfg
       - /build/admins_simple.ini:/home/steam/tf-dedicated/tf/addons/sourcemod/configs/admins_simple.ini
       - /build/{{ item.server_name_short }}/umc_mapcycle.txt:/home/steam/tf-dedicated/tf/umc_mapcycle.txt
-      - /build/{{ item.server_name_short }}/umc_mapcycle_nominate.txt:/home/steam/tf-dedicated/tf/umc_mapcycle_nominate.txt
+      #- /build/{{ item.server_name_short }}/umc_mapcycle_nominate.txt:/home/steam/tf-dedicated/tf/umc_mapcycle_nominate.txt
       - /build/motd.txt:/home/steam/tf-dedicated/tf/cfg/motd.txt
-      # - /build/mapcycle_halloween.txt:/home/steam/tf-dedicated/tf/cfg/mapcycle_halloween.txt
-      # - /build/pure_server_whitelist.txt:/home/steam/tf-dedicated/tf/cfg/pure_server_whitelist.txt
       - /build/sourcemod.cfg:/home/steam/tf-dedicated/tf/cfg/sourcemod/sourcemod.cfg
       - /build/admin_overrides.cfg:/home/steam/tf-dedicated/tf/addons/sourcemod/configs/admin_overrides.cfg
       - /build/gbans.cfg:/home/steam/tf-dedicated/tf/addons/sourcemod/configs/gbans.cfg
       - /build/discord.cfg:/home/steam/tf-dedicated/tf/addons/sourcemod/configs/discord.cfg
+      - /build/{{ item.server_name_short }}/umc-nominate.cfg:/home/steam/tf-dedicated/tf/cfg/sourcemod/umc-nominate.cfg
   loop: "{{ services }}"
   loop_control:
     index_var: loop0
