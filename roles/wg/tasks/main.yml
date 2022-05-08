@@ -21,7 +21,7 @@
     src: srv-wg0.conf.j2
     dest: /etc/wireguard/wg0.conf
     mode: 0700
-  when: not is_vpn_client | bool
+  when: not vpn_client | bool
 
 - name: wg.conf client
   become: true
@@ -29,7 +29,7 @@
     src: wg0.conf.j2
     dest: /etc/wireguard/wg0.conf
     mode: 0700
-  when: is_vpn_client | bool
+  when: vpn_client | bool
 
 - name: wg-fw
   become: true
