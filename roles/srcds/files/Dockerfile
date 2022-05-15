@@ -13,7 +13,7 @@ RUN set -x \
     && chmod +x /build/addons/sourcemod/scripting/spcomp
 COPY addons/sourcemod addons/sourcemod/
 
-RUN ls -la addons/sourcemod
+RUN ls -la addons/
 
 WORKDIR /build/addons/sourcemod/scripting
 COPY build.py .
@@ -23,6 +23,7 @@ RUN python3 build.py
 # Download tf2 game engine+assets to /build/game_data
 FROM debian:buster-slim as game_build
 WORKDIR /build
+ENV DEPOT_DL_VERSION 2.4.6
 ENV GAME_PATH ./game_data
 ENV STEAMAPPID 232250
 
@@ -34,11 +35,11 @@ RUN set -x \
 	&& rm packages-microsoft-prod.deb \
 	&& apt-get update \
     && apt-get install -y --no-install-recommends --no-install-suggests \
-		aspnetcore-runtime-5.0 unzip ca-certificates
+		aspnetcore-runtime-6.0 unzip ca-certificates
 
 RUN set -x \
-	&& wget https://github.com/SteamRE/DepotDownloader/releases/download/DepotDownloader_2.4.5/depotdownloader-2.4.5.zip \
-	&& unzip depotdownloader-2.4.5.zip \
+	&& wget "https://github.com/SteamRE/DepotDownloader/releases/download/DepotDownloader_${DEPOT_DL_VERSION}/depotdownloader-${DEPOT_DL_VERSION}.zip" \
+	&& unzip depotdownloader-${DEPOT_DL_VERSION}.zip \
 	&& mkdir -p "${GAME_PATH}" \
 	&& dotnet ./DepotDownloader.dll -app "${STEAMAPPID}" -dir "${GAME_PATH}" -max-downloads 16 -max-servers 32
 
