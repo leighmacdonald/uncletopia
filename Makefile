@@ -87,13 +87,13 @@ docker_build_sm:
 	docker build -t leighmacdonald/uncletopia:latest --no-cache --target sm_build -f ./roles/srcds/files/Dockerfile ./roles/srcds/files/
 
 docker_build:
-	docker build -t leighmacdonald/uncletopia:latest -f ./roles/srcds/files/Dockerfile ./roles/srcds/files/
+	docker build -t leighmacdonald/uncletopia:awx -f ./roles/srcds/files/Dockerfile ./roles/srcds/files/
 
 rebuild_srcds:
-	docker build -t leighmacdonald/uncletopia:latest --no-cache -f ./roles/srcds/files/Dockerfile ./roles/srcds/files/
+	docker build -t leighmacdonald/uncletopia:awx --no-cache -f ./roles/srcds/files/Dockerfile ./roles/srcds/files/
 
-shell_srcds: docker_build_srcds
-	docker run -it leighmacdonald/uncletopia:latest
+shell_srcds:
+	docker run -it leighmacdonald/uncletopia:awx
 
 list_hosts:
 	ansible all --list-hosts $(OPTS)
