@@ -1,19 +1,7 @@
----
-- name: srcds-fw-deny
-  become: true
-  community.general.ufw:
-    rule: deny
-    port: "{{ srcds_base_port + (loop0 * 10) }}"
-    proto: any
-  loop: "{{ services }}"
-  loop_control:
-    index_var: loop0
-  when: ansible_distribution == 'Ubuntu'
-
 - name: create build output dirs
   become: true
   become_user: root
-  ansible.builtin.file:
+  file:
     path: /build
     state: directory
     owner: tf2server
@@ -23,7 +11,7 @@
 - name: build output
   become: true
   become_user: root
-  ansible.builtin.file:
+  file:
     path: /build/{{ item.server_name_short }}
     state: directory
     owner: tf2server
@@ -31,7 +19,7 @@
   loop: "{{ services }}"
 
 - name: Generate /build/admins_simple.ini
-  ansible.builtin.template:
+  template:
     src: admins_simple.ini.j2
     dest: /build/admins_simple.ini
     mode: 0777
@@ -39,7 +27,7 @@
     - game_config
 
 - name: Generate /build/admin_overrides.cfg
-  ansible.builtin.template:
+  template:
     src: admin_overrides.cfg.j2
     dest: /build/admin_overrides.cfg
     mode: 0777
@@ -47,7 +35,7 @@
     - game_config
 
 - name: Generate /build/sourcemod.cfg
-  ansible.builtin.template:
+  template:
     src: sourcemod.cfg.j2
     dest: /build/sourcemod.cfg
     mode: 0777
@@ -55,160 +43,164 @@
     - game_config
 
 - name: Generate /build/gbans.cfg
-  ansible.builtin.template:
+  template:
     src: gbans.cfg.j2
     dest: /build/gbans.cfg
     mode: 0777
   tags:
     - game_config
 
-- name: Generate /build/discord.cfg
-  ansible.builtin.template:
-    src: discord.cfg.j2
-    dest: /build/discord.cfg
-    mode: 0777
-  tags:
-    - game_config
-
-- name: Generate tf/cfg/autoexec.cfg
-  ansible.builtin.template:
-    src: autoexec.cfg.j2
-    dest: /build/{{ item.server_name_short }}/autoexec.cfg
-    mode: 0777
-  loop: "{{ services }}"
-  loop_control:
-    index_var: loop0
-  vars:
-    tv_port: "{{ srcds_base_port + (loop0 * 10) + 5 }}"
-  tags:
-    - game_config
-
 - name: Generate tf/cfg/server.cfg
-  ansible.builtin.template:
+  template:
     src: server.cfg.j2
     dest: /build/{{ item.server_name_short }}/server.cfg
     mode: 0777
   loop: "{{ services }}"
-  loop_control:
-    index_var: loop0
-  vars:
-    tv_port: "{{ srcds_base_port + (loop0 * 10) + 5 }}"
   tags:
     - game_config
 
-- name: Generate /build/{{ item.server_name_short }}/umc_mapcycle.txt
-  ansible.builtin.template:
-    src: umc_mapcycle.txt.j2
-    dest: /build/{{ item.server_name_short }}/umc_mapcycle.txt
+- name: mapcycle.txt
+  template:
+    src: mapcycle.txt.j2
+    dest: /build/{{ item.server_name_short }}/mapcycle.txt
     mode: 0777
+  tags:
+    - game_config
   loop: "{{ services }}"
   loop_control:
     index_var: loop0
+
+- name: Generate /build/mapchooser.cfg
+  template:
+    src: mapchooser.cfg.j2
+    dest: /build/mapchooser.cfg
+    mode: 0777
   tags:
     - game_config
 
-- name: Generate /build/{{ item.server_name_short }}/umc-nominate.cfg
-  ansible.builtin.template:
-    src: umc-nominate.cfg.j2
-    dest: /build/{{ item.server_name_short }}/umc-nominate.cfg
+- name: Generate /build/maplists.cfg
+  template:
+    src: maplists.cfg.j2
+    dest: /build/{{ item.server_name_short }}/maplists.cfg
     mode: 0777
+  tags:
+    - game_config
   loop: "{{ services }}"
   loop_control:
     index_var: loop0
+
+- name: Generate /build/autoexec.cfg
+  template:
+    src: autoexec.cfg.j2
+    dest: /build/{{ item.server_name_short }}/autoexec.cfg
+    mode: 0777
+  tags:
+    - game_config
+  loop: "{{ services }}"
+  loop_control:
+    index_var: loop0
+
+- name: Generate /build/nativevotes.cfg
+  template:
+    src: nativevotes.cfg.j2
+    dest: /build/nativevotes.cfg
+    mode: 0777
+  tags:
+    - game_config
+  
+- name: Generate /build/randomcycle.cfg
+  template:
+    src: randomcycle.cfg.j2
+    dest: /build/randomcycle.cfg
+    mode: 0777
+  tags:
+    - game_config
+
+- name: Generate /build/rtv.cfg
+  template:
+    src: rtv.cfg.j2
+    dest: /build/rtv.cfg
+    mode: 0777
   tags:
     - game_config
 
 - name: Generate /build/motd.txt
-  ansible.builtin.template:
+  template:
     src: motd.txt.j2
     dest: /build/motd.txt
     mode: 0777
   tags:
     - game_config
 
-- name: prepare chown hack (roto pls fix)
-  ansible.builtin.shell: 'getent passwd "tf2server" | cut -d: -f1'
-  register: poop
-  tags: ['skip_ansible_lint']
-
-- name: chown hack all the things! (roto pls fix)
-  become: true
-  ansible.builtin.shell: chown -R {{ poop.stdout }} /build
-  tags: ['skip_ansible_lint']
-
 - name: Prune containers older than 24h
-  community.docker.docker_prune:
-    containers: true
+  docker_prune:
+    images: true
+    containers: yes
     containers_filters:
       # only consider containers created more than 24 hours ago
       until: 24h
 
 - name: srcds
-  community.docker.docker_container:
+  docker_container:
     name: srcds-{{ item.server_name_short }}
-    image: "{{ image_tag }}"
+    image: "{{ item.image_tag|default(image_tag) }}"
     state: started
-    restart: true
+    restart: yes
     network_mode: host
-    pull: true
-    interactive: true
-    tty: true
+    pull: yes
+    interactive: yes
+    tty: yes
+    recreate: yes
     restart_policy: always
     cpuset_cpus: "{{ loop0 * 2 }},{{ (loop0 * 2)+1 }}"
-    # Ports do nothing when running in host networking mode. Uncomment for bridge mode.
     # ports:
     #   - "{{ srcds_base_port + (loop0 * 10) }}:{{ srcds_base_port + (loop0 * 10) }}/tcp"
     #   - "{{ srcds_base_port + (loop0 * 10) }}:{{ srcds_base_port + (loop0 * 10) }}/udp"
-    #   - "{{ srcds_base_port + (loop0 * 10) + 5 }}:{{ srcds_base_port + (loop0 * 10) + 5 }}/udp"
+    #   - "{{ srcds_base_port + (loop0 * 10) + 1 }}:{{ srcds_base_port + (loop0 * 10) + 1 }}/udp"
     env:
-      SRCDS_FPSMAX: "300"
-      SRCDS_TICKRATE: "67"
       SRCDS_TOKEN: "{{ item.gslt }}"
       SRCDS_PORT: "{{ srcds_base_port + (loop0 * 10) }}"
-      SRCDS_CLIENT_PORT: "{{ srcds_base_port + (loop0 * 10) + 3 }}"
-      SRCDS_TV_PORT: "{{ srcds_base_port + (loop0 * 10) + 5 }}"
+      SRCDS_TV_PORT: "{{ srcds_base_port + (loop0 * 10) + 1 }}"
       SRCDS_REGION: "{{ sv_region|quote }}"
       SRCDS_HOSTNAME: "{{ item.name }}"
       SRCDS_PW: "{{ server_password }}"
-      SRCDS_STARTMAP: "{{ start_map_default[item.rotation] }}"
+      SRCDS_STARTMAP: "{{ start_map }}"
       SRCDS_RCONPW: "{{ rcon_password }}"
       SRCDS_IP: "{{ ip }}"
       SRCDS_MAXPLAYERS: "32"
-      SRCDS_LOG_SECRET: "{{ item.log_secret }}"
-
-    # This will opt out ofo the new handshake for A2S_INFO packets to address the reflection attack. At this
-    # time, it is primarily intended for testing 3rd party query clients. Since not all players may have an updated
-    # Steam client and understand this handshake, it is not recommend to enable this at this time, except for testing.
-    # We will post again when the vast majority of users are running clients that understand the new protocol, and
-    # enabling the new protocol is safe.
-    # STEAM_GAMESERVER_A2S_INFO_STRICT_LEGACY_PROTOCOL: "0"
-    #
-    # This will drop any connectionless packets (A2S_INFO, A2S_RULES, A2S_PLAYERS) from a given IP after more than
-    # N are received in a 200ms window. By default, rate limiting is disabled, but a reasonable value might be
-    # somewhere around 25-75.
-    # STEAM_GAMESERVER_RATE_LIMIT_200MS: "25"
-    #
-    # If this variable is set, then the Steamworks packet handling calls will use a “fast path”. In the
-    # Steamworks SDK, most API calls are serialized over an IPC, and in fact execute in the steam client process.
-    # A dedicated server does not communicate with a steam client (there usually isn’t one running), but the same
-    # basic design is used – there are two threads, and all API calls are serialized and executed in the Steam thread.
-    # Turning on this environment variable will bypass this serialization and thread context switch, which makes these
-    # calls, much, much faster. Note that this only affects a server in “shared socket mode” – meaning the game port
-    # and the query port are the same.
-    # STEAM_GAMESERVER_PACKET_HANDLER_NO_IPC: "1"
+      # This will opt out ofo the new handshake for A2S_INFO packets to address the reflection attack. At this
+      # time, it is primarily intended for testing 3rd party query clients. Since not all players may have an updated
+      # Steam client and understand this handshake, it is not recommend enabling this at this time, except for testing.
+      # We will post again when the vast majority of users are running clients that understand the new protocol, and 
+      # enabling the new protocol is safe.
+      STEAM_GAMESERVER_A2S_INFO_STRICT_LEGACY_PROTOCOL: "0"
+      # This will drop any connectionless packets (A2S_INFO, A2S_RULES, A2S_PLAYERS) from a given IP after more than 
+      # N are received in a 200ms window. By default, rate limiting is disabled, but a reasonable value might be 
+      # somewhere around 25-75.
+      STEAM_GAMESERVER_RATE_LIMIT_200MS: "25"
+      # If this variable is set, then the Steamworks packet handling calls will use a “fast path”. In the 
+      # Steamworks SDK, most API calls are serialized over an IPC, and in fact execute in the steam client process.
+      # A dedicated server does not communicate with a steam client (there usually isn’t one running), but the same 
+      # basic design is used – there are two threads, and all API calls are serialized and executed in the Steam thread. 
+      # Turning on this environment variable will bypass this serialization and thread context switch, which makes these 
+      # calls, much, much faster. Note that this only affects a server in “shared socket mode” – meaning the game port 
+      # and the query port are the same.
+      STEAM_GAMESERVER_PACKET_HANDLER_NO_IPC: "1"
 
     volumes:
       - /build/{{ item.server_name_short }}/autoexec.cfg:/home/steam/tf-dedicated/tf/cfg/autoexec.cfg
       - /build/{{ item.server_name_short }}/server.cfg:/home/steam/tf-dedicated/tf/cfg/server.cfg
       - /build/admins_simple.ini:/home/steam/tf-dedicated/tf/addons/sourcemod/configs/admins_simple.ini
-      - /build/{{ item.server_name_short }}/umc_mapcycle.txt:/home/steam/tf-dedicated/tf/umc_mapcycle.txt
-      #- /build/{{ item.server_name_short }}/umc_mapcycle_nominate.txt:/home/steam/tf-dedicated/tf/umc_mapcycle_nominate.txt
+      - /build/{{ item.server_name_short }}/mapcycle.txt:/home/steam/tf-dedicated/tf/cfg/mapcycle.txt
       - /build/motd.txt:/home/steam/tf-dedicated/tf/cfg/motd.txt
       - /build/sourcemod.cfg:/home/steam/tf-dedicated/tf/cfg/sourcemod/sourcemod.cfg
       - /build/admin_overrides.cfg:/home/steam/tf-dedicated/tf/addons/sourcemod/configs/admin_overrides.cfg
       - /build/gbans.cfg:/home/steam/tf-dedicated/tf/addons/sourcemod/configs/gbans.cfg
-      - /build/discord.cfg:/home/steam/tf-dedicated/tf/addons/sourcemod/configs/discord.cfg
-      - /build/{{ item.server_name_short }}/umc-nominate.cfg:/home/steam/tf-dedicated/tf/cfg/sourcemod/umc-nominate.cfg
+      - /build/mapchooser.cfg:/home/steam/tf-dedicated/tf/cfg/sourcemod/mapchooser.cfg
+      - /build/nativevotes.cfg:/home/steam/tf-dedicated/tf/cfg/sourcemod/nativevotes.cfg
+      - /build/randomcycle.cfg:/home/steam/tf-dedicated/tf/cfg/sourcemod/randomcycle.cfg
+      - /build/rtv.cfg:/home/steam/tf-dedicated/tf/cfg/sourcemod/rtv.cfg
+      - /build/{{ item.server_name_short }}/maplists.cfg:/home/steam/tf-dedicated/tf/addons/sourcemod/configs/maplists.cfg
   loop: "{{ services }}"
   loop_control:
     index_var: loop0
@@ -221,32 +213,10 @@
 
 - name: srcds-fw
   become: true
-  community.general.ufw:
+  ufw:
     rule: allow
     port: "{{ srcds_base_port + (loop0 * 10) }}"
     proto: any
-  loop: "{{ services }}"
-  loop_control:
-    index_var: loop0
-  when: ansible_distribution == 'Ubuntu'
-
-- name: srcds-client-fw
-  become: true
-  community.general.ufw:
-    rule: allow
-    port: "{{ srcds_base_port + (loop0 * 10) + 3 }}"
-    proto: udp
-  loop: "{{ services }}"
-  loop_control:
-    index_var: loop0
-  when: ansible_distribution == 'Ubuntu'
-
-- name: srcds-tv-fw
-  become: true
-  community.general.ufw:
-    rule: allow
-    port: "{{ srcds_base_port + (loop0 * 10) + 5 }}"
-    proto: udp
   loop: "{{ services }}"
   loop_control:
     index_var: loop0
