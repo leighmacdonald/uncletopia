@@ -72,7 +72,7 @@ test_srcds:
 	@ansible-playbook $(TESTING_OPTS) $(PLAYBOOK_PATH)/srcds.yml $(ARGS)
 
 test_deploy:
-	@ansible-playbook $(TESTING_OPTS) $(PLAYBOOK_PATH)/deploy.yml $(ARGS)
+	@ansible-playbook $(TESTING_OPTS) $(PLAYBOOK_PATH)/deploy.yml --limit staging
 
 test_ping:
 	@ansible tf2 -m ping -i testhost.yml $(ARGS)

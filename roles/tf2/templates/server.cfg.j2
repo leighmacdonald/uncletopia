@@ -20,7 +20,7 @@ mp_forcecamera 1
 // Extra time for map voting
 mp_enableroundwaittime 1
 mp_restartround 0
-mp_bonusroundtime 25
+mp_bonusroundtime 15
 mp_chattime 20
 
 // Dont push same team
@@ -58,16 +58,11 @@ nano_votescramble_time 20.0
 nano_votescramble_delay 180.0
 nano_votescramble_chat_percentage 0.50
 nano_votescramble_menu_percentage 0.60
-nano_votescramble_minimum 3
+nano_votescramble_minimum 12
 nano_votescramble_skip_second_vote 1
 
 // Reminders
 ut_scramble_nag_timer 300.0
 ut_rtv_nag_timer 2400.0
 
-tf_medieval 0
-tf_medieval_autorp 0
-
-{% for k, v in autorecorder.items() %}
-{{ k }} {{ v }}
-{% endfor %}
+// sv_visiblemaxplayers 24
