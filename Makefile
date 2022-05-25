@@ -32,7 +32,7 @@ node_exporter:
 	@ansible-playbook $(PROD_OPTS) $(PLAYBOOK_PATH)/node_exporter.yml $(ARGS) 
 
 metrics:
-	@ansible-playbook $(PROD_OPTS) $(PLAYBOOK_PATH)/metrics.yml $(ARGS) 
+	@ansible-playbook $(PROD_OPTS) $(PLAYBOOK_PATH)/metrics.yml --limit metrics
 
 uncletopiaweb:
 	@ansible-playbook $(PROD_OPTS) $(PLAYBOOK_PATH)/uncletopiaweb.yml $(ARGS) 
