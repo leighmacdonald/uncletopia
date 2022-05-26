@@ -24,7 +24,9 @@ bool g_bVoted[MAXPLAYERS + 1], g_bVoteCooldown, g_bScrambleTeams;
 
 public void Event_RoundWin(Event event, const char[] name, bool dontBroadcast)
 {
-	g_iRoundsSinceLastScramble++;
+	if (event.GetBool("full_round")) {
+		g_iRoundsSinceLastScramble++;
+	}
 }
 
 public void OnPluginStart()
