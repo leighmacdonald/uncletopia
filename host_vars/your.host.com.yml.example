@@ -1,0 +1,20 @@
+timezone: "America/New_York"
+sv_region: 0
+ip: "20.30.40.50"
+vpn:
+  client_addr: "10.69.69.10/32"
+  private_key: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+  public_key: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+services:
+  - name: "Uncletopia | Atlanta | Payload & A/D | 1"
+    server_name_short: "atl-1"
+    gslt: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+    gbans_key: "xxxxxxxxxxxxxxxxxxxx"
+    log_secret: 123456
+    rotation: "pl_ad"
+  - name: "Uncletopia | Atlanta | Koth & 5CP | 1"
+    server_name_short: "atl-2"
+    gslt: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+    gbans_key: "xxxxxxxxxxxxxxxxxxxx"
+    log_secret: 7891011
+    rotation: "koth_cp"
