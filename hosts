@@ -1,0 +1,60 @@
+---
+
+all:
+  children:
+    local:
+      hosts:
+        localhost:
+
+    build:
+      hosts:
+        mtl-1.ca.uncletopia.com:
+        #localhost:
+
+    metrics:
+      hosts:
+        mtl-1.ca.uncletopia.com:
+
+    web:
+      hosts:
+        mtl-1.ca.uncletopia.com:
+
+    tf2:
+      children:
+        production:
+          children:
+             eu:
+               hosts:
+                 lon-1.uk.uncletopia.com:
+                 frk-1.de.uncletopia.com:
+             nae:
+               hosts:
+                 atl-1.us.uncletopia.com:
+                 mtl-1.ca.uncletopia.com:
+                 nyc-1.us.uncletopia.com:
+                 mia-1.us.uncletopia.com:
+             nac:
+               hosts:
+                 chi-[1:2].us.uncletopia.com:
+                 dal-1.us.uncletopia.com:
+             naw:
+               hosts:
+                 lax-1.us.uncletopia.com:
+                 sea-1.us.uncletopia.com:
+                 sfo-1.us.uncletopia.com:
+             sa:
+               hosts:
+                 sao-[1:2].br.uncletopia.com:
+             asia:
+               hosts:
+                 sgp-1.sg.uncletopia.com:
+                 hgk-1.hk.uncletopia.com:
+             aus:
+               hosts:
+                 syd-[1:2].au.uncletopia.com:
+             mge:
+               hosts:
+                 mge-1.us.uncletopia.com:
+        staging:
+          hosts:
+            test-1.ca.uncletopia.com:
