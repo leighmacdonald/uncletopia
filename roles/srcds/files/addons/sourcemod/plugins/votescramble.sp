@@ -24,12 +24,7 @@ bool g_bVoted[MAXPLAYERS + 1], g_bVoteCooldown, g_bScrambleTeams;
 
 public void Event_RoundWin(Event event, const char[] name, bool dontBroadcast)
 {
-	// -- use commented code below if using teamplay_win_panel event
-	// if (event.GetBool("full_round")) {
-	// 	g_iRoundsSinceLastScramble++;
-	// }
-
-	if (event.GetInt("round_complete") == 1 || StrEqual(name, "arena_win_panel")) {
+	if (event.GetBool("full_round")) {
 		g_iRoundsSinceLastScramble++;
 	}
 }
@@ -54,7 +49,7 @@ public void OnPluginStart()
 	RegConsoleCmd("sm_scramble", Cmd_VoteScramble, "Initiate a vote to scramble teams!");
 	RegAdminCmd("sm_forcescramble", Cmd_ForceScramble, ADMFLAG_VOTE, "Force a team scramble vote.");
 
-	HookEvent("teamplay_win_panel", Event_RoundWin);
+	HookEvent("teamplay_round_win", Event_RoundWin);
 }
 
 public void OnMapStart()
@@ -100,7 +95,7 @@ public Action Cmd_VoteScramble(int client, int args)
 
 public OnClientSayCommand_Post(int client, const char[] command, const char[] sArgs)
 {
-	if (strcmp(sArgs, "votescramble", false) == 0 || strcmp(sArgs, "vscramble", false) == 0 || strcmp(sArgs, "scramble", false) == 0 || strcmp(sArgs, "scrimblo", false) == 0 )
+	if (strcmp(sArgs, "votescramble", false) == 0 || strcmp(sArgs, "vscramble", false) == 0 || strcmp(sArgs, "scramble", false) == 0 || strcmp(sArgs, "fuck these teams", false) == 0 )
 	{
 		new ReplySource:old = SetCmdReplySource(SM_REPLY_TO_CHAT);
 
@@ -244,8 +239,6 @@ public Action Timer_DelayLimitsUpdate(Handle timer) {
 		SetConVarInt(cvarWinLimit, cvarWinLimit.IntValue - (g_iRoundsSinceLastScramble / 2), false, true);
 	}
 	g_iRoundsSinceLastScramble = 0;
-
-	delete timer;
 }
 
 public Action Timer_DelayRTS(Handle timer, any mins)
