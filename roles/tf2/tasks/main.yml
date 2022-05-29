@@ -100,6 +100,14 @@
   loop_control:
     index_var: loop0
 
+- name: Generate /build/discord.cfg
+  ansible.builtin.template:
+    src: discord.cfg.j2
+    dest: /build/discord.cfg
+    mode: 0777
+  tags:
+    - game_config
+
 - name: Generate /build/nativevotes.cfg
   template:
     src: nativevotes.cfg.j2
@@ -200,7 +208,9 @@
       - /build/nativevotes.cfg:/home/steam/tf-dedicated/tf/cfg/sourcemod/nativevotes.cfg
       - /build/randomcycle.cfg:/home/steam/tf-dedicated/tf/cfg/sourcemod/randomcycle.cfg
       - /build/rtv.cfg:/home/steam/tf-dedicated/tf/cfg/sourcemod/rtv.cfg
+      - /build/discord.cfg:/home/steam/tf-dedicated/tf/addons/sourcemod/configs/discord.cfg
       - /build/{{ item.server_name_short }}/maplists.cfg:/home/steam/tf-dedicated/tf/addons/sourcemod/configs/maplists.cfg
+
   loop: "{{ services }}"
   loop_control:
     index_var: loop0
