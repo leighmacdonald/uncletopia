@@ -5,7 +5,6 @@
 
 #include <sourcemod>
 #include <sdktools>
-#include <morecolors>
 #include <nativevotes>
 
 public Plugin myinfo =
