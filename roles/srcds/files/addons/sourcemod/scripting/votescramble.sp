@@ -145,11 +145,10 @@ void StartVoteScramble()
 {
 	if (cvarSkipSecondVote.IntValue == 1) {
 		CreateTimer(0.1, Timer_Scramble);
-		ResetVoteScramble();
-		return;
+	} else {
+		VoteScrambleMenu();
 	}
 
-	VoteScrambleMenu();
 	ResetVoteScramble();
 	g_bVoteCooldown = true;
 	CreateTimer(cvarVoteTimeDelay.FloatValue, Timer_Delay, _, TIMER_FLAG_NO_MAPCHANGE);
