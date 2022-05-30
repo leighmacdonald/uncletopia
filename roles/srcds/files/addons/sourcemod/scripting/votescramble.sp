@@ -145,6 +145,7 @@ void StartVoteScramble()
 {
 	if (cvarSkipSecondVote.IntValue == 1) {
 		CreateTimer(0.1, Timer_Scramble);
+		ResetVoteScramble();
 		return;
 	}
 
