@@ -113,12 +113,12 @@ void AttemptVoteScramble(int client)
 {
 	if (g_bScrambleTeams)
 	{
-		MC_ReplyToCommand(client, "A previous vote scramble has succeeded. Teams will be scrambled next round.");
+		ReplyToCommand(client, "A previous vote scramble has succeeded. Teams will be scrambled next round.");
 		return;
 	}
 	if (g_bVoteCooldown)
 	{
-		MC_ReplyToCommand(client, "Sorry, votescramble is currently on cool-down.");
+		ReplyToCommand(client, "Sorry, votescramble is currently on cool-down.");
 		return;
 	}
 
@@ -127,13 +127,13 @@ void AttemptVoteScramble(int client)
 
 	if (g_bVoted[client])
 	{
-		MC_ReplyToCommandEx(client, client, "{teamcolor}You {default}have already voted for a team scramble. [%d/%d votes required]", g_iVotes, g_iVotesNeeded);
+		ReplyToCommand(client, "You have already voted for a team scramble. [%d/%d votes required]", g_iVotes, g_iVotesNeeded);
 		return;
 	}
 
 	g_iVotes++;
 	g_bVoted[client] = true;
-	MC_PrintToChatAllEx(client, "{teamcolor}%s {default}wants to scramble teams. [%d/%d votes required]", name, g_iVotes, g_iVotesNeeded);
+	PrintToChatAll("%s wants to scramble teams. [%d/%d votes required]", name, g_iVotes, g_iVotesNeeded);
 
 	if (g_iVotes >= g_iVotesNeeded)
 	{
@@ -230,7 +230,7 @@ public Action Timer_Scramble(Handle timer) {
 	// delay updates of winlimit/maxrounds until next round begins to prevent game from ending immediately during scramble
 	CreateTimer(6.0, Timer_DelayLimitsUpdate);
 
-	MC_PrintToChatAll("Scrambling the teams due to vote.");
+	PrintToChatAll("Scrambling the teams due to vote.");
 }
 
 public Action Timer_DelayLimitsUpdate(Handle timer) {
