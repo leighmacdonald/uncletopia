@@ -71,45 +71,9 @@
     creates: ~/node_exporter
 
 - name: Create prometheus.service
-  become: true
   ansible.builtin.copy:
     src: node_exporter.service
     dest: /etc/systemd/system/node_exporter.service
-    mode: "644"
-
-- name: mkdir gbans
-  become: true
-  become_user: tf2server
-  ansible.builtin.file:
-    path: ~/gbans
-    state: directory
-    mode: "0755"
-
-- name: gbans download
-  become: true
-  become_user: tf2server
-  ansible.builtin.unarchive:
-    src: https://github.com/leighmacdonald/gbans/releases/download/v0.1.5/gbans--lin64.zip
-    dest: ~/gbans
-    remote_src: true
-
-- name: gbans-relay.service
-  become: true
-  ansible.builtin.template:
-    src: gbans-relay.service.j2
-    dest: /etc/systemd/system/gbans-relay.service
-    mode: "644"
-
-- name: gbans chmod
-  ansible.builtin.file:
-    path: /home/tf2server/gbans/gbans
-    mode: 0755
-
-- name: gbans.yml
-  become: true
-  ansible.builtin.template:
-    src: gbans.yml.j2
-    dest: /home/tf2server/gbans.yml
     mode: "644"
 
 - name: Enable TCP docker listener
@@ -139,13 +103,6 @@
     name: node_exporter.service
     state: started
     enabled: true
-
-- name: systemd enable gbans-relay
-  become: true
-  ansible.builtin.systemd:
-    name: gbans-relay.service
-    enabled: false
-    state: stopped
 
 - name: Increase available memory for UDP receive buffers
   become: true
