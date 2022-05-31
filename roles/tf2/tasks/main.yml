@@ -78,6 +78,14 @@
   tags:
     - game_config
 
+# - name: Generate /build/autorecorder.cfg
+#   template:
+#     src: autorecorder.cfg.j2
+#     dest: /build/autorecorder.cfg
+#     mode: 0777
+#   tags:
+#     - game_config
+
 - name: Generate /build/maplists.cfg
   template:
     src: maplists.cfg.j2
@@ -99,6 +107,14 @@
   loop: "{{ services }}"
   loop_control:
     index_var: loop0
+
+- name: Generate /build/core.cfg
+  ansible.builtin.template:
+    src: core.cfg.j2
+    dest: /build/core.cfg
+    mode: 0777
+  tags:
+    - game_config
 
 - name: Generate /build/discord.cfg
   ansible.builtin.template:
@@ -205,10 +221,12 @@
       - /build/admin_overrides.cfg:/home/steam/tf-dedicated/tf/addons/sourcemod/configs/admin_overrides.cfg
       - /build/gbans.cfg:/home/steam/tf-dedicated/tf/addons/sourcemod/configs/gbans.cfg
       - /build/mapchooser.cfg:/home/steam/tf-dedicated/tf/cfg/sourcemod/mapchooser.cfg
+      # - /build/autorecorder.cfg:/home/steam/tf-dedicated/tf/cfg/sourcemod/autorecorder.cfg
       - /build/nativevotes.cfg:/home/steam/tf-dedicated/tf/cfg/sourcemod/nativevotes.cfg
       - /build/randomcycle.cfg:/home/steam/tf-dedicated/tf/cfg/sourcemod/randomcycle.cfg
       - /build/rtv.cfg:/home/steam/tf-dedicated/tf/cfg/sourcemod/rtv.cfg
       - /build/discord.cfg:/home/steam/tf-dedicated/tf/addons/sourcemod/configs/discord.cfg
+      - /build/core.cfg:/home/steam/tf-dedicated/tf/addons/sourcemod/configs/core.cfg
       - /build/{{ item.server_name_short }}/maplists.cfg:/home/steam/tf-dedicated/tf/addons/sourcemod/configs/maplists.cfg
 
   loop: "{{ services }}"
@@ -226,8 +244,21 @@
   ufw:
     rule: allow
     port: "{{ srcds_base_port + (loop0 * 10) }}"
+    # rcon/game (tcp/udp) share same port
     proto: any
   loop: "{{ services }}"
   loop_control:
     index_var: loop0
   when: ansible_distribution == 'Ubuntu'
+
+- name: srcdstv-fw
+  become: true
+  ufw:
+    rule: allow
+    port: "{{ srcds_base_port + (loop0 * 10) + 1 }}"
+    proto: udp
+  loop: "{{ services }}"
+  loop_control:
+    index_var: loop0
+  when: ansible_distribution == 'Ubuntu'
+  

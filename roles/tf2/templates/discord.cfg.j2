@@ -1,27 +1,31 @@
 "Discord"
 {
+        "crash"
+        {
+                "url"   "{{ discord.crash_webhook }}"
+        }
         "stac"
         {
-                "url"   "{{ stac_discord_webhook }}"
+                "url"   "{{ discord.stac_webhook }}"
         }
         "calladmin"
         {
-                "url"   "{{ stac_discord_webhook }}"
+                "url"   "{{ discord.stac_webhook }}"
         }
         "sourcebans"
         {
-                "url"   "{{ stac_discord_webhook }}/slack"
+                "url"   "{{ discord.stac_webhook }}/slack"
         }
         "sourcecomms"
         {
-                "url"   "{{ stac_discord_webhook }}/slack"
+                "url"   "{{ discord.stac_webhook }}/slack"
         }
         "test_discord"
         {
-                "url"   "{{ stac_discord_webhook }}"
+                "url"   "{{ discord.stac_webhook }}"
         }
         "test_slack"
         {
-                "url"   "{{ stac_discord_webhook }}/slack"
+                "url"   "{{ discord.stac_webhook }}/slack"
         }
 }

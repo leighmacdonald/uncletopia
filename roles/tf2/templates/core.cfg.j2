@@ -1,0 +1,50 @@
+"Core"
+{
+  /**
+   * SteamID64 (Community ID) that will have ownership of uploaded crash reports.
+   * You can share your crash reports with additional users from the website.
+   *
+   * If unset, your crash reports will be uploaded anonymously and you will not be
+   * able to see all of the information.
+   */
+  "MinidumpAccount"	"{{ mini_dump_steamid }}"
+
+  /**
+   * Controls which binaries will be eligible to be processed for symbols and uploaded.
+   * Only modules loaded by the server at the time of the crash can be considered.
+   *
+   * 0 = Disabled: No binaries will be processed or uploaded.
+   * 1 = System Only: Only binaries outside of the game directory (where the srcds binary is).
+   * 2 = System + Game: Loaded modules outside of the addons/ directory.
+   * 3 = System + Game + Addons: All loaded modules.
+   */
+  "MinidumpSymbolUpload"	"3"
+
+  /**
+   * Controls whether Accelerator can upload complete module binaries when explicitly requested
+   * by the processing server. This also respects the value of the MinidumpSymbolUpload setting.
+   */
+  "MinidumpBinaryUpload"	"yes"
+
+  /**
+   * Controls whether Accelerator does local processing of crash reports before upload.
+   * This should only be changed if local processing causes issues such as crashes,
+   * the processing server may reject crash reports that have not been presubmitted.
+   */
+  "MinidumpPresubmit"	"yes"
+
+  /**
+   * URL to upload crash dumps to. Should not be changed.
+   */
+  "MinidumpUrl"	"http://crash.limetech.org/submit"
+
+  /**
+   * URL to upload processed symbols to. Should not be changed.
+   */
+  "MinidumpSymbolUrl"	"http://crash.limetech.org/symbols/submit"
+
+  /**
+   * URL to upload binaries to. Should not be changed.
+   */
+  "MinidumpBinaryUrl"	"http://crash.limetech.org/binary/submit"
+}
