@@ -1,0 +1,5 @@
+---
+- name: Install stvup
+  hosts: tf2
+  roles:
+    - stvup

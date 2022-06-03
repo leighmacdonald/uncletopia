@@ -78,13 +78,13 @@
   tags:
     - game_config
 
-# - name: Generate /build/autorecorder.cfg
-#   template:
-#     src: autorecorder.cfg.j2
-#     dest: /build/autorecorder.cfg
-#     mode: 0777
-#   tags:
-#     - game_config
+- name: Generate /build/autorecorder.cfg
+  template:
+    src: autorecorder.cfg.j2
+    dest: /build/autorecorder.cfg
+    mode: 0777
+  tags:
+    - game_config
 
 - name: Generate /build/maplists.cfg
   template:
@@ -177,6 +177,8 @@
     recreate: yes
     restart_policy: always
     cpuset_cpus: "{{ loop0 * 2 }},{{ (loop0 * 2)+1 }}"
+    memory: 6000m
+    memory_reservation: 4000m
     # ports:
     #   - "{{ srcds_base_port + (loop0 * 10) }}:{{ srcds_base_port + (loop0 * 10) }}/tcp"
     #   - "{{ srcds_base_port + (loop0 * 10) }}:{{ srcds_base_port + (loop0 * 10) }}/udp"
@@ -212,6 +214,9 @@
       STEAM_GAMESERVER_PACKET_HANDLER_NO_IPC: "1"
 
     volumes:
+      - /home/steam/tf-dedicated/tf/addons/sourcemod/gamedata
+      - /home/steam/tf-dedicated/tf/logs
+      - /demos/{{ item.server_name_short }}:/home/steam/tf-dedicated/tf/stv_demos
       - /build/{{ item.server_name_short }}/autoexec.cfg:/home/steam/tf-dedicated/tf/cfg/autoexec.cfg
       - /build/{{ item.server_name_short }}/server.cfg:/home/steam/tf-dedicated/tf/cfg/server.cfg
       - /build/admins_simple.ini:/home/steam/tf-dedicated/tf/addons/sourcemod/configs/admins_simple.ini
@@ -221,7 +226,7 @@
       - /build/admin_overrides.cfg:/home/steam/tf-dedicated/tf/addons/sourcemod/configs/admin_overrides.cfg
       - /build/gbans.cfg:/home/steam/tf-dedicated/tf/addons/sourcemod/configs/gbans.cfg
       - /build/mapchooser.cfg:/home/steam/tf-dedicated/tf/cfg/sourcemod/mapchooser.cfg
-      # - /build/autorecorder.cfg:/home/steam/tf-dedicated/tf/cfg/sourcemod/autorecorder.cfg
+      - /build/autorecorder.cfg:/home/steam/tf-dedicated/tf/cfg/sourcemod/autorecorder.cfg
       - /build/nativevotes.cfg:/home/steam/tf-dedicated/tf/cfg/sourcemod/nativevotes.cfg
       - /build/randomcycle.cfg:/home/steam/tf-dedicated/tf/cfg/sourcemod/randomcycle.cfg
       - /build/rtv.cfg:/home/steam/tf-dedicated/tf/cfg/sourcemod/rtv.cfg

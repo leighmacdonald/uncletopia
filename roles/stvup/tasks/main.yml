@@ -1,0 +1,40 @@
+# - name: create stv upload dirs
+#   file:
+#     path: ~/stv_demos
+#     state: directory
+#     owner: tf2server
+#     mode: 0777
+#   loop: "{{ services }}"
+
+- name: Generate ssh private key
+  template:
+    src: private_key.j2
+    dest: ~/.ssh/id_rsa_stv
+    mode: 0600
+
+- name: stvup container
+  docker_container:
+    name: stvup-{{ item.server_name_short }}
+    image: "leighmacdonald/stvup:master"
+    state: started
+    restart: yes
+    pull: yes
+    interactive: yes
+    tty: yes
+    recreate: yes
+    restart_policy: always
+    env:
+      STV_PRIVATE_KEY: "/app/id_rsa.key"
+      STV_USERNAME: "tf2server"
+      STV_PASSWORD: ""
+      STV_REMOTE_ROOT: "./stv_demos/{{ item.server_name_short }}"
+      STV_LOCAL_ROOT: "/demos"
+      STV_HOST: "mtl-1.ca.uncletopia.com"
+      STV_PORT: "22"
+    volumes:
+      - /home/tf2server/.ssh/id_rsa_stv:/app/id_rsa.key
+      - /demos/{{ item.server_name_short }}:/demos
+
+  loop: "{{ services }}"
+  loop_control:
+    index_var: loop0
