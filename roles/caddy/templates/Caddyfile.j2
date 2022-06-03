@@ -19,3 +19,10 @@
     import cf_cfg
 }
 {% endfor %}
+
+{% for host in caddy.static  %}
+{{ host }} {
+    root * {{ caddy.static[host].root }}
+    file_server browse
+}
+{% endfor %}

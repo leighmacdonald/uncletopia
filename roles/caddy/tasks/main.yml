@@ -9,7 +9,7 @@
     state: present
 
 - name: Generate /etc/Caddyfile
-  become: yes
+  become: true
   template:
     src: Caddyfile.j2
     dest: /etc/Caddyfile
@@ -30,6 +30,7 @@
       - caddy_data:/data
       - caddy_config:/config
       - /etc/Caddyfile:/etc/caddy/Caddyfile
+      - /home/tf2server/stv_demos:/demos
     env:
       CLOUDFLARE_EMAIL: "{{ caddy.cloudflare.email }}"
       CLOUDFLARE_API_TOKEN: "{{ caddy.cloudflare.api_key }}"
