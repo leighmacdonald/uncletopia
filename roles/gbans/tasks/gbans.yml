@@ -4,7 +4,7 @@
     state: present
 
 - name: Generate /etc/gbans.yml
-  become: yes
+  become: true
   template:
     src: gbans.yml.j2
     dest: /etc/gbans.yml
@@ -17,6 +17,11 @@
     restart: yes
     recreate: yes
     pull: yes
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "10"
     volumes:
       - /etc/gbans.yml:/app/gbans.yml
       - gbans_cache_data:/app/.cache
@@ -47,7 +52,7 @@
     restart: yes
 
 - name: srcds-log-fw
-  become: yes
+  become: true
   ufw:
     rule: allow
     port: "27115"
