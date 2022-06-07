@@ -1,7 +1,7 @@
 #pragma semicolon 1
 
-#define PLUGIN_AUTHOR "Nanochip"
-#define PLUGIN_VERSION "1.2"
+#define PLUGIN_AUTHOR "Nanochip, viora, raspy"
+#define PLUGIN_VERSION "1.4"
 
 #include <sourcemod>
 #include <sdktools>
@@ -9,17 +9,48 @@
 
 public Plugin myinfo =
 {
-	name = "[TF2] Vote Scramle",
+	name = "[TF2] Vote Scramble",
 	author = PLUGIN_AUTHOR,
 	description = "Vote to scramble teams.",
 	version = PLUGIN_VERSION,
-	url = "http://steamcommunity.com/id/xnanochip"
+	url = "https://uncletopia.com"
 };
 
-ConVar cvarVoteTime, cvarVoteTimeDelay, cvarVoteChatPercent, cvarVoteMenuPercent, cvarBonusRoundTime, cvarTimeLimit, cvarMinimumVotesNeeded;
+ConVar cvarVoteTime, cvarVoteTimeDelay, cvarVoteChatPercent, cvarVoteMenuPercent, cvarTimeLimit, cvarMinimumVotesNeeded, cvarSkipSecondVote, cvarMaxRounds, cvarWinLimit;
 
-int g_iVoters, g_iVotes, g_iVotesNeeded;
-bool g_bVoted[MAXPLAYERS + 1], g_bVoteCooldown, g_bScrambleTeams;
+int g_iVoters, g_iVotes, g_iVotesNeeded, g_iRoundsSinceLastScramble;
+bool g_bVoted[MAXPLAYERS + 1], g_bVoteCooldown, g_bScrambleTeams, g_bBonusRoundTime, g_bScrambleDuringBRT;
+
+public void Event_RoundWin(Event event, const char[] name, bool dontBroadcast)
+{
+	// -- use commented code below if using teamplay_win_panel event
+	// if (event.GetBool("full_round")) {
+	// 	g_iRoundsSinceLastScramble++;
+	// }
+
+	if (event.GetInt("round_complete") == 1 || StrEqual(name, "arena_win_panel")) {
+		g_iRoundsSinceLastScramble++;
+	}
+
+	g_bBonusRoundTime = true;
+}
+
+public void Event_RoundStart(Event event, const char[] name, bool dontBroadcast)
+{
+	g_bBonusRoundTime = false;
+
+	if (g_bScrambleTeams) {
+		g_bScrambleTeams = false;
+
+		if (g_bScrambleDuringBRT) {
+			CreateTimer(6.0, Timer_DelayLimitsUpdate);
+		}
+		else {
+			CreateTimer(1.0, Timer_DelayLimitsUpdate);
+		}
+		g_bScrambleDuringBRT = false;
+	}
+}
 
 public void OnPluginStart()
 {
@@ -30,18 +61,19 @@ public void OnPluginStart()
 	cvarVoteChatPercent = CreateConVar("nano_votescramble_chat_percentage", "0.20", "How many players are required for the chat vote to pass? 0.20 = 20%.", 0, true, 0.05, true, 1.0);
 	cvarVoteMenuPercent = CreateConVar("nano_votescramble_menu_percentage", "0.60", "How many players are required for the menu vote to pass? 0.60 = 60%.", 0, true, 0.05, true, 1.0);
 	cvarMinimumVotesNeeded = CreateConVar("nano_votescramble_minimum", "3", "What are the minimum number of votes needed to initiate a chat vote?", 0);
+	cvarSkipSecondVote = CreateConVar("nano_votescramble_skip_second_vote", "0", "Should the second vote be skipped?", 0, true, 0.0, true, 1.0);
 
 	cvarTimeLimit = FindConVar("mp_timelimit");
-	cvarBonusRoundTime = FindConVar("mp_bonusroundtime");
-
-	// HookEvent("teamplay_round_win", Event_RoundEnd);
-	// HookEvent("teamplay_round_stalemate", Event_RoundEnd);
-	// HookEvent("teamplay_win_panel", Event_RoundEnd);
+	cvarMaxRounds = FindConVar("mp_maxrounds");
+	cvarWinLimit = FindConVar("mp_winlimit");
 
 	RegConsoleCmd("sm_votescramble", Cmd_VoteScramble, "Initiate a vote to scramble teams!");
 	RegConsoleCmd("sm_vscramble", Cmd_VoteScramble, "Initiate a vote to scramble teams!");
 	RegConsoleCmd("sm_scramble", Cmd_VoteScramble, "Initiate a vote to scramble teams!");
 	RegAdminCmd("sm_forcescramble", Cmd_ForceScramble, ADMFLAG_VOTE, "Force a team scramble vote.");
+
+	HookEvent("teamplay_win_panel", Event_RoundWin);
+	HookEvent("teamplay_round_start", Event_RoundStart);
 }
 
 public void OnMapStart()
@@ -49,8 +81,11 @@ public void OnMapStart()
 	g_iVoters = 0;
 	g_iVotesNeeded = 0;
 	g_iVotes = 0;
+	g_iRoundsSinceLastScramble = 0;
 	g_bVoteCooldown = false;
 	g_bScrambleTeams = false;
+	g_bBonusRoundTime = false;
+	g_bScrambleDuringBRT = false;
 }
 
 public void OnClientAuthorized(int client, const char[] auth)
@@ -86,7 +121,7 @@ public Action Cmd_VoteScramble(int client, int args)
 
 public OnClientSayCommand_Post(int client, const char[] command, const char[] sArgs)
 {
-	if (strcmp(sArgs, "votescramble", false) == 0 || strcmp(sArgs, "vscramble", false) == 0 || strcmp(sArgs, "scramble", false) == 0)
+	if (strcmp(sArgs, "votescramble", false) == 0 || strcmp(sArgs, "vscramble", false) == 0 || strcmp(sArgs, "scramble", false) == 0 || strcmp(sArgs, "scrimblo", false) == 0 )
 	{
 		new ReplySource:old = SetCmdReplySource(SM_REPLY_TO_CHAT);
 
@@ -130,7 +165,12 @@ void AttemptVoteScramble(int client)
 
 void StartVoteScramble()
 {
-	VoteScrambleMenu();
+	if (cvarSkipSecondVote.IntValue == 1) {
+		CreateTimer(0.1, Timer_Scramble);
+	} else {
+		VoteScrambleMenu();
+	}
+
 	ResetVoteScramble();
 	g_bVoteCooldown = true;
 	CreateTimer(cvarVoteTimeDelay.FloatValue, Timer_Delay, _, TIMER_FLAG_NO_MAPCHANGE);
@@ -152,7 +192,7 @@ void VoteScrambleMenu()
 	if (NativeVotes_IsVoteInProgress())
 	{
 		CreateTimer(10.0, Timer_Retry, _, TIMER_FLAG_NO_MAPCHANGE);
-		PrintToConsoleAll("Can't vote scramble because there is already a vote in progress. Retrying in 10 seconds...");
+		PrintToConsoleAll("[SM] Can't vote scramble because there is already a vote in progress. Retrying in 10 seconds...");
 		return;
 	}
 
@@ -206,22 +246,27 @@ public int NativeVote_Handler(Handle vote, MenuAction action, int param1, int pa
 	}
 }
 
-// public void Event_RoundEnd(Handle event, const char[] name, bool dontBroadcast) {
-	// if(g_bScrambleTeams) {
-		// float delay = cvarBonusRoundTime.FloatValue - 7.0;
-		// if (delay < 0.0) {
-			// delay = 0.0;
-		// }
-
-		// g_bScrambleTeams = false;
-		// CreateTimer(delay, Timer_Scramble);
-	// }
-// }
-
 public Action Timer_Scramble(Handle timer) {
 	ServerCommand("mp_scrambleteams");
 
+	g_bScrambleTeams = true;
+	if (g_bBonusRoundTime) {
+		g_bScrambleDuringBRT = true;
+	}
+
 	PrintToChatAll("Scrambling the teams due to vote.");
+}
+
+public Action Timer_DelayLimitsUpdate(Handle timer) {
+	// subtract from maxrounds/winlimit after scramble to prevent artificial superextension of maps
+	// assume no limit if 0, don't set negatives
+	if (cvarMaxRounds.IntValue != 0) {
+		SetConVarInt(cvarMaxRounds, cvarMaxRounds.IntValue - g_iRoundsSinceLastScramble, false, true);
+	}
+	if (cvarWinLimit.IntValue != 0) {
+		SetConVarInt(cvarWinLimit, cvarWinLimit.IntValue - (g_iRoundsSinceLastScramble / 2), false, true);
+	}
+	g_iRoundsSinceLastScramble = 0;
 }
 
 public Action Timer_DelayRTS(Handle timer, any mins)
