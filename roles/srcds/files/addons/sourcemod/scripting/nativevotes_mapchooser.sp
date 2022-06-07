@@ -913,6 +913,7 @@ public void Handler_VoteFinishedGenericShared(const char[] map,
 		}
 
 		g_Extends = 0;
+		CreateNextVote();
 		
 		PrintToChatAll("[SM] %t", "Nextmap Voting Finished", displayName, RoundToFloor(float(item_info[0][VOTEINFO_ITEM_VOTES])/float(num_votes)*100), num_votes);
 		LogAction(-1, -1, "Voting for next map has finished. Nextmap: %s.", map);
