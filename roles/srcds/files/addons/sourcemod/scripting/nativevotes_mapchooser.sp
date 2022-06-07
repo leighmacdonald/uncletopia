@@ -66,9 +66,6 @@ ConVar g_Cvar_Bonusroundtime;
 ConVar g_Cvar_StartTime;
 ConVar g_Cvar_StartRounds;
 ConVar g_Cvar_StartFrags;
-ConVar g_Cvar_ExtendTimeStep;
-ConVar g_Cvar_ExtendRoundStep;
-ConVar g_Cvar_ExtendFragStep;
 ConVar g_Cvar_ExcludeMaps;
 ConVar g_Cvar_IncludeMaps;
 ConVar g_Cvar_NoVoteMode;
@@ -136,9 +133,6 @@ public void OnPluginStart()
 	g_Cvar_StartTime = CreateConVar("sm_mapvote_start", "3.0", "Specifies when to start the vote based on time remaining.", _, true, 1.0);
 	g_Cvar_StartRounds = CreateConVar("sm_mapvote_startround", "2.0", "Specifies when to start the vote based on rounds remaining. Use 0 on TF2 to start vote during bonus round time", _, true, 0.0);
 	g_Cvar_StartFrags = CreateConVar("sm_mapvote_startfrags", "5.0", "Specifies when to start the vote base on frags remaining.", _, true, 1.0);
-	g_Cvar_ExtendTimeStep = CreateConVar("sm_extendmap_timestep", "15", "Specifies how much many more minutes each extension makes", _, true, 5.0);
-	g_Cvar_ExtendRoundStep = CreateConVar("sm_extendmap_roundstep", "5", "Specifies how many more rounds each extension makes", _, true, 1.0);
-	g_Cvar_ExtendFragStep = CreateConVar("sm_extendmap_fragstep", "10", "Specifies how many more frags are allowed when map is extended.", _, true, 5.0);	
 	g_Cvar_ExcludeMaps = CreateConVar("sm_mapvote_exclude", "5", "Specifies how many past maps to exclude from the vote.", _, true, 0.0);
 	g_Cvar_IncludeMaps = CreateConVar("sm_mapvote_include", "5", "Specifies how many maps to include in the vote.", _, true, 2.0, true, 6.0);
 	g_Cvar_NoVoteMode = CreateConVar("sm_mapvote_novote", "1", "Specifies whether or not MapChooser should pick a map if no votes are received.", _, true, 0.0, true, 1.0);
@@ -193,6 +187,8 @@ public void OnPluginStart()
 	
 	g_NominationsResetForward = CreateGlobalForward("OnNominationRemoved", ET_Ignore, Param_String, Param_Cell);
 	g_MapVoteStartedForward = CreateGlobalForward("OnMapVoteStarted", ET_Ignore);
+
+	g_Extends = 0;
 }
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
@@ -268,8 +264,6 @@ public void OnConfigsExecuted()
 	SetupTimeleftTimer();
 	
 	g_TotalRounds = 0;
-	
-	g_Extends = 0;
 	
 	g_MapVoteCompleted = false;
 	
@@ -864,41 +858,10 @@ public void Handler_VoteFinishedGenericShared(const char[] map,
 	{
 		g_Extends++;
 		
-		int time;
-		if (GetMapTimeLimit(time))
-		{
-			if (time > 0)
-			{
-				ExtendMapTimeLimit(g_Cvar_ExtendTimeStep.IntValue * 60);						
-			}
-		}
-		
-		if (g_Cvar_Winlimit)
-		{
-			int winlimit = g_Cvar_Winlimit.IntValue;
-			if (winlimit)
-			{
-				g_Cvar_Winlimit.IntValue = winlimit + g_Cvar_ExtendRoundStep.IntValue;
-			}					
-		}
-		
-		if (g_Cvar_Maxrounds)
-		{
-			int maxrounds = g_Cvar_Maxrounds.IntValue;
-			if (maxrounds)
-			{
-				g_Cvar_Maxrounds.IntValue = maxrounds + g_Cvar_ExtendRoundStep.IntValue;
-			}
-		}
-		
-		if (g_Cvar_Fraglimit)
-		{
-			int fraglimit = g_Cvar_Fraglimit.IntValue;
-			if (fraglimit)
-			{
-				g_Cvar_Fraglimit.IntValue = fraglimit + g_Cvar_ExtendFragStep.IntValue;
-			}
-		}
+		// map vote can sometimes extend beyond bonusroundtime and cause a mapchange anyways. set nextmap
+		char curmap[255];
+		GetCurrentMap(curmap, sizeof(curmap));
+		SetNextMap(curmap);
 
 		PrintToChatAll("[SM] %t", "Current Map Extended", RoundToFloor(float(item_info[0][VOTEINFO_ITEM_VOTES])/float(num_votes)*100), num_votes);
 		LogAction(-1, -1, "Voting for next map has finished. The current map has been extended.");
@@ -907,12 +870,6 @@ public void Handler_VoteFinishedGenericShared(const char[] map,
 		{
 			g_VoteNative.DisplayPassEx(NativeVotesPass_Extend);
 		}
-		
-		// We extended, so we'll have to vote again.
-		g_HasVoteStarted = false;
-		CreateNextVote();
-		SetupTimeleftTimer();
-		
 	}
 	else if (strcmp(map, VOTE_DONTCHANGE, false) == 0)
 	{
@@ -954,6 +911,8 @@ public void Handler_VoteFinishedGenericShared(const char[] map,
 		{
 			g_VoteNative.DisplayPass(displayName);
 		}
+
+		g_Extends = 0;
 		
 		PrintToChatAll("[SM] %t", "Nextmap Voting Finished", displayName, RoundToFloor(float(item_info[0][VOTEINFO_ITEM_VOTES])/float(num_votes)*100), num_votes);
 		LogAction(-1, -1, "Voting for next map has finished. Nextmap: %s.", map);
