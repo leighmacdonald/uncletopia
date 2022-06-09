@@ -1,11 +1,11 @@
 ---
 - name: Set timezone
-  become: yes
+  become: true
   community.general.timezone:
     name: "{{ timezone }}"
 
 - name: Install gpg
-  become: yes
+  become: true
   when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
   apt:
     update_cache: yes
@@ -15,19 +15,19 @@
       - gpg
 
 - name: Add an Apt signing key, uses whichever key is at the URL
-  become: yes
+  become: true
   ansible.builtin.apt_key:
     url: https://download.docker.com/linux/ubuntu/gpg
     state: present
 
 - name: Add specified repository into sources list
-  become: yes
+  become: true
   ansible.builtin.apt_repository:
     repo: deb https://download.docker.com/linux/ubuntu focal stable
     state: present
 
 - name: Install OS Dependencies
-  become: yes
+  become: true
   when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
   apt:
     update_cache: yes
@@ -48,12 +48,12 @@
       - python3-distutils
 
 - name: adding user to docker group
-  become: yes
+  become: true
   user:
     name: tf2server
     groups: docker
     append: yes
-  state: present
+    state: present
 
 # - name: Enable TCP docker listener
 #   become: yes
@@ -65,19 +65,19 @@
 #     backup=yes
 
 - name: systemd reload
-  become: yes
+  become: true
   systemd:
     daemon_reload: yes
 
 - name: systemd enable docker
-  become: yes
+  become: true
   systemd:
     name: docker
     state: started
     enabled: yes
 
 - name: Increase available memory for UDP receive buffers
-  become: yes
+  become: true
   ansible.posix.sysctl:
     name: net.core.rmem_max
     value: "26214400"
@@ -85,7 +85,7 @@
     reload: yes
 
 - name: Increase available memory for UDP send buffers
-  become: yes
+  become: true
   ansible.posix.sysctl:
     name: net.core.wmem_max
     value: "26214400"
@@ -93,7 +93,7 @@
     reload: yes
 
 - name: Increase the maximum amount of packets in the kernel queue
-  become: yes
+  become: true
   ansible.posix.sysctl:
     name: net.core.netdev_max_backlog
     value: "25000"
@@ -110,7 +110,7 @@
 #     - "2000"
 
 - name: Enable UFW
-  become: yes
+  become: true
   ufw:
     state: reloaded
     policy: deny
