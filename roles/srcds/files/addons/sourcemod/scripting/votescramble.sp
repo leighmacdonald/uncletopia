@@ -19,7 +19,7 @@ public Plugin myinfo =
 ConVar cvarVoteTime, cvarVoteTimeDelay, cvarVoteChatPercent, cvarVoteMenuPercent, cvarTimeLimit, cvarMinimumVotesNeeded, cvarSkipSecondVote, cvarMaxRounds, cvarWinLimit;
 
 int g_iVoters, g_iVotes, g_iVotesNeeded, g_iRoundsSinceLastScramble;
-bool g_bVoted[MAXPLAYERS + 1], g_bVoteCooldown, g_bScrambleTeams;
+bool g_bVoted[MAXPLAYERS + 1], g_bVoteCooldown, g_bScrambleTeams, g_bBonusRoundTime, g_bScrambleDuringBRT;
 
 public void Event_RoundWin(Event event, const char[] name, bool dontBroadcast)
 {
@@ -30,6 +30,25 @@ public void Event_RoundWin(Event event, const char[] name, bool dontBroadcast)
 
 	if (event.GetInt("round_complete") == 1 || StrEqual(name, "arena_win_panel")) {
 		g_iRoundsSinceLastScramble++;
+	}
+
+	g_bBonusRoundTime = true;
+}
+
+public void Event_RoundStart(Event event, const char[] name, bool dontBroadcast)
+{
+	g_bBonusRoundTime = false;
+
+	if (g_bScrambleTeams) {
+		g_bScrambleTeams = false;
+
+		if (g_bScrambleDuringBRT) {
+			CreateTimer(6.0, Timer_DelayLimitsUpdate);
+		}
+		else {
+			CreateTimer(1.0, Timer_DelayLimitsUpdate);
+		}
+		g_bScrambleDuringBRT = false;
 	}
 }
 
@@ -54,6 +73,7 @@ public void OnPluginStart()
 	RegAdminCmd("sm_forcescramble", Cmd_ForceScramble, ADMFLAG_VOTE, "Force a team scramble vote.");
 
 	HookEvent("teamplay_win_panel", Event_RoundWin);
+	HookEvent("teamplay_round_start", Event_RoundStart);
 }
 
 public void OnMapStart()
@@ -64,6 +84,8 @@ public void OnMapStart()
 	g_iRoundsSinceLastScramble = 0;
 	g_bVoteCooldown = false;
 	g_bScrambleTeams = false;
+	g_bBonusRoundTime = false;
+	g_bScrambleDuringBRT = false;
 }
 
 public void OnClientAuthorized(int client, const char[] auth)
@@ -227,8 +249,10 @@ public int NativeVote_Handler(Handle vote, MenuAction action, int param1, int pa
 public Action Timer_Scramble(Handle timer) {
 	ServerCommand("mp_scrambleteams");
 
-	// delay updates of winlimit/maxrounds until next round begins to prevent game from ending immediately during scramble
-	CreateTimer(6.0, Timer_DelayLimitsUpdate);
+	g_bScrambleTeams = true;
+	if (g_bBonusRoundTime) {
+		g_bScrambleDuringBRT = true;
+	}
 
 	PrintToChatAll("Scrambling the teams due to vote.");
 }
@@ -243,8 +267,6 @@ public Action Timer_DelayLimitsUpdate(Handle timer) {
 		SetConVarInt(cvarWinLimit, cvarWinLimit.IntValue - (g_iRoundsSinceLastScramble / 2), false, true);
 	}
 	g_iRoundsSinceLastScramble = 0;
-
-	delete timer;
 }
 
 public Action Timer_DelayRTS(Handle timer, any mins)
