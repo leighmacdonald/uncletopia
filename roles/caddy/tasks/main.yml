@@ -10,7 +10,7 @@
 
 - name: Generate /etc/Caddyfile
   become: true
-  template:
+  ansible.builtin.template:
     src: Caddyfile.j2
     dest: /etc/Caddyfile
     mode: 0775
@@ -23,9 +23,9 @@
   docker_container:
     name: caddy
     image: slothcroissant/caddy-cloudflaredns:latest
-    restart: yes
-    recreate: yes
-    pull: yes
+    restart: true
+    recreate: true
+    pull: true
     volumes:
       - caddy_data:/data
       - caddy_config:/config
@@ -44,9 +44,9 @@
     name: caddy_net
     connected:
       - caddy
-    appends: yes
+    appends: true
 
 - name: Reload networks
   docker_container:
     name: caddy
-    restart: yes
+    restart: true

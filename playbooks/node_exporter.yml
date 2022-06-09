@@ -1,7 +1,7 @@
 - hosts: all
-  #roles:
-    # ansible-galaxy install cloudalchemy.node_exporter
-    #- cloudalchemy.node_exporter
+  # roles:
+    #  ansible-galaxy install cloudalchemy.node_exporter
+    # - cloudalchemy.node_exporter
   tasks:
     - name: node-exporter-fw
       become: true

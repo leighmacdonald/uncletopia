@@ -1,6 +1,6 @@
 - name: create build directory
   become: true
-  file:
+  ansible.builtin.file:
     path: /build_srcds
     state: directory
     owner: root
@@ -8,14 +8,11 @@
     mode: '0777'
 
 - name: copy build sources
-  synchronize:
+  ansible.builtin.synchronize:
     src: ./
     dest: /build_srcds/
-    archive: no
-    recursive: yes
-    # owner: root
-    # group: root
-    #mode: '0644'
+    archive: false
+    recursive: true
 
 - name: Log into DockerHub
   community.docker.docker_login:
@@ -27,13 +24,13 @@
     name: leighmacdonald/uncletopia-srcds
     tag: awx
     source: build
-    force_tag: yes
-    push: yes
-    force_source: yes
+    force_tag: true
+    push: true
+    force_source: true
     build:
-      nocache: yes
-      pull: yes
-      rm: yes
+      nocache: true
+      pull: true
+      rm: true
       dockerfile: /build_srcds/Dockerfile
       path: /build_srcds/
     state: present

@@ -7,15 +7,15 @@ galaxy_info:
 
   license: MIT
 
-  min_ansible_version: 2.9
+  min_ansible_version: "2.9"
 
   # If this a Container Enabled role, provide the minimum Ansible Container version.
   # min_ansible_container_version:
 
   platforms:
-  - name: Ubuntu
-    versions:
-    - 20.04
+    - name: Ubuntu
+      versions:
+        - "focal"
 
   galaxy_tags:
     - "tf2"
