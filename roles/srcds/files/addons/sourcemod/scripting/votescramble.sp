@@ -101,7 +101,7 @@ public void OnClientAuthorized(int client, const char[] auth)
 
 public void OnClientDisconnect(int client)
 {
-	if (g_bVoted[client]) g_iVotes--;
+	if (g_iVotes > 0 && g_bVoted[client]) g_iVotes--;
 	g_iVoters--;
 	g_iVotesNeeded = RoundToCeil(float(g_iVoters) * cvarVoteChatPercent.FloatValue);
 	if (g_iVotesNeeded < cvarMinimumVotesNeeded.IntValue) g_iVotesNeeded = cvarMinimumVotesNeeded.IntValue;
