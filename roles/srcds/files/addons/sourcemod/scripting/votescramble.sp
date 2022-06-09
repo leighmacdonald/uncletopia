@@ -13,7 +13,7 @@ public Plugin myinfo =
 	author = PLUGIN_AUTHOR,
 	description = "Vote to scramble teams.",
 	version = PLUGIN_VERSION,
-	url = "http://steamcommunity.com/id/xnanochip"
+	url = "https://uncletopia.com"
 };
 
 ConVar cvarVoteTime, cvarVoteTimeDelay, cvarVoteChatPercent, cvarVoteMenuPercent, cvarTimeLimit, cvarMinimumVotesNeeded, cvarSkipSecondVote, cvarMaxRounds, cvarWinLimit;
@@ -192,7 +192,7 @@ void VoteScrambleMenu()
 	if (NativeVotes_IsVoteInProgress())
 	{
 		CreateTimer(10.0, Timer_Retry, _, TIMER_FLAG_NO_MAPCHANGE);
-		PrintToConsoleAll("Can't vote scramble because there is already a vote in progress. Retrying in 10 seconds...");
+		PrintToConsoleAll("[SM] Can't vote scramble because there is already a vote in progress. Retrying in 10 seconds...");
 		return;
 	}
 

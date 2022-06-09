@@ -193,6 +193,8 @@ public void OnPluginStart()
 	
 	g_NominationsResetForward = CreateGlobalForward("OnNominationRemoved", ET_Ignore, Param_String, Param_Cell);
 	g_MapVoteStartedForward = CreateGlobalForward("OnMapVoteStarted", ET_Ignore);
+
+	g_Extends = 0;
 }
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
@@ -268,8 +270,6 @@ public void OnConfigsExecuted()
 	SetupTimeleftTimer();
 	
 	g_TotalRounds = 0;
-	
-	g_Extends = 0;
 	
 	g_MapVoteCompleted = false;
 	
@@ -864,41 +864,10 @@ public void Handler_VoteFinishedGenericShared(const char[] map,
 	{
 		g_Extends++;
 		
-		int time;
-		if (GetMapTimeLimit(time))
-		{
-			if (time > 0)
-			{
-				ExtendMapTimeLimit(g_Cvar_ExtendTimeStep.IntValue * 60);						
-			}
-		}
-		
-		if (g_Cvar_Winlimit)
-		{
-			int winlimit = g_Cvar_Winlimit.IntValue;
-			if (winlimit)
-			{
-				g_Cvar_Winlimit.IntValue = winlimit + g_Cvar_ExtendRoundStep.IntValue;
-			}					
-		}
-		
-		if (g_Cvar_Maxrounds)
-		{
-			int maxrounds = g_Cvar_Maxrounds.IntValue;
-			if (maxrounds)
-			{
-				g_Cvar_Maxrounds.IntValue = maxrounds + g_Cvar_ExtendRoundStep.IntValue;
-			}
-		}
-		
-		if (g_Cvar_Fraglimit)
-		{
-			int fraglimit = g_Cvar_Fraglimit.IntValue;
-			if (fraglimit)
-			{
-				g_Cvar_Fraglimit.IntValue = fraglimit + g_Cvar_ExtendFragStep.IntValue;
-			}
-		}
+		// map vote can sometimes extend beyond bonusroundtime and cause a mapchange anyways. set nextmap
+		char curmap[255];
+		GetCurrentMap(curmap, sizeof(curmap));
+		SetNextMap(curmap);
 
 		PrintToChatAll("[SM] %t", "Current Map Extended", RoundToFloor(float(item_info[0][VOTEINFO_ITEM_VOTES])/float(num_votes)*100), num_votes);
 		LogAction(-1, -1, "Voting for next map has finished. The current map has been extended.");
@@ -907,12 +876,6 @@ public void Handler_VoteFinishedGenericShared(const char[] map,
 		{
 			g_VoteNative.DisplayPassEx(NativeVotesPass_Extend);
 		}
-		
-		// We extended, so we'll have to vote again.
-		g_HasVoteStarted = false;
-		CreateNextVote();
-		SetupTimeleftTimer();
-		
 	}
 	else if (strcmp(map, VOTE_DONTCHANGE, false) == 0)
 	{
@@ -954,6 +917,9 @@ public void Handler_VoteFinishedGenericShared(const char[] map,
 		{
 			g_VoteNative.DisplayPass(displayName);
 		}
+
+		g_Extends = 0;
+		CreateNextVote();
 		
 		PrintToChatAll("[SM] %t", "Nextmap Voting Finished", displayName, RoundToFloor(float(item_info[0][VOTEINFO_ITEM_VOTES])/float(num_votes)*100), num_votes);
 		LogAction(-1, -1, "Voting for next map has finished. Nextmap: %s.", map);

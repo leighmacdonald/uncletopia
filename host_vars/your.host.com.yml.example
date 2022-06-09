@@ -1,12 +1,20 @@
-timezone: "Europe/Warsaw"
-sv_region: 3
-ip: "146.59.44.190"
+timezone: "America/New_York"
+sv_region: 0
+ip: "20.30.40.50"
 vpn:
-  client_addr: "10.10.10.2/24"
-  private_key: ""
-  public_key: ""
+  client_addr: "10.69.69.10/32"
+  private_key: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+  public_key: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 services:
-  - name: "Server | Location | 1"
-    server_name_short: "srv-1"
-    gslt: ""
-    gbans_key: ""
+  - name: "Uncletopia | Atlanta | Payload & A/D | 1"
+    server_name_short: "atl-1"
+    gslt: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+    gbans_key: "xxxxxxxxxxxxxxxxxxxx"
+    log_secret: 123456
+    rotation: "pl_ad"
+  - name: "Uncletopia | Atlanta | Koth & 5CP | 1"
+    server_name_short: "atl-2"
+    gslt: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+    gbans_key: "xxxxxxxxxxxxxxxxxxxx"
+    log_secret: 7891011
+    rotation: "koth_cp"

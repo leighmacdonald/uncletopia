@@ -165,7 +165,7 @@
       SRCDS_REGION: "{{ sv_region|quote }}"
       SRCDS_HOSTNAME: "{{ item.name }}"
       SRCDS_PW: "{{ server_password }}"
-      SRCDS_STARTMAP: "{{ start_map }}"
+      SRCDS_STARTMAP: "{{ start_map_default[item.rotation] }}"
       SRCDS_RCONPW: "{{ rcon_password }}"
       SRCDS_IP: "{{ ip }}"
       SRCDS_MAXPLAYERS: "32"
@@ -207,7 +207,7 @@
     index_var: loop0
 
 - name: srcds-fw
-  become: yes
+  become: true
   ufw:
     rule: allow
     port: "{{ srcds_base_port + (loop0 * 10) }}"
