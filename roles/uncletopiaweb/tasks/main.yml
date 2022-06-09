@@ -7,9 +7,9 @@
   docker_container:
     name: uncletopia-web-postgres
     image: postgis/postgis:latest
-    restart: yes
-    recreate: yes
-    pull: yes
+    restart: true
+    recreate: true
+    pull: true
     volumes:
       - uncletopia-web_db:/var/lib/postgresql/data
     env:
@@ -20,8 +20,8 @@
       - 127.0.0.1:5433:5432
 
 - name: Generate /etc/uncletopia-web.yml
-  become: yes
-  template:
+  become: true
+  ansible.builtin.template:
     src: uncletopia-web.yml.j2
     dest: /etc/uncletopia-web.yml
     mode: 0770
@@ -30,9 +30,9 @@
   docker_container:
     name: uncletopia-web
     image: leighmacdonald/uncletopia-web:latest
-    restart: yes
-    recreate: yes
-    pull: yes
+    restart: true
+    recreate: true
+    pull: true
     links:
       - uncletopia-web-postgres
     restart_policy: unless-stopped
@@ -44,4 +44,4 @@
     name: caddy_net
     connected:
       - uncletopia-web
-    appends: yes
+    appends: true

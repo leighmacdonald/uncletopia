@@ -8,9 +8,9 @@
   docker_container:
     name: grafana
     image: grafana/grafana-oss:latest-ubuntu
-    restart: yes
-    recreate: yes
-    pull: yes
+    restart: true
+    recreate: true
+    pull: true
     volumes:
       - grafana_data:/var/lib/grafana
     ports:
@@ -21,16 +21,16 @@
     name: metrics_net
     connected:
       - grafana
-    appends: yes
+    appends: true
 
 - name: Join caddy network
   community.docker.docker_network:
     name: caddy_net
     connected:
       - grafana
-    appends: yes
+    appends: true
 
 - name: Reload networks
   docker_container:
     name: grafana
-    restart: yes
+    restart: true

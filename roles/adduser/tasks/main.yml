@@ -1,58 +1,58 @@
 ---
 - name: apt upgrade
-  become: yes
-  apt:
-    update_cache: yes
-    upgrade: yes
+  become: true
+  ansible.builtin.apt:
+    update_cache: true
+    upgrade: true
     cache_valid_time: 0
 
 - name: addgroup tf2
-  become: yes
-  group:
+  become: true
+  ansible.builtin.group:
     name: tf2
     state: present
 
 - name: adduser tf2server
-  become: yes
-  user:
+  become: true
+  ansible.builtin.user:
     name: tf2server
     comment: TF2 Server User
     group: tf2
     shell: /bin/bash
-    create_home: yes
+    create_home: true
     state: present
 
 - name: sudoers.d
-  become: yes
-  copy:
+  become: true
+  ansible.builtin.copy:
     dest: "/etc/sudoers.d/devops"
     content: "%tf2  ALL=(ALL)  NOPASSWD: ALL"
     mode: 0600
 
 - name: ufw allow 22
-  become: yes
-  ufw:
+  become: true
+  ansible.builtin.ufw:
     rule: allow
     port: '22'
     proto: tcp
 
 - name: ufw limit 22
-  become: yes
-  ufw:
+  become: true
+  ansible.builtin.ufw:
     comment: "TF2 Ansible"
     rule: limit
     port: '22'
     proto: tcp
 
 - name: ufw enable
-  become: yes
-  ufw:
+  become: true
+  ansible.builtin.ufw:
     state: enabled
     policy: deny
     direction: incoming
 
 - name: mkdir .ssh
-  file:
+  ansible.builtin.file:
     path: ~/.ssh
     state: directory
     mode: '0700'
@@ -65,21 +65,21 @@
   loop: "{{ ssh_keys }}"
 
 - name: etc/ssh/sshd_config
-  become: yes
-  lineinfile:
+  become: true
+  ansible.builtin.lineinfile:
     dest: /etc/ssh/sshd_config
     regexp: '^PasswordAuthentication'
     line: "PasswordAuthentication no"
     state: present
-    backup: yes
+    backup: true
 
 - name: systemctl restart ssh
-  become: yes
-  lineinfile:
+  become: true
+  ansible.builtin.lineinfile:
     dest: /etc/ssh/sshd_config
     regexp: '^PermitRootLogin'
     line: "PermitRootLogin no"
     state: present
-    backup: yes
+    backup: true
   notify:
     - restart ssh

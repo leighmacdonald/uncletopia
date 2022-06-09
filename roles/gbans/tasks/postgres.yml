@@ -7,9 +7,9 @@
   docker_container:
     name: gbans-postgres
     image: postgis/postgis:latest
-    restart: yes
-    recreate: yes
-    pull: yes
+    restart: true
+    recreate: true
+    pull: true
     volumes:
       - gbans_db:/var/lib/postgresql/data
     env:
@@ -23,9 +23,9 @@
   docker_container:
     name: gbans-postgres_exporter
     image: quay.io/prometheuscommunity/postgres-exporter:latest
-    restart: yes
-    recreate: yes
-    pull: yes
+    restart: true
+    recreate: true
+    pull: true
     env:
       DATA_SOURCE_NAME: postgresql://gbans:gbans@gbans-postgres/gbans?sslmode=disable
     ports:
@@ -36,7 +36,7 @@
     name: gbans_net
     connected:
       - gbans-postgres_exporter
-    appends: yes
+    appends: true
 
 - name: Join gbans network
   community.docker.docker_network:
@@ -44,7 +44,7 @@
     connected:
       - gbans-postgres
       - gbans-postgres_exporter
-    appends: yes
+    appends: true
 
 - name: Join metrics network
   community.docker.docker_network:
@@ -52,14 +52,14 @@
     connected:
       - gbans-service
       - gbans-postgres_exporter
-    appends: yes
+    appends: true
 
 - name: Reload networks
   docker_container:
     name: gbans-postgres
-    restart: yes
+    restart: true
 
 - name: Reload networks
   docker_container:
     name: gbans-postgres_exporter
-    restart: yes
+    restart: true

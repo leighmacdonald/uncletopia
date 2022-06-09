@@ -3,5 +3,3 @@ collections:
   - community.general
   - community.docker
   - ansible.posix
-  #- cloudalchemy.node_exporter
-

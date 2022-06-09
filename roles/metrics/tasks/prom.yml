@@ -1,4 +1,3 @@
-
 - name: metrics network
   community.docker.docker_network:
     name: metrics_net
@@ -9,8 +8,8 @@
     state: present
 
 - name: Generate /etc/prometheus.yml
-  become: yes
-  template:
+  become: true
+  ansible.builtin.template:
     src: prometheus.yml.j2
     dest: /etc/prometheus.yml
     mode: 0775
@@ -19,8 +18,8 @@
   docker_container:
     name: prometheus
     image: prom/prometheus:latest
-    restart: yes
-    recreate: yes
+    restart: true
+    recreate: true
     volumes:
       - prometheus_data:/prometheus
       - /etc/prometheus.yml:/etc/prometheus/prometheus.yml
@@ -36,16 +35,16 @@
     name: metrics_net
     connected:
       - prometheus
-    appends: yes
+    appends: true
 
 - name: Join metrics network
   community.docker.docker_network:
     name: gbans_net
     connected:
       - prometheus
-    appends: yes
+    appends: true
 
 - name: Reload networks
   docker_container:
     name: prometheus
-    restart: yes
+    restart: true
