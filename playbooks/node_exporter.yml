@@ -1,10 +1,10 @@
 - hosts: all
-  roles:
+  #roles:
     # ansible-galaxy install cloudalchemy.node_exporter
-    - cloudalchemy.node_exporter
+    #- cloudalchemy.node_exporter
   tasks:
     - name: node-exporter-fw
-      become: yes
+      become: true
       ufw:
         rule: allow
         port: "9100"
