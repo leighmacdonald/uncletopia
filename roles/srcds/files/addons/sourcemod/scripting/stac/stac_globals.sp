@@ -1,3 +1,5 @@
+#pragma semicolon 1
+
 // we don't need 64 maxplayers because this is only for tf2. saves some memory.
 #define TFMAXPLAYERS 33
 
@@ -6,6 +8,7 @@
 
 /***** Cvar Handles *****/
 ConVar stac_enabled;
+ConVar stac_ban_duration;
 ConVar stac_verbose_info;
 ConVar stac_max_allowed_turn_secs;
 ConVar stac_ban_for_misccheats;
@@ -16,7 +19,6 @@ ConVar stac_max_bhop_detections;
 ConVar stac_max_fakeang_detections;
 ConVar stac_max_cmdnum_detections;
 ConVar stac_max_tbot_detections;
-ConVar stac_max_spinbot_detections;
 ConVar stac_max_cmdrate_spam_detections;
 ConVar stac_min_interp_ms;
 ConVar stac_max_interp_ms;
@@ -27,8 +29,12 @@ ConVar stac_log_to_file;
 ConVar stac_fixpingmasking_enabled;
 ConVar stac_kick_unauthed_clients;
 ConVar stac_silent;
+ConVar stac_max_connections_from_ip;
+
 
 /***** Misc cheat defaults *****/
+// ban duration
+int banDuration                 = 0;
 // verbose mode
 bool DEBUG                      = false;
 // interp
@@ -43,13 +49,12 @@ bool demonameInBanReason        = true;
 bool logtofile                  = true;
 // fix pingmasking - required for pingreduce check
 bool fixpingmasking             = true;
-// bool that gets set by steamtools/steamworks forwards - used to kick clients that dont auth
-int isSteamAlive                = -1;
 bool kickUnauth                 = true;
 float maxAllowedTurnSecs        = -1.0;
 bool banForMiscCheats           = true;
 bool optimizeCvars              = true;
 int silent                      = 0;
+int maxip                       = 5;
 
 /***** Detection based cheat defaults *****/
 int maxAimsnapDetections        = 20;
@@ -58,7 +63,6 @@ int maxFakeAngDetections        = 10;
 int maxBhopDetections           = 10;
 int maxCmdnumDetections         = 20;
 int maxTbotDetections           = 0;
-int maxSpinbotDetections        = 50;
 int maxuserinfoSpamDetections   = 25;
 
 /***** Server based stuff *****/
@@ -67,13 +71,16 @@ int maxuserinfoSpamDetections   = 25;
 float tickinterv;
 float tps;
 
-// time to wait after server "stutters"
-float stutterWaitLength = 5.0;
+// time to wait after server lags before checking all client's OnPlayerRunCmd
+float ServerLagWaitLength = 5.0;
+// time to wait after player lags before checking single client's OnPlayerRunCmd
+float PlayerLagWaitLength = 1.0;
 
 // misc server info
 char hostname[64];
 char hostipandport[24];
 char demoname[128];
+int demotick = -1;
 
 // server cvar values
 bool waitStatus;
@@ -85,34 +92,31 @@ int imaxrate;
 int iminrate;
 
 // time since some server event happened
-// last time steam came online
-float steamLastOnlineTime;
 // time since the map started
 float timeSinceMapStart;
-// time since the last server stutter occurred
-float timeSinceLagSpike;
+// time since the last stutter/lag spike occurred per client
+float timeSinceLagSpikeFor[TFMAXPLAYERS + 1];
 
 // native/gamemode/plugin etc bools
 bool SOURCEBANS;
+bool MATERIALADMIN;
 bool GBANS;
-bool STEAMTOOLS;
-bool STEAMWORKS;
 bool AIMPLOTTER;
 bool DISCORD;
 bool MVM;
+bool SOURCETVMGR;
+bool STEAMWORKS;
 
 /***** client based stuff *****/
 
 // cheat detections per client
 int turnTimes               [TFMAXPLAYERS+1];
 int fakeAngDetects          [TFMAXPLAYERS+1];
-int aimsnapDetects          [TFMAXPLAYERS+1] = -1; // set to -1 to ignore first detections, as theyre most likely junk
-int pSilentDetects          [TFMAXPLAYERS+1] = -1; // ^
-int bhopDetects             [TFMAXPLAYERS+1] = -1; // set to -1 to ignore single jumps
+int aimsnapDetects          [TFMAXPLAYERS+1] = {-1, ...}; // set to -1 to ignore first detections, as theyre most likely junk
+int pSilentDetects          [TFMAXPLAYERS+1] = {-1, ...}; // ^
+int bhopDetects             [TFMAXPLAYERS+1] = {-1, ...}; // set to -1 to ignore single jumps
 int cmdnumSpikeDetects      [TFMAXPLAYERS+1];
-int tbotDetects             [TFMAXPLAYERS+1] = -1;
-int spinbotDetects          [TFMAXPLAYERS+1];
-int fakeChokeDetects        [TFMAXPLAYERS+1];
+int tbotDetects             [TFMAXPLAYERS+1] = {-1, ...};
 int userinfoSpamDetects     [TFMAXPLAYERS+1];
 
 // frames since client "did something"
@@ -139,7 +143,6 @@ int   clmouse               [TFMAXPLAYERS+1]   [2];
 float engineTime            [TFMAXPLAYERS+1][3];
 float fuzzyClangles         [TFMAXPLAYERS+1][5][2];
 float clpos                 [TFMAXPLAYERS+1][2][3];
-int   maxTickCountFor       [TFMAXPLAYERS+1];
 
 // Misc stuff per client    [ client index ][char size]
 char SteamAuthFor           [TFMAXPLAYERS+1][64];
@@ -153,6 +156,7 @@ float sensFor               [TFMAXPLAYERS+1];
 char hurtWeapon             [TFMAXPLAYERS+1][256];
 char lastCommandFor         [TFMAXPLAYERS+1][256];
 bool LiveFeedOn             [TFMAXPLAYERS+1];
+bool hasBadName             [TFMAXPLAYERS+1];
 
 // network info
 float lossFor               [TFMAXPLAYERS+1];
@@ -240,7 +244,9 @@ bool justclamped        [TFMAXPLAYERS+1];
 
 // tps etc
 int tickspersec        [TFMAXPLAYERS+1];
+// iterated tick num per client
 int t                  [TFMAXPLAYERS+1];
 
 float secTime          [TFMAXPLAYERS+1];
 
+char os                [16];

@@ -1,3 +1,5 @@
+#pragma semicolon 1
+
 /********** STAC CONVAR RELATED STUFF **********/
 
 void initCvars()
@@ -42,6 +44,22 @@ void initCvars()
         0.0,
         true,
         1.0
+    );
+    HookConVarChange(stac_verbose_info, setStacVars);
+
+    // ban duration
+    IntToString(banDuration, buffer, sizeof(buffer));
+    stac_ban_duration =
+    AutoExecConfig_CreateConVar
+    (
+        "stac_ban_duration",
+        buffer,
+        "[StAC] ban duration that StAC will use upon banning cheating clients. 0 = permanent.",
+        FCVAR_NONE,
+        true,
+        0.0,
+        false,
+        _
     );
     HookConVarChange(stac_verbose_info, setStacVars);
 
@@ -114,7 +132,7 @@ void initCvars()
     (
         "stac_max_aimsnap_detections",
         buffer,
-        "[StAC] maximum aimsnap detections before banning a client.\n-1 to disable even checking angles (saves cpu), 0 to print to admins/stv but never ban\n(recommended 25 or higher)",
+        "[StAC] maximum aimsnap detections before banning a client.\n-1 to disable even checking angles (saves cpu), 0 to print to admins/stv but never ban\n(recommended 20 or higher)",
         FCVAR_NONE,
         true,
         -1.0,
@@ -202,22 +220,6 @@ void initCvars()
         _
     );
     HookConVarChange(stac_max_tbot_detections, setStacVars);
-
-    // spinbot detections
-    IntToString(maxSpinbotDetections, buffer, sizeof(buffer));
-    stac_max_spinbot_detections =
-    AutoExecConfig_CreateConVar
-    (
-        "stac_max_spinbot_detections",
-        buffer,
-        "[StAC] maximum spinbot detections before banning a client. \n(recommended 50 or higher)",
-        FCVAR_NONE,
-        true,
-        -1.0,
-        false,
-        _
-    );
-    HookConVarChange(stac_max_spinbot_detections, setStacVars);
 
     // min interp
     IntToString(min_interp_ms, buffer, sizeof(buffer));
@@ -369,7 +371,7 @@ void initCvars()
     HookConVarChange(stac_max_cmdrate_spam_detections, setStacVars);
 
 
-    // kick unauthed clients
+    // reconnect unauthed clients
     if (kickUnauth)
     {
         buffer = "1";
@@ -383,7 +385,7 @@ void initCvars()
     (
         "stac_kick_unauthed_clients",
         buffer,
-        "[StAC] kick clients unauthorized with steam? This only checks if steam has been stable and online for at least the past 300 seconds or more.\n(recommended 1)",
+        "[StAC] Forcibly reconnect clients unauthorized with steam - this protects against cheat clients not setting steamids, at the cost of making your server inaccessible when Steam is down.\n(recommended 1)",
         FCVAR_NONE,
         true,
         0.0,
@@ -408,6 +410,22 @@ void initCvars()
     );
     HookConVarChange(stac_silent, setStacVars);
 
+    // max connections from the same ip
+    IntToString(maxip, buffer, sizeof(buffer));
+    stac_max_connections_from_ip =
+    AutoExecConfig_CreateConVar
+    (
+        "stac_max_connections_from_ip",
+        buffer,
+        "[StAC] Max connections allowed from the same IP address. Useful for autokicking bots, though StAC should do that with cvar checks anyway.\n(recommended 5)",
+        FCVAR_NONE,
+        true,
+        1.0,
+        false,
+        _
+    );
+    HookConVarChange(stac_max_connections_from_ip, setStacVars);
+
     // actually exec the cfg after initing cvars lol
     AutoExecConfig_ExecuteFile();
     AutoExecConfig_CleanFile();
@@ -424,6 +442,9 @@ void setStacVars(ConVar convar, const char[] oldValue, const char[] newValue)
     {
         SetFailState("[StAC] stac_enabled is set to 0 - aborting!");
     }
+
+    // ban duration var
+    banDuration             = GetConVarInt(stac_ban_duration);
 
     // verbose info var
     DEBUG                   = GetConVarBool(stac_verbose_info);
@@ -463,9 +484,6 @@ void setStacVars(ConVar convar, const char[] oldValue, const char[] newValue)
     // tbot var
     maxTbotDetections       = GetConVarInt(stac_max_tbot_detections);
 
-    // spinbot var
-    maxSpinbotDetections    = GetConVarInt(stac_max_spinbot_detections);
-
     // max ping reduce detections - clamp to -1 if 0
     maxuserinfoSpamDetections   = GetConVarInt(stac_max_cmdrate_spam_detections);
 
@@ -500,9 +518,12 @@ void setStacVars(ConVar convar, const char[] oldValue, const char[] newValue)
 
     // silent mode
     silent                  = GetConVarInt(stac_silent);
+
+    // max conns from same ip
+    maxip                   = GetConVarInt(stac_max_connections_from_ip);
 }
 
-void GenericCvarChanged(ConVar convar, const char[] oldValue, const char[] newValue)
+public void GenericCvarChanged(ConVar convar, const char[] oldValue, const char[] newValue)
 {
     // IMMEDIATELY unload if we enable sv cheats
     if (convar == FindConVar("sv_cheats"))
@@ -524,7 +545,7 @@ void GenericCvarChanged(ConVar convar, const char[] oldValue, const char[] newVa
 #define MAX_RATE        (1024*1024)
 #define MIN_RATE        1000
 // update server rate settings for cmdrate spam check - i'd rather have one func do this lol
-void UpdateRates(ConVar convar, const char[] oldValue, const char[] newValue)
+public void UpdateRates(ConVar convar, const char[] oldValue, const char[] newValue)
 {
     imincmdrate    = GetConVarInt(FindConVar("sv_mincmdrate"));
     imaxcmdrate    = GetConVarInt(FindConVar("sv_maxcmdrate"));
@@ -561,17 +582,6 @@ void RunOptimizeCvars()
     SetConVarInt(FindConVar("sv_maxusrcmdprocessticks_holdaim"), 1);
     // limit fakelag abuse
     SetConVarFloat(FindConVar("sv_maxunlag"), 0.2);
-    // fix backtracking
-    // dont error out on server start
-    ConVar jay_backtrack_enable     = FindConVar("jay_backtrack_enable");
-    ConVar jay_backtrack_tolerance  = FindConVar("jay_backtrack_tolerance");
-    if (jay_backtrack_enable != null && jay_backtrack_tolerance != null)
-    {
-        // enable jaypatch
-        SetConVarInt(jay_backtrack_enable, 1);
-        // set jaypatch to sane value
-        SetConVarInt(jay_backtrack_tolerance, 1);
-    }
     // get rid of any possible exploits by using teleporters and fov
     SetConVarInt(FindConVar("tf_teleporter_fov_start"), 90);
     SetConVarFloat(FindConVar("tf_teleporter_fov_time"), 0.0);

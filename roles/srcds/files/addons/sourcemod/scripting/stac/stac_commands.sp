@@ -1,3 +1,5 @@
+#pragma semicolon 1
+
 /********** STAC COMMANDS FOR ADMINS **********/
 
 Action checkAdmin(int callingCl, int args)
@@ -17,11 +19,12 @@ Action checkAdmin(int callingCl, int args)
         }
         if (!isAdmin)
         {
-            StacGeneralPlayerDiscordNotify(GetClientUserId(callingCl), "Client %N attempted to use %s, blocked access!", callingCl, arg0);
             PrintToImportant("{hotpink}[StAC]{white} Client %N attempted to use %s, blocked access." , callingCl, arg0);
+            StacLogSteam(GetClientUserId(callingCl));
+            StacGeneralPlayerNotify(GetClientUserId(callingCl), "Client %N attempted to use %s, blocked access!", callingCl, arg0);
             return Plugin_Handled;
         }
-        StacGeneralPlayerDiscordNotify(GetClientUserId(callingCl), "Admin %N used %s", callingCl, arg0);
+        StacGeneralPlayerNotify(GetClientUserId(callingCl), "Admin %N used %s", callingCl, arg0);
     }
 
     if (StrEqual(arg0, "sm_stac_checkall"))
