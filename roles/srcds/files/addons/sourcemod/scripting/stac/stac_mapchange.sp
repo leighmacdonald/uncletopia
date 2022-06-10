@@ -1,3 +1,5 @@
+#pragma semicolon 1
+
 /********** MAP CHANGE / STARTUP RELATED STUFF **********/
 
 public void OnMapStart()
@@ -6,23 +8,26 @@ public void OnMapStart()
     ActuallySetRandomSeed();
     DoTPSMath();
     ResetTimers();
-    RequestFrame(checkStatus);
     if (optimizeCvars)
     {
         RunOptimizeCvars();
     }
     timeSinceMapStart = GetEngineTime();
     CreateTimer(0.1, checkNativesEtc);
+    CreateTimer(0.5, getIP);
+
     GetConVarString(FindConVar("hostname"), hostname, sizeof(hostname));
 }
 
-Action eRoundStart(Handle event, char[] name, bool dontBroadcast)
+public Action eRoundStart(Handle event, char[] name, bool dontBroadcast)
 {
     DoTPSMath();
     // might as well do this here!
     ActuallySetRandomSeed();
     // this counts
     timeSinceMapStart = GetEngineTime();
+
+    return Plugin_Continue;
 }
 
 public void OnMapEnd()
@@ -38,7 +43,7 @@ Action checkNativesEtc(Handle timer)
     // check sv cheats
     if (GetConVarBool(FindConVar("sv_cheats")))
     {
-        //SetFailState("[StAC] sv_cheats set to 1! Aborting!");
+        SetFailState("sv_cheats set to 1! Aborting!");
     }
     // check wait command
     if (GetConVarBool(FindConVar("sv_allow_wait_command")))
@@ -57,20 +62,15 @@ Action checkNativesEtc(Handle timer)
 
     // check natives!
 
-    // steamtools
-    if (GetFeatureStatus(FeatureType_Native, "Steam_IsConnected") == FeatureStatus_Available)
-    {
-        STEAMTOOLS = true;
-    }
-    // steamworks
-    if (GetFeatureStatus(FeatureType_Native, "SteamWorks_IsConnected") == FeatureStatus_Available)
-    {
-        STEAMWORKS = true;
-    }
     // sourcebans
     if (GetFeatureStatus(FeatureType_Native, "SBPP_BanPlayer") == FeatureStatus_Available)
     {
         SOURCEBANS = true;
+    }
+    // materialadmin
+    if (GetFeatureStatus(FeatureType_Native, "MABanPlayer") == FeatureStatus_Available)
+    {
+        MATERIALADMIN = true;
     }
     // gbans
     if (CommandExists("gb_ban"))
@@ -87,12 +87,18 @@ Action checkNativesEtc(Handle timer)
     {
         DISCORD = true;
     }
-
-    // check steam status real quick
-    if (isSteamAlive == -1)
+    // srctvmgr functionality, for demo ticks
+    if (GetFeatureStatus(FeatureType_Native, "SourceTV_GetDemoFileName") == FeatureStatus_Available)
     {
-        checkSteam();
+        SOURCETVMGR = true;
     }
+    // steamworks
+    if (GetFeatureStatus(FeatureType_Native, "SteamWorks_GetPublicIP") == FeatureStatus_Available)
+    {
+        STEAMWORKS = true;
+    }
+
+    return Plugin_Continue;
 }
 
 // NUKE the client timers from orbit on plugin and map reload
@@ -116,7 +122,7 @@ void ResetTimers()
 
             if (DEBUG)
             {
-                StacLog("[StAC] Creating timer for %L", Cl);
+                StacLog("Creating timer for %L", Cl);
             }
             // lets make a timer with a random length between stac_min_randomcheck_secs and stac_max_randomcheck_secs
             QueryTimer[Cl] =
@@ -143,35 +149,56 @@ void ActuallySetRandomSeed()
     int seed = GetURandomInt();
     if (DEBUG)
     {
-        StacLog("[StAC] setting random server seed to %i", seed);
+        StacLog("setting random server seed to %i", seed);
     }
     SetRandomSeed(seed);
 }
 
-void checkStatus()
+// jesus this is ugly
+Action getIP(Handle timer)
 {
-    char status[2048];
-    ServerCommandEx(status, sizeof(status), "status");
-    char ipetc[128];
-    char ip[24];
-    if (MatchRegex(publicIPRegex, status) > 0)
+    // get our host port
+    char hostport[8];
+    GetConVarString(FindConVar("hostport"), hostport, sizeof(hostport));
+
+    // if we have steamworks we can get our ip ez pz
+    if (STEAMWORKS)
     {
-        if (GetRegexSubString(publicIPRegex, 0, ipetc, sizeof(ipetc)))
+        int sw_ip[4];
+        SteamWorks_GetPublicIP(sw_ip);
+        Format(hostipandport, sizeof(hostipandport), "%i.%i.%i.%i:%s", sw_ip[0], sw_ip[1], sw_ip[2], sw_ip[3], hostport);
+    }
+    // otherwise we have to scrape the status command (ugly and frightening)
+    else
+    {
+        char status_out[2048];
+        ServerCommandEx(status_out, sizeof(status_out), "status");
+
+        char ipetc[128];
+        char ip[24];
+
+        Format(hostipandport, sizeof(hostipandport), "un.known.ip.addr:%s", hostport);
+
+        if (MatchRegex(publicIPRegex, status_out) > 0)
         {
-            TrimString(ipetc);
-            if (MatchRegex(IPRegex, ipetc) > 0)
+            if (GetRegexSubString(publicIPRegex, 0, ipetc, sizeof(ipetc)))
             {
-                if (GetRegexSubString(IPRegex, 0, ip, sizeof(ip)))
+                TrimString(ipetc);
+                if (MatchRegex(IPRegex, ipetc) > 0)
                 {
-                    strcopy(hostipandport, sizeof(hostipandport), ip);
-                    StrCat(hostipandport, sizeof(hostipandport), ":");
-                    char hostport[6];
-                    GetConVarString(FindConVar("hostport"), hostport, sizeof(hostport));
-                    StrCat(hostipandport, sizeof(hostipandport), hostport);
+                    if (GetRegexSubString(IPRegex, 0, ip, sizeof(ip)))
+                    {
+                        Format(hostipandport, sizeof(hostipandport), "%s:%s", ip, hostport);
+                    }
                 }
             }
         }
     }
+    if (DEBUG)
+    {
+        StacLog("Server IP + Port = %s", hostipandport);
+    }
+    return Plugin_Continue;
 }
 
 void DoTPSMath()
@@ -184,4 +211,3 @@ void DoTPSMath()
         StacLog("tickinterv %f, tps %f", tickinterv, tps);
     }
 }
-
