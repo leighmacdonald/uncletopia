@@ -1,3 +1,11 @@
+- name: pre-download images
+  community.general.docker_image:
+    source: pull
+    name: "{{ item.image_tag|default(image_tag) }}"
+  loop: "{{ services }}"
+  loop_control:
+    index_var: loop0
+
 - name: create build output dirs
   become: true
   become_user: root
