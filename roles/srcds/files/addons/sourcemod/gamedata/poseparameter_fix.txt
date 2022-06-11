@@ -1,0 +1,15 @@
+"Games"
+{
+	"tf"
+	{
+		"Signatures"
+		{
+			"CStudioHdr::GetSharedPoseParameter"
+			{
+				"library"	"server"
+				"windows"	"\x55\x8B\xEC\x56\x8B\x71\x04\x85\x2A\x2A\x2A\x8B\x45\x0C\x5E\x5D\xC2"
+				"linux"		"@_ZNK10CStudioHdr22GetSharedPoseParameterEii"
+			}
+		}
+	}
+}

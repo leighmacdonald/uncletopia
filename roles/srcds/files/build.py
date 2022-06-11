@@ -5,8 +5,7 @@ from os.path import join, exists, realpath, dirname
 
 
 BASE_DIR = dirname(realpath(__file__))
-OUTPUT_PATH = join(BASE_DIR, "addons", "sourcemod", "plugins")
-SRC_PATH = join(BASE_DIR, "addons", "sourcemod", "scripting")
+OUTPUT_PATH = join(BASE_DIR, "..", "plugins")
 COMPILER = "/build/addons/sourcemod/scripting/spcomp64"
 INCLUDE_PATHS = [
     # Docker container build path
@@ -14,6 +13,7 @@ INCLUDE_PATHS = [
     join(BASE_DIR, "addons", "sourcemod", "scripting", "include")
 ]
 PLUGINS = [
+    "autorecorder",
     "admin-allspec",
     #"classrestrict",
     "cronjobs",
@@ -21,24 +21,24 @@ PLUGINS = [
     "extendedmapconfig",
     "gbans",
     "medicstats",
-    "nativevotes-basecommands", 
-    "nativevotes-basevotes", 
+    "nativevotes-basecommands",
+    "nativevotes-basevotes",
     "nativevotes",
     "NetworkTools",
     "SendToSpec",
-    "stac", 
+    "stac",
     "supstats2",
     "system2_http",
     # "tf_kick_immunity",
-    "tf2-comp-fixes", 
+    "tf2-comp-fixes",
     "tf2attributes",
-    "tf2centerprojectiles", 
+    "tf2centerprojectiles",
     "tidychat",
+    "uncletopia-nags",
     "unusedvoicelines",
     "votescramble",
     "waitingdoors"
 ]
-
 
 def compile_sp(input_name, out_path):
     out_file = join(out_path, input_name)

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-bash ./srcds_run -game "${STEAMAPP}" -console \
+bash ./srcds_run -debug -game "${STEAMAPP}" -console \
                         -usercon \
                         +fps_max "${SRCDS_FPSMAX}" \
                         -tickrate "${SRCDS_TICKRATE}" \

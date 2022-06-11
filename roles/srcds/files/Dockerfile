@@ -13,12 +13,11 @@ RUN set -x \
     && chmod +x /build/addons/sourcemod/scripting/spcomp
 COPY addons/sourcemod addons/sourcemod/
 
-RUN ls -la addons/
-
 WORKDIR /build/addons/sourcemod/scripting
 COPY build.py .
 
 RUN python3 build.py
+RUN ls -la /build/addons/sourcemod/plugins
 
 # Download tf2 game engine+assets to /build/game_data
 FROM debian:buster-slim as game_build
@@ -43,14 +42,14 @@ RUN set -x \
 	&& mkdir -p "${GAME_PATH}" \
 	&& dotnet ./DepotDownloader.dll -app "${STEAMAPPID}" -dir "${GAME_PATH}" -max-downloads 16 -max-servers 32
 
-FROM debian:buster-slim
+FROM debian:bullseye-slim
 
 LABEL maintainer="leigh.macdonald@gmail.com"
+LABEL org.opencontainers.image.source="https://github.com/leighmacdonald/uncletopia"
 
 ARG PUID=3000
 ARG PGID=3000
 ENV USER saxton
-ENV GROUP hale
 ENV HOMEDIR "/home/${USER}"
 ENV STEAMAPPID 232250
 ENV STEAMAPP tf
@@ -61,7 +60,7 @@ RUN set -x \
 	&& apt-get update \
 	&& apt-get install -y --no-install-recommends --no-install-suggests \
 		lib32stdc++6 \
-		lib32gcc1 \
+		lib32gcc-s1 \
 		nano \
 		libsdl2-2.0-0:i386 \
 		curl \
@@ -72,16 +71,21 @@ RUN set -x \
 		lib32z1 \
 		libncurses5:i386 \
 		libbz2-1.0:i386 \
-		lib32gcc1 \
-		lib32stdc++6 \
+		# lib32gcc1-sl \
+		# lib32stdc++6 \
 		libtinfo5:i386 \
 		libcurl3-gnutls:i386 \
-	&& groupadd -g "${PGID}" "${GROUP}" && useradd -u "${PUID}" -g "${GROUP}" -m "${USER}" 
+	&& sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen \
+	&& dpkg-reconfigure --frontend=noninteractive locales \
+	&& useradd -u "${PUID}" -m "${USER}" \
+	&& apt-get remove --purge --auto-remove -y \
+		wget nano unzip \
+	&& rm -rf /var/lib/apt/lists/*
 
 WORKDIR "${HOMEDIR}"
 
 COPY entry.sh .
-RUN chmod +x entry.sh && chown -R "${USER}:${GROUP}" entry.sh
+RUN chmod +x entry.sh && chown -R "${USER}" ./*
 
 USER ${USER}
 
@@ -100,20 +104,19 @@ ENV SRCDS_FPSMAX=300 \
     SRCDS_HOSTNAME="TF2" \
 	SRCSD_LOG_SECRET=""
 
-EXPOSE 27015/tcp 27015/udp 27020/udp
+COPY --from=game_build --chown="${USER}:${GROUP}" /build/game_data/ .
+COPY --from=sm_build --chown="${USER}:${GROUP}" /build/addons ./tf/addons/
 
-RUN mkdir -p ${STEAMAPPDIR}/tf/logs
+RUN rm ./tf/addons/sourcemod/plugins/basevotes.smx
 
-COPY --from=game_build --chown=$USERNAME /build/game_data/ /game/
-COPY --from=sm_build --chown=$USERNAME /build/addons/ /addons/
+RUN ls -la 
 
-VOLUME ${HOMEDIR}/tf/addons/sourcemod/data
-VOLUME ${HOMEDIR}/tf/addons/sourcemod/gamedata
-VOLUME ${HOMEDIR}/tf/addons/sourcemod/logs
-VOLUME ${HOMEDIR}/tf/downloads
-VOLUME ${HOMEDIR}/tf/cache
+VOLUME ${HOMEDIR}/tf/addons/sourcemod/data/sqlite
 VOLUME ${HOMEDIR}/tf/logs
+VOLUME ${HOMEDIR}/tf/addons/sourcemod/data/dumps
+
+EXPOSE 27015/tcp 27015/udp 27020/udp
 
 ENTRYPOINT [ "bash" ]
 
-CMD ["../entry.sh"]
+CMD ["entry.sh"]
