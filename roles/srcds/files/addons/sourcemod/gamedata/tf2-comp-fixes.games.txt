@@ -157,13 +157,13 @@
 
 		"Offsets" {
 			"CBaseCombatWeapon::Deploy" {
-				"linux" "261"
-				"windows" "255"
+				"linux" "264"
+				"windows" "258"
 			}
 
 			"CBaseProjectile::CanCollideWithTeammates" {
-				"linux" "224"
-				"windows" "223"
+				"linux" "227"
+				"windows" "226"
 			}
 
 			"CTeamplayRoundBasedRules::RestartTournament" {
@@ -177,13 +177,13 @@
 			}
 
 			"CTFGrenadePipebombProjectile::PipebombTouch" {
-				"linux" "255"
-				"windows" "254"
+				"linux" "258"
+				"windows" "257"
 			}
 
 			"CTFWeaponBase::SecondaryAttack" {
-				"linux" "287"
-				"windows" "281"
+				"linux" "290"
+				"windows" "284"
 			}
 		}
 
