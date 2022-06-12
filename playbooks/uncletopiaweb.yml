@@ -1,5 +1,5 @@
 ---
-- hosts: web
+- hosts: metrics
   roles:
     - caddy
     - uncletopiaweb

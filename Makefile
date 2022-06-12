@@ -35,7 +35,7 @@ metrics:
 	@ansible-playbook $(PROD_OPTS) $(PLAYBOOK_PATH)/metrics.yml --limit metrics
 
 uncletopiaweb:
-	@ansible-playbook $(PROD_OPTS) $(PLAYBOOK_PATH)/uncletopiaweb.yml $(ARGS) 
+	@ansible-playbook $(PROD_OPTS) $(PLAYBOOK_PATH)/uncletopiaweb.yml --limit metrics $(ARGS)
 
 gbans:
 	@ansible-playbook $(PROD_OPTS) $(PLAYBOOK_PATH)/gbans.yml $(ARGS) 
