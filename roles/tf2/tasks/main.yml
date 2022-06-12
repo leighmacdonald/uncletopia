@@ -2,9 +2,9 @@
   community.general.docker_image:
     source: pull
     name: "{{ item.image_tag|default(image_tag) }}"
-  loop: "{{ services }}"
-  loop_control:
-    index_var: loop0
+  # loop: "{{ services }}"
+  # loop_control:
+  #   index_var: loop0
 
 - name: create build output dirs
   become: true
@@ -179,7 +179,7 @@
     state: started
     restart: yes
     network_mode: host
-    pull: yes
+    pull: no
     interactive: yes
     tty: yes
     recreate: yes
