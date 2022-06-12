@@ -21,8 +21,8 @@
 
 - name: build & publish srcds image
   community.docker.docker_image:
-    name: leighmacdonald/uncletopia-srcds
-    tag: awx
+    name: leighmacdonald/uncletopia
+    tag: latest
     source: build
     force_tag: true
     push: true
