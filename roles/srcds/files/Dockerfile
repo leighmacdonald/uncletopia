@@ -62,7 +62,7 @@ ENV SRCDS_FPSMAX=300 \
 USER ${USER}
 
 WORKDIR ${HOMEDIR}
-VOLUME
+VOLUME /demos
 CMD ["bash", "entry.sh"]
 
 # Expose ports
