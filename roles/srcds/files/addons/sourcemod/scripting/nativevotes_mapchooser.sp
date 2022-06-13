@@ -71,6 +71,7 @@ ConVar g_Cvar_ExtendRoundStep;
 ConVar g_Cvar_ExtendFragStep;
 ConVar g_Cvar_ExcludeMaps;
 ConVar g_Cvar_IncludeMaps;
+ConVar g_Cvar_CurateMaps;
 ConVar g_Cvar_NoVoteMode;
 ConVar g_Cvar_Extend;
 ConVar g_Cvar_DontChange;
@@ -86,6 +87,7 @@ Handle g_RetryTimer = null;
 // g_OldMapList and g_NextMapList are resolved. g_NominateList depends on the nominations implementation.
 /* Data Handles */
 ArrayList g_MapList;
+ArrayList g_CMapList;
 ArrayList g_NominateList;
 ArrayList g_NominateOwners;
 ArrayList g_OldMapList;
@@ -125,6 +127,7 @@ public void OnPluginStart()
 	
 	int arraySize = ByteCountToCells(PLATFORM_MAX_PATH);
 	g_MapList = new ArrayList(arraySize);
+	g_CMapList = new ArrayList(arraySize);
 	g_NominateList = new ArrayList(arraySize);
 	g_NominateOwners = new ArrayList();
 	g_OldMapList = new ArrayList(arraySize);
@@ -138,9 +141,10 @@ public void OnPluginStart()
 	g_Cvar_StartFrags = CreateConVar("sm_mapvote_startfrags", "5.0", "Specifies when to start the vote base on frags remaining.", _, true, 1.0);
 	g_Cvar_ExtendTimeStep = CreateConVar("sm_extendmap_timestep", "15", "Specifies how much many more minutes each extension makes", _, true, 5.0);
 	g_Cvar_ExtendRoundStep = CreateConVar("sm_extendmap_roundstep", "5", "Specifies how many more rounds each extension makes", _, true, 1.0);
-	g_Cvar_ExtendFragStep = CreateConVar("sm_extendmap_fragstep", "10", "Specifies how many more frags are allowed when map is extended.", _, true, 5.0);	
+	g_Cvar_ExtendFragStep = CreateConVar("sm_extendmap_fragstep", "10", "Specifies how many more frags are allowed when map is extended.", _, true, 5.0);
 	g_Cvar_ExcludeMaps = CreateConVar("sm_mapvote_exclude", "5", "Specifies how many past maps to exclude from the vote.", _, true, 0.0);
 	g_Cvar_IncludeMaps = CreateConVar("sm_mapvote_include", "5", "Specifies how many maps to include in the vote.", _, true, 2.0, true, 6.0);
+	g_Cvar_CurateMaps = CreateConVar("sm_mapvote_curate", "1", "Specifies whether to use the curated maplist for default map votes.", _, true, 0.0, true, 1.0);
 	g_Cvar_NoVoteMode = CreateConVar("sm_mapvote_novote", "1", "Specifies whether or not MapChooser should pick a map if no votes are received.", _, true, 0.0, true, 1.0);
 	g_Cvar_Extend = CreateConVar("sm_mapvote_extend", "0", "Number of extensions allowed each map.", _, true, 0.0);
 	g_Cvar_DontChange = CreateConVar("sm_mapvote_dontchange", "1", "Specifies if a 'Don't Change' option should be added to early votes", _, true, 0.0);
@@ -263,6 +267,19 @@ public void OnConfigsExecuted()
 		if (g_mapFileSerial == -1)
 		{
 			LogError("Unable to create a valid map list.");
+		}
+	}
+
+	if (ReadMapList(g_CMapList,
+					 g_mapFileSerial, 
+					 "mapcurated",
+					 MAPLIST_FLAG_CLEARARRAY|MAPLIST_FLAG_MAPSFOLDER)
+		!= null)
+		
+	{
+		if (g_mapFileSerial == -1)
+		{
+			LogError("Unable to create a valid curated map list.");
 		}
 	}
 	
@@ -1251,9 +1268,17 @@ void CreateNextVote()
 	// tempMaps is a resolved map list
 	ArrayList tempMaps = new ArrayList(ByteCountToCells(PLATFORM_MAX_PATH));
 	
-	for (int i = 0; i < g_MapList.Length; i++)
+	// use curated mappool or
+	ArrayList maps = new ArrayList();
+	if (g_Cvar_CurateMaps.IntValue == 1) {
+		maps = g_CMapList;
+	} else {
+		maps = g_MapList;
+	}
+
+	for (int i = 0; i < maps.Length; i++)
 	{
-		g_MapList.GetString(i, map, sizeof(map));
+		maps.GetString(i, map, sizeof(map));
 		if (FindMap(map, map, sizeof(map)) != FindMap_NotFound)
 		{
 			tempMaps.PushString(map);
