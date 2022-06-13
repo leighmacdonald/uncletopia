@@ -16,6 +16,8 @@ fi
 # Believe it or not, if you don't do this srcds_run shits itself
 cd "${STEAMAPPDIR}"
 
+cp -rv /home/steam/config/* "${STEAMAPPDIR}/${STEAMAPP}/"
+
 bash "${STEAMAPPDIR}/srcds_run" -game "${STEAMAPP}" -console -autoupdate \
   -steam_dir "${STEAMCMDDIR}" \
   -steamcmd_script "${HOMEDIR}/${STEAMAPP}_update.txt" \

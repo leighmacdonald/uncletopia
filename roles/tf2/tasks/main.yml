@@ -183,6 +183,11 @@
     #   - "{{ srcds_base_port + (loop0 * 10) }}:{{ srcds_base_port + (loop0 * 10) }}/udp"
     #   - "{{ srcds_base_port + (loop0 * 10) + 1 }}:{{ srcds_base_port + (loop0 * 10) + 1 }}/udp"
     env:
+      STEAMAPPID: "232250"
+      STEAMAPP: "tf"
+      STEAMAPPDIR: "/home/steam/tf-dedicated"
+      METAMOD_VERSION: "1.11"
+      SOURCEMOD_VERSION: "1.11"
       SRCDS_TOKEN: "{{ item.gslt }}"
       SRCDS_PORT: "{{ srcds_base_port + (loop0 * 10) }}"
       SRCDS_TV_PORT: "{{ srcds_base_port + (loop0 * 10) + 1 }}"
@@ -213,29 +218,29 @@
       STEAM_GAMESERVER_PACKET_HANDLER_NO_IPC: "1"
 
     volumes:
-      - /build/{{ item.server_name_short }}/autoexec.cfg:/home/steam/tf-dedicated/tf/cfg/autoexec.cfg
-      - /build/{{ item.server_name_short }}/server.cfg:/home/steam/tf-dedicated/tf/cfg/server.cfg
-      - /build/admins_simple.ini:/home/steam/tf-dedicated/tf/addons/sourcemod/configs/admins_simple.ini
-      - /build/{{ item.server_name_short }}/mapcycle.txt:/home/steam/tf-dedicated/tf/cfg/mapcycle.txt
-      - /build/motd.txt:/home/steam/tf-dedicated/tf/cfg/motd.txt
-      - /build/sourcemod.cfg:/home/steam/tf-dedicated/tf/cfg/sourcemod/sourcemod.cfg
-      - /build/admin_overrides.cfg:/home/steam/tf-dedicated/tf/addons/sourcemod/configs/admin_overrides.cfg
-      - /build/gbans.cfg:/home/steam/tf-dedicated/tf/addons/sourcemod/configs/gbans.cfg
-      - /build/mapchooser.cfg:/home/steam/tf-dedicated/tf/cfg/sourcemod/mapchooser.cfg
-      - /build/autorecorder.cfg:/home/steam/tf-dedicated/tf/cfg/sourcemod/autorecorder.cfg
-      - /build/nativevotes.cfg:/home/steam/tf-dedicated/tf/cfg/sourcemod/nativevotes.cfg
-      - /build/randomcycle.cfg:/home/steam/tf-dedicated/tf/cfg/sourcemod/randomcycle.cfg
-      - /build/rtv.cfg:/home/steam/tf-dedicated/tf/cfg/sourcemod/rtv.cfg
-      - /build/discord.cfg:/home/steam/tf-dedicated/tfaddons/sourcemod/configs/discord.cfg
-      - /build/core.cfg:/home/steam/tf-dedicated/tf/addons/sourcemod/configs/core.cfg
-      - /build/{{ item.server_name_short }}/maplists.cfg:/home/steam/tf-dedicated/tf/addons/sourcemod/configs/maplists.cfg
+      - /build/{{ item.server_name_short }}/autoexec.cfg:/home/steam/config/tf/cfg/autoexec.cfg
+      - /build/{{ item.server_name_short }}/server.cfg:/home/steam/config/tf/cfg/server.cfg
+      - /build/admins_simple.ini:/home/steam/config/tf/addons/sourcemod/configs/admins_simple.ini
+      - /build/{{ item.server_name_short }}/mapcycle.txt:/home/steam/config/tf/cfg/mapcycle.txt
+      - /build/motd.txt:/home/steam/config/tf/cfg/motd.txt
+      - /build/sourcemod.cfg:/home/steam/config/tf/cfg/sourcemod/sourcemod.cfg
+      - /build/admin_overrides.cfg:/home/steam/config/tf/addons/sourcemod/configs/admin_overrides.cfg
+      - /build/gbans.cfg:/home/steam/config/tf/addons/sourcemod/configs/gbans.cfg
+      - /build/mapchooser.cfg:/home/steam/config/tf/cfg/sourcemod/mapchooser.cfg
+      - /build/autorecorder.cfg:/home/steam/config/tf/cfg/sourcemod/autorecorder.cfg
+      - /build/nativevotes.cfg:/home/steam/config/tf/cfg/sourcemod/nativevotes.cfg
+      - /build/randomcycle.cfg:/home/steam/config/tf/cfg/sourcemod/randomcycle.cfg
+      - /build/rtv.cfg:/home/steam/config/tf/cfg/sourcemod/rtv.cfg
+      - /build/discord.cfg:/home/steam/config/tf/addons/sourcemod/configs/discord.cfg
+      - /build/core.cfg:/home/steam/config/tf/addons/sourcemod/configs/core.cfg
+      - /build/{{ item.server_name_short }}/maplists.cfg:/home/steam/config/tf/addons/sourcemod/configs/maplists.cfg
   loop: "{{ services }}"
   loop_control:
     index_var: loop0
 
 #- name: yet another hack! (roto pls fix)
 #  become: true
-#  ansible.builtin.shell: docker exec -u 0 srcds-{{ item.server_name_short }} /bin/chown -R saxton /home/saxton
+#  ansible.builtin.shell: docker exec -u 0 srcds-{{ item.server_name_short }} /bin/chown -R steam /home/steam
 #  loop: "{{ services }}"
 #  tags: ['skip_ansible_lint']
 
