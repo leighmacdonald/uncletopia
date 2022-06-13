@@ -183,7 +183,7 @@
     state: started
     restart: true
     network_mode: host
-    pull: false
+    pull: true
     interactive: true
     tty: true
     recreate: true
@@ -246,7 +246,7 @@
       - /build/discord.cfg:/home/steam/config/tf/addons/sourcemod/configs/discord.cfg
       - /build/core.cfg:/home/steam/config/tf/addons/sourcemod/configs/core.cfg
       - /build/{{ item.server_name_short }}/maplists.cfg:/home/steam/config/tf/addons/sourcemod/configs/maplists.cfg
-      - /build/{{ item.server_name_short }}/curated_maplist.txt:/home/steam/config/tf/cfg/curated_maplist.txt
+      - /build/{{ item.server_name_short }}/curated_maplist.txt:/home/steam/config/tf/addons/sourcemod/configs/curated_maplist.txt
   loop: "{{ services }}"
   loop_control:
     index_var: loop0
