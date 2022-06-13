@@ -8,5 +8,6 @@ do
     -i/home/leigh/projects/uncletopia/roles/srcds/files/addons/sourcemod/scripting/include
     ((COUNTER=COUNTER+1))
 done
+# Disable plugins that are incompatible with our
 mv ../plugins/basevotes.smx ../plugins/disabled/
 echo "Compiled ${COUNTER} plugins"
