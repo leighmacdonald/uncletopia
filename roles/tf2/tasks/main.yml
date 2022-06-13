@@ -97,6 +97,18 @@
   loop_control:
     index_var: loop0
 
+- name: Generate /build/curated_maplist.cfg
+  ansible.builtin.template:
+    src: curated_maplist.txt.j2
+    dest: /build/{{ item.server_name_short }}/curated_maplist.txt
+    mode: 0777
+  tags:
+    - game_config
+  loop: "{{ services }}"
+  loop_control:
+    index_var: loop0
+
+
 - name: Generate /build/autoexec.cfg
   ansible.builtin.template:
     src: autoexec.cfg.j2
@@ -234,6 +246,7 @@
       - /build/discord.cfg:/home/steam/config/tf/addons/sourcemod/configs/discord.cfg
       - /build/core.cfg:/home/steam/config/tf/addons/sourcemod/configs/core.cfg
       - /build/{{ item.server_name_short }}/maplists.cfg:/home/steam/config/tf/addons/sourcemod/configs/maplists.cfg
+      - /build/{{ item.server_name_short }}/curated_maplist.txt:/home/steam/config/tf/cfg/curated_maplist.txt
   loop: "{{ services }}"
   loop_control:
     index_var: loop0

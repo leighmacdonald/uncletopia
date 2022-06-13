@@ -2,8 +2,8 @@
 # Dockerfile that builds a TF2 Gameserver
 ###########################################################
 FROM cm2network/steamcmd:root
-
-LABEL maintainer="walentinlamonos@gmail.com"
+# Adapted from cm2network/tf2
+LABEL maintainer="leigh.macdonald@gmail.com"
 
 ENV STEAMAPPID 232250
 ENV STEAMAPP tf
@@ -62,7 +62,10 @@ ENV SRCDS_FPSMAX=300 \
 USER ${USER}
 
 WORKDIR ${HOMEDIR}
+
 VOLUME /demos
+VOLUME /logs
+
 CMD ["bash", "entry.sh"]
 
 # Expose ports
