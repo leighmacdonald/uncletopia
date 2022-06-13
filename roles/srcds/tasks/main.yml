@@ -25,12 +25,12 @@
     tag: latest
     source: build
     force_tag: true
-    push: true
+    push: false
     force_source: true
     build:
-      nocache: true
-      pull: true
-      rm: true
+      nocache: false
+      pull: false
+      rm: false
       dockerfile: /build_srcds/Dockerfile
       path: /build_srcds/
     state: present
