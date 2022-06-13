@@ -11,15 +11,17 @@ done
 
 # Disable plugins that are incompatible with our
 for PLUGIN in admin-sql-prefetch \
-  admin-sql-threaded \
-  basevotes \
-  mapchooser \
-  csgo_votestart_test \
-  nativevotes_votemanager_test \
-  sql-admin-manager \
-  nominations \
-  rockthevote \
-  votediagnostics;
+    admin-allspec \
+    admin-sql-threaded \
+    csgo_votestart_test \
+    nativevotes_votemanager_test \
+    rockthevote.smx \
+    votediagnostics \
+    admin-sql-prefetch  \
+    basevotes \
+    mapchooser \
+    nominations \
+    sql-admin-manager;
 do
   mv ../plugins/${PLUGIN}.smx ../plugins/disabled/
 done
