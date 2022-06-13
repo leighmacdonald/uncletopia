@@ -44,4 +44,5 @@
     name: caddy_net
     connected:
       - uncletopia-web
+      - uncletopia-web-postgres
     appends: true
