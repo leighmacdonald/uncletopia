@@ -13,10 +13,11 @@ if  [ ! -z "$SOURCEMOD_VERSION" ] && [ ! -d "${STEAMAPPDIR}/${STEAMAPP}/addons/s
   wget -qO- https://github.com/leighmacdonald/uncletopia/releases/download/sm-test-release/ut-sourcemod.tar.gz | tar xvzf - -C "${STEAMAPPDIR}/${STEAMAPP}/"
 fi
 
+cp -rv "/home/steam/config/${STEAMAPP}/*" "${STEAMAPPDIR}/${STEAMAPP}/"
+
 # Believe it or not, if you don't do this srcds_run shits itself
 cd "${STEAMAPPDIR}"
 
-cp -rv /home/steam/config/* "${STEAMAPPDIR}/${STEAMAPP}/"
 
 bash "${STEAMAPPDIR}/srcds_run" -game "${STEAMAPP}" -console -autoupdate \
   -steam_dir "${STEAMCMDDIR}" \

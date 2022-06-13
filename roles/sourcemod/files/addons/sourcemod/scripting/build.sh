@@ -18,6 +18,7 @@ for PLUGIN in admin-sql-prefetch \
   nativevotes_votemanager_test \
   sql-admin-manager \
   nominations \
+  rockthevote \
   votediagnostics;
 do
   mv ../plugins/${PLUGIN}.smx ../plugins/disabled/
