@@ -11,7 +11,7 @@ PLAYBOOK_PATH := ./playbooks
 all: deploy
 
 build_local:
-	@ansible-playbook $(BUILD_OPTS) $(PLAYBOOK_PATH)/srcds.yml $(ARGS)
+	@ansible-playbook $(BUILD_OPTS) $(PLAYBOOK_PATH)/srcds.yml --limit localhost -K
 
 build_remote:
 	@ansible-playbook $(BUILD_OPTS) $(PLAYBOOK_PATH)/srcds.yml $(ARGS)
