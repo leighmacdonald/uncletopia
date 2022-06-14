@@ -10,7 +10,7 @@ jobs:
 
       - name: Create vault file
         run: |
-            echo VAULT_SECRET >> ~/.vault_ut
+            echo $VAULT_SECRET >> ~/.vault_ut
         shell: bash
         env:
           VAULT_SECRET : ${{secrets.VAULT_SECRET}}
