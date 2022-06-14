@@ -1,8 +1,7 @@
----
 exclude_paths:
   - .github/
-  - host_vars/*.yml
-  - group_vars/*.yml
+  - host_vars/*
+  - group_vars/*
   - hosts.yml
 
 skip_list:

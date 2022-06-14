@@ -26,11 +26,17 @@ ROOT = repo_dir()
 
 
 def ensure_encrypted():
-    def check(fp):
-        if header not in open(fp).read():
-            raise ValidationError("File should be encrypted with ansible-vault {}".format(fp))
-
     header = "$ANSIBLE_VAULT"
+
+    def check(fp):
+        content = open(fp).read()
+        if header not in content:
+            raise ValidationError("File should be encrypted with ansible-vault {}".format(fp))
+        if not content.endswith("\n"):
+            content = content + "\n"
+            open(fp, 'w+').write(content)
+            print("Added newline to vault file")
+
     for root_dir in ENCRYPTED_PATH:
         if isdir(join(ROOT, root_dir)):
             for file in [f for f in listdir(join(ROOT, root_dir)) if not f.endswith(".example")]:
