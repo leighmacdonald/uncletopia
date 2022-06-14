@@ -1268,8 +1268,8 @@ void CreateNextVote()
 	// tempMaps is a resolved map list
 	ArrayList tempMaps = new ArrayList(ByteCountToCells(PLATFORM_MAX_PATH));
 
-	// use curated mappool or
-	ArrayList maps = new ArrayList();
+	// use curated mappool or standard mappool
+	ArrayList maps;
 	if (g_Cvar_CurateMaps.IntValue == 1) {
 		maps = g_CMapList;
 	} else {
