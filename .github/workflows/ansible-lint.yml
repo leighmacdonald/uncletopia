@@ -8,5 +8,12 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Create vault file
+        run: |
+            echo VAULT_SECRET >> ~/.vault_ut
+        shell: bash
+        env:
+          VAULT_SECRET : ${{secrets.VAULT_SECRET}}
+
       - name: Lint Ansible Playbook
         uses: ansible/ansible-lint-action@main
