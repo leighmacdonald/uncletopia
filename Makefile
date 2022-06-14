@@ -32,6 +32,9 @@ node_exporter:
 web:
 	@ansible-playbook $(PROD_OPTS) $(PLAYBOOK_PATH)/web.yml --limit metrics
 
+stvup:
+	@ansible-playbook $(PROD_OPTS) $(PLAYBOOK_PATH)/stvup.yml
+
 system:
 	@ansible-playbook $(PROD_OPTS) $(PLAYBOOK_PATH)/system.yml
 

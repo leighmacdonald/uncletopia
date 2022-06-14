@@ -16,3 +16,9 @@ Install Ansible & Clone playbooks
 1. Watch for game update triggers via `watcher/watcher.py` using `wss://update.uncletopia.com`
 2. Trigger srcds build & upload image to docker hub.
 3. Trigger TF2 deploy.
+
+## Git pre-commit
+
+There is a pre-commit hook that you should enable to ensure you don't commit any unencrypted secret.
+
+    ln .hooks/pre-commit .git/hooks/pre-commit
