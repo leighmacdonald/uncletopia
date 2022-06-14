@@ -1,0 +1,60 @@
+---
+- name: gbans_cache_data volume
+  docker_volume:
+    name: gbans_cache_data
+    state: present
+
+- name: Generate /etc/gbans.yml
+  become: true
+  ansible.builtin.template:
+    src: gbans.yml.j2
+    dest: /etc/gbans.yml
+    mode: 0775
+
+- name: gbans-service
+  docker_container:
+    name: gbans-service
+    image: leighmacdonald/gbans:latest
+    restart: true
+    recreate: true
+    pull: true
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "10"
+    volumes:
+      - /etc/gbans.yml:/app/gbans.yml
+      - gbans_cache_data:/app/.cache
+    env:
+      GBANS_DATABASE_DSN: "{{ gbans.dsn }}"
+      GBANS_GENERAL_STEAM_KEY: "{{ steam_key }}"
+    ports:
+      - 127.0.0.1:6006:6006
+      - 27115:27115/udp
+
+- name: Join gbans network
+  community.docker.docker_network:
+    name: gbans_net
+    connected:
+      - gbans-service
+    appends: true
+
+- name: Join caddy network
+  community.docker.docker_network:
+    name: caddy_net
+    connected:
+      - gbans-service
+    appends: true
+
+- name: Reload networks
+  docker_container:
+    name: gbans-service
+    restart: true
+
+- name: srcds-log-fw
+  become: true
+  ansible.builtin.ufw:
+    rule: allow
+    port: "27115"
+    proto: udp

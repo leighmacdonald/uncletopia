@@ -1,0 +1,45 @@
+---
+- name: Create uncletopia-web_db volume
+  docker_volume:
+    name: uncletopia-web_db
+    state: present
+
+- name: Create uncletopia-web-postgres container
+  docker_container:
+    name: uncletopia-web-postgres
+    image: postgis/postgis:latest
+    restart: true
+    recreate: true
+    purge_networks: true
+    networks:
+      - name: caddy_net
+    pull: true
+    volumes:
+      - uncletopia-web_db:/var/lib/postgresql/data
+    env:
+      POSTGRES_DB: uncletopia-web
+      POSTGRES_PASSWORD: uncletopia-web
+      POSTGRES_USER: uncletopia-web
+    ports:
+      - 127.0.0.1:5433:5432
+
+- name: Generate /etc/uncletopia-web.yml
+  become: true
+  ansible.builtin.template:
+    src: uncletopia-web.yml.j2
+    dest: /etc/uncletopia-web.yml
+    mode: 0770
+
+- name: Create uncletopia-web container
+  docker_container:
+    name: uncletopia-web
+    image: leighmacdonald/uncletopia-web:latest
+    restart: true
+    recreate: true
+    purge_networks: true
+    pull: true
+    networks:
+      - name: caddy_net
+    restart_policy: unless-stopped
+    volumes:
+      - /etc/uncletopia-web.yml:/app/config.yml

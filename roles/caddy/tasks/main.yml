@@ -1,0 +1,44 @@
+---
+- name: Create caddy_data volume
+  docker_volume:
+    name: caddy_data
+    state: present
+
+- name: Create caddy_config volume
+  docker_volume:
+    name: caddy_config
+    state: present
+
+- name: Generate /etc/Caddyfile
+  become: true
+  ansible.builtin.template:
+    src: Caddyfile.j2
+    dest: /etc/Caddyfile
+    mode: 0775
+
+- name: Create caddy_net network
+  community.docker.docker_network:
+    name: caddy_net
+
+- name: Create caddy container
+  docker_container:
+    name: caddy
+    image: slothcroissant/caddy-cloudflaredns:latest
+    restart: true
+    recreate: true
+    purge_networks: true
+    networks:
+      - name: caddy_net
+    pull: true
+    volumes:
+      - caddy_data:/data
+      - caddy_config:/config
+      - /etc/Caddyfile:/etc/caddy/Caddyfile
+      - /home/tf2server/stv_demos:/demos
+    env:
+      CLOUDFLARE_EMAIL: "{{ caddy.cloudflare.email }}"
+      CLOUDFLARE_API_TOKEN: "{{ caddy.cloudflare.api_key }}"
+      ACME_AGREE: "true"
+    ports:
+      - 443:443
+      - 80:80

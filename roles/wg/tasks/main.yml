@@ -4,7 +4,7 @@
   when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
   ansible.builtin.apt:
     update_cache: true
-    cache_valid_time: 00
+    cache_valid_time: 0
     state: present
     pkg:
       - wireguard
@@ -21,7 +21,7 @@
     src: srv-wg0.conf.j2
     dest: /etc/wireguard/wg0.conf
     mode: 0700
-  when: not vpn_client | bool
+  when: not is_vpn_client | bool
 
 - name: wg.conf client
   become: true
@@ -29,11 +29,11 @@
     src: wg0.conf.j2
     dest: /etc/wireguard/wg0.conf
     mode: 0700
-  when: vpn_client | bool
+  when: is_vpn_client | bool
 
 - name: wg-fw
   become: true
-  community.general.ufw:
+  ufw:
     rule: allow
     port: "{{ vpn_port }}"
     proto: udp

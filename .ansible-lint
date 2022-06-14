@@ -1,3 +1,13 @@
----
+exclude_paths:
+  - .github/
+  - host_vars/*
+  - group_vars/*
+  - hosts.yml
+  - .ansible-lint
+
 skip_list:
-  - "306"
+  - schema
+  - internal-error
+
+kinds:
+  - tasks: "*/tasks/*.yml"

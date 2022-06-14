@@ -1,0 +1,7 @@
+---
+- hosts: metrics
+  roles:
+    - caddy
+    - metrics
+    - gbans
+    - uncletopiaweb

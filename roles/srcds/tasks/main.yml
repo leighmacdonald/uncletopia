@@ -1,0 +1,37 @@
+---
+- name: Create build directory
+  become: true
+  ansible.builtin.file:
+    path: /build_srcds
+    state: directory
+    owner: root
+    group: root
+    mode: "0770"
+
+- name: Copy build sources
+  ansible.builtin.synchronize:
+    src: ./
+    dest: /build_srcds/
+    archive: false
+    recursive: true
+
+- name: Log into DockerHub
+  community.docker.docker_login:
+    username: "{{ dockerhub.username }}"
+    password: "{{ dockerhub.password }}"
+
+- name: Build & Publish uncletopia image
+  community.docker.docker_image:
+    name: leighmacdonald/uncletopia
+    tag: latest
+    source: build
+    force_tag: true
+    push: false
+    force_source: true
+    build:
+      nocache: false
+      pull: false
+      rm: false
+      dockerfile: /build_srcds/Dockerfile
+      path: /build_srcds/
+    state: present

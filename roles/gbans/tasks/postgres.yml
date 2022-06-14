@@ -1,0 +1,39 @@
+---
+- name: Create gbans_postgres_data volume
+  docker_volume:
+    name: gbans_db
+    state: present
+
+- name: Create gbans-postgres container
+  docker_container:
+    name: gbans-postgres
+    image: postgis/postgis:latest
+    restart: true
+    recreate: true
+    pull: true
+    purge_networks: true
+    networks:
+      - name: caddy_net
+    volumes:
+      - gbans_db:/var/lib/postgresql/data
+    env:
+      POSTGRES_DB: gbans
+      POSTGRES_PASSWORD: gbans
+      POSTGRES_USER: gbans
+    ports:
+      - 127.0.0.1:5432:5432
+
+- name: Create gbans-postgres_exporter container
+  docker_container:
+    name: gbans-postgres_exporter
+    image: quay.io/prometheuscommunity/postgres-exporter:latest
+    restart: true
+    recreate: true
+    purge_networks: true
+    networks:
+      - name: caddy_net
+    pull: true
+    env:
+      DATA_SOURCE_NAME: postgresql://gbans:gbans@gbans-postgres/gbans?sslmode=disable
+    ports:
+      - 127.0.0.1:9187:9187

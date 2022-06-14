@@ -1,0 +1,5 @@
+---
+- name: Build sourcemod distribution
+  hosts: build
+  roles:
+    - sourcemod

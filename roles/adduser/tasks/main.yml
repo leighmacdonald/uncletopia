@@ -1,18 +1,19 @@
 ---
-- name: apt upgrade
+- name: Apply apt upgrade
   become: true
   ansible.builtin.apt:
     update_cache: true
     upgrade: true
-    cache_valid_time: 00
+    cache_valid_time: 0
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
 
-- name: addgroup tf2
+- name: Create tf2 group
   become: true
   ansible.builtin.group:
     name: tf2
     state: present
 
-- name: adduser tf2server
+- name: Create tf2server user
   become: true
   ansible.builtin.user:
     name: tf2server
@@ -31,36 +32,36 @@
 
 - name: ufw allow 22
   become: true
-  community.general.ufw:
+  ansible.builtin.ufw:
     rule: allow
     port: "22"
     proto: tcp
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
 
 - name: ufw limit 22
   become: true
-  community.general.ufw:
+  ansible.builtin.ufw:
     comment: TF2 Ansible
     rule: limit
     port: "22"
     proto: tcp
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
 
 - name: ufw enable
   become: true
-  community.general.ufw:
+  ansible.builtin.ufw:
     state: enabled
     policy: deny
     direction: incoming
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
 
 - name: mkdir .ssh
-  become: true
   ansible.builtin.file:
-    owner: tf2server
     path: ~/.ssh
     state: directory
     mode: "0700"
 
 - name: ssh keys
-  become: true
   ansible.posix.authorized_key:
     user: tf2server
     state: present
@@ -71,8 +72,8 @@
   become: true
   ansible.builtin.lineinfile:
     dest: /etc/ssh/sshd_config
-    regexp: '^PasswordAuthentication'
-    line: "PasswordAuthentication no"
+    regexp: ^PasswordAuthentication
+    line: PasswordAuthentication no
     state: present
     backup: true
 
@@ -80,8 +81,8 @@
   become: true
   ansible.builtin.lineinfile:
     dest: /etc/ssh/sshd_config
-    regexp: '^PermitRootLogin'
-    line: "PermitRootLogin no"
+    regexp: ^PermitRootLogin
+    line: PermitRootLogin no
     state: present
     backup: true
   notify:

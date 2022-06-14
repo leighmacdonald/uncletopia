@@ -1,0 +1,14 @@
+timezone: "Australia/Sydney"
+sv_region: 5
+ip: "51.161.134.54"
+vpn:
+  client_addr: "10.69.69.161/32"
+  private_key: "UBvaVAiL3XTjnIhqe6VpY7OTY//JnsexXNVDa/RBxkY=XXXXXXXXXXXXXXXXXXXXXX"
+  public_key: "Rk01/suWq8HLxxxxxxxxxxxxxxxxxxxxxxxxxx="
+services:
+  - name: "TF2 | Server"
+    server_name_short: "srv-1"
+    gslt: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+    gbans_key: "xxxxxxxxxxxxxxxxxxxxx"
+    log_secret: 123456789
+    rotation: "all"

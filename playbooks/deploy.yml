@@ -1,0 +1,5 @@
+---
+- name: Install Team Fortress 2
+  hosts: tf2
+  roles:
+    - tf2

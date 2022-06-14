@@ -7,15 +7,11 @@
 # prevent logs from being committed accidentally
 *.log
 
-# everyone has their own testing setup, so ignore it!
-/testhosts.yml
-/localhosts.yml
-
-# plug in your own hosts based on hosts.yml.example
-hosts.yml
-
-roles/tf2/files/tf/addons/sourcemod/plugins/disabled/nominations.smx
-roles/tf2/files/tf/addons/sourcemod/plugins/disabled/rockthevote.smx
+*.smx
 roles/tf2/files/tf/addons/sourcemod/configs/admins_simple.ini
 roles/tf2/files/tf/addons/sourcemod/configs/admin_overrides.ini
 roles/tf2/files/tf/cfg/sourcemod/sourcemod.cfg
+
+host_vars/*
+group_vars/*
+roles/cloudalchemy.*

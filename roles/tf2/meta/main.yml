@@ -1,14 +1,14 @@
 ---
 galaxy_info:
   author: Leigh MacDonald
-  description: Setup TF2 using LGSM
+  description: Setup TF2
   # company: your company (optional)
 
-  issue_tracker_url: http://github.com/leighmacdonald/uncletopia/issues
+  issue_tracker_url: https://github.com/leighmacdonald/uncletopia/issues
 
   license: MIT
 
-  min_ansible_version: 2.9
+  min_ansible_version: "2.9"
 
   # If this a Container Enabled role, provide the minimum Ansible Container version.
   # min_ansible_container_version:
@@ -16,7 +16,7 @@ galaxy_info:
   platforms:
     - name: Ubuntu
       versions:
-        - 20.04
+        - focal
 
   galaxy_tags:
     - tf2

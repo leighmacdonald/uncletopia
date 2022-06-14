@@ -60,28 +60,28 @@ sv_logecho 1
 sv_logfile 1
 sv_log_onefile 0
 {% if log.net_enable %}
-// net log enabled
-sv_logsecret {{ item.log_secret }}
-{% for host in log.net_hosts %}
-logaddress_add {{ host }}
-{% endfor %}
+    // net log enabled
+    sv_logsecret {{ item.log_secret }}
+    {% for host in log.net_hosts %}
+        logaddress_add {{ host }}
+    {% endfor %}
 {% endif %}
 
 {% if stv_enable %}
-tv_enable 1
-tv_autorecord 0
-tv_maxclients 5
-tv_transmitall 1
-tv_delaymapchange 0
-tv_delay 0
-tv_maxrate 0
-tv_port "{{ srcds_base_port + (loop0 * 10) + 1 }}"
-tv_allow_camera_man 1
-tv_password "{{ stv_password }}"
-// Hostname
-tv_name "{{ item.name }} | STV"
-// In-game name
-tv_title "{{ stv_name }}"
+    tv_enable 1
+    tv_autorecord 0
+    tv_maxclients 5
+    tv_transmitall 1
+    tv_delaymapchange 0
+    tv_delay 0
+    tv_maxrate 0
+    tv_port "{{ srcds_base_port + (loop0 * 10) + 1 }}"
+    tv_allow_camera_man 1
+    tv_password "{{ stv_password }}"
+    // Hostname
+    tv_name "{{ item.name }} | STV"
+    // In-game name
+    tv_title "{{ stv_name }}"
 {% endif %}
 
 sv_visiblemaxplayers 24
