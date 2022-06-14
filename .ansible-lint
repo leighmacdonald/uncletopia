@@ -3,6 +3,7 @@ exclude_paths:
   - host_vars/*
   - group_vars/*
   - hosts.yml
+  - .ansible-lint
 
 skip_list:
   - schema

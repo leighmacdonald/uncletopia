@@ -9,7 +9,7 @@ PLAYBOOK_PATH := ./playbooks
 all: site
 
 lint:
-	ansible-lint -v --write
+	@ansible-lint
 
 deps:
 	@ansible-galaxy collection install -r collections/requirements.yml
