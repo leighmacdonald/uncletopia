@@ -8,7 +8,8 @@ import sys
 ENCRYPTED_PATH = [
     "hosts.yml",
     "group_vars",
-    "host_vars"
+    "host_vars",
+    "hosts.yml"
 ]
 
 

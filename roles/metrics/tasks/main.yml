@@ -1,7 +1,4 @@
-- name: metrics network
-  community.docker.docker_network:
-    name: metrics_net
-
+---
 - name: Install portainer
   import_tasks: portainer.yml
 

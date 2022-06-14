@@ -1,36 +1,20 @@
 ---
-- name: grafana data volume
+- name: Create grafana_data volume
   docker_volume:
     name: grafana_data
     state: present
 
-- name: grafana
+- name: Create grafana container
   docker_container:
     name: grafana
     image: grafana/grafana-oss:latest-ubuntu
     restart: true
     recreate: true
+    purge_networks: true
+    networks:
+      - name: caddy_net
     pull: true
     volumes:
       - grafana_data:/var/lib/grafana
     ports:
       - 127.0.0.1:3000:3000
-
-- name: Join metrics network
-  community.docker.docker_network:
-    name: metrics_net
-    connected:
-      - grafana
-    appends: true
-
-- name: Join caddy network
-  community.docker.docker_network:
-    name: caddy_net
-    connected:
-      - grafana
-    appends: true
-
-- name: Reload networks
-  docker_container:
-    name: grafana
-    restart: true

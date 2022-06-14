@@ -14,7 +14,7 @@
     pkg:
       - gpg
 
-- name: Add an Apt signing key, uses whichever key is at the URL
+- name: Download docker gpg key
   become: true
   ansible.builtin.apt_key:
     url: https://download.docker.com/linux/ubuntu/gpg
@@ -47,7 +47,7 @@
       - python3-docker
       - python3-distutils
 
-- name: adding user to docker group
+- name: Add docker group to user
   become: true
   ansible.builtin.user:
     name: tf2server
@@ -55,21 +55,12 @@
     append: true
     state: present
 
-# - name: Enable TCP docker listener
-#   become: true
-#   lineinfile:
-#     dest=/etc/systemd/system/multi-user.target.wants/docker.service
-#     regexp='^ExecStart='
-#     line="ExecStart=/usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock"
-#     state=present
-#     backup=yes
-
-- name: systemd reload
+- name: Reload systemd daemon
   become: true
   ansible.builtin.systemd:
     daemon_reload: true
 
-- name: systemd enable docker
+- name: Enable docker service
   become: true
   ansible.builtin.systemd:
     name: docker
@@ -100,17 +91,9 @@
     sysctl_set: true
     reload: true
 
-# - name: fw-docker
-#   become: true
-#   ufw:
-#     rule: allow
-#     port: "{{ item }}"
-#     from_ip: "{{ docker_host_master }}"
-#   with_items:
-#     - "2000"
-
 - name: Enable UFW
   become: true
   ansible.builtin.ufw:
     state: reloaded
     policy: deny
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'

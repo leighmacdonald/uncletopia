@@ -1,13 +1,14 @@
-- name: create build directory
+---
+- name: Create build directory
   become: true
   ansible.builtin.file:
     path: /build_srcds
     state: directory
     owner: root
     group: root
-    mode: '0777'
+    mode: "0770"
 
-- name: copy build sources
+- name: Copy build sources
   ansible.builtin.synchronize:
     src: ./
     dest: /build_srcds/
@@ -19,7 +20,7 @@
     username: "{{ dockerhub.username }}"
     password: "{{ dockerhub.password }}"
 
-- name: build & publish srcds image
+- name: Build & Publish uncletopia image
   community.docker.docker_image:
     name: leighmacdonald/uncletopia
     tag: latest

@@ -6,7 +6,6 @@ rcon_password: ""
 fastdl_url: ""
 sv_tags: "nocrits,nodmgspread"
 sv_pure: 1
-start_map: pl_badwater
 chat_logs_token: "" # Internal ut tool, leave blank
 ssh_keys:
   - "https://github.com/username.keys"

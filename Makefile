@@ -1,105 +1,45 @@
 .PHONY: all pre system deploy
+
 VAULT_PASS_PATH := ~/.vault_pass.txt
 PROD_OPTS := -l production --vault-password-file $(VAULT_PASS_PATH)
-BUILD_OPTS := -l build --vault-password-file $(VAULT_PASS_PATH)
-LOCAL_OPTS := -l local --vault-password-file $(VAULT_PASS_PATH)
+DEVELOPMENT_OPTS := -l development --vault-password-file $(VAULT_PASS_PATH)
 STAGING_OPTS := -l staging --vault-password-file $(VAULT_PASS_PATH)
-TESTING_OPTS := -l testing --vault-password-file $(VAULT_PASS_PATH)
-MGE_OPTS := -l mge --vault-password-file $(VAULT_PASS_PATH)
 PLAYBOOK_PATH := ./playbooks
 
-all: deploy
+all: site
 
-build_local:
-	@ansible-playbook $(BUILD_OPTS) $(PLAYBOOK_PATH)/srcds.yml --limit localhost -K
-
-build_remote:
-	@ansible-playbook $(BUILD_OPTS) $(PLAYBOOK_PATH)/srcds.yml $(ARGS)
+lint:
+	ansible-lint -v --write
 
 deps:
 	@ansible-galaxy collection install -r collections/requirements.yml
 
 adduser:
-	@ansible-playbook $(PROD_OPTS) $(PLAYBOOK_PATH)/adduser.yml -u root $(ARGS)
+	@ansible-playbook $(PROD_OPTS) $(PLAYBOOK_PATH)/adduser.yml -u root
 
 pre:
-	@ansible-playbook $(PROD_OPTS) $(PLAYBOOK_PATH)/pre.yml $(ARGS)
-
-srcds:
-	@ansible-playbook $(PROD_OPTS) $(PLAYBOOK_PATH)/srcds.yml $(ARGS) 
-
-node_exporter:
-	@ansible-playbook $(PROD_OPTS) $(PLAYBOOK_PATH)/node_exporter.yml $(ARGS) 
-
-metrics:
-	@ansible-playbook $(PROD_OPTS) $(PLAYBOOK_PATH)/metrics.yml --limit metrics
-
-uncletopiaweb:
-	@ansible-playbook $(PROD_OPTS) $(PLAYBOOK_PATH)/uncletopiaweb.yml --limit metrics $(ARGS)
-
-gbans:
-	@ansible-playbook $(PROD_OPTS) $(PLAYBOOK_PATH)/gbans.yml $(ARGS) 
-
-system:
-	@ansible-playbook $(PROD_OPTS) $(PLAYBOOK_PATH)/system.yml $(ARGS)
-
-wg:
-	@ansible-playbook $(PROD_OPTS) $(PLAYBOOK_PATH)/wg.yml $(ARGS)
-
-deploy:
-	@ansible-playbook $(PROD_OPTS) $(PLAYBOOK_PATH)/deploy.yml $(ARGS)
-
-# Only deploy new game config files, skipping container redeploy/restart steps
-config:
-	@ansible-playbook $(PROD_OPTS) $(PLAYBOOK_PATH)/deploy.yml --tags "game_config" $(ARGS)
-
-mge_deploy:
-	@ansible-playbook $(MGE_OPTS) $(PLAYBOOK_PATH)/deploy.yml $(ARGS)
-
-stage_deploy:
-	@ansible-playbook $(STAGING_OPTS) $(PLAYBOOK_PATH)/deploy.yml $(ARGS)
-
-test_adduser:
-	@ansible-playbook $(TESTING_OPTS) $(PLAYBOOK_PATH)/adduser.yml -u root $(ARGS)
-
-test_pre:
-	@ansible-playbook $(TESTING_OPTS) $(PLAYBOOK_PATH)/pre.yml $(ARGS)
-
-test_system:
-	@ansible-playbook $(TESTING_OPTS) $(PLAYBOOK_PATH)/system.yml $(ARGS)
-
-test_srcds:
-	@ansible-playbook $(TESTING_OPTS) $(PLAYBOOK_PATH)/srcds.yml $(ARGS)
-
-test_deploy:
-	@ansible-playbook $(TESTING_OPTS) $(PLAYBOOK_PATH)/deploy.yml --limit staging
-
-test_ping:
-	@ansible tf2 -m ping -i testhost.yml $(ARGS)
-
-compile_sm: docker_build_sm
-	docker run -it leighmacdonald/uncletopia-sourcemod:latest
-
-docker_build_game:
-	docker build -t leighmacdonald/uncletopia:latest --target game_build -f ./roles/srcds/files/Dockerfile ./roles/srcds/files/
-
-docker_build_sm:
-	docker build -t leighmacdonald/uncletopia:latest --no-cache --target sm_build -f ./roles/srcds/files/Dockerfile ./roles/srcds/files/
-
-docker_build:
-	docker build -t leighmacdonald/uncletopia:awx -f ./roles/srcds/files/Dockerfile ./roles/srcds/files/
-
-rebuild_srcds:
-	docker build -t leighmacdonald/uncletopia:awx --no-cache -f ./roles/srcds/files/Dockerfile ./roles/srcds/files/
-
-shell_srcds:
-	docker run -it leighmacdonald/uncletopia:awx
-
-list_hosts:
-	ansible all --list-hosts $(OPTS)
+	@ansible-playbook $(PROD_OPTS) $(PLAYBOOK_PATH)/pre.yml
 
 sourcemod:
-	@./roles/srcds/files/build.py
+	@ansible-playbook $(PROD_OPTS) $(PLAYBOOK_PATH)/sourcemod.yml
+
+srcds:
+	@ansible-playbook $(PROD_OPTS) $(PLAYBOOK_PATH)/srcds.yml
+
+node_exporter:
+	@ansible-playbook $(PROD_OPTS) $(PLAYBOOK_PATH)/node_exporter.yml
+
+web:
+	@ansible-playbook $(PROD_OPTS) $(PLAYBOOK_PATH)/web.yml --limit metrics
+
+system:
+	@ansible-playbook $(PROD_OPTS) $(PLAYBOOK_PATH)/system.yml
+
+wg:
+	@ansible-playbook $(PROD_OPTS) $(PLAYBOOK_PATH)/wg.yml
+
+site:
+	ansible-playbook $(PROD_OPTS) site.yml
 
 ping:
 	@ansible tf2 -m ping $(ARGS)

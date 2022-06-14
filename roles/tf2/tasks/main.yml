@@ -1,3 +1,4 @@
+---
 - name: create build output dirs
   become: true
   become_user: root
@@ -79,7 +80,7 @@
     - game_config
 
 - name: Generate /build/autorecorder.cfg
-  template:
+  ansible.builtin.template:
     src: autorecorder.cfg.j2
     dest: /build/autorecorder.cfg
     mode: 0777
@@ -107,7 +108,6 @@
   loop: "{{ services }}"
   loop_control:
     index_var: loop0
-
 
 - name: Generate /build/autoexec.cfg
   ansible.builtin.template:
@@ -179,7 +179,7 @@
 - name: srcds
   docker_container:
     name: srcds-{{ item.server_name_short }}
-    image: "{{ item.image_tag|default(image_tag) }}"
+    image: "{{ item.image_tag | default(image_tag) }}"
     state: started
     restart: true
     network_mode: host
@@ -195,18 +195,13 @@
     #   - "{{ srcds_base_port + (loop0 * 10) }}:{{ srcds_base_port + (loop0 * 10) }}/udp"
     #   - "{{ srcds_base_port + (loop0 * 10) + 1 }}:{{ srcds_base_port + (loop0 * 10) + 1 }}/udp"
     env:
-      STEAMAPPID: "232250"
-      STEAMAPP: "tf"
-      STEAMAPPDIR: "/home/steam/tf-dedicated"
-      METAMOD_VERSION: "1.11"
-      SOURCEMOD_VERSION: "1.11"
       SRCDS_TOKEN: "{{ item.gslt }}"
       SRCDS_PORT: "{{ srcds_base_port + (loop0 * 10) }}"
       SRCDS_TV_PORT: "{{ srcds_base_port + (loop0 * 10) + 1 }}"
-      SRCDS_REGION: "{{ sv_region|quote }}"
+      SRCDS_REGION: "{{ sv_region | quote }}"
       SRCDS_HOSTNAME: "{{ item.name }}"
       SRCDS_PW: "{{ server_password }}"
-      SRCDS_STARTMAP: "{{ start_map_default[item.rotation] }}"
+      SRCDS_STARTMAP: "{{ map_rotation | random }}"
       SRCDS_RCONPW: "{{ rcon_password }}"
       SRCDS_IP: "{{ ip }}"
       SRCDS_MAXPLAYERS: "32"
@@ -250,12 +245,6 @@
   loop: "{{ services }}"
   loop_control:
     index_var: loop0
-
-#- name: yet another hack! (roto pls fix)
-#  become: true
-#  ansible.builtin.shell: docker exec -u 0 srcds-{{ item.server_name_short }} /bin/chown -R steam /home/steam
-#  loop: "{{ services }}"
-#  tags: ['skip_ansible_lint']
 
 - name: srcds-fw
   become: true

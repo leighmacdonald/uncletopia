@@ -1,1 +1,12 @@
-skip_list: []
+---
+exclude_paths:
+  - .github/
+  - host_vars/*.yml
+  - group_vars/*.yml
+  - hosts.yml
+
+skip_list:
+  - schema
+
+kinds:
+  - tasks: "*/tasks/*.yml"

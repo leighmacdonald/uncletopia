@@ -1,30 +1,21 @@
 ---
-- name: portainer data volume
+- name: Create portainer_data volume
   docker_volume:
     name: portainer_data
     state: present
 
-- name: portainer
+- name: Create portainer container
   docker_container:
     name: portainer
     image: portainer/portainer-ce:latest
     restart: true
     recreate: true
+    purge_networks: true
     pull: true
+    networks:
+      - name: caddy_net
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - portainer_data:/data
     ports:
       - 127.0.0.1:9000:9000
-
-- name: Join caddy network
-  community.docker.docker_network:
-    name: caddy_net
-    connected:
-      - portainer
-    appends: true
-
-- name: Reload networks
-  docker_container:
-    name: portainer
-    restart: true

@@ -1,18 +1,19 @@
 ---
-- name: apt upgrade
+- name: Apply apt upgrade
   become: true
   ansible.builtin.apt:
     update_cache: true
     upgrade: true
     cache_valid_time: 0
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
 
-- name: addgroup tf2
+- name: Create tf2 group
   become: true
   ansible.builtin.group:
     name: tf2
     state: present
 
-- name: adduser tf2server
+- name: Create tf2server user
   become: true
   ansible.builtin.user:
     name: tf2server
@@ -25,7 +26,7 @@
 - name: sudoers.d
   become: true
   ansible.builtin.copy:
-    dest: "/etc/sudoers.d/devops"
+    dest: /etc/sudoers.d/devops
     content: "%tf2  ALL=(ALL)  NOPASSWD: ALL"
     mode: 0600
 
@@ -33,16 +34,18 @@
   become: true
   ansible.builtin.ufw:
     rule: allow
-    port: '22'
+    port: "22"
     proto: tcp
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
 
 - name: ufw limit 22
   become: true
   ansible.builtin.ufw:
-    comment: "TF2 Ansible"
+    comment: TF2 Ansible
     rule: limit
-    port: '22'
+    port: "22"
     proto: tcp
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
 
 - name: ufw enable
   become: true
@@ -50,12 +53,13 @@
     state: enabled
     policy: deny
     direction: incoming
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
 
 - name: mkdir .ssh
   ansible.builtin.file:
     path: ~/.ssh
     state: directory
-    mode: '0700'
+    mode: "0700"
 
 - name: ssh keys
   ansible.posix.authorized_key:
@@ -68,8 +72,8 @@
   become: true
   ansible.builtin.lineinfile:
     dest: /etc/ssh/sshd_config
-    regexp: '^PasswordAuthentication'
-    line: "PasswordAuthentication no"
+    regexp: ^PasswordAuthentication
+    line: PasswordAuthentication no
     state: present
     backup: true
 
@@ -77,8 +81,8 @@
   become: true
   ansible.builtin.lineinfile:
     dest: /etc/ssh/sshd_config
-    regexp: '^PermitRootLogin'
-    line: "PermitRootLogin no"
+    regexp: ^PermitRootLogin
+    line: PermitRootLogin no
     state: present
     backup: true
   notify:

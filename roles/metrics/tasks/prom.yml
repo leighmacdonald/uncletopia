@@ -1,8 +1,5 @@
-- name: metrics network
-  community.docker.docker_network:
-    name: metrics_net
-
-- name: prometheus_data volume
+---
+- name: Create prometheus_data volume
   docker_volume:
     name: prometheus_data
     state: present
@@ -14,12 +11,15 @@
     dest: /etc/prometheus.yml
     mode: 0775
 
-- name: prometheus
+- name: Create prometheus container
   docker_container:
     name: prometheus
     image: prom/prometheus:latest
     restart: true
+    purge_networks: true
     recreate: true
+    networks:
+      - name: caddy_net
     volumes:
       - prometheus_data:/prometheus
       - /etc/prometheus.yml:/etc/prometheus/prometheus.yml
@@ -29,22 +29,3 @@
       ACME_AGREE: "true"
     ports:
       - 127.0.0.1:9090:9090
-
-- name: Join metrics network
-  community.docker.docker_network:
-    name: metrics_net
-    connected:
-      - prometheus
-    appends: true
-
-- name: Join metrics network
-  community.docker.docker_network:
-    name: gbans_net
-    connected:
-      - prometheus
-    appends: true
-
-- name: Reload networks
-  docker_container:
-    name: prometheus
-    restart: true

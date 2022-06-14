@@ -1,5 +1,5 @@
 ---
 - name: Build sourcemod distribution
-  hosts: localhost
+  hosts: build
   roles:
     - sourcemod

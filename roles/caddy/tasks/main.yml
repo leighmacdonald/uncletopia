@@ -1,9 +1,10 @@
-- name: caddy data volume
+---
+- name: Create caddy_data volume
   docker_volume:
     name: caddy_data
     state: present
 
-- name: caddy config volume
+- name: Create caddy_config volume
   docker_volume:
     name: caddy_config
     state: present
@@ -15,16 +16,19 @@
     dest: /etc/Caddyfile
     mode: 0775
 
-- name: caddy network
+- name: Create caddy_net network
   community.docker.docker_network:
     name: caddy_net
 
-- name: caddy
+- name: Create caddy container
   docker_container:
     name: caddy
     image: slothcroissant/caddy-cloudflaredns:latest
     restart: true
     recreate: true
+    purge_networks: true
+    networks:
+      - name: caddy_net
     pull: true
     volumes:
       - caddy_data:/data
@@ -38,15 +42,3 @@
     ports:
       - 443:443
       - 80:80
-
-- name: Join caddy network
-  community.docker.docker_network:
-    name: caddy_net
-    connected:
-      - caddy
-    appends: true
-
-- name: Reload networks
-  docker_container:
-    name: caddy
-    restart: true

@@ -1,7 +1,8 @@
+---
 - hosts: all
   # roles:
-    #  ansible-galaxy install cloudalchemy.node_exporter
-    # - cloudalchemy.node_exporter
+  #  ansible-galaxy install cloudalchemy.node_exporter
+  # - cloudalchemy.node_exporter
   tasks:
     - name: node-exporter-fw
       become: true
@@ -9,3 +10,5 @@
         rule: allow
         port: "9100"
         proto: tcp
+        src: "{{ metrics_host }}/32"
+      when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'

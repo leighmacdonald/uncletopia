@@ -1,13 +1,15 @@
+---
 - name: create build output dirs
   ansible.builtin.file:
     path: ~/sm-build
     state: directory
+    mode: "0770"
 
 - name: Download metamod
-  get_url:
+  ansible.builtin.get_url:
     url: https://mms.alliedmods.net/mmsdrop/1.11/mmsource-1.11.0-git1145-linux.tar.gz
     dest: ~/sm-build/mm.tar.gz
-    mode: '0660'
+    mode: "0660"
 
 - name: Extract metamod
   ansible.builtin.unarchive:
@@ -21,10 +23,10 @@
     state: absent
 
 - name: Download sourcemod
-  get_url:
+  ansible.builtin.get_url:
     url: https://sm.alliedmods.net/smdrop/1.10/sourcemod-1.10.0-git6542-linux.tar.gz
     dest: ~/sm-build/sm.tar.gz
-    mode: '0660'
+    mode: "0660"
 
 - name: Extract sourcemod
   ansible.builtin.unarchive:
@@ -43,11 +45,18 @@
     dest: ~/sm-build/
 
 - name: Build plugins
-  command:
+  ansible.builtin.command:
     chdir: ~/sm-build/addons/sourcemod/scripting
     cmd: bash build.sh
+    creates: ~/sm-build/addons/sourcemod/plugins/gbans.smx
 
 - name: Create sourcemod release
   community.general.archive:
     path: ~/sm-build/
     dest: ~/ut-sourcemod.tar.gz
+    mode: "0660"
+
+- name: Cleanup sourcemod build directory
+  ansible.builtin.file:
+    state: absent
+    path: ~/sm-build
