@@ -7,6 +7,7 @@ exclude_paths:
 
 skip_list:
   - schema
+  - internal-error
 
 kinds:
   - tasks: "*/tasks/*.yml"
