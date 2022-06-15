@@ -1,56 +1,55 @@
 ---
+
 - name: Create build directory
-  become: true
   ansible.builtin.file:
-    path: /build_srcds
+    path: ~/build_srcds
     state: directory
     mode: "0777"
 
 - name: Create build directory
-  become: true
   ansible.builtin.file:
-    path: /build_srcds/sourcemod
+    path: ~/build_srcds/sourcemod
     state: directory
     mode: "0777"
 
 - name: Download metamod
   ansible.builtin.get_url:
     url: https://mms.alliedmods.net/mmsdrop/1.11/mmsource-1.11.0-git1145-linux.tar.gz
-    dest: /build_srcds/sourcemod/mm.tar.gz
+    dest: ~/build_srcds/sourcemod/mm.tar.gz
     mode: "0777"
 
 - name: Extract metamod
   ansible.builtin.unarchive:
-    src: /build_srcds/sourcemod/mm.tar.gz
-    dest: /build_srcds/sourcemod/
+    src: ~/build_srcds/sourcemod/mm.tar.gz
+    dest: ~/build_srcds/sourcemod/
     remote_src: true
 
 - name: Remove metamod tarball
   ansible.builtin.file:
-    path: /build_srcds/sourcemod/mm.tar.gz
+    path: ~/build_srcds/sourcemod/mm.tar.gz
     state: absent
 
 - name: Download sourcemod
   ansible.builtin.get_url:
     url: https://sm.alliedmods.net/smdrop/1.10/sourcemod-1.10.0-git6542-linux.tar.gz
-    dest: /build_srcds/sourcemod/sm.tar.gz
+    dest: ~/build_srcds/sourcemod/sm.tar.gz
     mode: "0777"
 
 - name: Extract sourcemod
   ansible.builtin.unarchive:
-    src: /build_srcds/sourcemod/sm.tar.gz
-    dest: /build_srcds/sourcemod
+    src: ~/build_srcds/sourcemod/sm.tar.gz
+    dest: ~/build_srcds/sourcemod
     remote_src: true
 
 - name: Remove sourcemod tarball
   ansible.builtin.file:
-    path: /build_srcds/sourcemod/sm.tar.gz
+    path: ~/build_srcds/sourcemod/sm.tar.gz
     state: absent
 
 - name: Copy extensions & plugin sources
   ansible.builtin.synchronize:
     src: "{{ role_path }}/files/"
-    dest: /build_srcds/sourcemod/
+    dest: ~/build_srcds/sourcemod/
     recursive: true
     times: false
     perms: false
@@ -59,17 +58,17 @@
 
 - name: Build plugins
   ansible.builtin.command:
-    chdir: /build_srcds/sourcemod/addons/sourcemod/scripting
+    chdir: ~/build_srcds/sourcemod/addons/sourcemod/scripting
     cmd: bash build.sh
-    creates: /build_srcds/sourcemod/addons/sourcemod/plugins/gbans.smx
+    creates: ~/build_srcds/sourcemod/addons/sourcemod/plugins/gbans.smx
 
 - name: Create sourcemod release
   community.general.archive:
-    path: /build_srcds/sourcemod/
-    dest: /build_srcds/ut-sourcemod.tar.gz
+    path: ~/build_srcds/sourcemod/
+    dest: ~/build_srcds/ut-sourcemod.tar.gz
     mode: "0777"
 
 - name: Cleanup sourcemod build directory
   ansible.builtin.file:
     state: absent
-    path: /build_srcds/sourcemod
+    path: ~/build_srcds/sourcemod

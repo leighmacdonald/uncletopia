@@ -3,12 +3,12 @@ COUNTER=0
 for PLUGIN in *.sp;
 do
   echo "Compiling ${PLUGIN}"
-  spcomp "${PLUGIN}" -v2 -o../plugins/"$(basename -- "$PLUGIN" .sp)".smx \
+  spcomp64 "${PLUGIN}" -v2 -o../plugins/"$(basename -- "$PLUGIN" .sp)".smx \
     -i/build_srcds/sourcemod/addons/sourcemod/scripting/include || exit 2
     ((COUNTER=COUNTER+1))
 done
 
-# Disable plugins that are incompatible with our
+# Disable plugins that are incompatible with our plugin setup
 for PLUGIN in admin-sql-prefetch \
     admin-allspec \
     admin-sql-threaded \

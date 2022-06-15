@@ -1,8 +1,7 @@
 ---
 - name: Create build directory
-  become: true
   ansible.builtin.file:
-    path: /build_srcds
+    path: ~/build_srcds
     state: directory
     mode: "0777"
 
@@ -13,7 +12,7 @@
 - name: Copy build sources
   ansible.builtin.synchronize:
     src: ./
-    dest: /build_srcds/
+    dest: ~/build_srcds/
     archive: false
     recursive: true
 
@@ -34,6 +33,6 @@
       nocache: false
       pull: false
       rm: false
-      dockerfile: /build_srcds/Dockerfile
-      path: /build_srcds/
+      dockerfile: Dockerfile
+      path: ~/build_srcds/
     state: present
