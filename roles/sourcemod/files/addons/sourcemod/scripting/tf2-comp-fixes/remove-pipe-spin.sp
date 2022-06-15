@@ -3,7 +3,9 @@
 
 static ConVar g_convar;
 
-void RemovePipeSpin_Setup() { g_convar = CreateBoolConVar("sm_remove_pipe_spin", OnConVarChange); }
+void RemovePipeSpin_Setup() {
+    g_convar = CreateBoolConVar("sm_remove_pipe_spin", WhenConVarChange);
+}
 
 void RemovePipeSpin_OnClientPutInServer(int client) {
     if (!g_convar.BoolValue) {
@@ -13,7 +15,7 @@ void RemovePipeSpin_OnClientPutInServer(int client) {
     SDKHook(client, SDKHook_WeaponCanUsePost, Hook_WeaponCanUsePost);
 }
 
-static void OnConVarChange(ConVar cvar, const char[] before, const char[] after) {
+static void WhenConVarChange(ConVar cvar, const char[] before, const char[] after) {
     if (cvar.BoolValue == TruthyConVar(before)) {
         return;
     }
@@ -64,8 +66,8 @@ static void Hook_WeaponCanUsePost(int client, int weapon) {
 
     GetEntityClassname(weapon, classname, sizeof(classname));
 
-    if (StrEqual(classname, "tf_weapon_grenadelauncher") ||
-        StrEqual(classname, "tf_weapon_cannon")) {
+    if (StrEqual(classname, "tf_weapon_grenadelauncher")
+        || StrEqual(classname, "tf_weapon_cannon")) {
         LogDebug("Removing Grenade Spin with index %d", weapon);
         SetAttribute(weapon, ATTR_GRENADE_NO_SPIN, 1.0);
     }

@@ -14,10 +14,10 @@ void FixSlopeBug_Setup(Handle game_config) {
     g_offset_CGameMovement_player =
         CheckedGameConfGetKeyValueInt(game_config, "CGameMovement::player");
 
-    CreateBoolConVar("sm_fix_slope_bug", OnConVarChange);
+    CreateBoolConVar("sm_fix_slope_bug", WhenConVarChange);
 }
 
-static void OnConVarChange(ConVar cvar, const char[] before, const char[] after) {
+static void WhenConVarChange(ConVar cvar, const char[] before, const char[] after) {
     if (cvar.BoolValue == TruthyConVar(before)) {
         return;
     }

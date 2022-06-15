@@ -33,6 +33,28 @@
 				"this" "address"
 			}
 
+			"CTFDroppedWeapon::InitDroppedWeapon" {
+				// void CTFDroppedWeapon::InitDroppedWeapon( CTFPlayer *pPlayer, CTFWeaponBase *pWeapon, bool bSwap, bool bIsSuicide /*= false*/ )
+				"signature" "CTFDroppedWeapon::InitDroppedWeapon"
+				"callconv" "thiscall"
+				"return" "void"
+				"this" "entity"
+				"arguments" {
+					"player" {
+						"type" "cbaseentity"
+					}
+					"weapon" {
+						"type" "cbaseentity"
+					}
+					"swap" {
+						"type" "bool"
+					}
+					"is_suicide" {
+						"type" "bool"
+					}
+				}
+			}
+
 			"CTFGameMovement::SetGroundEntity" {
 				// virtual void SetGroundEntity( trace_t *pm )
 				"signature" "CTFGameMovement::SetGroundEntity"
@@ -100,15 +122,34 @@
 				}
 			}
 
-			"CTFGrenadePipebombProjectile::PipebombTouch" {
-				// virtual void PipebombTouch( CBaseEntity *pOther )
-				"offset" "CTFGrenadePipebombProjectile::PipebombTouch"
+			"CTFFlameThrower::DeflectEntity" {
+				// virtual bool DeflectEntity( CBaseEntity *pTarget, CTFPlayer *pOwner, Vector &vecForward )
+				"offset" "CTFFlameThrower::DeflectEntity"
 				"hooktype" "entity"
-				"return" "void"
+				"return" "bool"
 				"this" "entity"
 				"arguments" {
-					"other" {
+					"target" {
 						"type" "cbaseentity"
+					}
+					"owner" {
+						"type" "cbaseentity"
+					}
+					"forward" {
+						"type" "vectorptr"
+					}
+				}
+			}
+
+			"CTFPlayer::OnTakeDamage_Alive" {
+				// int CTFPlayer::OnTakeDamage_Alive( const CTakeDamageInfo &info )
+				"signature" "CTFPlayer::OnTakeDamage_Alive"
+				"callconv" "thiscall"
+				"return" "int"
+				"this" "entity"
+				"arguments" {
+					"info" {
+						"type" "objectptr"
 					}
 				}
 			}
@@ -141,6 +182,39 @@
 					}
 				}
 			}
+
+			"PassServerEntityFilter" {
+				// bool PassServerEntityFilter( const IHandleEntity *pTouch, const IHandleEntity *pPass )
+				"signature" "PassServerEntityFilter"
+				"callconv" "cdecl"
+				"return" "bool"
+				"arguments" {
+					"touch" {
+						"type" "cbaseentity"
+					}
+					"pass" {
+						"type" "cbaseentity"
+					}
+				}
+			}
+
+			"PointInRespawnRoom" {
+				// bool PointInRespawnRoom( const CBaseEntity *pTarget, const Vector &vecOrigin, bool bTouching_SameTeamOnly /*= false*/ )
+				"signature" "PointInRespawnRoom"
+				"callconv" "cdecl"
+				"return" "bool"
+				"arguments" {
+					"target" {
+						"type" "cbaseentity"
+					}
+					"origin" {
+						"type" "vectorptr"
+					}
+					"same_team_only" {
+						"type" "bool"
+					}
+				}
+			}
 		}
 
 		"Keys" {
@@ -152,6 +226,9 @@
 
 			"CBaseTrace::plane::normal" "24"
 			"CGameMovement::player" "4"
+			"CTakeDamageInfo::m_hAttacker" "40"
+			"CTakeDamageInfo::m_flDamage" "48"
+			"CTakeDamageInfo::m_bitsDamageType" "60"
 			"CTakeDamageInfo::m_iDamagedOtherPlayers" "76"
 		}
 
@@ -176,9 +253,9 @@
 				"windows" "160"
 			}
 
-			"CTFGrenadePipebombProjectile::PipebombTouch" {
-				"linux" "258"
-				"windows" "257"
+			"CTFFlameThrower::DeflectEntity" {
+				"linux" "424"
+				"windows" "417"
 			}
 
 			"CTFWeaponBase::SecondaryAttack" {
@@ -188,7 +265,6 @@
 		}
 
 		"Signatures" {
-			// TODO
 			"CAttributeList::SetRuntimeAttributeValue" {
 				"linux" "@_ZN14CAttributeList24SetRuntimeAttributeValueEPK28CEconItemAttributeDefinitionf"
 				"windows" "\x55\x8B\xEC\x83\xEC\x2A\x33\x2A\x53\x8B\xD9\x56\x57\x8B\x2A\x2A\x8B\x2A\x2A"
@@ -200,7 +276,6 @@
 				"windows" "\x55\x8B\xEC\x81\xC1\x5C\x01\x00\x00"
 			}
 
-			// TODO
 			"CEconItemSchema::GetAttributeDefinition" {
 				"linux" "@_ZN15CEconItemSchema22GetAttributeDefinitionEi"
 				"windows" "\x55\x8B\xEC\x83\xEC\x2A\x53\x56\x8B\xD9\x8D\x2A\x2A\x57"
@@ -210,6 +285,11 @@
 			"CEconItemSystem::ReloadWhitelist" {
 				"linux" "@_ZN15CEconItemSystem15ReloadWhitelistEv"
 				"windows" "\x55\x8B\xEC\x83\xEC\x0C\x53\x56\x57\x8B\xD9\xC6\x45\x2A\x01"
+			}
+
+			"CTFDroppedWeapon::InitDroppedWeapon" {
+				"linux" "@_ZN16CTFDroppedWeapon17InitDroppedWeaponEP9CTFPlayerP13CTFWeaponBasebb"
+				"windows" "\x55\x8B\xEC\x83\xEC\x24\x56\x57\x8B\xF9\x8B\x4D\x08"
 			}
 
 			// contains string "BumperCar.JumpLand"
@@ -236,22 +316,34 @@
 				"windows" "\x55\x8B\xEC\x83\xEC\x0C\x56\x6A\x00\x8D\x45\x2A"
 			}
 
+			"CTFPlayer::OnTakeDamage_Alive" {
+				"linux" "@_ZN9CTFPlayer18OnTakeDamage_AliveERK15CTakeDamageInfo"
+			}
+
 			// contains string "mult_player_aiming_movespeed"
 			"CTFPlayer::TeamFortress_CalculateMaxSpeed" {
 				"linux" "@_ZNK9CTFPlayer30TeamFortress_CalculateMaxSpeedEb"
 				"windows" "\x55\x8B\xEC\x83\xEC\x18\x83\x3D\x2A\x2A\x2A\x2A\x00"
 			}
 
-			// TODO
+			// contains string "projectile_spread_angle"
+			"CTFWeaponBaseGun::FirePipeBomb" {
+				"linux" "@_ZN16CTFWeaponBaseGun12FirePipeBombEP9CTFPlayeri"
+				"windows" "\x53\x8B\xDC\x83\xEC\x08\x83\xE4\xF0\x83\xC4\x04\x55\x8B\x6B\x04\x89\x6C\x24\x04\x8B\xEC\x81\xEC\x58\x01\x00\x00\x56\x8B\xF1\x57\x8B\x06"
+			}
+
 			"GEconItemSchema" {
 				"linux" "@_Z15GEconItemSchemav"
 				"windows" "\xE8\x2A\x2A\x2A\x2A\x83\xC0\x04\xC3"
 			}
 
-			// contains string "projectile_spread_angle"
-			"CTFWeaponBaseGun::FirePipeBomb" {
-				"linux" "@_ZN16CTFWeaponBaseGun12FirePipeBombEP9CTFPlayeri"
-				"windows" "\x53\x8B\xDC\x83\xEC\x08\x83\xE4\xF0\x83\xC4\x04\x55\x8B\x6B\x04\x89\x6C\x24\x04\x8B\xEC\x81\xEC\x58\x01\x00\x00\x56\x8B\xF1\x57\x8B\x06"
+			"PassServerEntityFilter" {
+				"linux" "@_Z22PassServerEntityFilterPK13IHandleEntityS1_"
+			}
+
+			"PointInRespawnRoom" {
+				"linux" "@_Z18PointInRespawnRoomPK11CBaseEntityRK6Vectorb"
+				"windows" "\x55\x8B\xEC\x53\x33\xDB\x56\x57"
 			}
 		}
 	}

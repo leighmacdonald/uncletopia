@@ -41,9 +41,8 @@ void FixStickyDelay_OnPlayerRunCmd(int client, int buttons) {
 
     int item = GetEntProp(weapon, Prop_Send, "m_iItemDefinitionIndex");
 
-    if (item == -1 || item == WEAPON_ID_THE_CHARGIN_TARGE ||
-        item == WEAPON_ID_THE_SPLENDID_SCREEN || item == WEAPON_ID_THE_TIDE_TURNER ||
-        item == WEAPON_ID_FESTIVE_TARGE) {
+    if (item == -1 || item == WEAPON_ID_THE_CHARGIN_TARGE || item == WEAPON_ID_THE_SPLENDID_SCREEN
+        || item == WEAPON_ID_THE_TIDE_TURNER || item == WEAPON_ID_FESTIVE_TARGE) {
         return;
     }
 

@@ -13,8 +13,8 @@ void Concede_Setup() {
 
     RegConsoleCmd("concede", Concede_Command);
 
-    HookEvent("teamplay_restart_round", OnRestartRound);
-    HookEvent("player_team", OnPlayerTeam);
+    HookEvent("teamplay_restart_round", WhenRestartRound);
+    HookEvent("player_team", WhenPlayerTeam);
 }
 
 Action Concede_Command(int client, int args) {
@@ -73,9 +73,9 @@ static Action TimerFinished(Handle timer, int limit) {
     return Plugin_Handled;
 }
 
-void OnRestartRound(Event event, const char[] name, bool dontBroadcast) { ResetVotes(); }
+void WhenRestartRound(Event event, const char[] name, bool dontBroadcast) { ResetVotes(); }
 
-void OnPlayerTeam(Event event, const char[] name, bool dontBroadcast) {
+void WhenPlayerTeam(Event event, const char[] name, bool dontBroadcast) {
     int client = GetClientOfUserId(event.GetInt("userid"));
 
     if (g_votes[client]) {

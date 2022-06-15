@@ -10,9 +10,9 @@ void WingerJumpBonusWhenFullyDeployed_Setup(Handle game_config) {
     g_hook_CBaseCombatWeapon_Deploy =
         CheckedDHookCreateFromConf(game_config, "CBaseCombatWeapon::Deploy");
 
-    g_convar = CreateBoolConVar("sm_winger_jump_bonus_when_fully_deployed", OnConVarChange);
+    g_convar = CreateBoolConVar("sm_winger_jump_bonus_when_fully_deployed", WhenConVarChange);
 
-    HookEvent("teamplay_round_start", OnRoundStart);
+    HookEvent("teamplay_round_start", WhenRoundStart);
 }
 
 void WingerJumpBonusWhenFullyDeployed_OnClientPutInServer(int client) {
@@ -23,15 +23,15 @@ void WingerJumpBonusWhenFullyDeployed_OnClientPutInServer(int client) {
     SDKHook(client, SDKHook_WeaponCanUse, Hook_WeaponCanUse);
 }
 
-static void OnConVarChange(ConVar cvar, const char[] before, const char[] after) {
+static void WhenConVarChange(ConVar cvar, const char[] before, const char[] after) {
     if (cvar.BoolValue == TruthyConVar(before)) {
         return;
     }
 
     if (cvar.BoolValue) {
         int entity = -1;
-        while ((entity = FindEntityByClassname(entity, "tf_weapon_handgun_scout_secondary")) !=
-               -1) {
+        while ((entity = FindEntityByClassname(entity, "tf_weapon_handgun_scout_secondary"))
+               != -1) {
             Hook_WeaponCanUse(0, entity);
         }
     } else {
@@ -108,7 +108,7 @@ static Action TimerFinished(Handle timer, int weapon) {
     return Plugin_Continue;
 }
 
-static void OnRoundStart(Event event, const char[] name, bool dontBroadcast) {
+static void WhenRoundStart(Event event, const char[] name, bool dontBroadcast) {
     for (int ent = 0; ent <= MAXENTITIES; ent++) {
         if (g_timers[ent] == INVALID_HANDLE) {
             continue;

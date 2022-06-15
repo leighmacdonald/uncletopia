@@ -4,10 +4,10 @@ void RemoveMedicAttachSpeed_Setup(Handle game_config) {
     g_detour_CTFPlayer_TeamFortress_CalculateMaxSpeed =
         CheckedDHookCreateFromConf(game_config, "CTFPlayer::TeamFortress_CalculateMaxSpeed");
 
-    CreateBoolConVar("sm_remove_medic_attach_speed", OnConVarChange);
+    CreateBoolConVar("sm_remove_medic_attach_speed", WhenConVarChange);
 }
 
-static void OnConVarChange(ConVar cvar, const char[] before, const char[] after) {
+static void WhenConVarChange(ConVar cvar, const char[] before, const char[] after) {
     if (cvar.BoolValue == TruthyConVar(before)) {
         return;
     }

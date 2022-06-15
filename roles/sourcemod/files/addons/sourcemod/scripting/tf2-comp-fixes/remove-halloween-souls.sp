@@ -4,10 +4,10 @@ void RemoveHalloweenSouls_Setup(Handle game_config) {
     g_detour_CTFGameRules_DropHalloweenSoulPack =
         CheckedDHookCreateFromConf(game_config, "CTFGameRules::DropHalloweenSoulPack");
 
-    CreateBoolConVar("sm_remove_halloween_souls", OnConVarChange);
+    CreateBoolConVar("sm_remove_halloween_souls", WhenConVarChange);
 }
 
-static void OnConVarChange(ConVar cvar, const char[] before, const char[] after) {
+static void WhenConVarChange(ConVar cvar, const char[] before, const char[] after) {
     if (cvar.BoolValue == TruthyConVar(before)) {
         return;
     }

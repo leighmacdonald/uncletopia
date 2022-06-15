@@ -24,7 +24,7 @@ sourcemod:
 	@ansible-playbook $(PROD_OPTS) $(PLAYBOOK_PATH)/sourcemod.yml
 
 test:
-	@ansible-playbook $(STAGING_OPTS) $(PLAYBOOK_PATH)/deploy_test.yml
+	@ansible-playbook $(STAGING_OPTS) $(PLAYBOOK_PATH)/deploy.yml
 
 srcds:
 	@ansible-playbook -l build $(PLAYBOOK_PATH)/srcds.yml

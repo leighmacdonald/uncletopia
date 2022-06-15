@@ -1,8 +1,8 @@
 static ConVar g_cvar;
 
 void Debug_Setup() {
-    g_cvar = CreateConVar("sm_cf_debug", "0", "Print debug statements in chat", FCVAR_REPLICATED,
-                          true, 0.0, true, 2.0);
+    g_cvar = CreateConVar("sm_cf_debug", "0", "Print debug statements in chat", FCVAR_NOTIFY, true,
+                          0.0, true, 2.0);
 }
 
 void LogDebug(const char[] format, any...) {

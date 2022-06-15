@@ -1,21 +1,21 @@
 void FixGhostCrossbowBolts_Setup() {
-    CreateBoolConVar("sm_fix_ghost_crossbow_bolts", OnConVarChange);
+    CreateBoolConVar("sm_fix_ghost_crossbow_bolts", WhenConVarChange);
 }
 
-static void OnConVarChange(ConVar cvar, const char[] before, const char[] after) {
+static void WhenConVarChange(ConVar cvar, const char[] before, const char[] after) {
     if (cvar.BoolValue == TruthyConVar(before)) {
         return;
     }
 
-    DHookToggleEntityListener(ListenType_Created, OnEntityCreated, cvar.BoolValue);
+    DHookToggleEntityListener(ListenType_Created, WhenEntityCreated, cvar.BoolValue);
 }
 
-static void OnEntityCreated(int entity, const char[] classname) {
+static void WhenEntityCreated(int entity, const char[] classname) {
     if (StrEqual(classname, "tf_projectile_healing_bolt")) {
         LogDebug("Hooking Healing Bolt with index %d", entity);
-        if (INVALID_HOOK_ID == DHookEntity(g_hook_CBaseProjectile_CanCollideWithTeammates, HOOK_PRE,
-                                           entity, _,
-                                           Hook_CBaseProjectile_CanCollideWithTeammates)) {
+        if (INVALID_HOOK_ID
+            == DHookEntity(g_hook_CBaseProjectile_CanCollideWithTeammates, HOOK_PRE, entity, _,
+                           Hook_CBaseProjectile_CanCollideWithTeammates)) {
             SetFailState("Failed to hook CBaseProjectile::CanCollideWithTeammates");
         }
     }

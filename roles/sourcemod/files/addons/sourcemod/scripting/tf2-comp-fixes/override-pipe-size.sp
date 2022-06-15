@@ -6,7 +6,8 @@ static Handle g_detour_CTFWeaponBaseGun_FirePipeBomb;
 void OverridePipeSize_Setup(Handle game_config) {
     StartPrepSDKCall(SDKCall_Entity);
 
-    if (!PrepSDKCall_SetFromConf(game_config, SDKConf_Signature, "CBaseEntity::SetCollisionBounds")) {
+    if (!PrepSDKCall_SetFromConf(game_config, SDKConf_Signature,
+                                 "CBaseEntity::SetCollisionBounds")) {
         SetFailState("Failed to finalize SDK call to CBaseEntity::SetCollisionBounds");
     }
 
@@ -14,17 +15,17 @@ void OverridePipeSize_Setup(Handle game_config) {
     PrepSDKCall_AddParameter(SDKType_Vector, SDKPass_ByRef);
 
     g_call_CBaseEntity_SetCollisionBounds = EndPrepSDKCall();
-    g_detour_CTFWeaponBaseGun_FirePipeBomb = CheckedDHookCreateFromConf(game_config, "CTFWeaponBaseGun::FirePipeBomb");
+    g_detour_CTFWeaponBaseGun_FirePipeBomb =
+        CheckedDHookCreateFromConf(game_config, "CTFWeaponBaseGun::FirePipeBomb");
 
-    g_cvar =
-        CreateConVar("sm_override_pipe_size", "0", _, FCVAR_NOTIFY, true, 0.0, true, 1000.0);
+    g_cvar = CreateConVar("sm_override_pipe_size", "0", _, FCVAR_NOTIFY, true, 0.0, true, 1000.0);
 
-    g_cvar.AddChangeHook(OnConVarChange);
+    g_cvar.AddChangeHook(WhenConVarChange);
 
-    CallConVarUpdateHook(g_cvar, OnConVarChange);
+    CallConVarUpdateHook(g_cvar, WhenConVarChange);
 }
 
-static void OnConVarChange(ConVar cvar, const char[] before, const char[] after) {
+static void WhenConVarChange(ConVar cvar, const char[] before, const char[] after) {
     if (cvar.BoolValue == TruthyConVar(before)) {
         return;
     }
@@ -37,7 +38,7 @@ static void OnConVarChange(ConVar cvar, const char[] before, const char[] after)
 
 static MRESReturn Detour_CTFWeaponBaseGun_FirePipeBomb(Handle hReturn, Handle hParams) {
     int entity = DHookGetReturn(hReturn);
-    
+
     if (entity == -1) {
         return MRES_Ignored;
     }
@@ -68,9 +69,11 @@ static void LogDebugCollisionBounds(int entity) {
     GetEntPropVector(entity, Prop_Data, "m_vecMins", mins);
     GetEntPropVector(entity, Prop_Data, "m_vecMaxs", maxs);
 
+    // clang-format off
     LogDebug(
         "{ %.2f, %.2f, %.2f }, { %.2f, %.2f, %.2f }",
         mins[0], mins[1], mins[2],
         maxs[0], maxs[1], maxs[2]
     );
+    // clang-format on
 }

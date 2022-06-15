@@ -8,10 +8,10 @@ void GunboatsAlwaysApply_Setup(Handle game_config) {
     g_offset_CTakeDamageInfo_m_iDamagedOtherPlayers =
         CheckedGameConfGetKeyValueInt(game_config, "CTakeDamageInfo::m_iDamagedOtherPlayers");
 
-    CreateBoolConVar("sm_gunboats_always_apply", OnConVarChange);
+    CreateBoolConVar("sm_gunboats_always_apply", WhenConVarChange);
 }
 
-static void OnConVarChange(ConVar cvar, const char[] before, const char[] after) {
+static void WhenConVarChange(ConVar cvar, const char[] before, const char[] after) {
     if (cvar.BoolValue == TruthyConVar(before)) {
         return;
     }

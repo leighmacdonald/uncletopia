@@ -6,10 +6,10 @@ void DeterministicFallDamage_Setup(Handle game_config) {
     g_detour_CTFGameRules_FlPlayerFallDamage =
         CheckedDHookCreateFromConf(game_config, "CTFGameRules::FlPlayerFallDamage");
 
-    CreateBoolConVar("sm_deterministic_fall_damage", OnConVarChange);
+    CreateBoolConVar("sm_deterministic_fall_damage", WhenConVarChange);
 }
 
-static void OnConVarChange(ConVar cvar, const char[] before, const char[] after) {
+static void WhenConVarChange(ConVar cvar, const char[] before, const char[] after) {
     if (cvar.BoolValue == TruthyConVar(before)) {
         return;
     }

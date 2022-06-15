@@ -2,12 +2,12 @@ void GhostifySoldierStatue_Setup() {
     ConVar cvar =
         CreateConVar("sm_rest_in_peace_rick_may", "0", _, FCVAR_NOTIFY, true, 0.0, true, 255.0);
 
-    cvar.AddChangeHook(OnConVarChange);
+    cvar.AddChangeHook(WhenConVarChange);
 
-    CallConVarUpdateHook(cvar, OnConVarChange);
+    CallConVarUpdateHook(cvar, WhenConVarChange);
 }
 
-static void OnConVarChange(ConVar cvar, const char[] before, const char[] after) {
+static void WhenConVarChange(ConVar cvar, const char[] before, const char[] after) {
     int i = -1;
 
     while ((i = FindEntityByClassname(i, "entity_soldier_statue")) != -1) {
@@ -18,10 +18,10 @@ static void OnConVarChange(ConVar cvar, const char[] before, const char[] after)
         return;
     }
 
-    DHookToggleEntityListener(ListenType_Created, OnEntityCreated, cvar.BoolValue);
+    DHookToggleEntityListener(ListenType_Created, WhenEntityCreated, cvar.BoolValue);
 }
 
-static void OnEntityCreated(int entity, const char[] classname) {
+static void WhenEntityCreated(int entity, const char[] classname) {
     if (StrEqual(classname, "entity_soldier_statue")) {
         int alpha = FindConVar("sm_rest_in_peace_rick_may").IntValue;
         GhostifySoldierStatue(entity, alpha);

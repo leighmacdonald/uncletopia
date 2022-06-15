@@ -7,6 +7,10 @@
 
 #define MAXENTITIES (2048)
 
+#define X (0)
+#define Y (1)
+#define Z (2)
+
 Handle g_call_CAttributeList_SetRuntimeAttributeValue;
 Handle g_call_CEconItemSchema_GetAttributeDefinition;
 Handle g_call_CTeamplayRules_SetWinningTeam;
