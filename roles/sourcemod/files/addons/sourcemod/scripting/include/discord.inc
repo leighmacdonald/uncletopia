@@ -18,7 +18,7 @@ public SharedPlugin __pl_discord =
 
 #if !defined REQUIRE_PLUGIN
 
-public void __pl_discord_SetNTVOptional()
+public __pl_discord_SetNTVOptional()
 {
 	MarkNativeAsOptional("Discord_SendMessage");
 }

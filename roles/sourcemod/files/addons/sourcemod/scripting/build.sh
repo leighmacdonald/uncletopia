@@ -1,11 +1,10 @@
+export PATH=".:$PATH"
 COUNTER=0
 for PLUGIN in *.sp;
 do
   echo "Compiling ${PLUGIN}"
   spcomp "${PLUGIN}" -v2 -o../plugins/"$(basename -- "$PLUGIN" .sp)".smx \
-    -i/home/leigh/projects/sourcemod/addons/sourcemod/scripting/include \
-    -i/build/sourcemod/addons/sourcemod/scripting/include \
-    -i/home/leigh/projects/uncletopia/roles/srcds/files/addons/sourcemod/scripting/include
+    -i/build_srcds/sourcemod/addons/sourcemod/scripting/include || exit 2
     ((COUNTER=COUNTER+1))
 done
 
@@ -15,7 +14,7 @@ for PLUGIN in admin-sql-prefetch \
     admin-sql-threaded \
     csgo_votestart_test \
     nativevotes_votemanager_test \
-    rockthevote.smx \
+    rockthevote \
     votediagnostics \
     admin-sql-prefetch  \
     basevotes \
