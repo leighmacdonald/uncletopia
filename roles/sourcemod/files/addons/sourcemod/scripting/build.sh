@@ -1,9 +1,10 @@
 export PATH=".:$PATH"
 COUNTER=0
+chmod +x ./spcomp
 for PLUGIN in *.sp;
 do
   echo "Compiling ${PLUGIN}"
-  spcomp64 "${PLUGIN}" -v2 -o../plugins/"$(basename -- "$PLUGIN" .sp)".smx \
+  ./spcomp64 "${PLUGIN}" -v2 -o../plugins/"$(basename -- "$PLUGIN" .sp)".smx \
     -i/build_srcds/sourcemod/addons/sourcemod/scripting/include || exit 2
     ((COUNTER=COUNTER+1))
 done
