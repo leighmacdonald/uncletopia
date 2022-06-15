@@ -18,6 +18,12 @@ Install Ansible & Clone playbooks
 3. Trigger TF2 deploy.
 
 
+### Development
+
+If you are on a 64bit machine you will want 32bit libs for spcomp to execute.
+
+    sudo apt get install libc6:i386 lib32stdc++6
+
 ## Git pre-commit
 
 There is a pre-commit hook that you should enable to ensure you don't commit any unencrypted secret.

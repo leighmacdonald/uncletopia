@@ -4,6 +4,19 @@
   community.general.timezone:
     name: "{{ timezone }}"
 
+- name: Check if i386 is enabled
+  ansible.builtin.shell: |
+    set -o pipefail
+    dpkg --print-foreign-architectures | grep i386
+  register: result_i386_check
+  changed_when: result_i386_check.rc == 1
+  failed_when: result_i386_check.rc > 1
+
+- name: Enable i386 architecture
+  become: true
+  ansible.builtin.command: dpkg --add-architecture i386
+  when: result_i386_check.rc == 1
+
 - name: Install gpg
   become: true
   when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
@@ -46,6 +59,8 @@
       - containerd.io
       - python3-docker
       - python3-distutils
+      - libc6:i386
+      - lib32stdc++6
 
 - name: Add docker group to user
   become: true
@@ -96,4 +111,4 @@
   ansible.builtin.ufw:
     state: reloaded
     policy: deny
-  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+  when: ansible_distribution == 'Ubuntu'

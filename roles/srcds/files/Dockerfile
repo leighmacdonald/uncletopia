@@ -9,6 +9,7 @@ ENV DLURL https://raw.githubusercontent.com/leighmacdonald/uncletopia/master
 ENV METAMOD_VERSION 1.11
 ENV SOURCEMOD_VERSION 1.11
 
+# To generate run: make sourcemod
 COPY ut-sourcemod.tar.gz entry.sh /
 
 RUN set -x \
