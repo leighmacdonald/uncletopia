@@ -1,9 +1,9 @@
 .PHONY: all pre system deploy
 
 VAULT_PASS_PATH := ~/.vault_pass.txt
-PROD_OPTS := -l production --vault-password-file $(VAULT_PASS_PATH)
-DEVELOPMENT_OPTS := -l development --vault-password-file $(VAULT_PASS_PATH)
-STAGING_OPTS := -l staging --vault-password-file $(VAULT_PASS_PATH)
+PROD_OPTS := -l production
+DEVELOPMENT_OPTS := -l development
+STAGING_OPTS := --limit test-1.ca.uncletopia.com,test-2.ca.uncletopia.com
 PLAYBOOK_PATH := ./playbooks
 
 all: site
@@ -23,8 +23,11 @@ pre:
 sourcemod:
 	@ansible-playbook $(PROD_OPTS) $(PLAYBOOK_PATH)/sourcemod.yml
 
+test:
+	@ansible-playbook $(STAGING_OPTS) $(PLAYBOOK_PATH)/deploy_test.yml
+
 srcds:
-	@ansible-playbook $(PROD_OPTS) $(PLAYBOOK_PATH)/srcds.yml
+	@ansible-playbook -l build $(PLAYBOOK_PATH)/srcds.yml
 
 node_exporter:
 	@ansible-playbook $(PROD_OPTS) $(PLAYBOOK_PATH)/node_exporter.yml

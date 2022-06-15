@@ -21,9 +21,9 @@
     username: "{{ dockerhub.username }}"
     password: "{{ dockerhub.password }}"
 
-- name: Build leighmacdonald/uncletopia image
+- name: Build leighmacdonald/uncletopia-srcds image
   community.docker.docker_image:
-    name: leighmacdonald/uncletopia
+    name: leighmacdonald/uncletopia-srcds
     tag: latest
     source: build
     force_tag: true

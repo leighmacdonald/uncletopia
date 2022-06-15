@@ -1,5 +1,5 @@
 ---
-- name: Build uncletopia srcdsup image
+- name: Build uncletopia srcds image
   hosts: build
   roles:
     - srcds
