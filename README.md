@@ -17,6 +17,7 @@ Install Ansible & Clone playbooks
 2. Trigger srcds build & upload image to docker hub.
 3. Trigger TF2 deploy.
 
+
 ## Git pre-commit
 
 There is a pre-commit hook that you should enable to ensure you don't commit any unencrypted secret.

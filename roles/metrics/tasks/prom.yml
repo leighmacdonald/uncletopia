@@ -17,6 +17,7 @@
     image: prom/prometheus:latest
     restart: true
     purge_networks: true
+    restart_policy: always
     recreate: true
     networks:
       - name: caddy_net

@@ -1,6 +1,3 @@
-###########################################################
-# Dockerfile that builds a TF2 Gameserver
-###########################################################
 FROM cm2network/steamcmd:root
 # Adapted from cm2network/tf2
 LABEL maintainer="leigh.macdonald@gmail.com"
@@ -8,9 +5,11 @@ LABEL maintainer="leigh.macdonald@gmail.com"
 ENV STEAMAPPID 232250
 ENV STEAMAPP tf
 ENV STEAMAPPDIR "${HOMEDIR}/${STEAMAPP}-dedicated"
-ENV DLURL https://raw.githubusercontent.com/leighmacdonald/uncletopia
+ENV DLURL https://raw.githubusercontent.com/leighmacdonald/uncletopia/master
 ENV METAMOD_VERSION 1.11
 ENV SOURCEMOD_VERSION 1.11
+
+COPY ut-sourcemod.tar.gz entry.sh /
 
 RUN set -x \
 	# Add i386 architecture
@@ -26,7 +25,8 @@ RUN set -x \
 		libtinfo5:i386=6.2+20201114-2 \
 		libcurl3-gnutls:i386=7.74.0-1.3+deb11u1 \
 	&& mkdir -p "${STEAMAPPDIR}" \
-    && wget "${DLURL}/awx/roles/srcds/files/entry.sh" -O "${HOMEDIR}/entry.sh" \
+    && cp /entry.sh "${HOMEDIR}/entry.sh" \
+    # && wget "${DLURL}/roles/srcds/files/entry.sh" -O "${HOMEDIR}/entry.sh" \
 	# Create autoupdate config
 	&& { \
 		echo '@ShutdownOnFailedCommand 1'; \
@@ -63,8 +63,7 @@ USER ${USER}
 
 WORKDIR ${HOMEDIR}
 
-VOLUME /demos
-VOLUME /logs
+
 
 CMD ["bash", "entry.sh"]
 

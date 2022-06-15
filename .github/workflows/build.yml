@@ -1,0 +1,38 @@
+name: Ansible Lint  # feel free to pick your own name
+
+on: [push, pull_request]
+
+jobs:
+  lint:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+
+  publish:
+    runs-on: ubuntu-20.04
+    needs: [lint]
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Build srcds image
+        uses: arillso/action.playbook@master
+        with:
+          limit: localhost
+          vault_password: ${{ secrets.VAULT_SECRET}}
+          playbook: playbooks/srcds.yml
+          inventory: hosts.yml
+          galaxy_file: collections/requirements.yml
+        env:
+          ANSIBLE_HOST_KEY_CHECKING: 'false'
+          ANSIBLE_DEPRECATION_WARNINGS: 'false'
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Push container image
+        run: |
+          docker push ghcr.io/leighmacdonald/uncletopia:${GITHUB_REF##*/}

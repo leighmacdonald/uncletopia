@@ -7,7 +7,6 @@
     state: directory
     owner: tf2server
     mode: 0777
-  loop: "{{ services }}"
 
 - name: build output
   become: true
@@ -183,7 +182,7 @@
     state: started
     restart: true
     network_mode: host
-    pull: true
+    pull: false
     interactive: true
     tty: true
     recreate: true
@@ -201,7 +200,7 @@
       SRCDS_REGION: "{{ sv_region | quote }}"
       SRCDS_HOSTNAME: "{{ item.name }}"
       SRCDS_PW: "{{ server_password }}"
-      SRCDS_STARTMAP: "{{ map_rotation | random }}"
+      SRCDS_STARTMAP: "{{ map_rotation['default'] | random }}"
       SRCDS_RCONPW: "{{ rcon_password }}"
       SRCDS_IP: "{{ ip }}"
       SRCDS_MAXPLAYERS: "32"
@@ -214,7 +213,7 @@
       # This will drop any connectionless packets (A2S_INFO, A2S_RULES, A2S_PLAYERS) from a given IP after more than
       # N are received in a 200ms window. By default, rate limiting is disabled, but a reasonable value might be
       # somewhere around 25-75.
-      STEAM_GAMESERVER_RATE_LIMIT_200MS: "25"
+      STEAM_GAMESERVER_RATE_LIMIT_200MS: "35"
       # If this variable is set, then the Steamworks packet handling calls will use a “fast path”. In the
       # Steamworks SDK, most API calls are serialized over an IPC, and in fact execute in the steam client process.
       # A dedicated server does not communicate with a steam client (there usually isn’t one running), but the same
@@ -223,7 +222,6 @@
       # calls, much, much faster. Note that this only affects a server in “shared socket mode” – meaning the game port
       # and the query port are the same.
       STEAM_GAMESERVER_PACKET_HANDLER_NO_IPC: "1"
-
     volumes:
       - /build/{{ item.server_name_short }}/autoexec.cfg:/home/steam/config/tf/cfg/autoexec.cfg
       - /build/{{ item.server_name_short }}/server.cfg:/home/steam/config/tf/cfg/server.cfg
@@ -255,4 +253,4 @@
   loop: "{{ services }}"
   loop_control:
     index_var: loop0
-  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+  when: ansible_distribution == 'Ubuntu'

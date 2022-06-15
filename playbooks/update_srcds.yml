@@ -1,0 +1,6 @@
+---
+- name: Update and deploy TF2
+  hosts: tf2
+  roles:
+    - srcds
+    - tf2

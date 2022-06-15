@@ -11,6 +11,7 @@
     restart: true
     recreate: true
     purge_networks: true
+    restart_policy: always
     networks:
       - name: caddy_net
     pull: true
@@ -40,6 +41,6 @@
     pull: true
     networks:
       - name: caddy_net
-    restart_policy: unless-stopped
+    restart_policy: always
     volumes:
       - /etc/uncletopia-web.yml:/app/config.yml

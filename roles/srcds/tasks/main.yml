@@ -4,9 +4,11 @@
   ansible.builtin.file:
     path: /build_srcds
     state: directory
-    owner: root
-    group: root
-    mode: "0770"
+    mode: "0777"
+
+- name: Build sourcemod
+  ansible.builtin.include_role:
+    name: sourcemod
 
 - name: Copy build sources
   ansible.builtin.synchronize:
@@ -15,14 +17,14 @@
     archive: false
     recursive: true
 
-- name: Log into DockerHub
-  community.docker.docker_login:
-    username: "{{ dockerhub.username }}"
-    password: "{{ dockerhub.password }}"
+# - name: Log into DockerHub
+#  community.docker.docker_login:
+#    username: "{{ dockerhub.username }}"
+#    password: "{{ dockerhub.password }}"
 
-- name: Build & Publish uncletopia image
+- name: Build ghcr.io/leighmacdonald/uncletopia image
   community.docker.docker_image:
-    name: leighmacdonald/uncletopia
+    name: ghcr.io/leighmacdonald/uncletopia
     tag: latest
     source: build
     force_tag: true

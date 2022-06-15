@@ -1,9 +1,0 @@
-name: Ansible Lint  # feel free to pick your own name
-
-on: [push, pull_request]
-
-jobs:
-  build:
-    runs-on: ubuntu-20.04
-    steps:
-      - uses: actions/checkout@v2
