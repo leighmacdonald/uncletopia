@@ -16,23 +16,23 @@
     archive: false
     recursive: true
 
-# - name: Log into DockerHub
-#  community.docker.docker_login:
-#    username: "{{ dockerhub.username }}"
-#    password: "{{ dockerhub.password }}"
+- name: Log into DockerHub
+  community.docker.docker_login:
+    username: "{{ dockerhub.username }}"
+    password: "{{ dockerhub.password }}"
 
-- name: Build ghcr.io/leighmacdonald/uncletopia image
+- name: Build leighmacdonald/uncletopia image
   community.docker.docker_image:
-    name: ghcr.io/leighmacdonald/uncletopia
+    name: leighmacdonald/uncletopia
     tag: latest
     source: build
     force_tag: true
-    push: false
+    push: true
     force_source: true
     build:
-      nocache: false
-      pull: false
-      rm: false
+      nocache: true
+      pull: true
+      rm: true
       dockerfile: Dockerfile
       path: ~/build_srcds/
     state: present

@@ -63,8 +63,6 @@ USER ${USER}
 
 WORKDIR ${HOMEDIR}
 
-
-
 CMD ["bash", "entry.sh"]
 
 # Expose ports
