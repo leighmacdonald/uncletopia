@@ -1,14 +1,9 @@
 ---
 
-- name: Create build directory
+- name: Create ~/build_srcds/sourcemod/ directory
   ansible.builtin.file:
-    path: ~/build_srcds
-    state: directory
-    mode: "0777"
-
-- name: Create build directory
-  ansible.builtin.file:
-    path: ~/build_srcds/sourcemod
+    recurse: true
+    path: ~/build_srcds/sourcemod/
     state: directory
     mode: "0777"
 
