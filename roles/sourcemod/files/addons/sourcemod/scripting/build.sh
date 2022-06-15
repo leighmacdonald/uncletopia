@@ -26,4 +26,11 @@ do
   mv ../plugins/${PLUGIN}.smx ../plugins/disabled/
 done
 
+# Enable pre-compiled plugins
+for PLUGIN in compiled/*.smx;
+do
+  echo "Enabling ${PLUGIN}"
+  mv compiled/"${PLUGIN}" ../plugins/
+done
+
 echo "Compiled ${COUNTER} plugins"
