@@ -19,7 +19,7 @@ jobs:
         with:
           limit: localhost
           vault_password: ${{ secrets.VAULT_SECRET}}
-          playbook: playbooks/srcds.yml
+          playbook: playbooks/srcds_github.yml
           inventory: hosts.yml
           galaxy_file: collections/requirements.yml
         env:
