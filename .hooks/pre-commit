@@ -26,6 +26,7 @@ ROOT = repo_dir()
 
 
 def ensure_encrypted():
+    print("Checking encrypted")
     header = "$ANSIBLE_VAULT"
 
     def check(fp):
@@ -47,15 +48,20 @@ def ensure_encrypted():
 
 
 def ensure_ansible_lint():
-    return False
+    print("Checking ansible-lint")
+    subprocess.check_call(["ansible-lint"])
+
+
+def format_sp():
+    print("Formatting sp")
+    subprocess.check_call(["make", "format"])
 
 
 def main():
     ret_val = 255
     try:
-        print("Checking encrypted")
+        # format_sp()
         ensure_encrypted()
-        print("Checking ansible-lint")
         ensure_ansible_lint()
     except ValidationError as err:
         print("[ERROR] {}".format(err))

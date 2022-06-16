@@ -8,6 +8,9 @@ PLAYBOOK_PATH := ./playbooks
 
 all: site
 
+format:
+	@find ./roles/sourcemod/files/addons/sourcemod/scripting -regex '.*\.\(sp\)' -exec clang-format -style=file -i {} \;
+
 lint:
 	@ansible-lint
 
