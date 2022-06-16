@@ -1,16 +1,29 @@
 FROM debian:bullseye-slim
+LABEL maintainer="leigh.macdonald@gmail.com"
 
-LABEL maintainer="walentinlamonos@gmail.com"
 ARG PUID=1000
 
 ENV USER steam
 ENV HOMEDIR "/home/${USER}"
 ENV STEAMCMDDIR "${HOMEDIR}/steamcmd"
+ENV STEAMAPPID 232250
+ENV STEAMAPP tf
+ENV STEAMAPPDIR "${HOMEDIR}/${STEAMAPP}-dedicated"
+ENV METAMOD_VERSION 1.11
+ENV SOURCEMOD_VERSION 1.11
 
 RUN set -x \
-	# Install, update & upgrade packages
+	# Install, update & upgrade packages \
+    && dpkg --add-architecture i386 \
 	&& apt-get update \
 	&& apt-get install -y --no-install-recommends --no-install-suggests \
+        wget=1.21-1+deb11u1 \
+        ca-certificates=20210119 \
+        lib32z1=1:1.2.11.dfsg-2+deb11u1 \
+        libncurses5:i386=6.2+20201114-2 \
+        libbz2-1.0:i386=1.0.8-4 \
+        libtinfo5:i386=6.2+20201114-2 \
+        libcurl3-gnutls:i386=7.74.0-1.3+deb11u1 \
 		lib32stdc++6=10.2.1-6 \
 		lib32gcc-s1=10.2.1-6 \
 		wget=1.21-1+deb11u1 \
@@ -36,38 +49,18 @@ RUN set -x \
 	# Clean up
 	&& apt-get remove --purge --auto-remove -y \
 		wget \
-	&& rm -rf /var/lib/apt/lists/*
+	&& rm -rf /var/lib/apt/lists/* \
+
 
 # Switch to user
 USER ${USER}
 
 WORKDIR ${STEAMCMDDIR}
 
-# Adapted from cm2network/tf2
-LABEL maintainer="leigh.macdonald@gmail.com"
-
-ENV STEAMAPPID 232250
-ENV STEAMAPP tf
-ENV STEAMAPPDIR "${HOMEDIR}/${STEAMAPP}-dedicated"
-ENV METAMOD_VERSION 1.11
-ENV SOURCEMOD_VERSION 1.11
-
 # To generate run: make sourcemod
 COPY ut-sourcemod.tar.gz entry.sh /
 
 RUN set -x \
-	# Add i386 architecture
-	&& dpkg --add-architecture i386 \
-	# Install, update & upgrade packages
-	&& apt-get update \
-	&& apt-get install -y --no-install-recommends --no-install-suggests \
-		wget=1.21-1+deb11u1 \
-		ca-certificates=20210119 \
-		lib32z1=1:1.2.11.dfsg-2+deb11u1 \
-		libncurses5:i386=6.2+20201114-2 \
-		libbz2-1.0:i386=1.0.8-4 \
-		libtinfo5:i386=6.2+20201114-2 \
-		libcurl3-gnutls:i386=7.74.0-1.3+deb11u1 \
 	&& mkdir -p "${STEAMAPPDIR}" \
     && cp /entry.sh "${HOMEDIR}/entry.sh" \
     # && wget "${DLURL}/roles/srcds/files/entry.sh" -O "${HOMEDIR}/entry.sh" \

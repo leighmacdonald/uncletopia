@@ -34,14 +34,6 @@
   tags:
     - game_config
 
-- name: Generate /build/sourcemod.cfg
-  ansible.builtin.template:
-    src: sourcemod.cfg.j2
-    dest: /build/sourcemod.cfg
-    mode: 0777
-  tags:
-    - game_config
-
 - name: Generate /build/gbans.cfg
   ansible.builtin.template:
     src: gbans.cfg.j2
@@ -69,22 +61,6 @@
   loop: "{{ services }}"
   loop_control:
     index_var: loop0
-
-- name: Generate /build/mapchooser.cfg
-  ansible.builtin.template:
-    src: mapchooser.cfg.j2
-    dest: /build/mapchooser.cfg
-    mode: 0777
-  tags:
-    - game_config
-
-- name: Generate /build/autorecorder.cfg
-  ansible.builtin.template:
-    src: autorecorder.cfg.j2
-    dest: /build/autorecorder.cfg
-    mode: 0777
-  tags:
-    - game_config
 
 - name: Generate /build/maplists.cfg
   ansible.builtin.template:
@@ -131,30 +107,6 @@
   ansible.builtin.template:
     src: discord.cfg.j2
     dest: /build/discord.cfg
-    mode: 0777
-  tags:
-    - game_config
-
-- name: Generate /build/nativevotes.cfg
-  ansible.builtin.template:
-    src: nativevotes.cfg.j2
-    dest: /build/nativevotes.cfg
-    mode: 0777
-  tags:
-    - game_config
-
-- name: Generate /build/randomcycle.cfg
-  ansible.builtin.template:
-    src: randomcycle.cfg.j2
-    dest: /build/randomcycle.cfg
-    mode: 0777
-  tags:
-    - game_config
-
-- name: Generate /build/rtv.cfg
-  ansible.builtin.template:
-    src: rtv.cfg.j2
-    dest: /build/rtv.cfg
     mode: 0777
   tags:
     - game_config
@@ -228,14 +180,8 @@
       - /build/admins_simple.ini:/home/steam/config/tf/addons/sourcemod/configs/admins_simple.ini
       - /build/{{ item.server_name_short }}/mapcycle.txt:/home/steam/config/tf/cfg/mapcycle.txt
       - /build/motd.txt:/home/steam/config/tf/cfg/motd.txt
-      - /build/sourcemod.cfg:/home/steam/config/tf/cfg/sourcemod/sourcemod.cfg
       - /build/admin_overrides.cfg:/home/steam/config/tf/addons/sourcemod/configs/admin_overrides.cfg
       - /build/gbans.cfg:/home/steam/config/tf/addons/sourcemod/configs/gbans.cfg
-      - /build/mapchooser.cfg:/home/steam/config/tf/cfg/sourcemod/mapchooser.cfg
-      - /build/autorecorder.cfg:/home/steam/config/tf/cfg/sourcemod/autorecorder.cfg
-      - /build/nativevotes.cfg:/home/steam/config/tf/cfg/sourcemod/nativevotes.cfg
-      - /build/randomcycle.cfg:/home/steam/config/tf/cfg/sourcemod/randomcycle.cfg
-      - /build/rtv.cfg:/home/steam/config/tf/cfg/sourcemod/rtv.cfg
       - /build/discord.cfg:/home/steam/config/tf/addons/sourcemod/configs/discord.cfg
       - /build/core.cfg:/home/steam/config/tf/addons/sourcemod/configs/core.cfg
       - /build/{{ item.server_name_short }}/maplists.cfg:/home/steam/config/tf/addons/sourcemod/configs/maplists.cfg

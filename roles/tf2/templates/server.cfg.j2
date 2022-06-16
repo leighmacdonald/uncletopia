@@ -3,6 +3,7 @@ mp_allowspectators 0
 mp_forceautoteam 1
 
 tf_medieval 0
+tf_medieval_autorp 0
 
 tf_gravetalk 1
 sv_alltalk 0
@@ -67,9 +68,97 @@ nano_votescramble_skip_second_vote 1
 ut_scramble_nag_timer 300.0
 ut_rtv_nag_timer 2400.0
 
-tf_medieval 0
-tf_medieval_autorp 0
+
+
+// Dont spectate other tea
+
+// Ask autobalance
+mp_autoteambalance 0
+mp_teams_unbalance_limit 1
+tf_autobalance_ask_candidates_maxtime 10
+tf_autobalance_dead_candidates_maxtime 0
+tf_autobalance_force_candidates_maxtime 0
+tf_autobalance_xp_bonus 0
+
+// Default map time limit
+mp_timelimit 30
+mp_match_end_at_timelimit 0
+mp_winlimit 0
+mp_maxrounds 0
+
+
+// Beginning round time
+sm_cvar mp_waitingforplayers_time 35
+
+// Extra time for map voting
+mp_enableroundwaittime 1
+mp_restartround 0
+
+mp_chattime 20
+
+// No spectators team
+mp_allowspectators 0
+mp_forceautoteam 1
+
+// Dont push same team
+tf_avoidteammates_pushaway 0
+
+// Rocket jump during preround
+tf_preround_push_from_damage_enable 1
+
+
+// Class limit
+sm_classrestrict_enabled 1
+sm_classrestrict_immunity 0
+
+sm_classrestrict_blu_demomen 3
+sm_classrestrict_blu_engineers 3
+sm_classrestrict_blu_heavies 3
+sm_classrestrict_blu_medics 3
+sm_classrestrict_blu_pyros 3
+sm_classrestrict_blu_scouts 3
+sm_classrestrict_blu_snipers 3
+sm_classrestrict_blu_soldiers 3
+sm_classrestrict_blu_spies 3
+
+sm_classrestrict_red_demomen 3
+sm_classrestrict_red_engineers 3
+sm_classrestrict_red_heavies 3
+sm_classrestrict_red_medics 3
+sm_classrestrict_red_pyros 3
+sm_classrestrict_red_scouts 3
+sm_classrestrict_red_snipers 3
+sm_classrestrict_red_soldiers 3
+sm_classrestrict_red_spies 3
+
+tf_classlimit 3
+sv_vote_issue_classlimits_allowed 0
+sv_vote_issue_classlimits_max 3
+
+// Disable stalemates
+mp_stalemate_enable 0
+mp_stalemate_timelimit 240
+
+{% for k, v in sourcemod.items() %}
+{{ k }} {{ v }}
+{% endfor %}
 
 {% for k, v in autorecorder.items() %}
-    {{ k }} {{ v }}
+{{ k }} {{ v }}
+{% endfor %}
+
+{% for k, v in rtv.items() %}
+{{ k }} {{ v }}
+{% endfor %}
+
+{% for k, v in mapchooser.items() %}
+{{ k }} {{ v }}
+{% endfor %}
+
+{% for k, v in randomcycle.items() %}
+{{ k }} {{ v }}
+{% endfor %}
+
+{% for k, v in nativevotes.items() %}
+{{ k }} {{ v }}
 {% endfor %}
