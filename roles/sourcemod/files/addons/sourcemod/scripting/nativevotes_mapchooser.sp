@@ -79,6 +79,7 @@ ConVar g_Cvar_EndOfMapVote;
 ConVar g_Cvar_VoteDuration;
 ConVar g_Cvar_RunOff;
 ConVar g_Cvar_RunOffPercent;
+ConVar g_Cvar_TimeLimit;
 
 Handle g_VoteTimer = null;
 Handle g_RetryTimer = null;
@@ -158,6 +159,7 @@ public void OnPluginStart()
 	g_Cvar_Winlimit = FindConVar("mp_winlimit");
 	g_Cvar_Maxrounds = FindConVar("mp_maxrounds");
 	g_Cvar_Fraglimit = FindConVar("mp_fraglimit");
+	g_Cvar_TimeLimit = FindConVar("mp_timelimit");
 	g_Cvar_Bonusroundtime = FindConVar("mp_bonusroundtime");
 
 	if (g_Cvar_Winlimit || g_Cvar_Maxrounds)
@@ -528,6 +530,7 @@ public void Event_RoundEnd(Event event, const char[] name, bool dontBroadcast)
 
 	CheckWinLimit(g_winCount[winner]);
 	CheckMaxRounds(g_TotalRounds);
+	CheckTimeLeft();
 }
 
 public void CheckWinLimit(int winner_score)
@@ -553,6 +556,24 @@ public void CheckMaxRounds(int roundcount)
 		if (maxrounds)
 		{
 			if (roundcount >= (maxrounds - g_Cvar_StartRounds.IntValue))
+			{
+				InitiateVote(MapChange_MapEnd, null);
+			}
+		}
+	}
+}
+
+public void CheckTimeLeft() {
+	if (g_Cvar_TimeLimit)
+	{
+		int timelimit = g_Cvar_TimeLimit.IntValue;
+		if (timelimit)
+		{
+			int timeleft;
+			GetMapTimeLeft(timeleft);
+
+			// tf2 will end the map if the timeleft < 5mins at the end of a round
+			if (timeleft >= (300 + g_Cvar_Bonusroundtime.IntValue))
 			{
 				InitiateVote(MapChange_MapEnd, null);
 			}
