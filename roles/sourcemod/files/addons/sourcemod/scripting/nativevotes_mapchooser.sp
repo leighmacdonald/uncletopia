@@ -567,7 +567,7 @@ public void CheckTimeLeft() {
 	if (g_Cvar_TimeLimit)
 	{
 		int timelimit = g_Cvar_TimeLimit.IntValue;
-		if (timelimit)
+		if (timelimit > 0)
 		{
 			int timeleft;
 			GetMapTimeLeft(timeleft);
