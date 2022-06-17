@@ -21,7 +21,7 @@ mp_forcecamera 1
 // Extra time for map voting
 mp_enableroundwaittime 1
 mp_restartround 0
-mp_bonusroundtime 25
+mp_bonusroundtime 19
 mp_chattime 20
 
 // Dont push same team
@@ -139,26 +139,3 @@ sv_vote_issue_classlimits_max 3
 mp_stalemate_enable 0
 mp_stalemate_timelimit 240
 
-{% for k, v in sourcemod.items() %}
-{{ k }} {{ v }}
-{% endfor %}
-
-{% for k, v in autorecorder.items() %}
-{{ k }} {{ v }}
-{% endfor %}
-
-{% for k, v in rtv.items() %}
-{{ k }} {{ v }}
-{% endfor %}
-
-{% for k, v in mapchooser.items() %}
-{{ k }} {{ v }}
-{% endfor %}
-
-{% for k, v in randomcycle.items() %}
-{{ k }} {{ v }}
-{% endfor %}
-
-{% for k, v in nativevotes.items() %}
-{{ k }} {{ v }}
-{% endfor %}

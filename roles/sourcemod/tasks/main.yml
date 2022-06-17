@@ -55,7 +55,7 @@
   ansible.builtin.command:
     chdir: ~/build_srcds/sourcemod/addons/sourcemod/scripting
     cmd: bash build.sh
-    creates: ~/build_srcds/sourcemod/addons/sourcemod/plugins/gbans.smx
+    creates: ~/build_srcds/sourcemod/addons/sourcemod/plugins/disabled/basevotes.smx
 
 - name: Create sourcemod release
   community.general.archive:

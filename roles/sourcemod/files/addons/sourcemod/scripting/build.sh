@@ -1,4 +1,4 @@
-echo "Compiling sourcemod plugins..."
+echo "Compiling & enabling sourcemod plugins..."
 
 ./compile.sh || exit 2
 
@@ -6,7 +6,7 @@ echo "Compiling sourcemod plugins..."
 for PLUGIN in pre-compiled/*.smx;
 do
   echo "Enabling ${PLUGIN}"
-  mv pre-compiled/"${PLUGIN}" compiled/
+  mv "${PLUGIN}" compiled/
 done
 
 # Disable plugins that are incompatible with our plugin setup
@@ -24,6 +24,8 @@ do
   mv compiled/${PLUGIN}.smx ../plugins/disabled/
 done
 
-mv -v compiled/* ../plugins/*
+mv compiled/* ../plugins/
+
+mv ../plugins/basevotes.smx ../plugins/disabled/
 
 echo "Compiled ${COUNTER} plugins"

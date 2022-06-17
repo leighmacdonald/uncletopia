@@ -4,7 +4,7 @@ mkdir -p "${STEAMAPPDIR}" || true
 bash "${STEAMCMDDIR}/steamcmd.sh" +force_install_dir "${STEAMAPPDIR}" \
 				+login anonymous \
 				+app_update "${STEAMAPPID}" \
-				+quit
+				+quit || exit
 
 if [ ! -f "$HOME/.sm-loaded" ]; then
   echo "Loading sourcemod distribution for first time"

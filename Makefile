@@ -27,10 +27,19 @@ sourcemod:
 	@ansible-playbook $(PROD_OPTS) $(PLAYBOOK_PATH)/sourcemod.yml
 
 test:
-	@ansible-playbook $(STAGING_OPTS) $(PLAYBOOK_PATH)/deploy.yml
+	docker stop srcds-test-1 || true # dont bail if a container doesnt already exist
+	docker rm srcds-test-1 || true
+	ansible-playbook playbooks/deploy.yml --limit localhost
+	make logs
+
+logs:
+	docker logs -f srcds-test-1
 
 srcds:
 	@ansible-playbook -l build $(PLAYBOOK_PATH)/srcds.yml
+
+shell:
+	@docker exec -it srcds-test-1 bash
 
 node_exporter:
 	@ansible-playbook $(PROD_OPTS) $(PLAYBOOK_PATH)/node_exporter.yml

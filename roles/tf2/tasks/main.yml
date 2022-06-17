@@ -42,15 +42,6 @@
   tags:
     - game_config
 
-- name: Generate tf/cfg/server.cfg
-  ansible.builtin.template:
-    src: server.cfg.j2
-    dest: /build/{{ item.server_name_short }}/server.cfg
-    mode: 0777
-  loop: "{{ services }}"
-  tags:
-    - game_config
-
 - name: mapcycle.txt
   ansible.builtin.template:
     src: mapcycle.txt.j2
@@ -102,7 +93,7 @@
     mode: 0777
   tags:
     - game_config
-    -
+
 - name: Generate /build/discord.cfg
   ansible.builtin.template:
     src: discord.cfg.j2
@@ -111,6 +102,95 @@
   tags:
     - game_config
 
+- name: Generate /build/autorecorder.cfg
+  ansible.builtin.template:
+    src: autorecorder.cfg.j2
+    dest: /build/autorecorder.cfg
+    mode: 0777
+  tags:
+    - game_config
+
+- name: Generate /build/basevotes.cfg
+  ansible.builtin.template:
+    src: basevotes.cfg.j2
+    dest: /build/basevotes.cfg
+    mode: 0777
+  tags:
+    - game_config
+
+- name: Generate /build/funvotes.cfg
+  ansible.builtin.template:
+    src: funvotes.cfg.j2
+    dest: /build/funvotes.cfg
+    mode: 0777
+  tags:
+    - game_config
+
+- name: Generate /build/mapchooser.cfg
+  ansible.builtin.template:
+    src: mapchooser.cfg.j2
+    dest: /build/mapchooser.cfg
+    mode: 0777
+  tags:
+    - game_config
+
+- name: Generate /build/nativevotes.cfg
+  ansible.builtin.template:
+    src: nativevotes.cfg.j2
+    dest: /build/nativevotes.cfg
+    mode: 0777
+  tags:
+    - game_config
+
+- name: Generate /build/networktools.cfg
+  ansible.builtin.template:
+    src: networktools.cfg.j2
+    dest: /build/networktools.cfg
+    mode: 0777
+  tags:
+    - game_config
+
+- name: Generate /build/randomcycle.cfg
+  ansible.builtin.template:
+    src: randomcycle.cfg.j2
+    dest: /build/randomcycle.cfg
+    mode: 0777
+  tags:
+    - game_config
+
+- name: Generate /build/rtv.cfg
+  ansible.builtin.template:
+    src: rtv.cfg.j2
+    dest: /build/rtv.cfg
+    mode: 0777
+  tags:
+    - game_config
+
+- name: Generate tf/cfg/server.cfg
+  ansible.builtin.template:
+    src: server.cfg.j2
+    dest: /build/{{ item.server_name_short }}/server.cfg
+    mode: 0777
+  loop: "{{ services }}"
+  tags:
+    - game_config
+
+- name: Generate /build/sourcemod.cfg
+  ansible.builtin.template:
+    src: sourcemod.cfg.j2
+    dest: /build/sourcemod.cfg
+    mode: 0777
+  tags:
+    - game_config
+
+- name: Generate /build/stac.cfg
+  ansible.builtin.template:
+    src: stac.cfg.j2
+    dest: /build/stac.cfg
+    mode: 0777
+  tags:
+    - game_config
+    -
 - name: Generate /build/motd.txt
   ansible.builtin.template:
     src: motd.txt.j2
@@ -134,7 +214,7 @@
     state: started
     restart: true
     network_mode: host
-    pull: false
+    pull: true
     interactive: true
     tty: true
     recreate: true
@@ -182,6 +262,16 @@
       - /build/motd.txt:/home/steam/config/tf/cfg/motd.txt
       - /build/admin_overrides.cfg:/home/steam/config/tf/addons/sourcemod/configs/admin_overrides.cfg
       - /build/gbans.cfg:/home/steam/config/tf/addons/sourcemod/configs/gbans.cfg
+      - /build/autorecorder.cfg:/home/steam/config/tf/cfg/sourcemod/autorecorder.cfg
+      - /build/basevotes.cfg:/home/steam/config/tf/cfg/sourcemod/basevotes.cfg
+      - /build/funvotes.cfg:/home/steam/config/tf/cfg/sourcemod/funvotes.cfg
+      - /build/mapchooser.cfg:/home/steam/config/tf/cfg/sourcemod/mapchooser.cfg
+      - /build/nativevotes.cfg:/home/steam/config/tf/cfg/sourcemod/nativevotes.cfg
+      - /build/networktools.cfg:/home/steam/config/tf/cfg/sourcemod/networktools.cfg
+      - /build/randomcycle.cfg:/home/steam/config/tf/cfg/sourcemod/randomcycle.cfg
+      - /build/rtv.cfg:/home/steam/config/tf/cfg/sourcemod/rtv.cfg
+      - /build/sourcemod.cfg:/home/steam/config/tf/cfg/sourcemod/sourcemod.cfg
+      - /build/stac.cfg:/home/steam/config/tf/cfg/sourcemod/stac.cfg
       - /build/discord.cfg:/home/steam/config/tf/addons/sourcemod/configs/discord.cfg
       - /build/core.cfg:/home/steam/config/tf/addons/sourcemod/configs/core.cfg
       - /build/{{ item.server_name_short }}/maplists.cfg:/home/steam/config/tf/addons/sourcemod/configs/maplists.cfg
