@@ -7,11 +7,46 @@
 #     mode: 0777
 #   loop: "{{ services }}"
 
+- name: build output
+  become: true
+  ansible.builtin.file:
+    path: /build/{{ item.server_name_short }}
+    state: directory
+    owner: tf2server
+    mode: 0777
+  loop: "{{ services }}"
+
 - name: Generate ssh private key
   ansible.builtin.template:
     src: private_key.j2
     dest: ~/.ssh/id_rsa_stv
     mode: 0600
+
+- name: srcds-logs volume
+  docker_volume:
+    name: srcds-{{ item.server_name_short }}-logs
+    state: present
+  loop: "{{ services }}"
+  loop_control:
+    index_var: loop0
+
+- name: srcds-stv volume
+  docker_volume:
+    name: srcds-{{ item.server_name_short }}-stv
+    state: present
+  loop: "{{ services }}"
+  loop_control:
+    index_var: loop0
+
+- name: Generate srcdsup.yml
+  become: true
+  ansible.builtin.template:
+    src: srcdsup.yml.j2
+    dest: /build/{{ item.server_name_short }}/srcdsup.yml
+    mode: 0777
+  loop: "{{ services }}"
+  loop_control:
+    index_var: loop0
 
 - name: srcdsup container
   docker_container:
@@ -19,14 +54,15 @@
     image: leighmacdonald/srcdsup:master
     state: started
     restart: true
-    pull: true
+    pull: false
     interactive: true
     tty: true
     recreate: true
     restart_policy: always
     volumes:
       - /home/tf2server/.ssh/id_rsa_stv:/app/id_rsa.key
-      - /demos/{{ item.server_name_short }}:/demos
+      - srcds-{{ item.server_name_short }}-stv:/app/demos
+      - srcds-{{ item.server_name_short }}-logs:/app/logs
       - /build/{{ item.server_name_short }}/srcdsup.yml:/app/srcdsup.yml
   loop: "{{ services }}"
   loop_control:

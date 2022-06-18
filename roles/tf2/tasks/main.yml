@@ -10,7 +10,7 @@
 
 - name: build output
   become: true
-  become_user: root
+  become_user: tf2server
   ansible.builtin.file:
     path: /build/{{ item.server_name_short }}
     state: directory
@@ -207,7 +207,6 @@
       # only consider containers created more than 24 hours ago
       until: 24h
 
-
 - name: srcds-logs volume
   docker_volume:
     name: srcds-{{ item.server_name_short }}-logs
@@ -272,8 +271,8 @@
       # and the query port are the same.
       STEAM_GAMESERVER_PACKET_HANDLER_NO_IPC: "1"
     volumes:
-      - srcds-{{ item.server_name_short }}-stv:/home/steam/tf-dedicated/tf/stv_demos
-      - srcds-{{ item.server_name_short }}-logs:/home/steam/tf-dedicated/tf/logs
+      - srcds-{{ item.server_name_short }}-stv:/home/steam/stv_demos
+      - srcds-{{ item.server_name_short }}-logs:/home/steam/logs
       - /build/{{ item.server_name_short }}/autoexec.cfg:/home/steam/config/tf/cfg/autoexec.cfg
       - /build/{{ item.server_name_short }}/server.cfg:/home/steam/config/tf/cfg/server.cfg
       - /build/admins_simple.ini:/home/steam/config/tf/addons/sourcemod/configs/admins_simple.ini

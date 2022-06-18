@@ -1,0 +1,17 @@
+---
+
+update_interval: 5s
+
+remotes:
+{% for remote in srcdsup.remotes %}
+  - name: {{ remote.name }}
+    type: {{ remote.type }}
+    password: {{ remote.password }}
+{% endfor %}
+
+rules:
+{% for rule in srcdsup.rules %}
+  - name: {{ rule.name }}
+    src: {{ rule.src }}
+    remote: {{ rule.remote }}
+{% endfor %}
