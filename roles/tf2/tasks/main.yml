@@ -207,6 +207,23 @@
       # only consider containers created more than 24 hours ago
       until: 24h
 
+
+- name: srcds-logs volume
+  docker_volume:
+    name: srcds-{{ item.server_name_short }}-logs
+    state: present
+  loop: "{{ services }}"
+  loop_control:
+    index_var: loop0
+
+- name: srcds-stv volume
+  docker_volume:
+    name: srcds-{{ item.server_name_short }}-stv
+    state: present
+  loop: "{{ services }}"
+  loop_control:
+    index_var: loop0
+
 - name: srcds
   docker_container:
     name: srcds-{{ item.server_name_short }}
@@ -236,7 +253,7 @@
       SRCDS_RCONPW: "{{ rcon_password }}"
       SRCDS_IP: "{{ ip }}"
       SRCDS_MAXPLAYERS: "32"
-      # This will opt out ofo the new handshake for A2S_INFO packets to address the reflection attack. At this
+      # This will opt out of the new handshake for A2S_INFO packets to address the reflection attack. At this
       # time, it is primarily intended for testing 3rd party query clients. Since not all players may have an updated
       # Steam client and understand this handshake, it is not recommend enabling this at this time, except for testing.
       # We will post again when the vast majority of users are running clients that understand the new protocol, and
@@ -255,6 +272,8 @@
       # and the query port are the same.
       STEAM_GAMESERVER_PACKET_HANDLER_NO_IPC: "1"
     volumes:
+      - srcds-{{ item.server_name_short }}-stv:/home/steam/tf-dedicated/tf/stv_demos
+      - srcds-{{ item.server_name_short }}-logs:/home/steam/tf-dedicated/tf/logs
       - /build/{{ item.server_name_short }}/autoexec.cfg:/home/steam/config/tf/cfg/autoexec.cfg
       - /build/{{ item.server_name_short }}/server.cfg:/home/steam/config/tf/cfg/server.cfg
       - /build/admins_simple.ini:/home/steam/config/tf/addons/sourcemod/configs/admins_simple.ini

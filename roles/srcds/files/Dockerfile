@@ -65,6 +65,9 @@ WORKDIR ${HOMEDIR}
 
 CMD ["bash", "entry.sh"]
 
+VOLUME ${STEAMAPPDIR}/${STEAMAPP}/stv_demos
+VOLUME ${STEAMAPPDIR}/${STEAMAPP}/logs
+
 # Expose ports
 EXPOSE 27015/tcp \
 	27015/udp \
