@@ -26,14 +26,14 @@ pre:
 sourcemod:
 	@ansible-playbook $(PROD_OPTS) $(PLAYBOOK_PATH)/sourcemod.yml
 
-test:
-	docker stop srcds-test-1 || true # dont bail if a container doesnt already exist
-	docker rm srcds-test-1 || true
+test: srcds
+	docker stop srcds-localhost-1 || true # dont bail if a container doesnt already exist
+	docker rm srcds-localhost-1 || true
 	ansible-playbook playbooks/deploy.yml --limit localhost
 	make logs
 
 logs:
-	docker logs -f srcds-test-1
+	docker logs -f srcds-localhost-1
 
 srcds:
 	@ansible-playbook -l build $(PLAYBOOK_PATH)/srcds.yml
@@ -47,8 +47,8 @@ node_exporter:
 web:
 	@ansible-playbook $(PROD_OPTS) $(PLAYBOOK_PATH)/web.yml --limit metrics
 
-stvup:
-	@ansible-playbook $(PROD_OPTS) $(PLAYBOOK_PATH)/stvup.yml
+srcdsup:
+	@ansible-playbook $(PROD_OPTS) $(PLAYBOOK_PATH)/srcdsup.yml
 
 system:
 	@ansible-playbook $(PROD_OPTS) $(PLAYBOOK_PATH)/system.yml

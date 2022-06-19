@@ -9,6 +9,11 @@
     name: caddy_config
     state: present
 
+- name: gbans_demos volume
+  docker_volume:
+    name: gbans_demos
+    state: present
+
 - name: Generate /etc/Caddyfile
   become: true
   ansible.builtin.template:
@@ -35,7 +40,7 @@
       - caddy_data:/data
       - caddy_config:/config
       - /etc/Caddyfile:/etc/caddy/Caddyfile
-      - /home/tf2server/stv_demos:/demos
+      - gbans_demos:/demos
     env:
       CLOUDFLARE_EMAIL: "{{ caddy.cloudflare.email }}"
       CLOUDFLARE_API_TOKEN: "{{ caddy.cloudflare.api_key }}"

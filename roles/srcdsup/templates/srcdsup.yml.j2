@@ -6,12 +6,15 @@ remotes:
 {% for remote in srcdsup.remotes %}
   - name: {{ remote.name }}
     type: {{ remote.type }}
-    password: {{ remote.password }}
+    url: {{ remote.url }}
+    password: {{ item.gbans_key }}
 {% endfor %}
 
 rules:
 {% for rule in srcdsup.rules %}
   - name: {{ rule.name }}
-    src: {{ rule.src }}
+    root: {{ rule.root }}
+    pattern: "{{ rule.pattern }}"
     remote: {{ rule.remote }}
+    server: {{ item.server_name_short }}
 {% endfor %}

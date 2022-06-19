@@ -4,6 +4,11 @@
     name: gbans_cache_data
     state: present
 
+- name: gbans_demos volume
+  docker_volume:
+    name: gbans_demos
+    state: present
+
 - name: Generate /etc/gbans.yml
   become: true
   ansible.builtin.template:
@@ -18,20 +23,21 @@
     restart: true
     recreate: true
     pull: true
-    logging:
-      driver: json-file
-      options:
-        max-size: 10m
-        max-file: "10"
+# Needs newer ansible
+#    logging:
+#      driver: json-file
+#      options:
+#        max-size: 10m
+#        max-file: "10"
     volumes:
-      - /etc/gbans.yml:/app/gbans.yml
+      - gbans_demos:/app/demos
       - gbans_cache_data:/app/.cache
+      - /etc/gbans.yml:/app/gbans.yml
     env:
       GBANS_DATABASE_DSN: "{{ gbans.dsn }}"
       GBANS_GENERAL_STEAM_KEY: "{{ steam_key }}"
     ports:
       - 127.0.0.1:6006:6006
-      - 27115:27115/udp
 
 - name: Join gbans network
   community.docker.docker_network:

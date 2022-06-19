@@ -58,6 +58,13 @@ ENV SRCDS_FPSMAX=300 \
     SRCDS_HOST_WORKSHOP_COLLECTION=0 \
     SRCDS_WORKSHOP_AUTHKEY=""
 
+RUN mkdir -p ${STEAMAPPDIR}/${STEAMAPP}/stv_demos && \
+    mkdir -p ${STEAMAPPDIR}/${STEAMAPP}/logs && \
+    chown -R ${USER}:${USER} ${STEAMAPPDIR}/${STEAMAPP}
+
+VOLUME ${STEAMAPPDIR}/${STEAMAPP}/stv_demos
+VOLUME ${STEAMAPPDIR}/${STEAMAPP}/logs
+
 # Switch to user
 USER ${USER}
 
@@ -65,8 +72,6 @@ WORKDIR ${HOMEDIR}
 
 CMD ["bash", "entry.sh"]
 
-VOLUME ${STEAMAPPDIR}/${STEAMAPP}/stv_demos
-VOLUME ${STEAMAPPDIR}/${STEAMAPP}/logs
 
 # Expose ports
 EXPOSE 27015/tcp \
