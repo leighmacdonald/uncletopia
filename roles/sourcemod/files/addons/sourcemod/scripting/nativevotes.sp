@@ -1007,7 +1007,7 @@ void DrawHintProgress()
 	
 	int iTimeRemaining = RoundFloat(timeRemaining);
 
-	PrintHintTextToAll("%t%s", "Vote Count", g_NumVotes, g_TotalClients, iTimeRemaining, g_LeaderList);
+	PrintCenterTextAll("%t%s", "Vote Count", g_NumVotes, g_TotalClients, iTimeRemaining, g_LeaderList);
 }
 
 void BuildVoteLeaders()
@@ -1027,7 +1027,7 @@ void BuildVoteLeaders()
 	/* Take the top 3 (if applicable) and draw them */
 	g_LeaderList[0] = '\0';
 	
-	for (int i = 0; i < num_items && i < 3; i++)
+	for (int i = 0; i < num_items && i < 5; i++)
 	{
 		int cur_item = votes[i][VOTEINFO_ITEM_INDEX];
 		char choice[256];
