@@ -338,6 +338,7 @@ enum
 }
 
 static int g_VoteController = -1;
+static int g_nNativeVoteIdx = -1; // TODO: track this
 static bool g_bUserBuf = false;
 
 static ConVar g_Cvar_Votes_Enabled;
@@ -2121,7 +2122,7 @@ static void TF2CSGO_ClientSelectedItem(NativeVote vote, int client, int item)
 	castEvent.SetInt("vote_option", item);
 	if (g_EngineVersion == Engine_TF2)
 	{
-		castEvent.SetInt("vote_idx", 0);
+		castEvent.SetInt("voteidx", g_nNativeVoteIdx);
 	}
 	castEvent.Fire();
 }
@@ -2249,7 +2250,7 @@ static void TF2CSGO_DisplayVote(NativeVote vote, int[] clients, int num_clients)
 		optionsEvent.SetInt("count", itemCount);
 		if (g_EngineVersion == Engine_TF2)
 		{
-			optionsEvent.SetInt("voteidx", 0);
+			optionsEvent.SetInt("voteidx", g_nNativeVoteIdx);
 		}
 		optionsEvent.Fire();
 	}
@@ -2305,11 +2306,9 @@ static void TF2CSGO_DisplayVote(NativeVote vote, int[] clients, int num_clients)
 		{
 			BfWrite bfStart = UserMessageToBfWrite(voteStart);
 			bfStart.WriteByte(team);
-			// 6/21/22 update for tf2
 			if (g_EngineVersion == Engine_TF2)
 			{
-				// vote idx
-				bfStart.WriteNum(0);
+				bfStart.WriteNum(g_nNativeVoteIdx);
 			}
 			bfStart.WriteByte(Data_GetInitiator(vote));
 			bfStart.WriteString(translation);
@@ -2404,7 +2403,7 @@ static void CSGO_VotePass(const char[] translation, const char[] details, int te
 	votePass.SetInt("vote_type", 0); // Unknown, need to check values
 	if (g_EngineVersion == Engine_TF2)
 	{
-		votePass.SetInt("voteidx", 0); // Unknown, need to check values
+		votePass.SetInt("voteidx", g_nNativeVoteIdx); // Unknown, need to check values
 	}
 
 	EndMessage();
@@ -2445,6 +2444,7 @@ static void TF2_VoteFail(int[] clients, int numClients, int reason, int team)
 	BfWrite voteFailed = UserMessageToBfWrite(StartMessage("VoteFailed", clients, numClients, USERMSG_RELIABLE));
 	
 	voteFailed.WriteByte(team);
+	voteFailed.WriteNum(g_nNativeVoteIdx);
 	voteFailed.WriteByte(reason);
 
 	EndMessage();
@@ -2525,7 +2525,10 @@ static void TF2CSGO_ResetVote()
 	if (CheckVoteController())
 	{	
 		if (g_EngineVersion == Engine_TF2)
+		{
 			SetEntProp(g_VoteController, Prop_Send, "m_iActiveIssueIndex", INVALID_ISSUE);
+			SetEntProp(g_VoteController, Prop_Send, "m_nVoteIdx", -1); // TODO: should this be -1 or the global counter?
+		}
 		
 		for (int i = 0; i < 5; i++)
 		{
