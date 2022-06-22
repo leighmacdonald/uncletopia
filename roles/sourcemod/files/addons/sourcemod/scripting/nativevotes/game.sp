@@ -2379,6 +2379,10 @@ static void TF2CSGO_SendOptionsToClient(NativeVote vote, int client)
 		optionsEvent.SetString(option, display);
 	}
 	optionsEvent.SetInt("count", itemCount);
+	if (g_EngineVersion == Engine_TF2)
+	{
+		optionsEvent.SetInt("voteidx", g_nNativeVoteIdx);
+	}
 	optionsEvent.FireToClient(client);
 	// FireToClient does not close the handle, so we call Cancel() to do that for us.
 	optionsEvent.Cancel();
@@ -2401,10 +2405,6 @@ static void CSGO_VotePass(const char[] translation, const char[] details, int te
 	votePass.SetString("disp_str", translation);
 	votePass.SetString("details_str", details);
 	votePass.SetInt("vote_type", 0); // Unknown, need to check values
-	if (g_EngineVersion == Engine_TF2)
-	{
-		votePass.SetInt("voteidx", g_nNativeVoteIdx); // Unknown, need to check values
-	}
 
 	EndMessage();
 }
@@ -2423,6 +2423,7 @@ static void TF2_VotePass(const char[] translation, const char[] details, int tea
 	}
 
 	votePass.WriteByte(team);
+	votePass.WriteNum(g_nNativeVoteIdx);
 	votePass.WriteString(translation);
 	votePass.WriteString(details);
 
