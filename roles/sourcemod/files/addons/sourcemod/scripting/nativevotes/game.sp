@@ -47,7 +47,6 @@
 
 //----------------------------------------------------------------------------
 // Translation strings
-
 //----------------------------------------------------------------------------
 // L4D/L4D2
 
@@ -2120,6 +2119,10 @@ static void TF2CSGO_ClientSelectedItem(NativeVote vote, int client, int item)
 	castEvent.SetInt("team", Data_GetTeam(vote));
 	castEvent.SetInt("entityid", client);
 	castEvent.SetInt("vote_option", item);
+	if (g_EngineVersion == Engine_TF2)
+	{
+		castEvent.SetInt("vote_idx", 0);
+	}
 	castEvent.Fire();
 }
 
@@ -2244,6 +2247,10 @@ static void TF2CSGO_DisplayVote(NativeVote vote, int[] clients, int num_clients)
 			optionsEvent.SetString(option, display);
 		}
 		optionsEvent.SetInt("count", itemCount);
+		if (g_EngineVersion == Engine_TF2)
+		{
+			optionsEvent.SetInt("voteidx", 0);
+		}
 		optionsEvent.Fire();
 	}
 	
@@ -2298,6 +2305,12 @@ static void TF2CSGO_DisplayVote(NativeVote vote, int[] clients, int num_clients)
 		{
 			BfWrite bfStart = UserMessageToBfWrite(voteStart);
 			bfStart.WriteByte(team);
+			// 6/21/22 update for tf2
+			if (g_EngineVersion == Engine_TF2)
+			{
+				// vote idx
+				bfStart.WriteNum(0);
+			}
 			bfStart.WriteByte(Data_GetInitiator(vote));
 			bfStart.WriteString(translation);
 			if (bCustom && changeTitle == Plugin_Changed)
@@ -2389,6 +2402,10 @@ static void CSGO_VotePass(const char[] translation, const char[] details, int te
 	votePass.SetString("disp_str", translation);
 	votePass.SetString("details_str", details);
 	votePass.SetInt("vote_type", 0); // Unknown, need to check values
+	if (g_EngineVersion == Engine_TF2)
+	{
+		votePass.SetInt("voteidx", 0); // Unknown, need to check values
+	}
 
 	EndMessage();
 }
