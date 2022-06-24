@@ -37,8 +37,9 @@ public void OnPluginStart()
 	HookEvent("teamplay_setup_finished", OnSetupFinished);
 	HookEvent("teamplay_alert", OnTeamplayAlert);
 	HookEvent("teamplay_win_panel", OnRoundWin);
-	HookEvent("tf_game_over", OnGameOver); //when scoreboard is shown.
-	HookEvent("teamplay_game_over", OnGameOver); 
+	// TODO fix extend causing game end music to loop
+	// HookEvent("tf_game_over", OnGameOver); //when scoreboard is shown.
+	// HookEvent("teamplay_game_over", OnGameOver);
 	HookEvent("player_death", OnPlayerDeath, EventHookMode_Post);
 	HookEvent("teamplay_broadcast_audio", OnBroadcastAudio, EventHookMode_Pre);
 	
