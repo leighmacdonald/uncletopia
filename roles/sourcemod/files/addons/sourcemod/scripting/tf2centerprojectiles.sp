@@ -14,12 +14,13 @@ Copying and distribution of this file, with or without modification, are permitt
 public Plugin myinfo = {
 	name = "[TF2] Center Projectiles",
 	author = "rtldg & pufftwitt",
-	version = "6.9",
+	version = "7.1",
 	url = "https://github.com/rtldg/tf2centerprojectiles",
 	description = "Provides the command sm_centerprojectiles [0|1] to shoot rockets from the center (like The Original) for any rocket launcher, shoot pipebombs and sticky bombs from the center, and more!"
 };
 
 bool g_bLate;
+bool g_bCentered[MAXPLAYERS+1];
 Handle g_hCenterProjectiles;
 Handle g_hWeapon_ShootPosition = null;
 Handle g_hIsViewModelFlipped = null;
@@ -40,7 +41,7 @@ public void OnPluginStart()
 {
 	RegConsoleCmd("sm_centerprojectiles", sm_centerprojectiles, "sm_centerprojectiles to toggle or sm_centerprojectiles [1|0] to set");
 	g_hCenterProjectiles = RegClientCookie("tf2centerprojectiles", "TF2 Center Projectiles thing", CookieAccess_Protected);
-	
+
 	// Called every player spawn...
 	HookEvent("player_spawn", Event_EverythingEver, EventHookMode_Post);
 	// Sent when a player gets a whole new set of items, aka touches a resupply locker / respawn cabinet or spawns in.
@@ -54,7 +55,7 @@ public void OnPluginStart()
 	}
 
 	int offset;
-	
+
 	if ((offset = GameConfGetOffset(hGameData, "Weapon_ShootPosition")) == -1)
 	{
 		SetFailState("Couldn't get the offset for Weapon_ShootPosition");
@@ -87,10 +88,17 @@ public void OnClientPutInServer(int client)
 	}
 }
 
+public void OnClientCookiesCached(int client)
+{
+	char cookie[2];
+	GetClientCookie(client, g_hCenterProjectiles, cookie, sizeof(cookie));
+	g_bCentered[client] = (cookie[0] == '1');
+}
+
 // Hook to work with FirePipeBomb... aka grenade launcher & pipebomb launcher
 public MRESReturn Hook_Weapon_ShootPosition(int client, DHookReturn hReturn)
 {
-	if (!GetCentered(client))
+	if (!g_bCentered[client])
 	{
 		return MRES_Ignored;
 	}
@@ -120,7 +128,7 @@ public MRESReturn Hook_Weapon_ShootPosition(int client, DHookReturn hReturn)
 	// We need to return a ShootPosition that'll return the center once the game has added the offset.
 	// i.e. subtract g_fOffset_FirePipeBomb and then the game adds g_fOffset_FirePipeBomb
 	bool isFlipped = SDKCall(g_hIsViewModelFlipped, weapon);
-	ScaleVector(right, g_fOffset_FirePipeBomb * (isFlipped ? -1.0 : 1.0));
+	ScaleVector(right, isFlipped ? -g_fOffset_FirePipeBomb : g_fOffset_FirePipeBomb);
 	SubtractVectors(pos, right, pos);
 
 	hReturn.SetVector(pos);
@@ -136,7 +144,7 @@ Action sm_centerprojectiles(int client, int args)
 
 	if (args == 0)
 	{
-		center = !GetCentered(client);
+		center = !g_bCentered[client];
 	}
 	else
 	{
@@ -146,22 +154,15 @@ Action sm_centerprojectiles(int client, int args)
 	}
 
 	SetCentered(client, center);
-	SetCenterAttribute(client);
+	CenterPlayer(client);
 	PrintToChat(client, "[TF2 Center Projectiles] %s", center ? "Enabled" : "Disabled");
 	return Plugin_Handled;
 }
 
 Action Event_EverythingEver(Event event, const char[] name, bool dontBroadcast)
 {
-	SetCenterAttribute(GetClientOfUserId(event.GetInt("userid")));
+	CenterPlayer(GetClientOfUserId(event.GetInt("userid")));
 	return Plugin_Continue;
-}
-
-bool GetCentered(int client)
-{
-	char cookie[2];
-	GetClientCookie(client, g_hCenterProjectiles, cookie, sizeof(cookie));
-	return cookie[0] == '1';
 }
 
 void SetCentered(int client, bool center)
@@ -169,21 +170,28 @@ void SetCentered(int client, bool center)
 	char cookie[2];
 	cookie[0] = center ? '1' : '0';
 	SetClientCookie(client, g_hCenterProjectiles, cookie);
+	g_bCentered[client] = center;
 }
 
-void SetCenterAttribute(int client)
+void CenterPlayer(int client)
 {
 	if (IsFakeClient(client))
 		return;
 
-	int weapon = GetPlayerWeaponSlot(client, TFWeaponSlot_Primary);
+	SetCenterAttribute(client, GetPlayerWeaponSlot(client, TFWeaponSlot_Primary));
+	SetCenterAttribute(client, GetPlayerWeaponSlot(client, TFWeaponSlot_Secondary));
+	SetCenterAttribute(client, GetPlayerWeaponSlot(client, TFWeaponSlot_Melee));
+}
+
+void SetCenterAttribute(int client, int weapon)
+{
 	if (weapon == -1) // How could this happen? :thinking:
 		return;
 
 	bool isTheOriginal = (GetEntProp(weapon, Prop_Send, "m_iItemDefinitionIndex") == 513);
-	bool center = GetCentered(client) || isTheOriginal;
+	bool center = g_bCentered[client] || isTheOriginal;
 
 	// List of attributes at https://wiki.teamfortress.com/wiki/List_of_item_attributes
 	// 289 == centerfire_projectile
-	TF2Attrib_SetByDefIndex(weapon, 289, center ? 1.0 : 0.0); 
+	TF2Attrib_SetByDefIndex(weapon, 289, center ? 1.0 : 0.0);
 }
