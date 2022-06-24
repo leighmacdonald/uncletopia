@@ -151,7 +151,7 @@
 // User vote to scramble teams.  Can be immediate or end of round.
 #define TF2_VOTE_SCRAMBLE_IMMEDIATE_START	"#TF_vote_scramble_teams"
 #define TF2_VOTE_SCRAMBLE_ROUNDEND_START		"#TF_vote_should_scramble_round"
-#define TF2_VOTE_SCRAMBLE_PASSED 			"#TF_vote_passed_scramble_teams"
+#define TF2_VOTE_SCRAMBLE_PASSED			"#TF_vote_passed_scramble_teams"
 
 // User vote to change MvM mission
 #define TF2_VOTE_CHANGEMISSION_START			"#TF_vote_changechallenge"
@@ -2444,6 +2444,8 @@ static void TF2CSGO_SendOptionsToClient(NativeVote vote, int client)
 	optionsEvent.SetInt("count", itemCount);
 	optionsEvent.SetInt("voteidx", s_nNativeVoteIdx); // TODO(UPDATE)
 	optionsEvent.FireToClient(client);
+	// FireToClient does not close the handle, so we call Cancel() to do that for us.
+	optionsEvent.Cancel();
 }
 
 static void CSGO_VotePass(const char[] translation, const char[] details, int team, int client=0)
@@ -2563,17 +2565,17 @@ static void TF2_DisplayVoteSetup(int client, ArrayList hVoteTypes)
 	{
 		char voteIssue[128];
 		
-		int voteData[CallVoteListData];
-		hVoteTypes.GetArray(i, voteData[0]);
+		CallVoteListData voteData;
+		hVoteTypes.GetArray(i, voteData, sizeof(CallVoteListData));
 		
-		Game_OverrideTypeToVoteString(voteData[CallVoteList_VoteType], voteIssue, sizeof(voteIssue));
+		Game_OverrideTypeToVoteString(voteData.CallVoteList_VoteType, voteIssue, sizeof(voteIssue));
 		
 		char translation[128];
-		Game_OverrideTypeToTranslationString(voteData[CallVoteList_VoteType], translation, sizeof(translation));
+		Game_OverrideTypeToTranslationString(voteData.CallVoteList_VoteType, translation, sizeof(translation));
 		
 		voteSetup.WriteString(voteIssue);
 		voteSetup.WriteString(translation);
-		voteSetup.WriteByte(voteData[CallVoteList_VoteEnabled]);
+		voteSetup.WriteByte(voteData.CallVoteList_VoteEnabled);
 	}
 	
 	EndMessage();
@@ -2907,14 +2909,14 @@ static void TF2_AddDefaultVotes(ArrayList hVoteTypes, bool bHideDisabledVotes)
 
 static void VoteTypeSet(ArrayList hVoteTypes, bool bHideDisabledVotes, NativeVotesOverride voteType, bool bEnabled)
 {
-	int voteList[CallVoteListData];
+	CallVoteListData voteList;
 	
 	if (bEnabled || !bHideDisabledVotes)
 	{
-		voteList[CallVoteList_VoteType] = voteType;
-		voteList[CallVoteList_VoteEnabled] = bEnabled;
+		voteList.CallVoteList_VoteType = voteType;
+		voteList.CallVoteList_VoteEnabled = bEnabled;
 		
-		hVoteTypes.PushArray(voteList[0]);
+		hVoteTypes.PushArray(voteList);
 	}
 }
 
@@ -3305,6 +3307,10 @@ static stock NativeVotesType TF2_VoteStringToVoteType(const char[] voteString)
 	{
 		voteType = NativeVotesType_Extend;
 	}	
+	else if (StrEqual(voteString, TF2_VOTE_STRING_CHANGEMISSION, false))
+	{
+		voteType = NativeVotesType_ChgMission;
+	}
 	else if (StrEqual(voteString, TF2_VOTE_STRING_CHANGEMISSION, false))
 	{
 		voteType = NativeVotesType_ChgMission;
