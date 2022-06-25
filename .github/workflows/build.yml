@@ -8,20 +8,20 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-  publish:
-    runs-on: ubuntu-20.04
-    needs: [lint]
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: Build srcds image
-        uses: arillso/action.playbook@master
-        with:
-          limit: localhost
-          vault_password: ${{ secrets.VAULT_SECRET}}
-          playbook: playbooks/srcds_github.yml
-          inventory: hosts.yml
-          galaxy_file: collections/requirements.yml
-        env:
-          ANSIBLE_HOST_KEY_CHECKING: 'false'
-          ANSIBLE_DEPRECATION_WARNINGS: 'false'
+#  publish:
+#    runs-on: ubuntu-20.04
+#    needs: [lint]
+#    steps:
+#      - uses: actions/checkout@v2
+#
+#      - name: Build srcds image
+#        uses: arillso/action.playbook@master
+#        with:
+#          limit: localhost
+#          vault_password: ${{ secrets.VAULT_SECRET}}
+#          playbook: playbooks/srcds_github.yml
+#          inventory: hosts.yml
+#          galaxy_file: collections/requirements.yml
+#        env:
+#          ANSIBLE_HOST_KEY_CHECKING: 'false'
+#          ANSIBLE_DEPRECATION_WARNINGS: 'false'

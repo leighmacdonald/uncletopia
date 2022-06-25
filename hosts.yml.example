@@ -1,9 +1,31 @@
 all:
-  hosts:
   children:
-    tf2:
+    build:
       hosts:
-        lax-[1:3].us.server.com:
-          ansible_python_interpreter: python3
-        sfo-1.us.server.com:
-          ansible_python_interpreter: python3
+        example.com:
+
+    development:
+      children:
+        tf2:
+          hosts:
+            localhost:
+    staging:
+      children:
+        tf2:
+          hosts:
+            test-[1:2].example.com:
+    production:
+      children:
+        metrics:
+          hosts:
+            mtl-1.ca.example.com:
+        web:
+          hosts:
+            mtl-1.ca.example.com:
+        tf2:
+          children:
+            na:
+              children:
+                nae:
+                  hosts:
+                    atl-1.us.example.com:

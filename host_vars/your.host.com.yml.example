@@ -1,14 +1,21 @@
-timezone: "Australia/Sydney"
-sv_region: 5
-ip: "51.161.134.54"
+timezone: "America/New_York"
+sv_region: 0
+# external ip
+ip: "1.2.3.4"
 vpn:
-  client_addr: "10.69.69.161/32"
-  private_key: "UBvaVAiL3XTjnIhqe6VpY7OTY//JnsexXNVDa/RBxkY=XXXXXXXXXXXXXXXXXXXXXX"
-  public_key: "Rk01/suWq8HLxxxxxxxxxxxxxxxxxxxxxxxxxx="
+  client_addr: "10.10.10.11/32"
+  private_key: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx="
+  public_key: "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy="
 services:
-  - name: "TF2 | Server"
-    server_name_short: "srv-1"
-    gslt: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-    gbans_key: "xxxxxxxxxxxxxxxxxxxxx"
-    log_secret: 123456789
+  - name: "Example |  1"
+    server_name_short: "exm-1"
+    gslt: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+    gbans_key: "xxxxxxxxxxxxxxxxxxxx"
+    log_secret: 12345
+    rotation: "all"
+  - name: "Example | 2"
+    server_name_short: "exm-2"
+    gslt: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+    gbans_key: "xxxxxxxxxxxxxxxxxxxx"
+    log_secret: 67890
     rotation: "all"

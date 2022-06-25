@@ -1,0 +1,593 @@
+srcds_base_port: 27015
+server_password: ""
+rcon_password: "global_rcon_pass"
+fastdl_url: ""
+sv_tags: "your_network"
+sv_pure: 1
+start_map: "pl_badwater"
+
+# https://crash.limetech.org/
+mini_dump_steamid:
+
+image_tag: leighmacdonald/uncletopia-srcds:latest
+
+stv_enable: false
+stv_password: ""
+stv_name: "STV"
+
+# Params to generate /tf/addons/sourcemod/configs/admin_overrides.cfg
+admin_overrides:
+  - [ "admin_allspec_flag", "b" ]
+  
+srcdsup:
+  update_interval: 5m
+  remotes:
+    - name: gbans_demo
+      type: gbans_demo
+      url: https://example.com/api/demo
+    - name: gbans_log
+      type: gbans_log
+      url: https://example.com/api/log
+    - name: chat_log
+      type: gbans_log
+      url: https://chat-log.example.com/upload
+      password: "xxxxxxxxxxxxxxxxxxxxxxx"
+  rules:
+    - name: logs
+      root: /app/logs/
+      pattern: "*.log"
+      remotes: [ gbans_log, chat_log ]
+    - name: stac_logs
+      root: /app/logs/stac/
+      pattern: "*.log"
+      remotes: [ gbans_ac ]
+    - name: demos
+      root: /app/demos/
+      pattern: "*.dem"
+      remotes: [ gbans_demo ]
+
+autorecorder:
+    # Enable automatic recording
+  # -
+  # Default: "1"
+  # Minimum: "0.000000"
+  # Maximum: "1.000000"
+  sm_autorecord_enable: "1"
+
+  # If 1, continue recording until the map ends
+  # -
+  # Default: "1"
+  # Minimum: "0.000000"
+  # Maximum: "1.000000"
+  sm_autorecord_finishmap: "1"
+
+  # Ignore bots in the player count
+  # -
+  # Default: "1"
+  # Minimum: "0.000000"
+  # Maximum: "1.000000"
+  sm_autorecord_ignorebots: "1"
+
+  # Minimum players on server to start recording
+  # -
+  # Default: "4"
+  # Minimum: "0.000000"
+  sm_autorecord_minplayers: "4"
+
+  # Path to store recorded demos
+  # -
+  # Default: "."
+  sm_autorecord_path: "stv_demos"
+
+  # Hour in the day to start recording (0-23, -1 disables)
+  # -
+  # Default: "-1"
+  sm_autorecord_timestart: "-1"
+
+  # Hour in the day to stop recording (0-23, -1 disables)
+  # -
+  # Default: "-1"
+  sm_autorecord_timestop: "-1"
+
+# Params to generate /tf/cfg/sourcemod/sourcemod.cfg
+sourcemod:
+  # Specifies how admin activity should be relayed to users.  Add up the values
+  # below to get the functionality you want.
+  # 1: Show admin activity to non-admins anonymously.
+  # 2: If 1 is specified, admin names will be shown.
+  # 4: Show admin activity to admins anonymously.
+  # 8: If 4 is specified, admin names will be shown.
+  # 16: Always show admin names to root users.
+  # --
+  # Default: 13 (1+4+8)
+  sm_show_activity: 31
+
+  # Specifies whether menu sounds are enabled for menus created by SourceMod.
+  # Menu sounds can be further configured in addons/sourcemod/configs/core.cfg.
+  #
+  #  Default: 1
+  sm_menu_sounds: 1
+
+  # Specifies how long of a delay, in seconds, should be used in between votes
+  # that are "public" or can be spammed.  Whether or not this delay is obeyed
+  # is dependent on the menu/command.
+  # --
+  # Default: 30
+  sm_vote_delay: 30
+
+  # Default datetime formatting rules when displaying to clients.
+  # For full options, see: http://www.opengroup.org/onlinepubs/007908799/xsh/strftime.html
+  # --
+  # Default: %m/%d/%Y - %H:%M:%S
+  # 12 hour format: %m/%d/%Y - %I:%M:%S %p
+  sm_datetime_format: "%d/%m/%Y - %H:%M:%S"
+
+  # Sets how SourceMod should check immunity levels when administrators target each other.
+  # 0: Ignore immunity levels (except for specific group immunities).
+  # 1: Protect from admins of lower access only.
+  # 2: Protect from admins of equal to or lower access.
+  # 3: Same as 2, except admins with no immunity can affect each other.
+  sm_immunity_mode: 2
+
+  # Sets how many seconds SourceMod should adjust time values for incorrect
+  # server clocks.  This can be positive or negative and will affect every
+  # system time in SourceMod, including logging stamps.
+  # --
+  # Default: 0
+  sm_time_adjustment: 0
+
+  # Specifies the amount of time that is allowed between chat messages.  This
+  # includes the say and say_team commands.  If a client sends a message faster
+  # than this time, they receive a flood token.  When the client has accumulated
+  # 3 or more tokens, a warning message is shown instead of the chat message.
+  # Requires: antiflood.smx
+  # Default: 0.75
+  sm_flood_time: 1.0
+  # Specifies how the reserved slots plugin operates. Valid values are:
+  # 0 : Public slots are used in preference to reserved slots. Reserved slots are freed before public slots.
+  # 1 : If someone with reserve access joins into a reserved slot, the player with the highest latency and
+  # no reserved slot access (spectator players are selected first) is kicked to make room. Thus, the reserved
+  # slots always remains free. The only situation where the reserved slot(s) can become properly occupied is
+  # if the server is full with reserve slot access clients.
+  # 2 : The same as sm_reserve_type 1 except once a certain number of admins have been reached, the reserve slot
+  # stops kicking people and anyone can join to fill the server. You can use this to simulate having a large
+  # number of reserved slots with sm_reserve_type 0 but with only need to have 1 slot unavailable when there are
+  # less admins connected.
+  # --
+  # Requires: reservedslots.smx
+  # Default: 0
+  sm_reserve_type: 0
+
+  # Specifies the number of reserved player slots.  Users with the reservation
+  # admin flag set will be able to join the server when there are no public slots
+  # remaining. If someone does not have this flag, they will be kicked.
+  # (Public slots are defined as: maxplayers - number of reserved slots)
+  # Requires: reservedslots.smx
+  # Default: 0
+  sm_reserved_slots: 8
+
+  # Specifies whether or not reserved slots will be hidden (subtracted from max
+  # slot count). Valid values are 0 (Visible) or 1 (Hidden).
+  # --
+  # Requires: reservedslots.smx
+  # Default: 0
+  sm_hide_slots: 0
+
+  # Specifies whether or not non-admins can send messages to admins using
+  # say_team @<message>. Valid values are 0 (Disabled) or 1 (Enabled)
+  # --
+  # Requires: basechat.smx
+  # Default: 1
+  sm_chat_mode: 1
+
+  # Specifies whether or not "timeleft" will automatically be triggered every
+  # x seconds. Valid values are 0 (Disabled) to 1800 seconds.
+  # --
+  # Requires: basetriggers.smx
+  # Default: 0
+  sm_timeleft_interval: 0
+
+  # Specifies whether or not chat triggers are broadcast to the server or just
+  # the player who requested the info trigger. Valid values are 0 (Disabled) or
+  # 1 (Enabled)
+  # --
+  # Requires: basetriggers.smx
+  # Default: 0
+  sm_trigger_show: 0
+
+  # Specifies whether or not to display vote progress to clients in the
+  # "hint" box (near the bottom of the screen in most games).
+  # Valid values are 0 (Disabled) or 1 (Enabled).
+  # --
+  # Default: 0
+  sm_vote_progress_hintbox: 1
+
+  # Specifies whether or not to display vote progress to clients in the
+  # chat area. Valid values are 0 (Disabled) or 1 (Enabled).
+  # --
+  # Default: 0
+  sm_vote_progress_chat: 0
+
+  # Specifies whether or not to display vote progress in the server console.
+  # Valid values are 0 (Disabled) or 1 (Enabled).
+  # --
+  # Default: 0
+  sm_vote_progress_console: 0
+
+  # Specifies whether or not to display vote progress to clients in the
+  # client console. Valid values are 0 (Disabled) or 1 (Enabled).
+  # --
+  # Default: 0
+  sm_vote_progress_client_console: 0
+
+  # What nickname hook will have.
+  # -
+  # Default: "Captain Crash"
+  discord_accelerator_hookname: "SRCDS Crash"
+
+  #  Role ID ir User ID to mention.
+  #  You can get Role ID or User ID by making \@User or \@Group
+  #  If you want to mention group add & before ID
+  #  -
+  #  Default: ""
+  discord_accelerator_mention: "100742067323416576"
+
+  #  Short server name
+  #  -
+  #  Default: ""
+  discord_accelerator_servername: "srcds"
+
+  #  Config key from configs/discord.cfg.
+  #  -
+  #  Default: "accelerator"
+  discord_accelerator_webhook: "crash"
+
+  #  Information text that server crashed in message.
+  #  -
+  #  Default: "Server crashed"
+  discord_accelerator_message: "Server crashed"
+
+discord:
+  stac_webhook: ""
+  crash_webhook: ""
+
+motd: |
+  Welcome to Uncletopia! If you enjoyed your time here, remember to add this server to your favorites via the server browser!
+  This is Uncle Dane's custom community server. The experience on Uncletopia is intended to be very similar to TF2 Casual Mode, with a few quality-of-life changes. If you’d like to learn more, please visit -- UNCLETOPIA.COM -- You can easily connect with the Uncletopia community, give feedback, report players, and access other resources by joining the official Uncletopia Discord at -- UNCLETOPIA.COM/DISCORD --
+  If teams are unbalanced, type !scramble in chat to vote to scramble the teams. If you would like to change the current map, you can nominate a map with !nominate and rock the vote with !rtv. There is a no-tolerance policy against slurs and toxicity. Thanks for playing!
+
+map_rotation:
+  default:
+    - cp_altitude
+    - cp_dustbowl
+    - cp_mountainlab
+    - cp_process_final
+    - cp_snakewater_final1
+    - cp_sunshine
+    - koth_cascade
+    - koth_highpass
+    - koth_lakeside_final
+    - koth_viaduct
+    - pl_badwater
+    - pl_barnblitz
+    - pl_borneo
+    - pl_frontier_final
+    - pl_pier
+    - pl_snowycoast
+    - pl_swiftwater_final1
+    - pl_upward
+
+  all:
+    # ad
+    - cp_altitude
+    - cp_dustbowl
+    - cp_egypt_final
+    - cp_gorge
+    - cp_gravelpit
+    - cp_junction_final
+    - cp_mercenarypark
+    - cp_mossrock
+    - cp_mountainlab
+    - cp_steel
+    # 5cp
+    - cp_5gorge
+    - cp_badlands
+    - cp_coldfront
+    - cp_fastlane
+    - cp_foundry
+    - cp_freight_final1
+    - cp_granary
+    - cp_gullywash_final1
+    - cp_metalworks
+    - cp_powerhouse
+    - cp_process_final
+    - cp_snakewater_final1
+    - cp_sunshine
+    - cp_vanguard
+    - cp_well
+    - cp_yukon_final
+    # koth
+    - koth_badlands
+    - koth_highpass
+    - koth_king
+    - koth_lakeside_final
+    - koth_harvest_final
+    - koth_suijin
+    - koth_viaduct
+    - koth_cascade
+    - koth_brazil
+    - koth_lazarus
+    - koth_sawmill
+    - koth_nucleus
+    - koth_harvest_final
+    # payload
+    - pl_badwater
+    - pl_barnblitz
+    - pl_borneo
+    - pl_enclosure_final
+    - pl_frontier_final
+    - pl_goldrush
+    - pl_hoodoo_final
+    - pl_pier
+    - pl_snowycoast
+    - pl_swiftwater_final1
+    - pl_thundermountain
+    - pl_upward
+    # payload (evil version)
+    - plr_bananabay
+    - plr_hightower
+    - plr_nightfall_final
+    - plr_pipeline
+    # ctf
+    - ctf_2fort
+    - ctf_doublecross
+    - ctf_landfall
+    - ctf_sawmill
+    - ctf_turbine
+    - ctf_well
+
+sm_permissions:
+  # Admins
+  - ["STEAM_0:1:1111", "z", "aaaa"]
+
+  # Mods
+  - ["STEAM_1:1:22222", "abcdegjk", "bbbb"]
+
+  # Community manager
+  - ["STEAM_0:1:3333", "aj", "ccccc"]
+
+  # Reserved slots
+  - ["STEAM_1:0:4444", "a", "ddddd"]
+
+
+
+rtv:
+  # When to change the map after a succesful RTV: 0 - Instant, 1 - RoundEnd, 2 - MapEnd
+  # -
+  # Default: "0"
+  # Minimum: "0.000000"
+  # Maximum: "2.000000"
+  sm_rtv_changetime: "0"
+
+  # Time (in seconds) before first RTV can be held
+  # -
+  # Default: "30.0"
+  # Minimum: "0.000000"
+  sm_rtv_initialdelay: "30.0"
+
+  # Time (in seconds) after a failed RTV before another can be held
+  # -
+  # Default: "240.0"
+  # Minimum: "0.000000"
+  sm_rtv_interval: "240"
+
+  # Number of players required before RTV will be enabled.
+  # -
+  # Default: "0"
+  # Minimum: "0.000000"
+  # Maximum: "65.000000"
+  sm_rtv_minplayers: "0"
+
+  # Percentage of players needed to rockthevote (Def 60%)
+  # -
+  # Default: "0.60"
+  # Minimum: "0.050000"
+  # Maximum: "1.000000"
+  sm_rtv_needed: "0.50"
+
+  # What to do with RTV's after a mapvote has completed. 0 - Allow, success = instant change, 1 - Deny
+  # -
+  # Default: "0"
+  # Minimum: "0.000000"
+  # Maximum: "1.000000"
+  sm_rtv_postvoteaction: "0"
+
+randomcycle:
+  sm_randomcycle_exclude: "6"
+
+mapchooser:
+  # Specifies how many more frags are allowed when map is extended.
+  # -
+  # Default: "10"
+  # Minimum: "5.000000"
+  sm_extendmap_fragstep: "10"
+
+  # Specifies how many more rounds each extension makes
+  # -
+  # Default: "5"
+  # Minimum: "1.000000"
+  sm_extendmap_roundstep: "2"
+
+  # Specifies how much many more minutes each extension makes
+  # -
+  # Default: "15"
+  # Minimum: "5.000000"
+  sm_extendmap_timestep: "30"
+
+  # Specifies if a 'Don't Change' option should be added to early votes
+  # -
+  # Default: "1"
+  # Minimum: "0.000000"
+  sm_mapvote_dontchange: "1"
+
+  # Specifies if MapChooser should run an end of map vote
+  # -
+  # Default: "1"
+  # Minimum: "0.000000"
+  # Maximum: "1.000000"
+  sm_mapvote_endvote: "1"
+
+  # Specifies how many past maps to exclude from the vote.
+  # -
+  # Default: "5"
+  # Minimum: "0.000000"
+  sm_mapvote_exclude: "6"
+
+  # Number of extensions allowed each map.
+  # -
+  # Default: "0"
+  # Minimum: "0.000000"
+  sm_mapvote_extend: "0"
+
+  # Specifies how many maps to include in the vote.
+  # -
+  # Default: "5"
+  # Minimum: "2.000000"
+  # Maximum: "6.000000"
+  sm_mapvote_include: "6"
+
+  # Specifies whether or not MapChooser should pick a map if no votes are received.
+  # -
+  # Default: "1"
+  # Minimum: "0.000000"
+  # Maximum: "1.000000"
+  sm_mapvote_novote: "1"
+
+  # Hold runoff votes if winning choice is less than a certain margin
+  # -
+  # Default: "0"
+  # Minimum: "0.000000"
+  # Maximum: "1.000000"
+  sm_mapvote_runoff: "1"
+
+  # If winning choice has less than this percent of votes, hold a runoff
+  # -
+  # Default: "50"
+  # Minimum: "0.000000"
+  # Maximum: "100.000000"
+  sm_mapvote_runoffpercent: "50"
+
+  # Specifies when to start the vote based on time remaining.
+  # -
+  # Default: "3.0"
+  # Minimum: "1.000000"
+  sm_mapvote_start: "3.0"
+
+  # Specifies when to start the vote base on frags remaining.
+  # -
+  # Default: "5.0"
+  # Minimum: "1.000000"
+  sm_mapvote_startfrags: "1.0"
+
+  # Specifies when to start the vote based on rounds remaining. Use 0 on TF2 to start vote during bonus round time
+  # -
+  # Default: "2.0"
+  # Minimum: "0.000000"
+  sm_mapvote_startround: "0"
+
+  # Specifies how long the mapvote should be available for.
+  # -
+  # Default: "20"
+  # Minimum: "5.000000"
+  sm_mapvote_voteduration: "15"
+
+nativevotes:
+  # Show current vote progress as chat messages
+  # -
+  # Default: "0"
+  # Minimum: "0.000000"
+  # Maximum: "1.000000"
+  nativevotes_progress_chat: "0"
+
+  # Show current vote progress as console messages to clients
+  # -
+  # Default: "0"
+  # Minimum: "0.000000"
+  # Maximum: "1.000000"
+  nativevotes_progress_client_console: "0"
+
+  # Show current vote progress as console messages
+  # -
+  # Default: "0"
+  # Minimum: "0.000000"
+  # Maximum: "1.000000"
+  nativevotes_progress_console: "1"
+
+  # Show current vote progress in a hint box
+  # -
+  # Default: "0"
+  # Minimum: "0.000000"
+  # Maximum: "1.000000"
+  nativevotes_progress_hintbox: "1"
+
+  # Sets the recommended time in between public votes
+  # -
+  # Default: "30"
+  # Minimum: "0.000000"
+  nativevotes_vote_delay: "30"
+
+networktools:
+  nt_checkrate: "10"
+  nt_choke_addition: "30"
+  nt_choke_enable: "0"
+  nt_choke_threashold: "6"
+  nt_enabled: "1"
+  nt_kickvocalize: "0"
+  nt_lat_threashold: "6"
+  nt_latency_addition: "150"
+  nt_latency_enable: "1"
+  nt_liammethod: "0"
+  nt_logenabled: "0"
+  nt_logformatext: "%Y_%m_%d"
+  nt_logformatint: "%x"
+  nt_loss_addition: "15"
+  nt_loss_enable: "0"
+  nt_loss_threashold: "6"
+  nt_minplayercount: "23"
+  nt_warningvocalize: "1"
+  
+funvotes:
+  sm_vote_alltalk: "0.60"
+  sm_vote_burn: "0.60"
+  sm_vote_ff: "0.60"
+  sm_vote_gravity: "0.60"
+  sm_vote_slay: "0.60"
+
+basevotes:
+  sm_vote_ban: "0.60"
+  sm_vote_kick: "0.60"
+  sm_vote_map: "0.60"
+  
+stac:
+  stac_enabled: "1"
+  stac_verbose_info: "0"
+  stac_max_allowed_turn_secs: "-1.000000"
+  stac_ban_for_misccheats: "1"
+  stac_optimize_cvars: "1"
+  stac_max_aimsnap_detections: "40"
+  stac_max_psilent_detections: "20"
+  stac_max_bhop_detections: "25"
+  stac_max_fakeang_detections: "15"
+  stac_max_cmdnum_detections: "40"
+  stac_max_tbot_detections: "0"
+  # stac_max_spinbot_detections: "100"
+  stac_min_interp_ms: "-1"
+  stac_max_interp_ms: "101"
+  stac_min_randomcheck_secs: "60.000000"
+  stac_max_randomcheck_secs: "300.000000"
+  stac_include_demoname_in_banreason: "1"
+  stac_log_to_file: "1"
+  stac_fixpingmasking_enabled: "1"
+  stac_max_userinfo_spam_detections: "35"
+  stac_kick_unauthed_clients: "0"
+  stac_silent: "0"

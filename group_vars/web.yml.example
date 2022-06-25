@@ -1,0 +1,81 @@
+steam_key: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+http:
+  listen_http: 0.0.0.0:8004
+  domain: example.com
+  static_path: frontend/dist/static
+  cookie_key: change-me
+
+database:
+  dsn: postgres://uncletopia-web:uncletopia-web@uncletopia-web-postgres/uncletopia-web
+
+paypal:
+  client_id: asdf
+  secret: asdf
+  url: adsf
+
+patreon:
+  client_id: asdfgasdfasdf
+  client_secret: adfgasdf
+  access_token: asdfasdf
+  refresh_token: asdfasdfasdf
+
+gbans:
+  owner: 76561198084134025
+  dsn: postgresql://gbans:gbans@gbans-postgres/gbans
+  run_mode: "release"
+  cookie_key: xxxxxxxxxxxxxxxxxxxxxxxxxxxx
+  address: https://gbans.example.com
+  port: 6006
+  update_freq: 15s
+  network_bans_enabled: true
+  network_bans_list:
+    - name: tf2bd
+      url: https://raw.githubusercontent.com/PazerOP/tf2_bot_detector/master/staging/cfg/playerlist.official.json
+      type: tf2bd
+  relay:
+    enabled: false
+    channel_ids: [879587487339671572]
+  ip2location:
+    enabled: false
+    api_key: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+  word_filter:
+    enabled: false
+    sources:
+      - https://raw.githubusercontent.com/RobertJGabriel/Google-profanity-words/master/list.txt
+  discord:
+    app_id: 11111111111111111
+    guild_id: 22222222222222222222
+    mod_channel_id: 33333333333333333333
+    public_log_enabled: true
+    public_log_channel_id: 4444444444444444444
+    token: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    roles: [11111111111111111111, 2222222222222222222]
+    mod_channel_ids: [1111111111111111111]
+  logging:
+    srcds_log_addr: ":27115"
+    srcds_log_external_host: "example.com:27115"
+
+caddy:
+  cloudflare:
+    api_key: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    email: username@example.com
+  static:
+    stv.example.com:
+      root: /demos
+  hosts:
+    docker.example.com:
+      address: portainer:9000
+      forward: false
+    metrics.example.com:
+      address: grafana:3000
+      forward: false
+    update.example.com:
+      address: swp:8181
+      forward: true
+    uncletopia.com:
+      address: uncletopia-web:8004
+      forward: false
+    gbans.example.com:
+      address: gbans-service:6006
+      forward: false

@@ -1,219 +1,36 @@
-gbans_host: "https://gbans.host.com"
+---
+
+gbans_host: "https://example.com"
 gbans_port: "443"
-server_password: ""
-srcds_base_port: 27015
-rcon_password: ""
-fastdl_url: ""
-sv_tags: "nocrits,nodmgspread"
-sv_pure: 1
-chat_logs_token: "" # Internal ut tool, leave blank
+
+# https://github.com/crescentrose/chat-log
+chat_logs_token: "xxxxxxxxxxxxxxxxxxxxxxxxx"
+
 ssh_keys:
-  - "https://github.com/username.keys"
-  - "ssh-rsa xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+  - "ssh-rsa xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx== key"
 
-# Initial map when starting a srcds instance
-start_map: pl_badwater
+dockerhub:
+  publish: false
+  username: your_username
+  password: your_password
 
-# Host running prometheus to allow through firewall
-prometheus_host: "10.69.69.10"
-# Host running as docker master
-docker_host_master: "10.69.69.5"
+log:
+  file_enable: true
+  # UDP logger targets (logaddress_add)
+  net_enable: false
+  net_hosts: ["example.com:27115"]
 
+prometheus_host: "1.2.3.4"
+metrics_host: "1.2.3.4"
 
-# wireguard network config
-# Public key of the wg server
-vpn_server_public_key: "eRKgSIrnVUNYBtn1fHa0NkGr+xCiuHtpm+4YvNMh9Tc="
-# hostname/IP of wg server
-vpn_host: "50.50.50.50"
-# Port of wg server
-vpn_port: 41194
-# Route these ips through the vpn
-vpn_allowed_ips: "10.69.69.0/24"
-# All hosts default to having a vpn client. The server should override this on their local host config.
 is_vpn_client: true
-# Extra external wg keys to add
+
+vpn_server_public_key: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx="
+vpn_host: "1.2.3.4"
+vpn_port: 41194
+vpn_allowed_ips: "10.10.10.0/24"
+# Extra vpn configs for admins
 vpn_clients_extra:
-  - public_key: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx=
-    client_addr: 10.69.69.69/32
-    name: roto
-  - public_key: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx=
-    client_addr: 10.69.69.96/32
-    name: viora
-
-# Params to generate /tf/addons/sourcemod/configs/admin_overrides.cfg
-admin_overrides:
-  - [ "admin_allspec_flag", "b" ]
-
-# Params to generate /tf/cfg/sourcemod/sourcemod.cfg
-sourcemod:
-  # Specifies how admin activity should be relayed to users.  Add up the values
-  # below to get the functionality you want.
-  # 1: Show admin activity to non-admins anonymously.
-  # 2: If 1 is specified, admin names will be shown.
-  # 4: Show admin activity to admins anonymously.
-  # 8: If 4 is specified, admin names will be shown.
-  # 16: Always show admin names to root users.
-  # --
-  # Default: 13 (1+4+8)
-  sm_show_activity: 31
-  
-  # Specifies whether menu sounds are enabled for menus created by SourceMod.
-  # Menu sounds can be further configured in addons/sourcemod/configs/core.cfg.
-  #
-  #  Default: 1
-  sm_menu_sounds: 1
-
-  # Specifies how long of a delay, in seconds, should be used in between votes
-  # that are "public" or can be spammed.  Whether or not this delay is obeyed
-  # is dependent on the menu/command.
-  # --
-  # Default: 30
-  sm_vote_delay: 30
-
-  # Default datetime formatting rules when displaying to clients.
-  # For full options, see: http://www.opengroup.org/onlinepubs/007908799/xsh/strftime.html
-  # --
-  # Default: %m/%d/%Y - %H:%M:%S
-  # 12 hour format: %m/%d/%Y - %I:%M:%S %p
-  sm_datetime_format: "%d/%m/%Y - %H:%M:%S"
-
-  # Sets how SourceMod should check immunity levels when administrators target each other.
-  # 0: Ignore immunity levels (except for specific group immunities).
-  # 1: Protect from admins of lower access only.
-  # 2: Protect from admins of equal to or lower access.
-  # 3: Same as 2, except admins with no immunity can affect each other.
-  sm_immunity_mode: 0
-  # Sets how many seconds SourceMod should adjust time values for incorrect
-  # server clocks.  This can be positive or negative and will affect every
-  # system time in SourceMod, including logging stamps.
-  # --
-  # Default: 0
-  sm_time_adjustment: 0
-
-  # Specifies the amount of time that is allowed between chat messages.  This
-  # includes the say and say_team commands.  If a client sends a message faster
-  # than this time, they receive a flood token.  When the client has accumulated
-  # 3 or more tokens, a warning message is shown instead of the chat message.
-  # Requires: antiflood.smx
-  # Default: 0.75
-  sm_flood_time: 1.0
-  # Specifies how the reserved slots plugin operates. Valid values are:
-  # 0 : Public slots are used in preference to reserved slots. Reserved slots are freed before public slots.
-  # 1 : If someone with reserve access joins into a reserved slot, the player with the highest latency and
-  # no reserved slot access (spectator players are selected first) is kicked to make room. Thus, the reserved
-  # slots always remains free. The only situation where the reserved slot(s) can become properly occupied is
-  # if the server is full with reserve slot access clients.
-  # 2 : The same as sm_reserve_type 1 except once a certain number of admins have been reached, the reserve slot
-  # stops kicking people and anyone can join to fill the server. You can use this to simulate having a large
-  # number of reserved slots with sm_reserve_type 0 but with only need to have 1 slot unavailable when there are
-  # less admins connected.
-  # --
-  # Requires: reservedslots.smx
-  # Default: 0
-  sm_reserve_type: 0
-
-  # Specifies the number of reserved player slots.  Users with the reservation
-  # admin flag set will be able to join the server when there are no public slots
-  # remaining. If someone does not have this flag, they will be kicked.
-  # (Public slots are defined as: maxplayers - number of reserved slots)
-  # Requires: reservedslots.smx
-  # Default: 0
-  sm_reserved_slots: 8
-
-  # Specifies whether or not reserved slots will be hidden (subtracted from max
-  # slot count). Valid values are 0 (Visible) or 1 (Hidden).
-  # --
-  # Requires: reservedslots.smx
-  # Default: 0
-  sm_hide_slots: 1
-
-  # Specifies whether or not non-admins can send messages to admins using
-  # say_team @<message>. Valid values are 0 (Disabled) or 1 (Enabled)
-  # --
-  # Requires: basechat.smx
-  # Default: 1
-  sm_chat_mode: 1
-
-  # Specifies whether or not "timeleft" will automatically be triggered every
-  # x seconds. Valid values are 0 (Disabled) to 1800 seconds.
-  # --
-  # Requires: basetriggers.smx
-  # Default: 0
-  sm_timeleft_interval: 0
-
-  # Specifies whether or not chat triggers are broadcast to the server or just
-  # the player who requested the info trigger. Valid values are 0 (Disabled) or
-  # 1 (Enabled)
-  # --
-  # Requires: basetriggers.smx
-  # Default: 0
-  sm_trigger_show: 0
-
-  # Specifies whether or not to display vote progress to clients in the
-  # "hint" box (near the bottom of the screen in most games).
-  # Valid values are 0 (Disabled) or 1 (Enabled).
-  # --
-  # Default: 0
-  sm_vote_progress_hintbox: 1
-
-  # Specifies whether or not to display vote progress to clients in the
-  # chat area. Valid values are 0 (Disabled) or 1 (Enabled).
-  # --
-  # Default: 0
-  sm_vote_progress_chat: 0
-
-  # Specifies whether or not to display vote progress in the server console.
-  # Valid values are 0 (Disabled) or 1 (Enabled).
-  # --
-  # Default: 0
-  sm_vote_progress_console: 0
-
-  # Specifies whether or not to display vote progress to clients in the
-  # client console. Valid values are 0 (Disabled) or 1 (Enabled).
-  # --
-  # Default: 0
-  sm_vote_progress_client_console: 0
-
-
-motd: |
-  Welcome to a server! If you enjoyed your time here, remember to add this server to your favorites via the server browser!
-
-  This is Uncle Dane’s custom community server. The experience on Uncletopia is intended to be very similar to TF2 Casual Mode, with a few quality-of-life changes. If you’d like to learn more, please visit -- UNCLETOPIA.COM -- You can easily connect with the Uncletopia community, give feedback, report players, and access other resources by joining the official Uncletopia Discord at -- UNCLETOPIA.COM/DISCORD --
-
-  If teams are unbalanced, type !scramble in chat to vote to scramble the teams. If you would like to change the current map, you can nominate a map with !nominate and rock the vote with !rtv. There is a no-tolerance policy against slurs and toxicity. Thanks for playing!
-
-map_rotation:
-  - cp_dustbowl
-  - cp_gorge
-  - cp_metalworks
-  - cp_mossrock
-  - cp_mountainlab
-  - cp_process_final
-  - cp_snakewater_final1
-  - cp_steel
-  - cp_sunshine
-  - koth_badlands
-  - koth_highpass
-  - koth_king
-  - koth_lakeside_final
-  - koth_sawmill
-  - koth_suijin
-  - koth_viaduct
-  - pl_pier
-  - pl_badwater
-  - pl_barnblitz
-  - pl_borneo
-  - pl_frontier_final
-  - pl_snowycoast
-  - pl_swiftwater_final1
-  - pl_thundermountain
-  - pl_upward
-
-sm_permissions:
-  # Admins
-  - [ "STEAM_0:1:1234546345", "z", "admin user" ]
-  # Mods
-  - [ "STEAM_1:1:123412344" , "abcdegjk", "mod 1" ]
-  - [ "STEAM_0:1:123412353454", "abcdegjk", "mod 2" ]
-  # Reserved slots
-  - [ "STEAM_1:0:98513259", "a", "reserved user 1" ]
+  - public_key: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx=
+    client_addr: 10.10.10.10/32
+    name: username

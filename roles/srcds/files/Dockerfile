@@ -5,8 +5,6 @@ LABEL maintainer="leigh.macdonald@gmail.com"
 ENV STEAMAPPID 232250
 ENV STEAMAPP tf
 ENV STEAMAPPDIR "${HOMEDIR}/${STEAMAPP}-dedicated"
-ENV METAMOD_VERSION 1.11
-ENV SOURCEMOD_VERSION 1.11
 
 # To generate run: make sourcemod
 COPY ut-sourcemod.tar.gz entry.sh /
