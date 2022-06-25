@@ -7,7 +7,7 @@
 - name: Create gbans-postgres container
   docker_container:
     name: gbans-postgres
-    image: postgis/postgis:latest
+    image: postgis/postgis:13-3.2
     restart: true
     recreate: true
     pull: true

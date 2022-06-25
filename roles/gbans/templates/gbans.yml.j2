@@ -57,6 +57,7 @@ discord:
 {% for cid in gbans.discord.mod_channel_ids %}
     - {{ cid }}
 {% endfor %}
+  log_channel_id: {{ gbans.discord.log_channel_id }}
   public_log_channel_enable: {{ gbans.discord.public_log_enabled }}
   public_log_channel_id: {{ gbans.discord.public_log_channel_id }}
 

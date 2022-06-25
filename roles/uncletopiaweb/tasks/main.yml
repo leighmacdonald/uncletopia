@@ -7,7 +7,7 @@
 - name: Create uncletopia-web-postgres container
   docker_container:
     name: uncletopia-web-postgres
-    image: postgis/postgis:latest
+    image: postgis/postgis:13-3.2
     restart: true
     recreate: true
     purge_networks: true
