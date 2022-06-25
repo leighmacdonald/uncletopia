@@ -15,6 +15,6 @@ rules:
   - name: {{ rule.name }}
     root: {{ rule.root }}
     pattern: "{{ rule.pattern }}"
-    remotes: [ {{ srcdsup.remotes|join(" , ") }} ]
+    remotes: [ {{ rule.remotes|join(" , ") }} ]
     server: {{ item.server_name_short }}
 {% endfor %}
