@@ -199,6 +199,8 @@ public void OnPluginStart()
 	
 	g_NominationsResetForward = CreateGlobalForward("OnNominationRemoved", ET_Ignore, Param_String, Param_Cell);
 	g_MapVoteStartedForward = CreateGlobalForward("OnMapVoteStarted", ET_Ignore);
+
+	g_Extends = 0;
 }
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
@@ -287,8 +289,6 @@ public void OnConfigsExecuted()
 	SetupTimeleftTimer();
 	
 	g_TotalRounds = 0;
-	
-	g_Extends = 0;
 	
 	g_MapVoteCompleted = false;
 	
