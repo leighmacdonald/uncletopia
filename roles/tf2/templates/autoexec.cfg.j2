@@ -44,13 +44,20 @@ mp_idlemaxtime 3
 
 // Network stuff
 // Current settings are ripped 100% from casual
-sv_minrate 3500
-sv_minupdaterate 10
-net_splitpacket_maxrate 131072
+{#sv_minrate 3500#}
+{#net_splitpacket_maxrate 131072#}
+{#sv_maxrate 0#}
+{#sv_maxupdaterate 66#}
+{#sv_mincmdrate 10#}
+{#sv_maxcmdrate 66#}
 sv_maxrate 0
-sv_maxupdaterate 66
-sv_mincmdrate 10
-sv_maxcmdrate 66
+sv_minrate 18000
+sv_maxupdaterate 67
+sv_minupdaterate 33
+sv_maxcmdrate 67
+sv_mincmdrate 33
+
+sv_minupdaterate 10
 net_maxfilesize 64
 
 // Server Logging
