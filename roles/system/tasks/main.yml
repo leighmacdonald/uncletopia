@@ -11,6 +11,7 @@
   register: result_i386_check
   changed_when: result_i386_check.rc == 1
   failed_when: result_i386_check.rc > 1
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
 
 - name: Enable i386 architecture
   become: true
@@ -82,11 +83,27 @@
     state: started
     enabled: true
 
+- name: Increase default available memory for UDP receive buffers
+  become: true
+  ansible.posix.sysctl:
+    name: net.core.rmem_default
+    value: "52428800"
+    sysctl_set: true
+    reload: true
+
 - name: Increase available memory for UDP receive buffers
   become: true
   ansible.posix.sysctl:
     name: net.core.rmem_max
-    value: "26214400"
+    value: "52428800"
+    sysctl_set: true
+    reload: true
+
+- name: Increase default available memory for UDP send buffers
+  become: true
+  ansible.posix.sysctl:
+    name: net.core.wmem_default
+    value: "52428800"
     sysctl_set: true
     reload: true
 
@@ -94,7 +111,7 @@
   become: true
   ansible.posix.sysctl:
     name: net.core.wmem_max
-    value: "26214400"
+    value: "52428800"
     sysctl_set: true
     reload: true
 

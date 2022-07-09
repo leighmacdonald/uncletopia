@@ -171,9 +171,11 @@
     src: server.cfg.j2
     dest: /build/{{ item.server_name_short }}/server.cfg
     mode: 0777
-  loop: "{{ services }}"
   tags:
     - game_config
+  loop: "{{ services }}"
+  loop_control:
+    index_var: loop0
 
 - name: Generate /build/sourcemod.cfg
   ansible.builtin.template:

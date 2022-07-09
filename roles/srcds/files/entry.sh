@@ -13,13 +13,13 @@ if [ ! -f "$HOME/.sm-loaded" ]; then
 fi
 
 cp -rv "/home/steam/config/${STEAMAPP}" "${STEAMAPPDIR}"
-
-ln /home/steam/stv_demos "${STEAMAPPDIR}/${STEAMAPP}/stv_demos"
-
-ln /home/steam/logs "${STEAMAPPDIR}/${STEAMAPP}/logs"
+mkdir -p "${STEAMAPPDIR}/${STEAMAPP}/logs/stac"
+#ln /home/steam/stv_demos "${STEAMAPPDIR}/${STEAMAPP}/stv_demos"
+#ln /home/steam/logs "${STEAMAPPDIR}/${STEAMAPP}/logs"
 
 # Believe it or not, if you don't do this srcds_run shits itself
 cd "${STEAMAPPDIR}"
+
 
 bash "${STEAMAPPDIR}/srcds_run" -game "${STEAMAPP}" -console -autoupdate \
   -steam_dir "${STEAMCMDDIR}" \
