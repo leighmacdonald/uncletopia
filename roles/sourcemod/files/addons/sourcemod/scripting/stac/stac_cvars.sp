@@ -385,7 +385,7 @@ void initCvars()
     (
         "stac_kick_unauthed_clients",
         buffer,
-        "[StAC] Forcibly reconnect clients unauthorized with steam - this protects against cheat clients not setting steamids, at the cost of making your server inaccessible when Steam is down.\n(recommended 1)",
+        "[StAC] Forcibly reconnect clients unauthorized with steam - this protects against cheat clients not setting steamids, at the cost of making your server inaccessible when Steam is down.\n(recommended 0, only enable this if you have consistent issues with unauthed cheaters!)",
         FCVAR_NONE,
         true,
         0.0,
@@ -417,10 +417,10 @@ void initCvars()
     (
         "stac_max_connections_from_ip",
         buffer,
-        "[StAC] Max connections allowed from the same IP address. Useful for autokicking bots, though StAC should do that with cvar checks anyway.\n(recommended 5)",
+        "[StAC] Max connections allowed from the same IP address. Useful for autokicking bots, though StAC should do that with cvar checks anyway.\n(recommended 0, you should really only enable this if you're getting swarmed by bots, and StAC isn't doing much against them, in which case, consider opening a bug report!)",
         FCVAR_NONE,
         true,
-        1.0,
+        0.0,
         false,
         _
     );
@@ -582,6 +582,17 @@ void RunOptimizeCvars()
     SetConVarInt(FindConVar("sv_maxusrcmdprocessticks_holdaim"), 1);
     // limit fakelag abuse
     SetConVarFloat(FindConVar("sv_maxunlag"), 0.2);
+    // fix backtracking
+    // dont error out on server start
+    ConVar jay_backtrack_enable     = FindConVar("jay_backtrack_enable");
+    ConVar jay_backtrack_tolerance  = FindConVar("jay_backtrack_tolerance");
+    if (jay_backtrack_enable != null && jay_backtrack_tolerance != null)
+    {
+        // enable jaypatch
+        SetConVarInt(jay_backtrack_enable, 1);
+        // set jaypatch to sane value
+        SetConVarInt(jay_backtrack_tolerance, 1);
+    }
     // get rid of any possible exploits by using teleporters and fov
     SetConVarInt(FindConVar("tf_teleporter_fov_start"), 90);
     SetConVarFloat(FindConVar("tf_teleporter_fov_time"), 0.0);

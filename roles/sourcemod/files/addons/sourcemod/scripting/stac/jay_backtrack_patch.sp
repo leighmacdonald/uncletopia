@@ -1,6 +1,9 @@
+#pragma semicolon 1
+#pragma newdecls required
+
 /*
 	Jay's Backtrack Patch
-	Copyright (C) 2020 J_Tanzanite
+	Copyright (C) 2021 J_Tanzanite
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -15,7 +18,6 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-
 
 #include <sourcemod>
 #include <sdktools_entoutput>
@@ -50,7 +52,7 @@ void OnPluginStart_jaypatch()
 
 	HookEntityOutput("trigger_teleport", "OnEndTouch", map_teleport);
 
-	hcvar[CVAR_ENABLE] = CreateConVar("jay_backtrack_enable", "1",
+	hcvar[CVAR_ENABLE] = CreateConVar("jay_backtrack_enable", "0",
 		"Enable Jay's Backtracking patch.",
 		FCVAR_PROTECTED, true, 0.0, true, 1.0);
 	hcvar[CVAR_TOLERANCE] = CreateConVar("jay_backtrack_tolerance", "0",
@@ -66,7 +68,7 @@ void OnPluginStart_jaypatch()
 	backtrack_ticks = time_to_ticks(0.2);
 }
 
-public void cvar_change(ConVar convar, const char[] oldValue, const char[] newValue)
+void cvar_change(ConVar convar, const char[] oldValue, const char[] newValue)
 {
 	if (view_as<Handle>(convar) == hcvar[CVAR_ENABLE]) {
 		icvar[CVAR_ENABLE] = StringToInt(newValue, 10);
@@ -76,7 +78,7 @@ public void cvar_change(ConVar convar, const char[] oldValue, const char[] newVa
 	}
 }
 
-public Action event_teleported(Event event, const char[] name, bool dontBroadcast)
+Action event_teleported(Event event, const char[] name, bool dontBroadcast)
 {
 	int client;
 
@@ -84,9 +86,11 @@ public Action event_teleported(Event event, const char[] name, bool dontBroadcas
 
 	if (is_player_valid(client))
 		time_teleport[client] = GetGameTime();
+
+	return Plugin_Continue;
 }
 
-public void map_teleport(const char[] output, int caller, int activator, float delay)
+void map_teleport(const char[] output, int caller, int activator, float delay)
 {
 	if (!is_player_valid(activator) || IsFakeClient(activator))
 		return;
@@ -94,7 +98,7 @@ public void map_teleport(const char[] output, int caller, int activator, float d
 	time_teleport[activator] = GetGameTime();
 }
 
-public void OnClientPutInServer_jaypatch(int client)
+void OnClientPutInServer_jaypatch(int client)
 {
 	prev_tickcount[client] = 0;
 	diff_tickcount[client] = 0;
@@ -102,7 +106,7 @@ public void OnClientPutInServer_jaypatch(int client)
 	time_teleport[client] = 0.0;
 }
 
-public Action OnPlayerRunCmd_jaypatch(int client, int& buttons, int& impulse,
+stock Action OnPlayerRunCmd_jaypatch(int client, int& buttons, int& impulse,
 				float vel[3], float angles[3], int& weapon,
 				int& subtype, int& cmdnum, int& tickcount,
 				int& seed, int mouse[2])
@@ -154,7 +158,7 @@ int correct_tickcount(int client, int tickcount)
 	return tickcount;
 }
 
-bool set_in_timeout(int client)
+void set_in_timeout(int client)
 {
 	int ping;
 	int tick;
@@ -183,6 +187,7 @@ bool set_in_timeout(int client)
 		diff_tickcount[client] = backtrack_ticks - 3;
 	else if (diff_tickcount[client] < ((backtrack_ticks * -1) + 3))
 		diff_tickcount[client] = (backtrack_ticks * -1) + 3;
+
 }
 
 // Simulate the players tickcount as if it incremented normally

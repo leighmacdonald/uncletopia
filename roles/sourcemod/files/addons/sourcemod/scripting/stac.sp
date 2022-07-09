@@ -27,7 +27,7 @@
 #pragma semicolon 1
 #pragma newdecls required
 
-#define PLUGIN_VERSION  "5.3.2"
+#define PLUGIN_VERSION  "5.4.0"
 
 #define UPDATE_URL      "https://raw.githubusercontent.com/sapphonie/StAC-tf2/master/updatefile.txt"
 
@@ -62,7 +62,8 @@ public Plugin myinfo =
 #include "stac/stac_misc_checks.sp"
 // stac livefeed
 #include "stac/stac_livefeed.sp"
-
+// if it ain't broke, don't fix it. jtanz has written a great backtrack patch.
+#include "stac/jay_backtrack_patch.sp"
 
 /********** PLUGIN LOAD & UNLOAD **********/
 
@@ -155,6 +156,9 @@ public void OnPluginStart()
 
     // set up our array we'll use for checking cvars
     InitCvarArray();
+
+    // jaypatch
+    OnPluginStart_jaypatch();
 }
 
 public void OnPluginEnd()
