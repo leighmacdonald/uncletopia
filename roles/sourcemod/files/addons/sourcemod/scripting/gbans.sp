@@ -1,5 +1,6 @@
 #pragma semicolon 1
 #pragma tabsize 4
+#pragma newdecls required
 
 #include <basecomm>
 #include <json> // sm-json
@@ -60,6 +61,7 @@ void OnPluginStart() {
     RegAdminCmd("gb_kick", AdminCmdKick, ADMFLAG_KICK);
     RegAdminCmd("gb_reauth", AdminCmdReauth, ADMFLAG_KICK);
     RegConsoleCmd("gb_help", CmdHelp, "Get a list of gbans commands");
+
 }
 
 void ReadConfig() {
@@ -92,12 +94,13 @@ System2HTTPRequest newReq(System2HTTPResponseCallback cb, const char[] path) {
     return httpRequest;
 }
 
-void CheckPlayer(int client, const char[] auth, const char[] ip) {
+void CheckPlayer(int client, const char[] auth, const char[] ip, const char[] name) {
     char encoded[1024];
     JSON_Object obj = new JSON_Object();
     obj.SetString("steam_id", auth);
     obj.SetInt("client_id", client);
     obj.SetString("ip", ip);
+    obj.SetString("name", name);
     obj.Encode(encoded, sizeof(encoded));
     obj.Cleanup();
     System2HTTPRequest req = newReq(OnCheckResp, "/api/check");
@@ -351,7 +354,7 @@ Action CmdMod(int client, int argc) {
     obj.Encode(encoded, sizeof(encoded));
     obj.Cleanup();
     delete obj;
-    System2HTTPRequest req = newReq(OnPingModRespRecieved, "/api/ping_mod");
+    System2HTTPRequest req = newReq(OnPingModRespReceived, "/api/ping_mod");
     req.SetData(encoded);
     req.POST();
     delete req;
@@ -361,7 +364,7 @@ Action CmdMod(int client, int argc) {
     return Plugin_Handled;
 }
 
-void OnPingModRespRecieved(bool success, const char[] error, System2HTTPRequest request, System2HTTPResponse response,
+void OnPingModRespReceived(bool success, const char[] error, System2HTTPRequest request, System2HTTPResponse response,
                            HTTPRequestMethod method) {
     if (!success) {
         return;
@@ -395,7 +398,7 @@ Action CmdHelp(int client, int argc) {
 }
 
 public
-bool OnClientConnect(int client, char[] rejectmsg, int maxlen) {
+bool OnClientConnect(int client, char[] rejectMsg, int maxLen) {
     g_players[client].authed = false;
     g_players[client].ban_type = BSUnknown;
     return true;
@@ -405,6 +408,10 @@ public
 void OnClientAuthorized(int client, const char[] auth) {
     char ip[16];
     GetClientIP(client, ip, sizeof(ip));
+
+    char name[32];
+    GetClientName(client, name, sizeof(name));
+
     /* Do not check bots nor check player with lan steamid. */
     if (auth[0] == 'B' /*|| auth[9] == 'L'*/) {
         g_players[client].authed = true;
@@ -415,5 +422,5 @@ void OnClientAuthorized(int client, const char[] auth) {
 #if defined DEBUG
     PrintToServer("[GB] Checking ban state for: %s", auth);
 #endif
-    CheckPlayer(client, auth, ip);
+    CheckPlayer(client, auth, ip, name);
 }
