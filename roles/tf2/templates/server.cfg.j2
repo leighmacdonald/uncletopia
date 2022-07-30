@@ -1,16 +1,15 @@
-// Server Logging
-log on
-sv_logbans 1
-sv_logecho 0
-sv_logfile 1
-sv_log_onefile 0
-{% if log.net_enable %}
-// net log enabled
-sv_logsecret {{ item.log_secret }}
-{% for host in log.net_hosts %}
-logaddress_add {{ host }}
-{% endfor %}
-{% endif %}
+sv_maxrate		"0"
+sv_maxcmdrate		"60"
+sv_minrate		"40000"
+sv_minupdaterate		"20"
+sv_mincmdrate		"30"
+sv_client_cmdrate_difference		"20"
+net_splitpacket_maxrate		"1048576"
+
+// Force client values to be in range
+sv_competitive_minspec 1
+// Community servers can enable use of the older steam voice codec with sv_use_steam_voice 1
+// sv_use_steam_voice 0
 
 {% if stv_enable %}
 tv_enable 1
@@ -27,6 +26,20 @@ tv_password "{{ stv_password }}"
 tv_name "{{ item.name }} | STV"
 // In-game name
 tv_title "{{ stv_name }}"
+{% endif %}
+
+// Server Logging
+log on
+sv_logbans 1
+sv_logecho 0
+sv_logfile 1
+sv_log_onefile 0
+{% if log.net_enable %}
+    // net log enabled
+    sv_logsecret {{ item.log_secret }}
+    {% for host in log.net_hosts %}
+        logaddress_add {{ host }}
+    {% endfor %}
 {% endif %}
 
 // No spectators team

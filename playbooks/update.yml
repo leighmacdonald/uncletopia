@@ -1,0 +1,13 @@
+---
+- hosts: all
+  tasks:
+  - name: Update all packages to their latest version
+    become: true
+    ansible.builtin.apt:
+      update_cache: true
+      name: "*"
+      state: latest
+    when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+  - name: reboot the machine
+    become: true
+    ansible.builtin.reboot:

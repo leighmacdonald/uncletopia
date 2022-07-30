@@ -8,6 +8,8 @@ exclude_paths:
 skip_list:
   - schema
   - internal-error
+  - unnamed-task
+  - package-latest
 
 kinds:
   - tasks: "*/tasks/*.yml"

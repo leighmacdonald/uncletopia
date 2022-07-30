@@ -2,6 +2,7 @@
 Kvizzle
 By F2
 
+
 Features:
 - Supports having several KVs open simultaneously
 - Pseudo-Classes (like :first-child, :nth-child(n), :any-child)
@@ -71,7 +72,7 @@ TODO:
 // Customizable settings
 const Kviz_iMaxContexts = 4; // Max number of simultaneously open Kvizzles. You can still use more, but the performance will degrade. However, if you set the number too high, then the performance will degrade when you have few Kvizzles opened simultaneously.
 const Kviz_iMaxPathDepth = 32; // Max path depth... ie: aa.bb.cc.dd.ee(...).zz. Depth 32 equals 31 periods.
-const Kviz_iMaxTraversalStack = 32; // Max size of the traversal stack. The size of the traversal stack gets increased by 1 every time you call KvizJumpToKey, and decreased by 1 every time you call KvizGoBack. You can set it to 0 by calling KvizRewind.
+#define Kviz_iMaxTraversalStack 32 // Max size of the traversal stack. The size of the traversal stack gets increased by 1 every time you call KvizJumpToKey, and decreased by 1 every time you call KvizGoBack. You can set it to 0 by calling KvizRewind.
 const Kviz_iMaxSectionLen = 128; // Max string length of a section in a Kv-file.
 // ---------------------
 
@@ -96,17 +97,17 @@ const KVIZ_ACTION_VALUE = 33;		// :value
 const KVIZ_ACTION_VALUEORSECTION = 34; // :value-or-section
 
 
-enum KvizData {
-	Handle:Kviz_hKv,
-	Kviz_iPositionPathCount,
+enum struct KvizData {
+	Handle Kviz_hKv;
+	int Kviz_iPositionPathCount;
 	
-	Kviz_iTraversalStack[Kviz_iMaxTraversalStack],
-	Kviz_iTraversalStackLen,
+	int Kviz_iTraversalStack[Kviz_iMaxTraversalStack];
+	int Kviz_iTraversalStackLen;
 	
-	Kviz_iLRU,
+	int Kviz_iLRU;
 }
 
-new Kviz[Kviz_iMaxContexts][KvizData];
+KvizData Kviz[Kviz_iMaxContexts];
 new String:Kviz_sPositionPath[Kviz_iMaxContexts][Kviz_iMaxPathDepth][Kviz_iMaxSectionLen];
 new String:Kviz_sPositionPathPseudoClass[Kviz_iMaxContexts][Kviz_iMaxPathDepth][Kviz_iMaxSectionLen];
 new Kviz_sPositionPathNthChild[Kviz_iMaxContexts][Kviz_iMaxPathDepth];
@@ -887,7 +888,7 @@ stock bool:KvizSetVector(Handle:kv, Float:vec[3], const String:path[], any:...) 
 			KvSetVector(kv, NULL_STRING, vec);
 			return true;
 		} else if (action == KVIZ_ACTION_SECTIONNAME) {
-			decl String:strvalue[128];
+			decl String:strvalue[Kviz_iMaxSectionLen];
 			Format(strvalue, sizeof(strvalue), "%f %f %f", vec[0], vec[1], vec[2]);
 			KvSetSectionName(kv, strvalue);
 			return true;
@@ -924,13 +925,13 @@ stock bool:KvizDelete(Handle:kv, const String:path[], any:...) {
 	new ret = KvDeleteThis(kv);
 	//PrintToServer("Delete=%i", ret);
 	if (ret == 1) {
-		new pathDepth = Kviz[Kviz_iCurrentContext][Kviz_iPositionPathCount] - 1;
+		new pathDepth = Kviz[Kviz_iCurrentContext].Kviz_iPositionPathCount - 1;
 		KvGetSectionName(kv, Kviz_sPositionPath[Kviz_iCurrentContext][pathDepth], sizeof(Kviz_sPositionPath[][]));
 		//Kviz_sPositionPathPseudoClass[Kviz_iCurrentContext][pathDepth][0] = '\0';
 		//PrintToServer("new section: %s", Kviz_sPositionPath[Kviz_iCurrentContext][pathDepth]);
 		return true;
 	} else if (ret == -1) {
-		Kviz[Kviz_iCurrentContext][Kviz_iPositionPathCount]--;
+		Kviz[Kviz_iCurrentContext].Kviz_iPositionPathCount--;
 		return true;
 	} else {
 		return false;
@@ -959,8 +960,8 @@ stock bool:KvizJumpToKey(Handle:kv, bool:create, const String:path[], any:...) {
 	if (!KvizGoto(kv, path2, create, action, true) || action != KVIZ_ACTION_NONE)
 		return false;
 	
-	Kviz[Kviz_iCurrentContext][Kviz_iTraversalStack][Kviz[Kviz_iCurrentContext][Kviz_iTraversalStackLen]] = Kviz[Kviz_iCurrentContext][Kviz_iPositionPathCount];
-	Kviz[Kviz_iCurrentContext][Kviz_iTraversalStackLen]++;
+	Kviz[Kviz_iCurrentContext].Kviz_iTraversalStack[Kviz[Kviz_iCurrentContext].Kviz_iTraversalStackLen] = Kviz[Kviz_iCurrentContext].Kviz_iPositionPathCount;
+	Kviz[Kviz_iCurrentContext].Kviz_iTraversalStackLen++;
 	return true;
 }
 
@@ -975,10 +976,10 @@ stock bool:KvizGoBack(Handle:kv) {
 	if (!KvizSwitchContext(kv))
 		return false;
 	
-	if (Kviz[Kviz_iCurrentContext][Kviz_iTraversalStackLen] == 0)
+	if (Kviz[Kviz_iCurrentContext].Kviz_iTraversalStackLen == 0)
 		return false;
 	
-	Kviz[Kviz_iCurrentContext][Kviz_iTraversalStackLen]--;
+	Kviz[Kviz_iCurrentContext].Kviz_iTraversalStackLen--;
 	return true;
 }
 
@@ -1074,19 +1075,19 @@ stock bool:KvizGoto(Handle:kv, const String:path[], bool:create, &action, bool:j
 	if (path[0] == '\0') {
 		// Go to root
 		new rootDepth = -1;
-		if (Kviz[Kviz_iCurrentContext][Kviz_iTraversalStackLen] != 0)
-			rootDepth = Kviz[Kviz_iCurrentContext][Kviz_iTraversalStack][Kviz[Kviz_iCurrentContext][Kviz_iTraversalStackLen] - 1] - 1;
+		if (Kviz[Kviz_iCurrentContext].Kviz_iTraversalStackLen != 0)
+			rootDepth = Kviz[Kviz_iCurrentContext].Kviz_iTraversalStack[Kviz[Kviz_iCurrentContext].Kviz_iTraversalStackLen - 1] - 1;
 		KvizRollBack(kv, rootDepth);
 		return true;
-	} else if (Kviz[Kviz_iCurrentContext][Kviz_iTraversalStackLen] != 0) {
-		return KvizGoto2(kv, path, create, action, jumpToValues, Kviz[Kviz_iCurrentContext][Kviz_iTraversalStack][Kviz[Kviz_iCurrentContext][Kviz_iTraversalStackLen] - 1]);
+	} else if (Kviz[Kviz_iCurrentContext].Kviz_iTraversalStackLen != 0) {
+		return KvizGoto2(kv, path, create, action, jumpToValues, Kviz[Kviz_iCurrentContext].Kviz_iTraversalStack[Kviz[Kviz_iCurrentContext].Kviz_iTraversalStackLen - 1]);
 	} else {
 		return KvizGoto2(kv, path, create, action, jumpToValues, 0);
 	}
 }
 
 stock bool:KvizGoto2(Handle:kv, const String:path[], bool:create, &action, bool:jumpToValues, depth) {
-	decl String:key[128];
+	decl String:key[Kviz_iMaxSectionLen];
 	new endPos = 0, destPos = 0;
 	while (path[endPos] != '.' && path[endPos] != '\0' && !(path[endPos] == ':' && endPos != 0)) {
 		if (path[endPos] == '\\') {
@@ -1164,16 +1165,16 @@ stock bool:KvizGoto2(Handle:kv, const String:path[], bool:create, &action, bool:
 	} else {
 		if (isPseudoClass && pseudoClass == KVIZ_PSEUDO_UP) {
 			new rootDepth = -1;
-			new traversalStackLen = Kviz[Kviz_iCurrentContext][Kviz_iTraversalStackLen];
+			new traversalStackLen = Kviz[Kviz_iCurrentContext].Kviz_iTraversalStackLen;
 			if (traversalStackLen != 0)
-				rootDepth = Kviz[Kviz_iCurrentContext][Kviz_iTraversalStack][traversalStackLen - 1] - 1;
+				rootDepth = Kviz[Kviz_iCurrentContext].Kviz_iTraversalStack[traversalStackLen - 1] - 1;
 			alreadyInPosition = true;
 			depth -= 2;
 			if (depth < rootDepth) {
 				LogError("Kvizzle - :up used on root node (%s)", path);
 				depth = rootDepth;
 			}
-		} else if (depth < Kviz[Kviz_iCurrentContext][Kviz_iPositionPathCount]) {
+		} else if (depth < Kviz[Kviz_iCurrentContext].Kviz_iPositionPathCount) {
 			if (isPseudoClass) {
 				if (pseudoClass == KVIZ_PSEUDO_NTHCHILD && Kviz_sPositionPathNthChild[Kviz_iCurrentContext][depth] != 0) {
 					new currentChildNum = Kviz_sPositionPathNthChild[Kviz_iCurrentContext][depth];
@@ -1227,7 +1228,7 @@ stock bool:KvizGoto2(Handle:kv, const String:path[], bool:create, &action, bool:
 					KvGetSectionName(kv, Kviz_sPositionPath[Kviz_iCurrentContext][depth], sizeof(Kviz_sPositionPath[][]));
 					strcopy(Kviz_sPositionPathPseudoClass[Kviz_iCurrentContext][depth], sizeof(Kviz_sPositionPathPseudoClass[][]), key);
 					Kviz_sPositionPathNthChild[Kviz_iCurrentContext][depth] = 0;
-					Kviz[Kviz_iCurrentContext][Kviz_iPositionPathCount]++;
+					Kviz[Kviz_iCurrentContext].Kviz_iPositionPathCount++;
 				}
 				case KVIZ_PSEUDO_NTHCHILD: {
 					//PrintToServer("Go to %ith child", pseudoParmInt);
@@ -1248,20 +1249,20 @@ stock bool:KvizGoto2(Handle:kv, const String:path[], bool:create, &action, bool:
 						KvGetSectionName(kv, Kviz_sPositionPath[Kviz_iCurrentContext][depth], sizeof(Kviz_sPositionPath[][]));
 						Format(Kviz_sPositionPathPseudoClass[Kviz_iCurrentContext][depth], sizeof(Kviz_sPositionPathPseudoClass[][]), ":nth-child(%i)", currentChildNum);
 						Kviz_sPositionPathNthChild[Kviz_iCurrentContext][depth] = currentChildNum;
-						Kviz[Kviz_iCurrentContext][Kviz_iPositionPathCount]++;
+						Kviz[Kviz_iCurrentContext].Kviz_iPositionPathCount++;
 						return false;
 					}
 					
 					KvGetSectionName(kv, Kviz_sPositionPath[Kviz_iCurrentContext][depth], sizeof(Kviz_sPositionPath[][]));
 					strcopy(Kviz_sPositionPathPseudoClass[Kviz_iCurrentContext][depth], sizeof(Kviz_sPositionPathPseudoClass[][]), key);
 					Kviz_sPositionPathNthChild[Kviz_iCurrentContext][depth] = pseudoParmInt;
-					Kviz[Kviz_iCurrentContext][Kviz_iPositionPathCount]++;
+					Kviz[Kviz_iCurrentContext].Kviz_iPositionPathCount++;
 				}
 				case KVIZ_PSEUDO_ANYCHILD: {
 					if (!KvGotoFirstSubKey(kv, !jumpToValues))
 						return false;
 					
-					Kviz[Kviz_iCurrentContext][Kviz_iPositionPathCount]++;
+					Kviz[Kviz_iCurrentContext].Kviz_iPositionPathCount++;
 					
 					new currentChildNum = 0;
 					do {
@@ -1295,7 +1296,7 @@ stock bool:KvizGoto2(Handle:kv, const String:path[], bool:create, &action, bool:
 			
 			strcopy(Kviz_sPositionPath[Kviz_iCurrentContext][depth], sizeof(Kviz_sPositionPath[][]), key);
 			Kviz_sPositionPathPseudoClass[Kviz_iCurrentContext][depth][0] = '\0';
-			Kviz[Kviz_iCurrentContext][Kviz_iPositionPathCount]++;
+			Kviz[Kviz_iCurrentContext].Kviz_iPositionPathCount++;
 			Kviz_sPositionPathNthChild[Kviz_iCurrentContext][depth] = 0; // We jumped directly to a subkey - we don't know which number child it is. Fixed 06/07/2015.
 		}
 	} else if (isAction) {
@@ -1345,10 +1346,10 @@ stock bool:KvizGoto2(Handle:kv, const String:path[], bool:create, &action, bool:
 }
 
 stock KvizRollBack(Handle:kv, destPos) {
-	while (Kviz[Kviz_iCurrentContext][Kviz_iPositionPathCount] > destPos+1) {
+	while (Kviz[Kviz_iCurrentContext].Kviz_iPositionPathCount > destPos+1) {
 		//PrintToServer("GoBack");
 		KvGoBack(kv);
-		Kviz[Kviz_iCurrentContext][Kviz_iPositionPathCount]--;
+		Kviz[Kviz_iCurrentContext].Kviz_iPositionPathCount--;
 	}
 }
 
@@ -1374,9 +1375,9 @@ stock bool:KvizStringToVector(const String:strvalue[], Float:vec[3]) {
 }
 
 stock KvizResetContext(context) {
-	Kviz[context][Kviz_hKv] = INVALID_HANDLE;
-	Kviz[context][Kviz_iPositionPathCount] = 0;
-	Kviz[context][Kviz_iTraversalStackLen] = 0;
+	Kviz[context].Kviz_hKv = INVALID_HANDLE;
+	Kviz[context].Kviz_iPositionPathCount = 0;
+	Kviz[context].Kviz_iTraversalStackLen = 0;
 }
 
 stock bool:KvizSwitchContext(Handle:kv, bool:mayCreate = false) {
@@ -1385,8 +1386,8 @@ stock bool:KvizSwitchContext(Handle:kv, bool:mayCreate = false) {
 	}
 	
 	for (new i = 0; i < Kviz_iMaxContexts; i++) {
-		if (Kviz[Kviz_iCurrentContext][Kviz_hKv] == kv) {
-			Kviz[Kviz_iCurrentContext][Kviz_iLRU] = ++Kviz_iLRUCounter;
+		if (Kviz[Kviz_iCurrentContext].Kviz_hKv == kv) {
+			Kviz[Kviz_iCurrentContext].Kviz_iLRU = ++Kviz_iLRUCounter;
 			return true;
 		}
 		
@@ -1396,7 +1397,7 @@ stock bool:KvizSwitchContext(Handle:kv, bool:mayCreate = false) {
 	}
 	
 	if (KvizSwitchFromArchive(kv)) {
-		Kviz[Kviz_iCurrentContext][Kviz_iLRU] = ++Kviz_iLRUCounter;
+		Kviz[Kviz_iCurrentContext].Kviz_iLRU = ++Kviz_iLRUCounter;
 		return true;
 	}
 	
@@ -1406,8 +1407,8 @@ stock bool:KvizSwitchContext(Handle:kv, bool:mayCreate = false) {
 	}
 	
 	Kviz_iCurrentContext = KvizGetFreeContext();
-	Kviz[Kviz_iCurrentContext][Kviz_hKv] = kv;
-	Kviz[Kviz_iCurrentContext][Kviz_iLRU] = ++Kviz_iLRUCounter;
+	Kviz[Kviz_iCurrentContext].Kviz_hKv = kv;
+	Kviz[Kviz_iCurrentContext].Kviz_iLRU = ++Kviz_iLRUCounter;
 	return true;
 }
 
@@ -1418,7 +1419,7 @@ stock bool:KvizSwitchFromArchive(Handle:kv) {
 		if (archiveKv == kv) {
 			new context = KvizGetFreeContext();
 			
-			decl String:path[256][128];
+			decl String:path[Kviz_iMaxPathDepth][Kviz_iMaxSectionLen];
 			
 			new pathPos = 0;
 			for (new kvDepth = KvNodesInStack(kv); kvDepth > 0; kvDepth = KvGoBack(kv) ? kvDepth - 1 : 0) {
@@ -1426,7 +1427,7 @@ stock bool:KvizSwitchFromArchive(Handle:kv) {
 				pathPos++;
 			}
 			
-			decl String:kvizPos[256*128] = "";
+			decl String:kvizPos[Kviz_iMaxPathDepth*Kviz_iMaxSectionLen] = "";
 			if (pathPos > 0) {
 				// TODO: Can be optimized a lot, because StrCat is getting strlen all the time
 				pathPos--;
@@ -1439,9 +1440,9 @@ stock bool:KvizSwitchFromArchive(Handle:kv) {
 			}
 			
 			Kviz_iCurrentContext = context;
-			Kviz[context][Kviz_hKv] = kv;
-			Kviz[context][Kviz_iPositionPathCount] = 0;
-			Kviz[context][Kviz_iTraversalStackLen] = 0;
+			Kviz[context].Kviz_hKv = kv;
+			Kviz[context].Kviz_iPositionPathCount = 0;
+			Kviz[context].Kviz_iTraversalStackLen = 0;
 			if (!StrEqual("", kvizPos)) {
 				new action;
 				if (!KvizGoto(kv, kvizPos, false, action))
@@ -1449,9 +1450,9 @@ stock bool:KvizSwitchFromArchive(Handle:kv) {
 			}
 			
 			new archiveTSLen = GetArrayCell(Kviz_hArchiveTraversalStack, i, 0);
-			Kviz[context][Kviz_iTraversalStackLen] = archiveTSLen;
+			Kviz[context].Kviz_iTraversalStackLen = archiveTSLen;
 			for (new j = 0; j < archiveTSLen; j++) {
-				Kviz[context][Kviz_iTraversalStack][j] = GetArrayCell(Kviz_hArchiveTraversalStack, i, j+1);
+				Kviz[context].Kviz_iTraversalStack[j] = GetArrayCell(Kviz_hArchiveTraversalStack, i, j+1);
 			}
 			
 			RemoveFromArray(Kviz_hArchiveKv, i);
@@ -1467,10 +1468,10 @@ stock bool:KvizSwitchFromArchive(Handle:kv) {
 stock KvizGetFreeContext() {
 	new best = -1;
 	for (new context = 0; context < Kviz_iMaxContexts; context++) {
-		if (Kviz[context][Kviz_hKv] == INVALID_HANDLE)
+		if (Kviz[context].Kviz_hKv == INVALID_HANDLE)
 			return context;
 		
-		if (best == -1 || Kviz[context][Kviz_iLRU] < Kviz[best][Kviz_iLRU])
+		if (best == -1 || Kviz[context].Kviz_iLRU < Kviz[best].Kviz_iLRU)
 			best = context;
 	}
 	
@@ -1480,19 +1481,19 @@ stock KvizGetFreeContext() {
 }
 
 stock KvizArchiveContext(context) {
-	PushArrayCell(Kviz_hArchiveKv, Kviz[context][Kviz_hKv]);
+	PushArrayCell(Kviz_hArchiveKv, Kviz[context].Kviz_hKv);
 	decl stack[Kviz_iMaxTraversalStack+1];
-	stack[0] = Kviz[context][Kviz_iTraversalStackLen];
+	stack[0] = Kviz[context].Kviz_iTraversalStackLen;
 	for (new i = 0; i < stack[0]; i++)
-		stack[i+1] = Kviz[context][Kviz_iTraversalStack][i];
+		stack[i+1] = Kviz[context].Kviz_iTraversalStack[i];
 	PushArrayArray(Kviz_hArchiveTraversalStack, stack);
-	Kviz[context][Kviz_hKv] = INVALID_HANDLE;
+	Kviz[context].Kviz_hKv = INVALID_HANDLE;
 }
 
 stock bool:KvizRemoveContext(Handle:kv) {
 	for (new i = 0; i < Kviz_iMaxContexts; i++) {
-		if (Kviz[Kviz_iCurrentContext][Kviz_hKv] == kv) {
-			Kviz[Kviz_iCurrentContext][Kviz_hKv] = INVALID_HANDLE;
+		if (Kviz[Kviz_iCurrentContext].Kviz_hKv == kv) {
+			Kviz[Kviz_iCurrentContext].Kviz_hKv = INVALID_HANDLE;
 			return true;
 		}
 		

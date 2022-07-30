@@ -1,0 +1,43 @@
+---
+- hosts: tf2
+  become: true
+  name: 'yep'
+  tasks:
+    - ansible.builtin.package:
+        name: sysfsutils
+    - ansible.builtin.lineinfile:
+        name: 'THP'
+        path: /etc/sysfs.conf
+        line: kernel/mm/transparent_hugepage/enabled = never
+    - ansible.posix.sysctl:
+        name: vm.swappiness
+        value: '0'
+        state: present
+    - ansible.posix.sysctl:
+        name: vm.zone_reclaim_mode
+        value: '0'
+        state: present
+    - ansible.posix.sysctl:
+        name: kernel.sched_rt_runtime_us
+        value: '1000000'
+        state: present
+    - ansible.posix.sysctl:
+        name: kernel.hung_task_timeout_secs
+        value: '600'
+        state: present
+    - ansible.posix.sysctl:
+        name: kernel.nmi_watchdog
+        value: '0'
+        state: present
+    - ansible.posix.sysctl:
+        name: kernel.numa_balancing
+        value: '0'
+        state: present
+    - ansible.posix.sysctl:
+        name: vm.stat_interval
+        value: '10'
+        state: present
+    - ansible.posix.sysctl:
+        name: vm.min_free_kbytes
+        value: '1024000'
+        state: present
