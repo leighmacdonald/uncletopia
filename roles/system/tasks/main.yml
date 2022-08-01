@@ -83,22 +83,6 @@
     state: started
     enabled: true
 
-- name: Increase default available memory for UDP receive buffers
-  become: true
-  ansible.posix.sysctl:
-    name: net.core.rmem_default
-    value: "52428800"
-    sysctl_set: true
-    reload: true
-
-- name: Increase available memory for UDP receive buffers
-  become: true
-  ansible.posix.sysctl:
-    name: net.core.rmem_max
-    value: "52428800"
-    sysctl_set: true
-    reload: true
-
 - name: Increase default available memory for UDP send buffers
   become: true
   ansible.posix.sysctl:
@@ -112,14 +96,6 @@
   ansible.posix.sysctl:
     name: net.core.wmem_max
     value: "52428800"
-    sysctl_set: true
-    reload: true
-
-- name: Increase the maximum amount of packets in the kernel queue
-  become: true
-  ansible.posix.sysctl:
-    name: net.core.netdev_max_backlog
-    value: "25000"
     sysctl_set: true
     reload: true
 

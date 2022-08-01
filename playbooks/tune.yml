@@ -5,39 +5,84 @@
   tasks:
     - ansible.builtin.package:
         name: sysfsutils
+        state: latest
     - ansible.builtin.lineinfile:
-        name: 'THP'
         path: /etc/sysfs.conf
-        line: kernel/mm/transparent_hugepage/enabled = never
+        create: true
+        regexp: '^kernel\/mm\/transparent\_hugepage\/enabled'
+        line: "kernel/mm/transparent_hugepage/enabled = never"
+    - ansible.builtin.shell: echo never {{ ">" }} /sys/kernel/mm/transparent_hugepage/enabled
     - ansible.posix.sysctl:
         name: vm.swappiness
         value: '0'
         state: present
+        reload: true
     - ansible.posix.sysctl:
         name: vm.zone_reclaim_mode
         value: '0'
         state: present
+        reload: true
     - ansible.posix.sysctl:
         name: kernel.sched_rt_runtime_us
         value: '1000000'
         state: present
+        reload: true
     - ansible.posix.sysctl:
         name: kernel.hung_task_timeout_secs
         value: '600'
         state: present
+        reload: true
     - ansible.posix.sysctl:
         name: kernel.nmi_watchdog
         value: '0'
         state: present
+        reload: true
     - ansible.posix.sysctl:
         name: kernel.numa_balancing
         value: '0'
         state: present
+        reload: true
     - ansible.posix.sysctl:
         name: vm.stat_interval
         value: '10'
         state: present
+        reload: true
     - ansible.posix.sysctl:
         name: vm.min_free_kbytes
         value: '1024000'
         state: present
+        reload: true
+    - ansible.posix.sysctl:
+        name: net.core.rmem_default
+        value: '851968'
+        state: present
+        reload: true
+    - ansible.posix.sysctl:
+        name: net.core.rmem_max
+        value: '851968'
+        state: present
+        reload: true
+    - ansible.posix.sysctl:
+        name: net.core.busy_read
+        value: '50'
+        state: present
+        reload: true
+    - ansible.posix.sysctl:
+        name: net.core.busy_poll
+        value: '50'
+        state: present
+        reload: true
+    - ansible.posix.sysctl:
+        name: net.ipv4.udp_mem
+        value: '1445727 1927636 2891454'
+        state: present
+        reload: true
+    - ansible.posix.sysctl:
+        name: net.core.netdev_max_backlog
+        value: "2000"
+        state: present
+        reload: true
+    - ansible.builtin.service:
+        enabled: false
+        name: irqbalance
+        state: stopped
