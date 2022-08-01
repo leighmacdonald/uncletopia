@@ -10,6 +10,12 @@ skip_list:
   - internal-error
   - unnamed-task
   - package-latest
+  - no-changed-when
+  - command-instead-of-shell
+  - risky-file-permissions
+
+warn_lisT:
+
 
 kinds:
   - tasks: "*/tasks/*.yml"
