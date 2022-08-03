@@ -13,6 +13,7 @@ skip_list:
   - no-changed-when
   - command-instead-of-shell
   - risky-file-permissions
+  - risky-shell-pipe
 
 warn_lisT:
 

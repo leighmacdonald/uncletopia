@@ -86,3 +86,19 @@
         enabled: false
         name: irqbalance
         state: stopped
+
+    # - name: Increase default available memory for UDP send buffers
+    #  become: true
+    #  ansible.posix.sysctl:
+    #    name: net.core.wmem_default
+    #    value: "52428800"
+    #    sysctl_set: true
+    #    reload: true
+    #
+    # - name: Increase available memory for UDP send buffers
+    #  become: true
+    #  ansible.posix.sysctl:
+    #    name: net.core.wmem_max
+    #    value: "52428800"
+    #    sysctl_set: true
+    #    reload: true
