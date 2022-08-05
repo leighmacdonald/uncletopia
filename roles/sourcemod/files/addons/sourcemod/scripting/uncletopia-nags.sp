@@ -15,7 +15,7 @@ public Plugin myinfo = {
     name        = "Uncletopia Nags",
     author      = "VIORA",
     description = "Provide players with timely and relevant updates.",
-    version     = "0.2.0",
+    version     = "0.2.1",
     url         = "https://github.com/crescentrose/uncletopia-nags"
 };
 
@@ -67,6 +67,9 @@ public void Event_RoundStart(Event event, const char[] name, bool dontBroadcast)
         MC_PrintToChatAll("{unusual}Remember:{default} You can type {unusual}!nominate{default} in chat to propose which map to play next.");
         g_didAlertToNominate = true;
     }
+
+    MC_PrintToChatAll("{unusual}NOTICE: Be aware there are {red}fake uncletopia servers{unusual} spreading malware & harvesting IPs");
+    MC_PrintToChatAll("{unusual}Please visit uncletopia.com/servers for a list of safe servers");
 
     CleanupTimer(g_teamImbalanceTimer);
 
