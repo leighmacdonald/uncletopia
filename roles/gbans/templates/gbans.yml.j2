@@ -9,6 +9,7 @@ general:
   map_changer_enabled: false
   default_maps: ["pl_badwater", "pl_upward", "pl_snowycoast"]
   demo_root_path: ./demos/
+  banned_steam_group_ids: [ {{ gbans.banned_steam_group_ids|join(" , ") }} ]
 
 http:
   # Listen on this ip address
