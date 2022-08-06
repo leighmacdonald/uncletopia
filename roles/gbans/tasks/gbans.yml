@@ -23,6 +23,8 @@
     restart: true
     recreate: true
     pull: true
+    restart_policy: always
+    state: started
 # Needs newer ansible
 #    logging:
 #      driver: json-file
