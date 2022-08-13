@@ -1,3 +1,3 @@
-{% for map in map_rotation['all'] %}
+{% for map in map_rotation[item.rotation|default("all")] %}
 {{ map }}
 {% endfor %}
