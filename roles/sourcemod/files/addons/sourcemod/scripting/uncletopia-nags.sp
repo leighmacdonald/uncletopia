@@ -68,7 +68,7 @@ public void Event_RoundStart(Event event, const char[] name, bool dontBroadcast)
         g_didAlertToNominate = true;
     }
 
-    MC_PrintToChatAll("{red}NOTICE:{default} Be aware there are {red}fake Uncletopia servers{default} spreading malware & harvesting IPs.");
+    MC_PrintToChatAll("{red}NOTICE:{default} Be aware there are {red}fake Uncletopia servers{default}");
     MC_PrintToChatAll("Please visit {red}uncletopia.com/servers{default} for a list of safe servers.");
 
     CleanupTimer(g_teamImbalanceTimer);
