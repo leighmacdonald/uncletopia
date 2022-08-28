@@ -39,48 +39,10 @@ whitelist
 	//	2. directory\...			- refers to all files under the directory and all directories under that (recursively)
 	//	3. directory\filename		- refers to a single file
 
-
-    // "any" (Allow from custom folder)
     sound\...                                       any
     models\...                                      any
     materials\...                                   any
     particles\...                                   any
-    scripts\game_sounds.txt                         any
-    scripts\game_sounds_manifest.txt                any
-    scripts\game_sounds_player.txt                  any
-    scripts\game_sounds_vo.txt                      any
-    scripts\game_sounds_vo_handmade.txt             any
-    scripts\game_sounds_weapons.txt                 any
-    scripts\soundmixers.txt                         any
-    sound\ui\hitsound.wav                           any
-
-    // "trusted_source" (Allow from Steam)
-    particles\bullet_tracers.pcf                    trusted_source
-    particles\burningplayer.pcf                     trusted_source
-    particles\burningplayer_dx80.pcf                trusted_source
-    particles\cig_smoke.pcf                         trusted_source
-    particles\cig_smoke_dx80.pcf                    trusted_source
-    particles\explosion.pcf                         trusted_source
-    particles\explosion_dx80.pcf                    trusted_source
-    particles\explosion_dx90_slow.pcf               trusted_source
-    particles\explosion_high.pcf                    trusted_source
-    particles\disguise.pcf                          trusted_source
-    particles\flag_particles.pcf                    trusted_source
-    particles\nemesis.pcf                           trusted_source
-    particles\player_recent_teleport.pcf            trusted_source
-    particles\player_recent_teleport_dx80.pcf       trusted_source
-    particles\speechbubbles.pcf                     trusted_source
-    particles\teleported_fx.pcf                     trusted_source
-    particles\teleport_status.pcf                   trusted_source
-    particles\water.pcf                             trusted_source
-    particles\water_dx80.pcf                        trusted_source
-    particles\stickybomb.pcf                        trusted_source
-    particles\stickybomb_dx80.pcf                   trusted_source
-
-    // Disable sprays
-    materials\temp\...                              trusted_source
-    materials\vgui\logos\...                        trusted_source
-    materials\vgui\logos\ui\...                     trusted_source
 
     // Dominations removal mod
     // https://gamebanana.com/mods/36617
@@ -93,5 +55,50 @@ whitelist
     // https://gamebanana.com/mods/12410
     particles\rockettrail.pcf                       any
     particles\rockettrail_dx80.pcf                  any
+    particles\nemesis.pcf                           any
 
+    // "trusted_source" (Allow from Steam)
+    materials\water\...                       trusted_source
+    materials\wood\...                        trusted_source
+    materials\concrete\...                    trusted_source
+    materials\metal\...                       trusted_source
+    materials\nature\...                      trusted_source
+    sound\player\footsteps\...                trusted_source
+    sound\player\spy_uncloak.wav              trusted_source
+    sound\player\spy_cloak.wav                trusted_source
+    sound\player\spy_disguise.wav             trusted_source
+    sound\player\spy_uncloak_feigndeath.wav   trusted_source
+    materials\Effects\sniperdot.vmt           trusted_source
+    materials\Effects\sniperdot.vtf           trusted_source
+    materials\Effects\sniperdot_blue.vmt      trusted_source
+    materials\Effects\sniperdot_blue.vtf      trusted_source
+    materials\Effects\sniperdot_red.vmt       trusted_source
+    materials\Effects\sniperdot_red.vtf       trusted_source
+
+    particles\bullet_tracers.pcf              trusted_source
+    particles\burningplayer.pcf               trusted_source
+    particles\burningplayer_dx80.pcf          trusted_source
+    particles\cig_smoke.pcf                   trusted_source
+    particles\cig_smoke_dx80.pcf              trusted_source
+    particles\explosion.pcf                   trusted_source
+    particles\explosion_dx80.pcf              trusted_source
+    particles\explosion_dx90_slow.pcf         trusted_source
+    particles\explosion_high.pcf              trusted_source
+    particles\disguise.pcf                    trusted_source
+    particles\flag_particles.pcf              trusted_source
+
+    particles\player_recent_teleport.pcf      trusted_source
+    particles\player_recent_teleport_dx80.pcf trusted_source
+    particles\speechbubbles.pcf               trusted_source
+    particles\teleported_fx.pcf               trusted_source
+    particles\teleport_status.pcf             trusted_source
+    particles\water.pcf                       trusted_source
+    particles\water_dx80.pcf                  trusted_source
+    particles\stickybomb.pcf                  trusted_source
+    particles\stickybomb_dx80.pcf             trusted_source
+
+    // Disable sprays
+    materials\temp\...                        trusted_source
+    materials\vgui\logos\...                  trusted_source
+    materials\vgui\logos\ui\...               trusted_source
 }
