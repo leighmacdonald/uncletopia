@@ -5,7 +5,7 @@
  * A pure SourcePawn JSON encoder/decoder.
  * https://github.com/clugg/sm-json
  *
- * sm-json (C)2020 James Dickens. (clug)
+ * sm-json (C)2022 James Dickens. (clug)
  * SourceMod (C)2004-2008 AlliedModders LLC.  All rights reserved.
  * =============================================================================
  *
@@ -43,7 +43,7 @@
  * representation of a UTF-8 character.
  *
  * @param c     The UTF-8 character.
- * @returns     The number of bytes required, or -1 if c is invalid.
+ * @return      The number of bytes required, or -1 if c is invalid.
  */
 stock int json_utf8_to_ascii_size(int c)
 {
@@ -73,7 +73,7 @@ stock int json_utf8_to_ascii_size(int c)
  * @param c         The UTF-8 character.
  * @param output    String buffer to store output.
  * @param max_size  Maximum size of string buffer.
- * @returns         The number of bytes written, or -1 if c is invalid.
+ * @return          The number of bytes written, or -1 if c is invalid.
  */
 stock int json_utf8_to_ascii(int c, char[] output, int max_size)
 {
@@ -118,6 +118,13 @@ stock int json_utf8_to_ascii(int c, char[] output, int max_size)
     return i;
 }
 
+/**
+ * Converts bytes to their UTF-8 int representation.
+ *
+ * @param ascii     The ascii/bytes to convert.
+ * @param max_size  Maximum size of ascii.
+ * @return          The UTF-8 int representation.
+ */
 stock int json_ascii_to_utf8(const char[] ascii, int max_size, int &size)
 {
     size = 0;

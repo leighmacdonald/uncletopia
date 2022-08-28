@@ -5,7 +5,7 @@
  * A pure SourcePawn JSON encoder/decoder.
  * https://github.com/clugg/sm-json
  *
- * sm-json (C)2020 James Dickens. (clug)
+ * sm-json (C)2022 James Dickens. (clug)
  * SourceMod (C)2004-2008 AlliedModders LLC.  All rights reserved.
  * =============================================================================
  *
@@ -44,11 +44,10 @@
  */
 
 /**
- * Checks whether the character at the beginning
- * of the buffer is whitespace.
+ * Checks whether the character at the beginning of the buffer is whitespace.
  *
  * @param buffer    String buffer of data.
- * @returns         True if the first character in the buffer
+ * @return          True if the first character in the buffer
  *                  is whitespace, false otherwise.
  */
 stock bool json_is_whitespace(const char[] buffer)
@@ -64,9 +63,8 @@ stock bool json_is_whitespace(const char[] buffer)
  * of the buffer is the start of a string.
  *
  * @param buffer                String buffer of data.
- * @param allow_single_quotes   Should strings wrapped in
- *                              single quotes be accepted?
- * @returns                     True if the first character in the buffer
+ * @param allow_single_quotes   Should strings using single quotes be accepted?
+ * @return                      True if the first character in the buffer
  *                              is the start of a string, false otherwise.
  */
 stock bool json_is_string(const char[] buffer, bool allow_single_quotes = false)
@@ -78,17 +76,17 @@ stock bool json_is_string(const char[] buffer, bool allow_single_quotes = false)
  * Checks whether the buffer provided contains an int.
  *
  * @param buffer    String buffer of data.
- * @returns         True if buffer contains an int, false otherwise.
+ * @return          True if buffer contains an int, false otherwise.
  */
 stock bool json_is_int(const char[] buffer)
 {
-    bool starts_with_zero = false;
-    bool has_digit_gt_zero = false;
-
     int length = strlen(buffer);
     if (length == 0) {
         return false;
     }
+
+    bool starts_with_zero = false;
+    bool has_digit_gt_zero = false;
 
     for (int i = 0; i < length; i += 1) {
         // allow minus as first character only
@@ -118,25 +116,58 @@ stock bool json_is_int(const char[] buffer)
     return true;
 }
 
+#if SM_INT64_SUPPORTED
+/**
+ * Checks whether the buffer provided contains an int64, assuming it has
+ * already been validated as an int and attempted to convert to an int32.
+ *
+ * @param buffer    String buffer of data.
+ * @param value     Converted int value to compare with.
+ * @return          True if buffer contains an int64, false otherwise.
+ */
+stock bool json_is_int64(const char[] buffer, int value)
+{
+    if (
+        (value == 0 && ! StrEqual(buffer, "0"))
+        || (value == -1 && ! StrEqual(buffer, "-1"))
+    ) {
+        // failed to produce output of validated int, must be 64bit
+        return true;
+    }
+
+    if (buffer[0] != '-' && value < 0) {
+        // 32-bit unsigned positive int which is incorrectly
+        // interpreted as a negative signed int by sourcepawn
+        return true;
+    }
+
+    if (buffer[0] == '-' && value > 0) {
+        return true;
+    }
+
+    return false;
+}
+#endif
+
 /**
  * Checks whether the buffer provided contains a float.
  *
  * @param buffer    String buffer of data.
- * @returns         True if buffer contains a float, false otherwise.
+ * @return          True if buffer contains a float, false otherwise.
  */
 stock bool json_is_float(const char[] buffer)
 {
+    int length = strlen(buffer);
+    if (length == 0) {
+        return false;
+    }
+
     bool starts_with_zero = false;
     bool has_digit_gt_zero = false;
     bool after_decimal = false;
     bool has_digit_after_decimal = false;
     bool after_exponent = false;
     bool has_digit_after_exponent = false;
-
-    int length = strlen(buffer);
-    if (length == 0) {
-        return false;
-    }
 
     for (int i = 0; i < length; i += 1) {
         // allow minus as first character only
@@ -218,27 +249,28 @@ stock bool json_is_float(const char[] buffer)
         return false;
     }
 
-    /* we should have reached an exponent, decimal, or both.
-       otherwise, this number can be handled by the int parser */
+    // we should have reached an exponent, decimal, or both
+    // otherwise this number can be handled by the int parser
     return after_decimal || after_exponent;
 }
 
 /**
  * Checks whether the character at the beginning of the buffer
- * is considered a valid 'end point' for some data, such as a
- * colon (indicating a key), a comma (indicating a new element),
+ * is considered a valid 'end point' for an element,
+ * such as a colon (indicating the end of a key),
+ * a comma (indicating the end of an element),
  * or the end of an object or array.
  *
  * @param buffer    String buffer of data.
- * @returns         True if the first character in the buffer
- *                  is a valid data end point, false otherwise.
+ * @param is_array  Whether the decoder is processing an array.
+ * @return          True if the first character in the buffer
+ *                  is a valid element end point, false otherwise.
  */
 stock bool json_is_at_end(const char[] buffer, bool is_array)
 {
     return buffer[0] == ','
-        || (! is_array && buffer[0] == ':')
-        || buffer[0] == '}'
-        || buffer[0] == ']';
+        || (! is_array && (buffer[0] == ':' || buffer[0] == '}'))
+        || (is_array && buffer[0] == ']');
 }
 
 /**
@@ -252,7 +284,7 @@ stock bool json_is_at_end(const char[] buffer, bool is_array)
  * @param buffer    String buffer of data.
  * @param max_size  Maximum size of string buffer.
  * @param pos       Position to increment.
- * @returns         True if pos has not reached the end
+ * @return          True if pos has not reached the end
  *                  of the buffer, false otherwise.
  */
 stock bool json_skip_whitespace(const char[] buffer, int max_size, int &pos)
@@ -274,7 +306,7 @@ stock bool json_skip_whitespace(const char[] buffer, int max_size, int &pos)
  * @param max_size          Maximum size of string buffer.
  * @param pos               Position to increment.
  * @param is_array          Whether the decoder is processing an array.
- * @returns                 The size of the buffer required to store the cell.
+ * @return                  The size of the buffer required to store the cell.
  */
 stock int json_extract_until_end_size(
     const char[] buffer,
@@ -299,8 +331,7 @@ stock int json_extract_until_end_size(
 }
 
 /**
- * Extracts a JSON cell from the buffer until
- * a valid end point is reached.
+ * Extracts a JSON cell from the buffer until a valid end point is reached.
  *
  * @param buffer            String buffer of data.
  * @param max_size          Maximum size of string buffer.
@@ -308,7 +339,7 @@ stock int json_extract_until_end_size(
  * @param output            String buffer to store output.
  * @param output_max_size   Maximum size of output string buffer.
  * @param is_array          Whether the decoder is processing an array.
- * @returns                 True if pos has not reached the end
+ * @return                  True if pos has not reached the end
  *                          of the buffer, false otherwise.
  */
 stock bool json_extract_until_end(
@@ -360,7 +391,7 @@ stock bool json_extract_until_end(
  * @param max_size          Maximum size of string buffer.
  * @param pos               Position to increment.
  * @param is_array          Whether the decoder is processing an array.
- * @returns                 The size of the buffer required to store the string.
+ * @return                  The size of the buffer required to store the string.
  */
 stock int json_extract_string_size(
     const char[] buffer,
@@ -369,7 +400,7 @@ stock int json_extract_string_size(
     bool is_array
 )
 {
-    int length = 0;
+    int length = 1; // for NULL terminator
 
     // store initial quote
     char quote = buffer[pos];
@@ -399,12 +430,11 @@ stock int json_extract_string_size(
         length += 1;
     }
 
-    return json_cell_string_size(length);
+    return length;
 }
 
 /**
- * Extracts a JSON string from the buffer until
- * a valid end point is reached.
+ * Extracts a JSON string from the buffer until a valid end point is reached.
  *
  * @param buffer            String buffer of data.
  * @param max_size          Maximum size of string buffer.
@@ -412,7 +442,7 @@ stock int json_extract_string_size(
  * @param output            String buffer to store output.
  * @param output_max_size   Maximum size of output string buffer.
  * @param is_array          Whether the decoder is processing an array.
- * @returns                 True if pos has not reached the end
+ * @return                  True if pos has not reached the end
  *                          of the buffer, false otherwise.
  */
 stock bool json_extract_string(
@@ -526,7 +556,12 @@ stock bool json_extract_string(
     }
 
     // copy only from start with length end - start + NULL terminator
-    strcopy(output, end - start + 1, buffer[start]);
+    int length = end - start + 1;
+    strcopy(
+        output,
+        length > output_max_size ? output_max_size : length,
+        buffer[start]
+    );
 
     if (quote == '\'') {
         ReplaceString(output, max_size, "\\'", "'");

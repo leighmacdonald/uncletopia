@@ -5,7 +5,7 @@
  * A pure SourcePawn JSON encoder/decoder.
  * https://github.com/clugg/sm-json
  *
- * sm-json (C)2020 James Dickens. (clug)
+ * sm-json (C)2022 James Dickens. (clug)
  * SourceMod (C)2004-2008 AlliedModders LLC.  All rights reserved.
  * =============================================================================
  *
@@ -39,23 +39,42 @@
 #include <string>
 #include <json/helpers/string>
 
+#define SM_INT64_SUPPORTED SOURCEMOD_V_MAJOR >= 1 \
+    && SOURCEMOD_V_MINOR >= 11 \
+    && SOURCEMOD_V_REV >= 6861
+
 /**
  * @section Settings
  */
 
+/** Used when no options are desired. */
 #define JSON_NONE 0
 
-/* json_encode settings */
+/**
+ * @section json_encode settings
+ */
+
+/** Should encoded output be pretty printed? */
 #define JSON_ENCODE_PRETTY 1 << 0
 
-/* json_decode settings */
-// During decoding, should strings wrapped in single quotes be accepted?
+/**
+ * @section json_decode settings
+ */
+
+/** Should single quote wrapped strings be accepted during decoding? */
 #define JSON_DECODE_SINGLE_QUOTES 1 << 0
 
-/* json_merge settings */
-// During merge, should existing keys be replaced if they exist in both objects?
+/** Should objects track order of key insertion during decoding? */
+#define JSON_DECODE_ORDERED_KEYS 1 << 1
+
+/**
+ * @section json_merge settings
+ */
+
+/** During merge, should existing keys be replaced if they exist in both objects? */
 #define JSON_MERGE_REPLACE 1 << 0
-/* During merge, should existing objects be cleaned up if they exist in
+
+/** During merge, should existing objects be cleaned up if they exist in
  * both objects? (only applies when JSON_MERGE_REPLACE is also set) */
 #define JSON_MERGE_CLEANUP 1 << 1
 
@@ -66,32 +85,39 @@
  * You can modify these if you prefer your JSON formatted differently.
  */
 
-#define JSON_PP_AFTER_COLON " "
-#define JSON_PP_INDENT "    "
-#define JSON_PP_NEWLINE "\n"
+char JSON_PP_AFTER_COLON[32] = " ";
+char JSON_PP_INDENT[32] = "    ";
+char JSON_PP_NEWLINE[32] = "\n";
 
 /**
  * @section Buffer Size Constants
  */
 
-// The longest representable integer ("-2147483648") + NULL terminator
+/** The longest representable integer ("-2147483648") + NULL terminator */
 #define JSON_INT_BUFFER_SIZE 12
 
-// You may need to change this if you are working with large floats.
+#if SM_INT64_SUPPORTED
+/** The longest representable int64 ("-9223372036854775808") + NULL terminator */
+#define JSON_INT64_BUFFER_SIZE 21
+#endif
+
+/** You may need to change this if you are working with large floats. */
 #define JSON_FLOAT_BUFFER_SIZE 32
 
-// "true"|"false" + NULL terminator
+/** "true"|"false" + NULL terminator */
 #define JSON_BOOL_BUFFER_SIZE 6
 
-// "null" + NULL terminator
+/** "null" + NULL terminator */
 #define JSON_NULL_BUFFER_SIZE 5
 
 /**
- * @section Array Constants
+ * @section Array/Object Constants
  */
 
-#define JSON_ARRAY_INDEX_KEY "__array_index"
-#define JSON_ARRAY_TYPE_KEY "__array_type"
+#define JSON_ARRAY_KEY "is_array"
+#define JSON_ENFORCE_TYPE_KEY "enforce_type"
+#define JSON_ORDERED_KEYS_KEY "ordered_keys"
+#define JSON_SNAP_KEY "snap"
 
 /**
  * Types of cells within a JSON object
@@ -100,6 +126,9 @@ enum JSONCellType {
     JSON_Type_Invalid = -1,
     JSON_Type_String = 0,
     JSON_Type_Int,
+    #if SM_INT64_SUPPORTED
+    JSON_Type_Int64,
+    #endif
     JSON_Type_Float,
     JSON_Type_Bool,
     JSON_Type_Object
@@ -110,23 +139,25 @@ enum JSONCellType {
  */
 enum JSONMetaInfo {
     JSON_Meta_Type = 0,
-    JSON_Meta_Length,
-    JSON_Meta_Hidden
+    JSON_Meta_Size,
+    JSON_Meta_Hidden,
+    JSON_Meta_Index
 }
 
 /**
  * An array of all possible meta info values.
  */
-JSONMetaInfo[] JSON_ALL_METADATA = {
-    JSON_Meta_Type, JSON_Meta_Length, JSON_Meta_Hidden
+JSONMetaInfo JSON_ALL_METADATA[4] = {
+    JSON_Meta_Type, JSON_Meta_Size, JSON_Meta_Hidden, JSON_Meta_Index
 };
 
 /**
  * Calculates the length required to store a meta key
  * for a specified key/metainfo combination.
+ * @internal
  *
  * @param   key
- * @returns The length required to store the meta key.
+ * @return  The length required to store the meta key.
  */
 stock int json_meta_key_length(const char[] key)
 {
@@ -136,6 +167,7 @@ stock int json_meta_key_length(const char[] key)
 
 /**
  * Formats the key/metainfo combination into a buffer.
+ * @internal
  *
  * @param output    String buffer to store output.
  * @param max_size  Maximum size of string buffer.
@@ -150,32 +182,4 @@ stock void json_format_meta_key(
 )
 {
     FormatEx(output, max_size, "%s:%d", key, view_as<int>(meta));
-}
-
-/**
- * Checks whether the key provided is a metadata key.
- *
- * @param key   Key to check.
- * @returns     True when it is a meta-key, false otherwise.
- */
-stock bool json_is_meta_key(const char[] key)
-{
-    if (
-        StrEqual(key, JSON_ARRAY_INDEX_KEY)
-        || StrEqual(key, JSON_ARRAY_TYPE_KEY)
-    ) {
-        return true;
-    }
-
-    int max_size = json_meta_key_length("");
-    char[] meta_key = new char[max_size];
-    for (int i = 0; i < sizeof(JSON_ALL_METADATA); i += 1) {
-        json_format_meta_key(meta_key, max_size, "", JSON_ALL_METADATA[i]);
-
-        if (json_string_endswith(key, meta_key)) {
-            return true;
-        }
-    }
-
-    return false;
 }

@@ -5,7 +5,7 @@
  * A pure SourcePawn JSON encoder/decoder.
  * https://github.com/clugg/sm-json
  *
- * sm-json (C)2020 James Dickens. (clug)
+ * sm-json (C)2022 James Dickens. (clug)
  * SourceMod (C)2004-2008 AlliedModders LLC.  All rights reserved.
  * =============================================================================
  *
@@ -39,9 +39,118 @@
 #include <string>
 #include <json/definitions>
 #include <json/helpers/decode>
+#include <json/helpers/errors>
 #include <json/helpers/string>
 #include <json/object>
 #include <json/array>
+
+
+/**
+ * Calculates the buffer size required to store an encoded JSON instance.
+ *
+ * @param obj       Object to encode.
+ * @param options   Bitwise combination of `JSON_ENCODE_*` options.
+ * @param depth     The current depth of the encoder.
+ * @return          The required buffer size.
+ */
+stock int json_encode_size(JSON_Object obj, int options = JSON_NONE, int depth = 0)
+{
+    bool pretty_print = (options & JSON_ENCODE_PRETTY) != 0;
+
+    bool is_array = obj.IsArray;
+
+    int size = 1; // for opening bracket
+
+    // used in key iterator
+    int json_size = obj.Iterate();
+    JSON_Object child = null;
+    bool is_empty = true;
+    int str_length = 0;
+
+    int key_length = 0;
+    for (int i = 0; i < json_size; i += 1) {
+        key_length = is_array ? JSON_INT_BUFFER_SIZE : obj.GetKeySize(i);
+        char[] key = new char[key_length];
+
+        if (is_array) {
+            IntToString(i, key, key_length);
+        } else {
+            obj.GetKey(i, key, key_length);
+        }
+
+        // skip keys that are marked as hidden
+        if (obj.GetHidden(key)) {
+            continue;
+        }
+
+        JSONCellType type = obj.GetType(key);
+        // skip keys of unknown type
+        if (type == JSON_Type_Invalid) {
+            continue;
+        }
+
+        if (pretty_print) {
+            size += strlen(JSON_PP_NEWLINE);
+            size += (depth + 1) * strlen(JSON_PP_INDENT);
+        }
+
+        if (! is_array) {
+            // add the size of the key and + 1 for :
+            size += json_cell_string_size(key) + 1;
+
+            if (pretty_print) {
+                size += strlen(JSON_PP_AFTER_COLON);
+            }
+        }
+
+        switch (type) {
+            case JSON_Type_String: {
+                str_length = obj.GetSize(key);
+                char[] value = new char[str_length];
+                obj.GetString(key, value, str_length);
+
+                size += json_cell_string_size(value);
+            }
+            case JSON_Type_Int: {
+                size += JSON_INT_BUFFER_SIZE;
+            }
+            #if SM_INT64_SUPPORTED
+            case JSON_Type_Int64: {
+                size += JSON_INT64_BUFFER_SIZE;
+            }
+            #endif
+            case JSON_Type_Float: {
+                size += JSON_FLOAT_BUFFER_SIZE;
+            }
+            case JSON_Type_Bool: {
+                size += JSON_BOOL_BUFFER_SIZE;
+            }
+            case JSON_Type_Object: {
+                child = obj.GetObject(key);
+                size += child != null ? json_encode_size(child, options, depth + 1) : JSON_NULL_BUFFER_SIZE;
+            }
+        }
+
+        // increment for comma
+        size += 1;
+
+        is_empty = false;
+    }
+
+    if (! is_empty) {
+        // remove the final comma
+        size -= 1;
+
+        if (pretty_print) {
+            size += strlen(JSON_PP_NEWLINE);
+            size += depth * strlen(JSON_PP_INDENT);
+        }
+    }
+
+    size += 2; // closing bracket + NULL
+
+    return size;
+}
 
 /**
  * Encodes a JSON instance into its string representation.
@@ -49,9 +158,8 @@
  * @param obj       Object to encode.
  * @param output    String buffer to store output.
  * @param max_size  Maximum size of string buffer.
- * @param options   Bitwise combination of JSON_ENCODE_* options.
- *                  [default: JSON_NONE]
- * @param depth     The current depth of the encoder. [default: 0]
+ * @param options   Bitwise combination of `JSON_ENCODE_*` options.
+ * @param depth     The current depth of the encoder.
  */
 stock void json_encode(
     JSON_Object obj,
@@ -64,25 +172,10 @@ stock void json_encode(
     bool pretty_print = (options & JSON_ENCODE_PRETTY) != 0;
 
     bool is_array = obj.IsArray;
-    JSON_Array arr = null;
-    if (is_array) {
-        arr = view_as<JSON_Array>(obj);
-    }
-
-    StringMapSnapshot snap = null;
-    int json_size = 0;
-    if (is_array) {
-        json_size = arr.Length;
-
-        strcopy(output, max_size, "[");
-    } else {
-        snap = obj.Snapshot();
-        json_size = snap.Length;
-
-        strcopy(output, max_size, "{");
-    }
+    strcopy(output, max_size, is_array ? "[" : "{");
 
     // used in key iterator
+    int json_size = obj.Iterate();
     int builder_size = 0;
     int str_length = 1;
     JSON_Object child = null;
@@ -91,26 +184,21 @@ stock void json_encode(
 
     int key_length = 0;
     for (int i = 0; i < json_size; i += 1) {
-        key_length = is_array ? JSON_INT_BUFFER_SIZE : snap.KeyBufferSize(i);
+        key_length = is_array ? JSON_INT_BUFFER_SIZE : obj.GetKeySize(i);
         char[] key = new char[key_length];
 
         if (is_array) {
             IntToString(i, key, key_length);
         } else {
-            snap.GetKey(i, key, key_length);
-
-            // skip meta-keys
-            if (json_is_meta_key(key)) {
-                continue;
-            }
+            obj.GetKey(i, key, key_length);
         }
 
         // skip keys that are marked as hidden
-        if (obj.GetKeyHidden(key)) {
+        if (obj.GetHidden(key)) {
             continue;
         }
 
-        JSONCellType type = obj.GetKeyType(key);
+        JSONCellType type = obj.GetType(key);
         // skip keys of unknown type
         if (type == JSON_Type_Invalid) {
             continue;
@@ -120,12 +208,20 @@ stock void json_encode(
         cell_length = 0;
         switch (type) {
             case JSON_Type_String: {
-                str_length = obj.GetKeyLength(key);
-                cell_length = json_cell_string_size(str_length);
+                str_length = obj.GetSize(key);
+                char[] value = new char[str_length];
+                obj.GetString(key, value, str_length);
+
+                cell_length = json_cell_string_size(value);
             }
             case JSON_Type_Int: {
                 cell_length = JSON_INT_BUFFER_SIZE;
             }
+            #if SM_INT64_SUPPORTED
+            case JSON_Type_Int64: {
+                cell_length = JSON_INT64_BUFFER_SIZE;
+            }
+            #endif
             case JSON_Type_Float: {
                 cell_length = JSON_FLOAT_BUFFER_SIZE;
             }
@@ -142,14 +238,21 @@ stock void json_encode(
         char[] cell = new char[cell_length];
         switch (type) {
             case JSON_Type_String: {
-                char[] value = new char[str_length + 1];
-                obj.GetString(key, value, str_length + 1);
+                char[] value = new char[str_length];
+                obj.GetString(key, value, str_length);
                 json_cell_string(value, cell, cell_length);
             }
             case JSON_Type_Int: {
                 int value = obj.GetInt(key);
                 IntToString(value, cell, cell_length);
             }
+            #if SM_INT64_SUPPORTED
+            case JSON_Type_Int64: {
+                int value[2];
+                obj.GetInt64(key, value);
+                Int64ToString(value, cell, cell_length);
+            }
+            #endif
             case JSON_Type_Float: {
                 float value = obj.GetFloat(key);
                 FloatToString(value, cell, cell_length);
@@ -178,7 +281,7 @@ stock void json_encode(
         builder_size = cell_length + 1;
         if (! is_array) {
             // get the length of the key and + 1 for :
-            builder_size += json_cell_string_size(strlen(key)) + 1;
+            builder_size += json_cell_string_size(key) + 1;
 
             if (pretty_print) {
                 builder_size += strlen(JSON_PP_AFTER_COLON);
@@ -216,10 +319,6 @@ stock void json_encode(
         is_empty = false;
     }
 
-    if (snap != null) {
-        delete snap;
-    }
-
     if (! is_empty) {
         // remove the final comma
         output[strlen(output) - 1] = '\0';
@@ -241,12 +340,11 @@ stock void json_encode(
  * Decodes a JSON string into a JSON instance.
  *
  * @param buffer    Buffer to decode.
- * @param options   Bitwise combination of JSON_DECODE_* options.
- *                  [default: JSON_NONE]
+ * @param options   Bitwise combination of `JSON_DECODE_*` options.
  * @param pos       Current position of the decoder as bytes
  *                  offset into the buffer.
  * @param depth     Current nested depth of the decoder.
- * @returns         JSON instance or null if decoding failed becase
+ * @return          JSON instance or null if decoding failed becase
  *                  the buffer didn't contain valid JSON.
  * @error           If the buffer does not contain valid JSON,
  *                  an error will be thrown.
@@ -261,7 +359,7 @@ stock JSON_Object json_decode(
     int length = strlen(buffer);
     // skip preceding whitespace
     if (! json_skip_whitespace(buffer, length, pos)) {
-        LogError("json_decode: buffer ended early at position %d", pos);
+        json_set_last_error("buffer ended early at position %d", pos);
 
         return null;
     }
@@ -272,14 +370,15 @@ stock JSON_Object json_decode(
     if (buffer[pos] == '{') {
         is_array = false;
         obj = new JSON_Object();
+
+        if ((options & JSON_DECODE_ORDERED_KEYS) > 0) {
+            obj.EnableOrderedKeys();
+        }
     } else if (buffer[pos] == '[') {
         is_array = true;
         arr = new JSON_Array();
     } else {
-        LogError(
-            "json_decode: no object or array found at position %d",
-            pos
-        );
+        json_set_last_error("no object or array found at position %d", pos);
 
         return null;
     }
@@ -298,7 +397,7 @@ stock JSON_Object json_decode(
 
         // skip any whitespace preceding the element
         if (! json_skip_whitespace(buffer, length, pos)) {
-            LogError("json_decode: buffer ended early at position %d", pos);
+            json_set_last_error("buffer ended early at position %d", pos);
             json_cleanup_and_delete(obj);
             json_cleanup_and_delete(arr);
 
@@ -322,10 +421,7 @@ stock JSON_Object json_decode(
         if (! is_array) {
             // if dealing with an object, look for the key and determine length
             if (! json_is_string(buffer[pos], allow_single_quotes)) {
-                LogError(
-                    "json_decode: expected key string at position %d",
-                    pos
-                );
+                json_set_last_error("expected key string at position %d", pos);
                 json_cleanup_and_delete(obj);
                 json_cleanup_and_delete(arr);
 
@@ -348,7 +444,7 @@ stock JSON_Object json_decode(
 
             // skip any whitespace following the key
             if (! json_skip_whitespace(buffer, length, pos)) {
-                LogError("json_decode: buffer ended early at position %d", pos);
+                json_set_last_error("buffer ended early at position %d", pos);
                 json_cleanup_and_delete(obj);
                 json_cleanup_and_delete(arr);
 
@@ -357,8 +453,8 @@ stock JSON_Object json_decode(
 
             // ensure that we find a colon
             if (buffer[pos++] != ':') {
-                LogError(
-                    "json_decode: expected colon after key at position %d",
+                json_set_last_error(
+                    "expected colon after key at position %d",
                     pos
                 );
                 json_cleanup_and_delete(obj);
@@ -369,7 +465,7 @@ stock JSON_Object json_decode(
 
             // skip any whitespace following the colon
             if (! json_skip_whitespace(buffer, length, pos)) {
-                LogError("json_decode: buffer ended early at position %d", pos);
+                json_set_last_error("buffer ended early at position %d", pos);
                 json_cleanup_and_delete(obj);
                 json_cleanup_and_delete(arr);
 
@@ -435,8 +531,8 @@ stock JSON_Object json_decode(
                     cell_length,
                     is_array
                 )) {
-                    LogError(
-                        "json_decode: couldn't extract string at position %d",
+                    json_set_last_error(
+                        "couldn't extract string at position %d",
                         pos
                     );
                     json_cleanup_and_delete(obj);
@@ -460,8 +556,8 @@ stock JSON_Object json_decode(
                     cell_length,
                     is_array
                 )) {
-                    LogError(
-                        "json_decode: couldn't extract until end at position %d",
+                    json_set_last_error(
+                        "couldn't extract until end at position %d",
                         pos
                     );
                     json_cleanup_and_delete(obj);
@@ -471,8 +567,8 @@ stock JSON_Object json_decode(
                 }
 
                 if (strlen(cell) == 0) {
-                    LogError(
-                        "json_decode: empty cell encountered at position %d",
+                    json_set_last_error(
+                        "empty cell encountered at position %d",
                         pos
                     );
                     json_cleanup_and_delete(obj);
@@ -483,11 +579,30 @@ stock JSON_Object json_decode(
 
                 if (json_is_int(cell)) {
                     int value = StringToInt(cell);
+                    #if SM_INT64_SUPPORTED
+                    if (json_is_int64(cell, value)) {
+                        int values[2];
+                        StringToInt64(cell, values);
+
+                        if (is_array) {
+                            arr.PushInt64(values);
+                        } else {
+                            obj.SetInt64(key, values);
+                        }
+                    } else {
+                        if (is_array) {
+                            arr.PushInt(value);
+                        } else {
+                            obj.SetInt(key, value);
+                        }
+                    }
+                    #else
                     if (is_array) {
                         arr.PushInt(value);
                     } else {
                         obj.SetInt(key, value);
                     }
+                    #endif
                 } else if (json_is_float(cell)) {
                     float value = StringToFloat(cell);
                     if (is_array) {
@@ -509,8 +624,8 @@ stock JSON_Object json_decode(
                         obj.SetObject(key, null);
                     }
                 } else {
-                    LogError(
-                        "json_decode: unknown type encountered at position %d: %s",
+                    json_set_last_error(
+                        "unknown type encountered at position %d: %s",
                         pos,
                         cell
                     );
@@ -523,7 +638,7 @@ stock JSON_Object json_decode(
         }
 
         if (! json_skip_whitespace(buffer, length, pos)) {
-            LogError("json_decode: buffer ended early at position %d", pos);
+            json_set_last_error("buffer ended early at position %d", pos);
             json_cleanup_and_delete(obj);
             json_cleanup_and_delete(arr);
 
@@ -534,8 +649,8 @@ stock JSON_Object json_decode(
     // skip remaining whitespace and ensure we're at the end of the buffer
     pos += 1;
     if (json_skip_whitespace(buffer, length, pos) && depth == 0) {
-        LogError(
-            "json_decode: unexpected data after structure end at position %d",
+        json_set_last_error(
+            "unexpected data after structure end at position %d",
             pos
         );
         json_cleanup_and_delete(obj);
@@ -544,174 +659,82 @@ stock JSON_Object json_decode(
         return null;
     }
 
-    JSON_Object result;
-    result = is_array ? view_as<JSON_Object>(arr) : view_as<JSON_Object>(obj);
-
-    return result;
+    return is_array ? view_as<JSON_Object>(arr) : obj;
 }
 
 /**
- * Merges the entries from the second object to the first,
- * optionally replacing existing entries with the same key.
+ * Encodes the object with the options provided and writes
+ * the output to the file at the path specified.
  *
- * @param to        Object to merge on to.
- * @param from      Object to merge entries from.
- * @param options   Bitwise combination of JSON_MERGE_* options.
- *                  [default: JSON_MERGE_REPLACE]
- * @returns         True on success, false otherwise.
- * @error           If the objects are not the same structure type
- *                  as one another, an error will be thrown.
- *                  For example, an object cannot be reliably merged over an
- *                  array and vice versa. Only array over array and
- *                  object over object merging is supported.
+ * @param obj         Object to encode/write to file.
+ * @param path        Path of file to write to.
+ * @param options     Options to pass to `json_encode`.
+ * @return            True on success, false otherwise.
  */
-stock bool json_merge(
-    JSON_Object to,
-    JSON_Object from,
-    int options = JSON_MERGE_REPLACE
+stock bool json_write_to_file(
+    JSON_Object obj,
+    const char[] path,
+    int options = JSON_NONE
 )
 {
-    if (to.IsArray && ! from.IsArray) {
-        LogError("json_merge: attempting to merge an object onto an array");
-
-        return false;
-    } else if (! to.IsArray && from.IsArray) {
-        LogError("json_merge: attempting to merge an array onto an object");
-
+    File f = OpenFile(path, "wb");
+    if (f == null) {
         return false;
     }
 
-    bool replace = (options & JSON_MERGE_REPLACE) > 0;
-    bool autocleanup = (options & JSON_MERGE_CLEANUP) > 0;
+    int size = json_encode_size(obj, options);
+    char[] buffer = new char[size];
+    json_encode(obj, buffer, size, options);
 
-    bool is_array = to.IsArray;
-    JSON_Array to_arr = null;
-    if (is_array) {
-        to_arr = view_as<JSON_Array>(to);
+    bool success = f.WriteString(buffer, false);
+    delete f;
+
+    return success;
+}
+
+/**
+ * Reads and decodes the contents of a JSON file.
+ *
+ * @param path        Path of file to read from.
+ * @param options     Options to pass to `json_decode`.
+ * @return            The decoded object on success, null otherwise.
+ */
+stock JSON_Object json_read_from_file(const char[] path, int options = JSON_NONE)
+{
+    File f = OpenFile(path, "rb");
+    if (f == null) {
+        return null;
     }
 
-    StringMapSnapshot snap = null;
-    int json_size = 0;
-    if (is_array) {
-        JSON_Array from_arr = view_as<JSON_Array>(from);
-        json_size = from_arr.Length;
-    } else {
-        snap = from.Snapshot();
-        json_size = snap.Length;
-    }
+    f.Seek(0, SEEK_END);
+    int size = f.Position + 1;
+    char[] buffer = new char[size];
 
-    int key_length = 0;
-    for (int i = 0; i < json_size; i += 1) {
-        key_length = is_array ? JSON_INT_BUFFER_SIZE : snap.KeyBufferSize(i);
-        char[] key = new char[key_length];
+    f.Seek(0, SEEK_SET);
+    f.ReadString(buffer, size);
+    delete f;
 
-        bool key_already_exists = false;
-        if (is_array) {
-            IntToString(i, key, key_length);
-        } else {
-            snap.GetKey(i, key, key_length);
-
-            // skip meta-keys
-            if (json_is_meta_key(key)) {
-                continue;
-            }
-
-            // skip already existing keys if we aren't in replace mode
-            key_already_exists = to.HasKey(key);
-            if (! replace && key_already_exists) {
-                continue;
-            }
-        }
-
-        JSONCellType type = from.GetKeyType(key);
-        // skip keys of unknown type
-        if (type == JSON_Type_Invalid) {
-            continue;
-        }
-
-        // merge value onto structure
-        switch (type) {
-            case JSON_Type_String: {
-                int length = from.GetKeyLength(key);
-                char[] value = new char[length + 1];
-                from.GetString(key, value, length + 1);
-
-                if (is_array) {
-                    to_arr.PushString(value);
-                } else {
-                    to.SetString(key, value);
-                }
-            }
-            case JSON_Type_Int: {
-                int value = from.GetInt(key);
-
-                if (is_array) {
-                    to_arr.PushInt(value);
-                } else {
-                    to.SetInt(key, value);
-                }
-            }
-            case JSON_Type_Float: {
-                float value = from.GetFloat(key);
-
-                if (is_array) {
-                    to_arr.PushFloat(value);
-                } else {
-                    to.SetFloat(key, value);
-                }
-            }
-            case JSON_Type_Bool: {
-                bool value = from.GetBool(key);
-
-                if (is_array) {
-                    to_arr.PushBool(value);
-                } else {
-                    to.SetBool(key, value);
-                }
-            }
-            case JSON_Type_Object: {
-                JSON_Object value = from.GetObject(key);
-
-                if (is_array) {
-                    to_arr.PushObject(value);
-                } else {
-                    if (autocleanup && key_already_exists) {
-                        JSON_Object existing = to.GetObject(key);
-                        if (existing != null && existing != value) {
-                            existing.Cleanup();
-                            delete existing;
-                        }
-                    }
-
-                    to.SetObject(key, value);
-                }
-            }
-        }
-
-        // set hidden attribute
-        bool hidden = from.GetKeyHidden(key);
-        if (is_array) {
-            to_arr.SetKeyHidden(to_arr.Length - 1, hidden);
-        } else {
-            to.SetKeyHidden(key, hidden);
-        }
-    }
-
-    return true;
+    return json_decode(buffer, options);
 }
 
 /**
  * Creates a shallow copy of the specified object.
  *
  * @param obj   Object to copy.
- * @returns     A shallow copy of the specified object.
+ * @return      A shallow copy of the specified object.
  */
 stock JSON_Object json_copy_shallow(JSON_Object obj)
 {
-    JSON_Object result = obj.IsArray ?
-        view_as<JSON_Object>(new JSON_Array())
+    bool isArray = obj.IsArray;
+    JSON_Object result = isArray
+        ? view_as<JSON_Object>(new JSON_Array())
         : new JSON_Object();
-    result.Merge(obj);
+
+    if (isArray) {
+        view_as<JSON_Array>(result).Concat(view_as<JSON_Array>(obj));
+    } else {
+        result.Merge(obj);
+    }
 
     return result;
 }
@@ -720,61 +743,52 @@ stock JSON_Object json_copy_shallow(JSON_Object obj)
  * Creates a deep copy of the specified object.
  *
  * @param obj   Object to copy.
- * @returns     A deep copy of the specified object.
+ * @return      A deep copy of the specified object.
  */
 stock JSON_Object json_copy_deep(JSON_Object obj)
 {
-    JSON_Object result = obj.IsArray ?
-        view_as<JSON_Object>(new JSON_Array())
-        : new JSON_Object();
-    result.Merge(obj);
+    JSON_Object result = json_copy_shallow(obj);
 
+    int length = obj.Iterate();
     int key_length = 0;
-    StringMapSnapshot snap = result.Snapshot();
-    for (int i = 0; i < snap.Length; i += 1) {
-        key_length = snap.KeyBufferSize(i);
+    for (int i = 0; i < length; i += 1) {
+        key_length = obj.GetKeySize(i);
         char[] key = new char[key_length];
-
-        // ignore meta keys
-        snap.GetKey(i, key, key_length);
-        if (json_is_meta_key(key)) {
-            continue;
-        }
+        obj.GetKey(i, key, key_length);
 
         // only deep copy objects
-        JSONCellType type = obj.GetKeyType(key);
+        JSONCellType type = obj.GetType(key);
         if (type != JSON_Type_Object) {
             continue;
         }
 
         JSON_Object value = obj.GetObject(key);
-        result.SetObject(key, value.DeepCopy());
+        result.SetObject(key, json_copy_deep(value));
     }
 
     return result;
 }
 
 /**
- * Recursively cleans up a JSON instance and any JSON instances stored within.
+ * Recursively cleans up the instance and any instances stored within.
  *
- * @param obj   JSON instance to clean up.
+ * @param obj   Object to clean up.
  */
 stock void json_cleanup(JSON_Object obj)
 {
-    int key_length = 0;
-    StringMapSnapshot snap = obj.Snapshot();
-    for (int i = 0; i < snap.Length; i += 1) {
-        key_length = snap.KeyBufferSize(i);
-        char[] key = new char[key_length];
+    if (obj == null) {
+        return;
+    }
 
-        // ignore meta keys
-        snap.GetKey(i, key, key_length);
-        if (json_is_meta_key(key)) {
-            continue;
-        }
+    int length = obj.Iterate();
+    int key_length = 0;
+    for (int i = 0; i < length; i += 1) {
+        key_length = obj.GetKeySize(i);
+        char[] key = new char[key_length];
+        obj.GetKey(i, key, key_length);
 
         // only clean up objects
-        JSONCellType type = obj.GetKeyType(key);
+        JSONCellType type = obj.GetType(key);
         if (type != JSON_Type_Object) {
             continue;
         }
@@ -782,33 +796,20 @@ stock void json_cleanup(JSON_Object obj)
         JSON_Object value = obj.GetObject(key);
         if (value != null) {
             json_cleanup(value);
-            delete value;
         }
     }
-    delete snap;
 
-    if (obj.IsArray) {
-        JSON_Array obj_arr = view_as<JSON_Array>(obj);
-        obj_arr.Clear();
-    } else {
-        obj.Clear();
-    }
+    delete obj.Snap;
+    obj.Super.Cleanup();
 }
 
 /**
- * Cleans up and deletes an object, ensuring all resources are freed.
- * Also sets the passed variable to null.
+ * Cleans up an object and sets the passed variable to null.
  *
  * @param obj   Object to clean up.
  */
 stock void json_cleanup_and_delete(JSON_Object &obj)
 {
-    if (obj == null) {
-        return;
-    }
-
-    obj.Cleanup();
-    delete obj;
-
+    json_cleanup(obj);
     obj = null;
 }

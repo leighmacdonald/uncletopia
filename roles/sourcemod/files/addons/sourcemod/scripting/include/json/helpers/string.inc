@@ -5,7 +5,7 @@
  * A pure SourcePawn JSON encoder/decoder.
  * https://github.com/clugg/sm-json
  *
- * sm-json (C)2020 James Dickens. (clug)
+ * sm-json (C)2022 James Dickens. (clug)
  * SourceMod (C)2004-2008 AlliedModders LLC.  All rights reserved.
  * =============================================================================
  *
@@ -166,60 +166,10 @@ stock void json_unescape_string(char[] buffer, int max_size)
 }
 
 /**
- * Checks if a string starts with another string.
- *
- * @param haystack  String to check that starts with needle.
- * @param max_size  Maximum size of string buffer.
- * @param needle    String to check that haystack starts with.
- * @returns         True if haystack begins with needle, false otherwise.
- */
-stock bool json_string_startswith(const char[] haystack, const char[] needle)
-{
-    int haystack_length = strlen(haystack);
-    int needle_length = strlen(needle);
-    if (needle_length > haystack_length) {
-        return false;
-    }
-
-    for (int i = 0; i < needle_length; i += 1) {
-        if (haystack[i] != needle[i]) {
-            return false;
-        }
-    }
-
-    return true;
-}
-
-/**
- * Checks if a string ends with another string.
- *
- * @param haystack  String to check that ends with needle.
- * @param max_size  Maximum size of string buffer.
- * @param needle    String to check that haystack ends with.
- * @returns         True if haystack ends with needle, false otherwise.
- */
-stock bool json_string_endswith(const char[] haystack, const char[] needle)
-{
-    int haystack_length = strlen(haystack);
-    int needle_length = strlen(needle);
-    if (needle_length > haystack_length) {
-        return false;
-    }
-
-    for (int i = 0; i < needle_length; i += 1) {
-        if (haystack[haystack_length - needle_length + i] != needle[i]) {
-            return false;
-        }
-    }
-
-    return true;
-}
-
-/**
  * Checks whether the provided character is a valid hexadecimal character.
  *
  * @param c     Character to check.
- * @returns     True if c is a hexadecimal character, false otherwise.
+ * @return      True if c is a hexadecimal character, false otherwise.
  */
 stock bool json_char_is_hex(int c)
 {
@@ -235,12 +185,45 @@ stock bool json_char_is_hex(int c)
  * store the JSON cell representation of a string.
  *
  * @param length    The length of the string.
- * @returns         Maximum buffer length.
+ * @return          Maximum buffer length.
  */
-stock int json_cell_string_size(int length)
+stock int json_cell_string_size(const char[] input)
 {
-    // double for potential escaping, + 2 for outside quotes + NULL terminator
-    return (length * 3) + 3;
+    int size = 3; // for outside quotes + NULL terminator
+
+    bool foundEscapeTarget = false;
+    int length = strlen(input);
+    for (int pos = 0; pos < length; pos += 1) {
+        foundEscapeTarget = false;
+        for (int i = 0; i < sizeof(JSON_STRING_NORMAL); i += 1) {
+            if (input[pos] == JSON_STRING_NORMAL[i][0]) {
+                size += 2;
+                foundEscapeTarget = true;
+                break;
+            }
+        }
+
+        if (foundEscapeTarget) {
+            continue;
+        }
+
+        if (input[pos] < 0x80) {
+            size += 1;
+            continue;
+        }
+
+        // consume the ascii bytes of the next utf8 character
+        int ascii_size;
+        json_ascii_to_utf8(input[pos], length - pos, ascii_size);
+        if (ascii_size <= 0) {
+            continue;
+        }
+
+        pos += ascii_size - 1;
+        size += 6; // for unicode escape is \uXXXX
+    }
+
+    return size;
 }
 
 /**
@@ -252,11 +235,11 @@ stock int json_cell_string_size(int length)
  */
 stock void json_cell_string(const char[] input, char[] output, int max_size)
 {
-    // add input string to output offset by 1 char
-    strcopy(output[1], max_size - 1, input);
+    // add input string to output, offset for start/end quotes
+    strcopy(output[1], max_size - 2, input);
 
     // escape the output
-    json_escape_string(output[1], max_size - 1);
+    json_escape_string(output[1], max_size - 2);
 
     // surround output with quotations
     output[0] = '"';
