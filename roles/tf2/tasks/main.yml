@@ -288,7 +288,7 @@
       - /build/autorecorder.cfg:/home/steam/config/tf/cfg/sourcemod/autorecorder.cfg
       - /build/basevotes.cfg:/home/steam/config/tf/cfg/sourcemod/basevotes.cfg
       - /build/funvotes.cfg:/home/steam/config/tf/cfg/sourcemod/funvotes.cfg
-      - /build/{ item.server_name_short }}/mapchooser.cfg:/home/steam/config/tf/cfg/sourcemod/mapchooser.cfg
+      - /build/{{ item.server_name_short }}/mapchooser.cfg:/home/steam/config/tf/cfg/sourcemod/mapchooser.cfg
       - /build/nativevotes.cfg:/home/steam/config/tf/cfg/sourcemod/nativevotes.cfg
       - /build/networktools.cfg:/home/steam/config/tf/cfg/sourcemod/networktools.cfg
       - /build/randomcycle.cfg:/home/steam/config/tf/cfg/sourcemod/randomcycle.cfg
