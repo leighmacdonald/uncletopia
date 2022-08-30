@@ -15,7 +15,7 @@
     path: /etc/wireguard
     mode: 0700
 
-- name: wg.conf server
+- name: Wg.conf server
   become: true
   ansible.builtin.template:
     src: srv-wg0.conf.j2
@@ -23,7 +23,7 @@
     mode: 0700
   when: not is_vpn_client | bool
 
-- name: wg.conf client
+- name: Wg.conf client
   become: true
   ansible.builtin.template:
     src: wg0.conf.j2
@@ -31,19 +31,19 @@
     mode: 0700
   when: is_vpn_client | bool
 
-- name: wg-fw
+- name: Wg-fw
   become: true
   ufw:
     rule: allow
     port: "{{ vpn_port }}"
     proto: udp
 
-- name: systemd reload
+- name: Systemd reload
   become: true
   ansible.builtin.systemd:
     daemon_reload: true
 
-- name: systemctl enable wg-quick@wg0
+- name: Systemctl enable wg-quick@wg0
   become: true
   ansible.builtin.systemd:
     name: wg-quick@wg0

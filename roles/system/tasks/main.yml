@@ -69,6 +69,14 @@
     append: true
     state: present
 
+- name: Disable irqbalance
+  become: true
+  ansible.builtin.systemd:
+    name: irqbalance
+    state: stopped
+    masked: true
+    enabled: false
+
 - name: Reload systemd daemon
   become: true
   ansible.builtin.systemd:

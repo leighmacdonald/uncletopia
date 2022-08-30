@@ -55,13 +55,8 @@
     direction: incoming
   when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
 
-- name: mkdir .ssh
-  ansible.builtin.file:
-    path: ~/.ssh
-    state: directory
-    mode: "0700"
-
 - name: ssh keys
+  become: true
   ansible.posix.authorized_key:
     user: tf2server
     state: present

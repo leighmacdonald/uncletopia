@@ -240,7 +240,7 @@
     tty: true
     recreate: true
     restart_policy: always
-    cpuset_cpus: "{{ loop0 * 2 }},{{ (loop0 * 2)+1 }}"
+    cpuset_cpus: "{{ loop0 * 2 }},{{ (loop0 * 2) + 1 }}"
     # Uncomment when not using host network_mode
     # ports:
     #   - "{{ srcds_base_port + (loop0 * 10) }}:{{ srcds_base_port + (loop0 * 10) }}/tcp"
