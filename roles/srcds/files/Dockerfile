@@ -15,13 +15,13 @@ RUN set -x \
 	# Install, update & upgrade packages
 	&& apt-get update \
 	&& apt-get install -y --no-install-recommends --no-install-suggests \
-		wget=1.21-1+deb11u1 \
-		ca-certificates=20210119 \
-		lib32z1=1:1.2.11.dfsg-2+deb11u1 \
-		libncurses5:i386=6.2+20201114-2 \
-		libbz2-1.0:i386=1.0.8-4 \
-		libtinfo5:i386=6.2+20201114-2 \
-		libcurl3-gnutls:i386=7.74.0-1.3+deb11u1 \
+		wget \
+		ca-certificates \
+		lib32z1 \
+		libncurses5:i386 \
+		libbz2-1.0:i386 \
+		libtinfo5:i386 \
+		libcurl3-gnutls:i386 \
 	&& mkdir -p "${STEAMAPPDIR}" \
     && cp /entry.sh "${HOMEDIR}/entry.sh" \
     # && wget "${DLURL}/roles/srcds/files/entry.sh" -O "${HOMEDIR}/entry.sh" \
