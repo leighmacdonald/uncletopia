@@ -313,3 +313,16 @@
   loop_control:
     index_var: loop0
   when: ansible_distribution == 'Ubuntu'
+
+- name: cron
+  become: true
+  ansible.builtin.cron:
+    name: "tf2-restart-{{ item.server_name_short }}"
+    weekday: "*"
+    minute: "0"
+    hour: "6"
+    job: "docker restart srcds-{{ item.server_name_short }}"
+  loop: "{{ services }}"
+  loop_control:
+    index_var: loop0
+  when: ansible_distribution == 'Ubuntu'
