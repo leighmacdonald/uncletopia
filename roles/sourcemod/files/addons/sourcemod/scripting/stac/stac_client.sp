@@ -22,7 +22,7 @@ public void OnClientPutInServer(int Cl)
         {
             StacLog("%N joined. Checking cvars", Cl);
         }
-        QueryTimer[Cl] = CreateTimer(60.0, Timer_CheckClientConVars_FirstTime, userid);
+        QueryTimer[Cl] = CreateTimer(30.0, Timer_CheckClientConVars_FirstTime, userid);
 
         CreateTimer(10.0, CheckAuthOn, userid);
 
@@ -90,12 +90,12 @@ Action CheckAuthOn(Handle timer, int userid)
                 // TODO: detect clients that ignore this
                 // KickClient(Cl, "[StAC] Not authorized with Steam Network, please authorize and reconnect");
             }
-            else
-            {
-                StacGeneralPlayerNotify(userid, "Client failed to authorize w/ Steam in a timely manner");
-                StacLog("Client %N failed to authorize w/ Steam in a timely manner.", Cl);
-                // SteamAuthFor[Cl][0] = '\0'; ?
-            }
+//            else
+//            {
+//                StacGeneralPlayerNotify(userid, "Client failed to authorize w/ Steam in a timely manner");
+//                StacLog("Client %N failed to authorize w/ Steam in a timely manner.", Cl);
+//                // SteamAuthFor[Cl][0] = '\0'; ?
+//            }
         }
         else
         {
