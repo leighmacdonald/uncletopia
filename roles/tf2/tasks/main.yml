@@ -235,6 +235,9 @@
     state: started
     restart: true
     network_mode: host
+    # Disables https://en.wikipedia.org/wiki/Speculative_Store_Bypass
+    # https://github.com/moby/moby/issues/41389
+    security_opts: ["seccomp:unconfined"]
     pull: true
     interactive: true
     tty: true

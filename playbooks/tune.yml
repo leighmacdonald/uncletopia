@@ -14,7 +14,7 @@
     - ansible.builtin.shell: echo never {{ ">" }} /sys/kernel/mm/transparent_hugepage/enabled
     - ansible.posix.sysctl:
         name: vm.swappiness
-        value: '0'
+        value: '10'
         state: present
         reload: true
     - ansible.posix.sysctl:
@@ -102,3 +102,12 @@
     #    value: "52428800"
     #    sysctl_set: true
     #    reload: true
+
+    - ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 0
+        state: present
+        pkg:
+          - tuned
+
+    - ansible.builtin.shell: tuned-adm profile latency-performance
