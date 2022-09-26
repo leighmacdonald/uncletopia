@@ -1,0 +1,7 @@
+{{ inventory_hostname }} {
+    root * /replays
+    file_server browse
+    tls {{ caddy.cloudflare.email }} {
+        dns cloudflare {{ caddy.cloudflare.api_key }}
+    }
+}

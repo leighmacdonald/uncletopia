@@ -21,7 +21,7 @@ mkdir -p "${STEAMAPPDIR}/${STEAMAPP}/logs/stac"
 cd "${STEAMAPPDIR}"
 
 
-bash "${STEAMAPPDIR}/srcds_run" -game "${STEAMAPP}" -console -autoupdate \
+bash "${STEAMAPPDIR}/srcds_run" -game "${STEAMAPP}" -console -autoupdate -replay \
   -steam_dir "${STEAMCMDDIR}" \
   -steamcmd_script "${HOMEDIR}/${STEAMAPP}_update.txt" \
   -usercon \

@@ -18,6 +18,16 @@
     mode: 0777
   loop: "{{ services }}"
 
+- name: build replay output
+  become: true
+  become_user: tf2server
+  ansible.builtin.file:
+    path: /replays/{{ item.server_name_short }}
+    state: directory
+    owner: tf2server
+    mode: 0777
+  loop: "{{ services }}"
+
 - name: Generate /build/admins_simple.ini
   ansible.builtin.template:
     src: admins_simple.ini.j2
@@ -180,6 +190,17 @@
   loop_control:
     index_var: loop0
 
+- name: Generate tf/cfg/replay.cfg
+  ansible.builtin.template:
+    src: replay.cfg.j2
+    dest: /build/{{ item.server_name_short }}/replay.cfg
+    mode: 0777
+  tags:
+    - game_config
+  loop: "{{ services }}"
+  loop_control:
+    index_var: loop0
+
 - name: Generate /build/sourcemod.cfg
   ansible.builtin.template:
     src: sourcemod.cfg.j2
@@ -195,7 +216,7 @@
     mode: 0777
   tags:
     - game_config
-    -
+
 - name: Generate /build/motd.txt
   ansible.builtin.template:
     src: motd.txt.j2
@@ -279,10 +300,12 @@
       # and the query port are the same.
       STEAM_GAMESERVER_PACKET_HANDLER_NO_IPC: "1"
     volumes:
+      - /replays/{{ item.server_name_short }}:/replays
       - srcds-{{ item.server_name_short }}-stv:/home/steam/tf-dedicated/tf/stv_demos
       - srcds-{{ item.server_name_short }}-logs:/home/steam/tf-dedicated/tf/logs
       - /build/{{ item.server_name_short }}/autoexec.cfg:/home/steam/config/tf/cfg/autoexec.cfg
       - /build/{{ item.server_name_short }}/server.cfg:/home/steam/config/tf/cfg/server.cfg
+      - /build/{{ item.server_name_short }}/replay.cfg:/home/steam/config/tf/cfg/replay.cfg
       - /build/admins_simple.ini:/home/steam/config/tf/addons/sourcemod/configs/admins_simple.ini
       - /build/{{ item.server_name_short }}/mapcycle.txt:/home/steam/config/tf/cfg/mapcycle.txt
       - /build/motd.txt:/home/steam/config/tf/cfg/motd.txt

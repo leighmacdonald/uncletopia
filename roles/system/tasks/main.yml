@@ -95,3 +95,57 @@
     state: reloaded
     policy: deny
   when: ansible_distribution == 'Ubuntu'
+
+- name: Create a directory if it does not exist
+  become: true
+  ansible.builtin.file:
+    path: /replays
+    state: directory
+    mode: '0777'
+
+- name: replays-fw
+  become: true
+  ansible.builtin.ufw:
+    rule: allow
+    port: "27800"
+    proto: tcp
+
+- name: Generate /etc/Caddyfile_replays
+  become: true
+  ansible.builtin.template:
+    src: Caddyfile.j2
+    dest: /etc/Caddyfile_replays
+    mode: 0775
+
+- name: caddy_data_replays volume
+  docker_volume:
+    name: caddy_data_replays
+    state: present
+
+- name: caddy_config_replays volume
+  docker_volume:
+    name: caddy_config_replays
+    state: present
+
+- name: Create caddy container
+  docker_container:
+    name: caddy
+    image: slothcroissant/caddy-cloudflaredns:latest
+    restart: true
+    recreate: true
+    network_mode: 'host'
+    purge_networks: true
+    restart_policy: always
+    pull: true
+    volumes:
+      - caddy_data_replays:/data
+      - caddy_config_replays:/config
+      - /etc/Caddyfile_replays:/etc/caddy/Caddyfile
+      - /replays:/replays
+    env:
+      CLOUDFLARE_EMAIL: "{{ caddy.cloudflare.email }}"
+      CLOUDFLARE_API_TOKEN: "{{ caddy.cloudflare.api_key }}"
+      ACME_AGREE: "true"
+    ports:
+      - 443:443
+      - 80:80
