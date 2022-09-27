@@ -47,9 +47,9 @@ replay_fileserver_protocol "http"
 replay_fileserver_offload_enable	"0"
 //
 //// The replay data will be copied to this directory
-replay_local_fileserver_path		"/replays"
+replay_local_fileserver_path		"/replays/replays"
 //
 //// These are used to reconstruct a URL on the client.
 replay_fileserver_host			"{{ inventory_hostname }}"
-replay_fileserver_port			"80"
-replay_fileserver_path			"/{{ item.server_name_short }}"
+replay_fileserver_port			"27800"
+replay_fileserver_path			"/{{ item.server_name_short }}/replays"

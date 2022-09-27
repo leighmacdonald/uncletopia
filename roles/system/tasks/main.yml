@@ -127,9 +127,30 @@
     name: caddy_config_replays
     state: present
 
+- name: replays-fw-80
+  become: true
+  ansible.builtin.ufw:
+    rule: allow
+    port: "80"
+    proto: tcp
+
+- name: replays-fw-443
+  become: true
+  ansible.builtin.ufw:
+    rule: allow
+    port: "443"
+    proto: tcp
+
+- name: replays-fw-27800
+  become: true
+  ansible.builtin.ufw:
+    rule: allow
+    port: "27800"
+    proto: tcp
+
 - name: Create caddy container
   docker_container:
-    name: caddy
+    name: replays-caddy
     image: slothcroissant/caddy-cloudflaredns:latest
     restart: true
     recreate: true
@@ -142,10 +163,10 @@
       - caddy_config_replays:/config
       - /etc/Caddyfile_replays:/etc/caddy/Caddyfile
       - /replays:/replays
+    exposed_ports: ["443", "80"]
     env:
       CLOUDFLARE_EMAIL: "{{ caddy.cloudflare.email }}"
       CLOUDFLARE_API_TOKEN: "{{ caddy.cloudflare.api_key }}"
       ACME_AGREE: "true"
     ports:
-      - 443:443
-      - 80:80
+      - 27800:27800

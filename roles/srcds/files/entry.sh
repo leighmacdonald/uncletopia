@@ -20,6 +20,7 @@ mkdir -p "${STEAMAPPDIR}/${STEAMAPP}/logs/stac"
 # Believe it or not, if you don't do this srcds_run shits itself
 cd "${STEAMAPPDIR}"
 
+mkdir -p /replays/replays
 
 bash "${STEAMAPPDIR}/srcds_run" -game "${STEAMAPP}" -console -autoupdate -replay \
   -steam_dir "${STEAMCMDDIR}" \
