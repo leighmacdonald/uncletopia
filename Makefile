@@ -50,6 +50,9 @@ web:
 srcdsup:
 	@ansible-playbook $(PROD_OPTS) $(PLAYBOOK_PATH)/srcdsup.yml
 
+game_config:
+	@ansible-playbook $(PROD_OPTS) $(PLAYBOOK_PATH)/deploy.yml --tags game_config
+
 system:
 	@ansible-playbook $(PROD_OPTS) $(PLAYBOOK_PATH)/system.yml
 

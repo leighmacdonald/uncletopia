@@ -22,7 +22,7 @@ cd "${STEAMAPPDIR}"
 
 mkdir -p /replays/replays
 
-bash "${STEAMAPPDIR}/srcds_run" -game "${STEAMAPP}" -console -autoupdate -replay \
+bash "${STEAMAPPDIR}/srcds_run" -game "${STEAMAPP}" -console -autoupdate \
   -steam_dir "${STEAMCMDDIR}" \
   -steamcmd_script "${HOMEDIR}/${STEAMAPP}_update.txt" \
   -usercon \
