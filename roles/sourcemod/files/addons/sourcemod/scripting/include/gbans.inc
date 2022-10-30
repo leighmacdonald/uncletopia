@@ -10,6 +10,14 @@
 #define BSNoComm 1   // Muted
 #define BSBanned 2   // Banned
 
+#define PERMISSION_RESERVED 15
+#define PERMISSION_EDITOR 25
+#define PERMISSION_MOD 50
+#define PERMISSION_ADMIN 100
+
+#define HTTP_STATUS_OK 200
+#define HTTP_STATUS_CONFLICT 409
+
 public SharedPlugin __pl_gbans =
 {
 	name = "gbans",
@@ -35,4 +43,9 @@ enum banReason {
 	itemDescriptions  = 11
 }
 
+/**
+ * Ban or Mute+Gag a client
+ * 
+ * 
+ */
 native bool GB_BanClient(int adminId, int targetId, banReason reason, const char[] duration = "2d", int banType = BSBanned);
