@@ -179,6 +179,14 @@
   tags:
     - game_config
 
+- name: Generate /build/discord_cfg.cfg
+  ansible.builtin.template:
+    src: discord_cfg.cfg.j2
+    dest: /build/discord_cfg.cfg
+    mode: 0777
+  tags:
+    - game_config
+
 - name: Generate tf/cfg/server.cfg
   ansible.builtin.template:
     src: server.cfg.j2
@@ -319,6 +327,7 @@
       - /build/networktools.cfg:/home/steam/config/tf/cfg/sourcemod/networktools.cfg
       - /build/randomcycle.cfg:/home/steam/config/tf/cfg/sourcemod/randomcycle.cfg
       - /build/rtv.cfg:/home/steam/config/tf/cfg/sourcemod/rtv.cfg
+      - /build/discord_cfg.cfg:/home/steam/config/tf/cfg/sourcemod/discord.cfg
       - /build/sourcemod.cfg:/home/steam/config/tf/cfg/sourcemod/sourcemod.cfg
       - /build/stac.cfg:/home/steam/config/tf/cfg/sourcemod/stac.cfg
       - /build/discord.cfg:/home/steam/config/tf/addons/sourcemod/configs/discord.cfg

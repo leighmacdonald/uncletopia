@@ -39,8 +39,8 @@ RUN set -x \
 	# Clean up
 	&& rm -rf /var/lib/apt/lists/*
 
-ENV SRCDS_FPSMAX=300 \
-	SRCDS_TICKRATE=66 \
+ENV SRCDS_FPSMAX=67 \
+	SRCDS_TICKRATE=67 \
 	SRCDS_PORT=27015 \
 	SRCDS_TV_PORT=27020 \
     SRCDS_NET_PUBLIC_ADDRESS="0" \
