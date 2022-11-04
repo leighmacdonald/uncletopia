@@ -18,7 +18,8 @@ for PLUGIN in admin-sql-prefetch \
     basevotes \
     mapchooser \
     nominations \
-    sql-admin-manager;
+    sql-admin-manager \
+    reservedslots ;
 do
   echo "Disabling ${PLUGIN}"
   mv compiled/${PLUGIN}.smx ../plugins/disabled/
