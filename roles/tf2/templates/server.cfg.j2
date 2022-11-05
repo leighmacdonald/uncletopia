@@ -1,9 +1,13 @@
-sv_maxrate		"0"
-sv_maxcmdrate		"67"
-sv_minrate		"50000"
-sv_minupdaterate		"20"
-sv_maxupdaterate "67"
-sv_mincmdrate		"20"
+log on
+mp_logdetail "3"
+
+sv_minrate 20000
+sv_maxrate 60000
+sv_maxupdaterate 66
+sv_minupdaterate 40
+sv_maxcmdrate 66
+sv_mincmdrate 40
+
 sv_client_cmdrate_difference		"20"
 net_splitpacket_maxrate		"100000"
 
@@ -33,7 +37,6 @@ tv_title "{{ stv_name }}"
 {% endif %}
 
 // Server Logging
-log on
 sv_logbans 1
 sv_logecho 0
 sv_logfile 1
