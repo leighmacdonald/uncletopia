@@ -70,6 +70,7 @@ public Plugin myinfo =
 public void OnPluginStart()
 {
     StacLog("\n\n----> StAC version [%s] loaded\n", PLUGIN_VERSION);
+    return;
     // check if tf2, unload if not
     if (GetEngineVersion() != Engine_TF2)
     {
@@ -166,6 +167,7 @@ public void OnPluginStart()
 public void OnPluginEnd()
 {
     StacLog("\n\n----> StAC version [%s] unloaded\n", PLUGIN_VERSION);
+    return;
     NukeTimers();
     OnMapEnd();
 }
