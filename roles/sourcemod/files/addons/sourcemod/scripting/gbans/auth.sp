@@ -11,9 +11,15 @@ Send authenticated commands with header "Authorization $token" set for subsequen
 
 */
 void refreshToken() {
+    char server_name[PLATFORM_MAX_PATH];
+    g_server_name.GetString(server_name, sizeof(server_name));
+
+    char server_key[PLATFORM_MAX_PATH];
+    g_server_key.GetString(server_key, sizeof(server_key));
+
     JSON_Object obj = new JSON_Object();
-    obj.SetString("server_name", g_server_name);
-    obj.SetString("key", g_server_key);
+    obj.SetString("server_name", server_name);
+    obj.SetString("key", server_key);
     char encoded[1024];
     obj.Encode(encoded, sizeof(encoded));
     json_cleanup_and_delete(obj);

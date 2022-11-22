@@ -44,14 +44,6 @@
   tags:
     - game_config
 
-- name: Generate /build/gbans.cfg
-  ansible.builtin.template:
-    src: gbans.cfg.j2
-    dest: /build/gbans.cfg
-    mode: 0777
-  tags:
-    - game_config
-
 - name: mapcycle.txt
   ansible.builtin.template:
     src: mapcycle.txt.j2
@@ -112,13 +104,16 @@
   tags:
     - game_config
 
-- name: Generate /build/autorecorder.cfg
+- name: Generate /build/gbans.cfg
   ansible.builtin.template:
-    src: autorecorder.cfg.j2
-    dest: /build/autorecorder.cfg
+    src: gbans.cfg.j2
+    dest: /build/{{ item.server_name_short }}/gbans.cfg
     mode: 0777
   tags:
     - game_config
+  loop: "{{ services }}"
+  loop_control:
+    index_var: loop0
 
 - name: Generate /build/basevotes.cfg
   ansible.builtin.template:
@@ -318,8 +313,7 @@
       - /build/{{ item.server_name_short }}/mapcycle.txt:/home/steam/config/tf/cfg/mapcycle.txt
       - /build/motd.txt:/home/steam/config/tf/cfg/motd.txt
       - /build/admin_overrides.cfg:/home/steam/config/tf/addons/sourcemod/configs/admin_overrides.cfg
-      - /build/gbans.cfg:/home/steam/config/tf/addons/sourcemod/configs/gbans.cfg
-      - /build/autorecorder.cfg:/home/steam/config/tf/cfg/sourcemod/autorecorder.cfg
+      - /build/{{ item.server_name_short }}/gbans.cfg:/home/steam/config/tf/addons/sourcemod/configs/gbans.cfg
       - /build/basevotes.cfg:/home/steam/config/tf/cfg/sourcemod/basevotes.cfg
       - /build/funvotes.cfg:/home/steam/config/tf/cfg/sourcemod/funvotes.cfg
       - /build/{{ item.server_name_short }}/mapchooser.cfg:/home/steam/config/tf/cfg/sourcemod/mapchooser.cfg

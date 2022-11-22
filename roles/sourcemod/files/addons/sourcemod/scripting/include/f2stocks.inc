@@ -184,7 +184,7 @@ stock GetRealPlayerCount() {
 // As opposed to CPrintToChatEx, this function only colorizes message, NOT the parameters
 // Requires <morecolors>
 stock CPrintToChatEx2(client, author, const String:message[], any:...) {
-	CCheckTrie();
+	MC_CheckTrie();
 	if(client <= 0 || client > MaxClients) {
 		ThrowError("Invalid client index %i", client);
 	}
@@ -197,71 +197,71 @@ stock CPrintToChatEx2(client, author, const String:message[], any:...) {
 	if(!IsClientInGame(author)) {
 		ThrowError("Client %i is not in game", author);
 	}
-	decl String:buffer[MAX_MESSAGE_LENGTH], String:buffer2[MAX_MESSAGE_LENGTH];
+	decl String:buffer[MC_MAX_MESSAGE_LENGTH], String:buffer2[MC_MAX_MESSAGE_LENGTH];
 	SetGlobalTransTarget(client);
 	Format(buffer, sizeof(buffer), "\x01%s", message);
-	CReplaceColorCodes(buffer, author);
+	MC_ReplaceColorCodes(buffer, author);
 	VFormat(buffer2, sizeof(buffer2), buffer, 4);
-	CSendMessage(client, buffer2, author);
+	MC_SendMessage(client, buffer2, author);
 }
 
 // As opposed to CPrintToChatAllEx, this function only colorizes message, NOT the parameters
 // Requires <morecolors>
 stock CPrintToChatAllEx2(author, const String:message[], any:...) {
-	CCheckTrie();
+	MC_CheckTrie();
 	if(author <= 0 || author > MaxClients) {
 		ThrowError("Invalid client index %i", author);
 	}
 	if(!IsClientInGame(author)) {
 		ThrowError("Client %i is not in game", author);
 	}
-	decl String:buffer[MAX_MESSAGE_LENGTH], String:buffer2[MAX_MESSAGE_LENGTH];
+	decl String:buffer[MC_MAX_MESSAGE_LENGTH], String:buffer2[MC_MAX_MESSAGE_LENGTH];
 	for(new i = 1; i <= MaxClients; i++) {
-		if(!IsClientInGame(i) || CSkipList[i]) {
-			CSkipList[i] = false;
+		if(!IsClientInGame(i) || MC_SkipList[i]) {
+			MC_SkipList[i] = false;
 			continue;
 		}
 		SetGlobalTransTarget(i);
 		Format(buffer, sizeof(buffer), "\x01%s", message);
-		CReplaceColorCodes(buffer, author);
+		MC_ReplaceColorCodes(buffer, author);
 		VFormat(buffer2, sizeof(buffer2), buffer, 3);
-		CSendMessage(i, buffer2, author);
+		MC_SendMessage(i, buffer2, author);
 	}
 }
 
 // As opposed to CPrintToChat, this function only colorizes message, NOT the parameters
 // Requires <morecolors>
 stock CPrintToChat2(client, const String:message[], any:...) {
-	CCheckTrie();
+	MC_CheckTrie();
 	if(client <= 0 || client > MaxClients) {
 		ThrowError("Invalid client index %i", client);
 	}
 	if(!IsClientInGame(client)) {
 		ThrowError("Client %i is not in game", client);
 	}
-	decl String:buffer[MAX_MESSAGE_LENGTH], String:buffer2[MAX_MESSAGE_LENGTH];
+	decl String:buffer[MC_MAX_MESSAGE_LENGTH], String:buffer2[MC_MAX_MESSAGE_LENGTH];
 	SetGlobalTransTarget(client);
 	Format(buffer, sizeof(buffer), "\x01%s", message);
-	CReplaceColorCodes(buffer);
+	MC_ReplaceColorCodes(buffer);
 	VFormat(buffer2, sizeof(buffer2), buffer, 3);
-	CSendMessage(client, buffer2);
+	MC_SendMessage(client, buffer2);
 }
 
 // As opposed to CPrintToChatAll, this function only colorizes message, NOT the parameters
 // Requires <morecolors>
 stock CPrintToChatAll2(const String:message[], any:...) {
-	CCheckTrie();
-	decl String:buffer[MAX_MESSAGE_LENGTH], String:buffer2[MAX_MESSAGE_LENGTH];
+	MC_CheckTrie();
+	decl String:buffer[MC_MAX_MESSAGE_LENGTH], String:buffer2[MC_MAX_MESSAGE_LENGTH];
 	for(new i = 1; i <= MaxClients; i++) {
-		if(!IsClientInGame(i) || CSkipList[i]) {
-			CSkipList[i] = false;
+		if(!IsClientInGame(i) || MC_SkipList[i]) {
+			MC_SkipList[i] = false;
 			continue;
 		}
 		SetGlobalTransTarget(i);
 		Format(buffer, sizeof(buffer), "\x01%s", message);
-		CReplaceColorCodes(buffer);
+		MC_ReplaceColorCodes(buffer);
 		VFormat(buffer2, sizeof(buffer2), buffer, 2);
-		CSendMessage(i, buffer2);
+		MC_SendMessage(i, buffer2);
 	}
 }
 
@@ -389,7 +389,7 @@ stock bool:SteamID_Equal(const String:id1[], const String:id2[]) {
 		if (steam1 == 0)
 			return false;
 		steam1 = steam1 * 2 + a;
-	} else if (F2_String_StartsWith(id1, "[U:1:", false) && String_EndsWith(id1, "]")) {
+	} else if (F2_String_StartsWith(id1, "[U:1:", false) && F2_String_EndsWith(id1, "]")) {
 		if (StringToIntEx(id1[5], steam1) != strlen(id1) - 5 - 1)
 			return false;
 	} else {
@@ -406,7 +406,7 @@ stock bool:SteamID_Equal(const String:id1[], const String:id2[]) {
 		if (steam2 == 0)
 			return false;
 		steam2 = steam2 * 2 + a;
-	} else if (F2_String_StartsWith(id2, "[U:1:", false) && String_EndsWith(id2, "]")) {
+	} else if (F2_String_StartsWith(id2, "[U:1:", false) && F2_String_EndsWith(id2, "]")) {
 		if (StringToIntEx(id2[5], steam2) != strlen(id2) - 5 - 1)
 			return false;
 	} else {
@@ -431,9 +431,10 @@ stock bool:SteamID_ToOldFormat(String:oldID[], oldIDsize, const String:newID[]) 
 	return true;
 }
 
-
-stock bool:GetClientAuthStringOld(client, String:steamid[], steamidSize, bool:validate = true) {
-	if (!GetClientAuthString(client, steamid, steamidSize, validate)) {
+stock bool:GetClientAuthStringOld(client, String:steamid[], steamidSize, bool:validate = true)
+{
+	if (!GetClientAuthId(client, AuthId_Steam2, steamid, steamidSize, validate))
+	{
 		strcopy(steamid, steamidSize, "");
 		return false;
 	}

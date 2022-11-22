@@ -17,11 +17,23 @@ enum struct PlayerInfo {
 // Globals must all start with g_
 PlayerInfo g_players[MAXPLAYERS + 1];
 
-int g_port;
-char g_host[128];
+// Core gbans options
+ConVar g_port  = null;
+ConVar g_host  = null;
+ConVar g_server_name = null;
+ConVar g_server_key = null;
 
-char g_server_name[128];
-char g_server_key[41];
+// STV options
+ConVar g_hTvEnabled = null;
+ConVar g_hAutoRecord = null;
+ConVar g_hMinPlayersStart = null;
+ConVar g_hIgnoreBots = null;
+ConVar g_hTimeStart = null;
+ConVar g_hTimeStop = null;
+ConVar g_hFinishMap = null;
+ConVar g_hDemoPath = null;
+
+
 char g_access_token[512];
 
 // Store temp clientId for networked callbacks 
