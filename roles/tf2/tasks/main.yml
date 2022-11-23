@@ -313,7 +313,7 @@
       - /build/{{ item.server_name_short }}/mapcycle.txt:/home/steam/config/tf/cfg/mapcycle.txt
       - /build/motd.txt:/home/steam/config/tf/cfg/motd.txt
       - /build/admin_overrides.cfg:/home/steam/config/tf/addons/sourcemod/configs/admin_overrides.cfg
-      - /build/{{ item.server_name_short }}/gbans.cfg:/home/steam/config/tf/addons/sourcemod/configs/gbans.cfg
+      - /build/{{ item.server_name_short }}/gbans.cfg:/home/steam/config/tf/cfg/sourcemod/gbans.cfg
       - /build/basevotes.cfg:/home/steam/config/tf/cfg/sourcemod/basevotes.cfg
       - /build/funvotes.cfg:/home/steam/config/tf/cfg/sourcemod/funvotes.cfg
       - /build/{{ item.server_name_short }}/mapchooser.cfg:/home/steam/config/tf/cfg/sourcemod/mapchooser.cfg

@@ -59,6 +59,10 @@ void OnPluginStart() {
     RegAdminCmd("gb_reload", AdminCmdReload, ADMFLAG_ROOT);
     RegConsoleCmd("gb_help", CmdHelp, "Get a list of gbans commands");
 
+}
+
+public
+void OnConfigsExecuted() {
     setupSTV();
     refreshToken();
 }

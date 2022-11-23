@@ -87,9 +87,7 @@ public Action Command_Record(int client, int args)
 
 	StartRecord();
 	g_bIsManual = true;
-
 	ReplyToCommand(client, "[GB] SourceTV is now recording...");
-
 	return Plugin_Handled;
 }
 
@@ -100,17 +98,13 @@ public Action Command_StopRecord(int client, int args)
 		ReplyToCommand(client, "[GB] SourceTV is not recording!");
 		return Plugin_Handled;
 	}
-
 	StopRecord();
-
 	if(g_bIsManual)
 	{
 		g_bIsManual = false;
 		CheckStatus();
 	}
-
 	ReplyToCommand(client, "[GB] Stopped recording.");
-
 	return Plugin_Handled;
 }
 
@@ -119,11 +113,9 @@ void CheckStatus()
 	if(g_hAutoRecord.BoolValue && !g_bIsManual)
 	{
 		int iMinClients = g_hMinPlayersStart.IntValue;
-
 		int iTimeStart = g_hTimeStart.IntValue;
 		int iTimeStop = g_hTimeStop.IntValue;
 		bool bReverseTimes = (iTimeStart > iTimeStop);
-
 		char sCurrentTime[4];
 		FormatTime(sCurrentTime, sizeof(sCurrentTime), "%H", GetTime());
 		int iCurrentTime = StringToInt(sCurrentTime);
