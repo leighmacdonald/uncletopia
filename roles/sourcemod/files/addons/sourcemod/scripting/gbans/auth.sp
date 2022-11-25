@@ -2,6 +2,8 @@
 #pragma tabsize 4
 #pragma newdecls required
 
+#include "globals.sp"
+
 /**
 Authenicates the server with the backend API system.
 

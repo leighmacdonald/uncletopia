@@ -47,8 +47,9 @@ void OnPluginStart() {
 	g_hTimeStart = CreateConVar("sm_gbans_stv_timestart", "-1", "Hour in the day to start recording (0-23, -1 disables)");
 	g_hTimeStop = CreateConVar("sm_gbans_stv_timestop", "-1", "Hour in the day to stop recording (0-23, -1 disables)");
 	g_hFinishMap = CreateConVar("sm_gbans_stv_finishmap", "1", "If 1, continue recording until the map ends", _, true, 0.0, true, 1.0);
-	g_hDemoPath = CreateConVar("sm_gbans_stv_path", ".", "Path to store recorded demos");
-	
+	g_hDemoPath = CreateConVar("sm_gbans_stv_path", "stv_demos/active", "Path to store currently recording demos");
+	g_hDemoPathComplete = CreateConVar("sm_gbans_stv_path_complete", "stv_demos/complete", "Path to store complete demos");
+
     AutoExecConfig(true, "gbans");
 
     RegConsoleCmd("gb_version", CmdVersion, "Get gbans version");
@@ -58,7 +59,6 @@ void OnPluginStart() {
     RegAdminCmd("gb_reauth", AdminCmdReauth, ADMFLAG_ROOT);
     RegAdminCmd("gb_reload", AdminCmdReload, ADMFLAG_ROOT);
     RegConsoleCmd("gb_help", CmdHelp, "Get a list of gbans commands");
-
 }
 
 public

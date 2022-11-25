@@ -51,7 +51,7 @@
 - name: srcdsup container
   docker_container:
     name: srcdsup-{{ item.server_name_short }}
-    image: ghcr.io/leighmacdonald/srcdsup:master
+    image: leighmacdonald/srcdsup:master
     state: started
     restart: true
     pull: true
