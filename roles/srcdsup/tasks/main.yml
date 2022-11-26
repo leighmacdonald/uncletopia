@@ -1,11 +1,4 @@
 ---
-# - name: create stv upload dirs
-#   file:
-#     path: ~/stv_demos
-#     state: directory
-#     owner: tf2server
-#     mode: 0777
-#   loop: "{{ services }}"
 
 - name: build output
   become: true
