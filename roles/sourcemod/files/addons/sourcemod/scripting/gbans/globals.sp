@@ -40,6 +40,12 @@ ConVar g_hFinishMap = null;
 ConVar g_hDemoPath = null;
 ConVar g_hDemoPathComplete = null;
 
+
+// Stopwatch options
+ConVar g_hStopwatchEnabled = null;
+ConVar g_hStopwatchNameRed = null;
+ConVar g_hStopwatchNameBlu = null;
+
 char g_access_token[512];
 
 // Store temp clientId for networked callbacks 

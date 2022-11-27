@@ -38,7 +38,7 @@ enum banReason {
 	exploiting        = 6,
 	warningsExceeded  = 7,
 	spam              = 8,
-	language          = 9,
+	languageUsed      = 9, // "language" shadows var
 	profile           = 10,
 	itemDescriptions  = 11
 }

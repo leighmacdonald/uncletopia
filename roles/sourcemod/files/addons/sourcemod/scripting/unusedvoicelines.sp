@@ -158,6 +158,7 @@ public void OnTeamplayAlert(Event event, const char[] name, bool dontBroadcast)
 public Action Timer_Delay(Handle hTimer)
 {
 	PlaySound("teamScramble");
+	return Plugin_Handled;
 }
 
 public Action Cmd_WinSound(int client, int args) // this is just a debug command which will be removed later.
@@ -165,6 +166,7 @@ public Action Cmd_WinSound(int client, int args) // this is just a debug command
 	char arg1[32];
 	GetCmdArg(1, arg1, sizeof(arg1));
 	ProcessWinSounds(-1, StringToInt(arg1));
+	return Plugin_Handled;
 }
 
 public void OnRoundWin(Event event, const char[] name, bool dontBroadcast)
@@ -223,9 +225,10 @@ public Action Timer_ResponseDelay(Handle hTimer, DataPack pk)
 {
 	pk.Reset();
 	int client = GetClientOfUserId(pk.ReadCell());
-	if (client < 1 || client > MaxClients || !IsClientInGame(client) || !IsPlayerAlive(client)) return;
+	if (client < 1 || client > MaxClients || !IsClientInGame(client) || !IsPlayerAlive(client)) return Plugin_Continue;
 	
 	PlayWinResponse(client, pk.ReadCell());
+	return Plugin_Handled;
 }
 
 void PlayWinResponse(int client, int gameOver = 0)
@@ -276,6 +279,7 @@ public void OnPlayerDeath(Event event, const char[] name, bool dontBroadcast)
 public Action Timer_TeamWipeCooldown(Handle hTimer)
 {
 	g_bTeamWipe = false;
+	return Plugin_Continue;
 }
 
 void PlaySound(const char[] sound, int team = -1) //-1 = all, 2 = red, 3 = blu

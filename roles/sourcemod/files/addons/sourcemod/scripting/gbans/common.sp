@@ -24,3 +24,9 @@ System2HTTPRequest newReq(System2HTTPResponseCallback cb, const char[] path) {
     }
     return httpRequest;
 }
+
+public void OnMapEnd()
+{
+    onMapEndStopwatch();
+    onMapEndSTV();
+}

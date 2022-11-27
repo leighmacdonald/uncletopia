@@ -95,6 +95,7 @@ public Action openDoorsTimer(Handle timer)
             }
         }
     }
+    return Plugin_Continue;
 }
 
 // remove any func_brushes that could be blockbullets and open area portals near those func_brushes

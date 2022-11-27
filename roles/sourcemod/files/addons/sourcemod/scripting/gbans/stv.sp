@@ -64,7 +64,7 @@ public void OnConVarChanged(ConVar convar, const char[] oldValue, const char [] 
 	}
 }
 
-public void OnMapEnd()
+public void onMapEndSTV()
 {
 	if(g_bIsRecording)
 	{

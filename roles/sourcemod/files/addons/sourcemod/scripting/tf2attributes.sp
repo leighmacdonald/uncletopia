@@ -7,7 +7,7 @@
 
 #define PLUGIN_NAME		"[TF2] TF2Attributes"
 #define PLUGIN_AUTHOR		"FlaminSarge"
-#define PLUGIN_VERSION		"1.3.3@nosoop-1.7.1.1"
+#define PLUGIN_VERSION		"1.7.2"
 #define PLUGIN_CONTACT		"http://forums.alliedmods.net/showthread.php?t=210221"
 #define PLUGIN_DESCRIPTION	"Functions to add/get attributes for TF2 players/items"
 
@@ -714,6 +714,7 @@ public int Native_SetID(Handle plugin, int numParams) {
 	Address pAttrib = GetNativeCell(1);
 	int iDefIndex = GetNativeCell(2);
 	StoreToAddressOffset(pAttrib, 0x04, iDefIndex, NumberType_Int16);
+	return 0;
 }
 
 /* native int TF2Attrib_GetDefIndex(Address pAttrib); */
@@ -727,6 +728,7 @@ public int Native_SetVal(Handle plugin, int numParams) {
 	Address pAttrib = GetNativeCell(1);
 	int flVal = GetNativeCell(2);	//It's a float but avoiding tag mismatch warnings from StoreToAddress
 	StoreToAddressOffset(pAttrib, 0x08, flVal, NumberType_Int32);
+	return 0;
 }
 
 /* native float TF2Attrib_GetValue(Address pAttrib); */
@@ -752,6 +754,7 @@ public int Native_SetCurrency(Handle plugin, int numParams) {
 	Address pAttrib = GetNativeCell(1);
 	int nCurrency = GetNativeCell(2);
 	StoreToAddressOffset(pAttrib, 0x0C, nCurrency, NumberType_Int32);
+	return 0;
 }
 
 /* native int TF2Attrib_GetRefundableCurrency(Address pAttrib); */

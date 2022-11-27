@@ -118,7 +118,7 @@ public OnPluginStart()
 	g_Cvar_Limits[0] = CreateConVar("sm_vote_map", "0.60", "percent required for successful map vote.", 0, true, 0.05, true, 1.0);
 	g_Cvar_Limits[1] = CreateConVar("sm_vote_kick", "0.60", "percent required for successful kick vote.", 0, true, 0.05, true, 1.0);
 	g_Cvar_Limits[2] = CreateConVar("sm_vote_ban", "0.60", "percent required for successful ban vote.", 0, true, 0.05, true, 1.0);
-	CreateConVar("nativevotes_basevotes_version", VERSION, "NativeVotes Basic Votes version", FCVAR_PLUGIN|FCVAR_NOTIFY|FCVAR_DONTRECORD|FCVAR_SPONLY);
+	CreateConVar("nativevotes_basevotes_version", VERSION, "NativeVotes Basic Votes version", FCVAR_NOTIFY|FCVAR_DONTRECORD|FCVAR_SPONLY);
 	
 	g_SelectedMaps = CreateArray(PLATFORM_MAX_PATH);
 	
@@ -648,7 +648,7 @@ VoteMenuClose()
 
 Float:GetVotePercent(votes, totalVotes)
 {
-	return FloatDiv(float(votes),float(totalVotes));
+	return float(votes) / float(totalVotes);
 }
 
 bool:TestVoteDelay(client)

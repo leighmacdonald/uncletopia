@@ -1283,7 +1283,7 @@ stock void NativeVotes_DisplayRawFailToAll(NativeVotesFailType reason=NativeVote
 		players[total++] = i;
 	}
 	
-	return NativeVotes_DisplayRawFail(players, total, reason, team);
+	NativeVotes_DisplayRawFail(players, total, reason, team);
 }
 
 /**
@@ -1302,7 +1302,7 @@ stock void NativeVotes_DisplayRawFailToOne(int client, NativeVotesFailType reaso
 	
 	players[0] = client;
 	
-	return NativeVotes_DisplayRawFail(players, 1, reason, team);
+	NativeVotes_DisplayRawFail(players, 1, reason, team);
 }
 
 /**

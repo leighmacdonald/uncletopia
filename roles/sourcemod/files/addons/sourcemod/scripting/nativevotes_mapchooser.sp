@@ -66,9 +66,9 @@ ConVar g_Cvar_Bonusroundtime;
 ConVar g_Cvar_StartTime;
 ConVar g_Cvar_StartRounds;
 ConVar g_Cvar_StartFrags;
-ConVar g_Cvar_ExtendTimeStep;
-ConVar g_Cvar_ExtendRoundStep;
-ConVar g_Cvar_ExtendFragStep;
+//ConVar g_Cvar_ExtendTimeStep;
+//ConVar g_Cvar_ExtendRoundStep;
+//ConVar g_Cvar_ExtendFragStep;
 ConVar g_Cvar_ExcludeMaps;
 ConVar g_Cvar_IncludeMaps;
 ConVar g_Cvar_CurateMaps;
@@ -140,9 +140,9 @@ public void OnPluginStart()
 	g_Cvar_StartTime = CreateConVar("sm_mapvote_start", "3.0", "Specifies when to start the vote based on time remaining.", _, true, 1.0);
 	g_Cvar_StartRounds = CreateConVar("sm_mapvote_startround", "2.0", "Specifies when to start the vote based on rounds remaining. Use 0 on TF2 to start vote during bonus round time", _, true, 0.0);
 	g_Cvar_StartFrags = CreateConVar("sm_mapvote_startfrags", "5.0", "Specifies when to start the vote base on frags remaining.", _, true, 1.0);
-	g_Cvar_ExtendTimeStep = CreateConVar("sm_extendmap_timestep", "15", "Specifies how much many more minutes each extension makes", _, true, 5.0);
-	g_Cvar_ExtendRoundStep = CreateConVar("sm_extendmap_roundstep", "5", "Specifies how many more rounds each extension makes", _, true, 1.0);
-	g_Cvar_ExtendFragStep = CreateConVar("sm_extendmap_fragstep", "10", "Specifies how many more frags are allowed when map is extended.", _, true, 5.0);
+	//g_Cvar_ExtendTimeStep = CreateConVar("sm_extendmap_timestep", "15", "Specifies how much many more minutes each extension makes", _, true, 5.0);
+	//g_Cvar_ExtendRoundStep = CreateConVar("sm_extendmap_roundstep", "5", "Specifies how many more rounds each extension makes", _, true, 1.0);
+	//g_Cvar_ExtendFragStep = CreateConVar("sm_extendmap_fragstep", "10", "Specifies how many more frags are allowed when map is extended.", _, true, 5.0);
 	g_Cvar_ExcludeMaps = CreateConVar("sm_mapvote_exclude", "5", "Specifies how many past maps to exclude from the vote.", _, true, 0.0);
 	g_Cvar_IncludeMaps = CreateConVar("sm_mapvote_include", "5", "Specifies how many maps to include in the vote.", _, true, 2.0, true, 6.0);
 	g_Cvar_CurateMaps = CreateConVar("sm_mapvote_curate", "1", "Specifies whether to use the curated maplist for default map votes.", _, true, 0.0, true, 1.0);
@@ -1512,6 +1512,7 @@ public int Native_InitiateVote(Handle plugin, int numParams)
 	
 	LogAction(-1, -1, "Starting map vote because outside request");
 	InitiateVote(when, inputarray);
+	return 0;
 }
 
 /* native bool CanMapChooserStartVote(); */
@@ -1539,7 +1540,7 @@ public int Native_GetExcludeMapList(Handle plugin, int numParams)
 
 	if (array == null)
 	{
-		return;
+		return -1;
 	}
 	int size = g_OldMapList.Length;
 	char map[PLATFORM_MAX_PATH];
@@ -1550,7 +1551,7 @@ public int Native_GetExcludeMapList(Handle plugin, int numParams)
 		array.PushString(map);
 	}
 
-	return;
+	return 0;
 }
 
 /* native void GetNominatedMapList(ArrayList maparray, ArrayList ownerarray = null); */
@@ -1560,7 +1561,7 @@ public int Native_GetNominatedMapList(Handle plugin, int numParams)
 	ArrayList ownerarray = view_as<ArrayList>(GetNativeCell(2));
 
 	if (maparray == null)
-		return;
+		return -1;
 
 	char map[PLATFORM_MAX_PATH];
 
@@ -1577,5 +1578,5 @@ public int Native_GetNominatedMapList(Handle plugin, int numParams)
 		}
 	}
 
-	return;
+	return 0;
 }

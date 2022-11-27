@@ -69,7 +69,7 @@ public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 
 public OnPluginStart()
 {
-	CreateConVar("sm_nt_verison", PLUGIN_VERSION, PLUGIN_DESCRIPTION, FCVAR_PLUGIN|FCVAR_SPONLY|FCVAR_UNLOGGED|FCVAR_DONTRECORD|FCVAR_REPLICATED|FCVAR_NOTIFY);
+	CreateConVar("sm_nt_verison", PLUGIN_VERSION, PLUGIN_DESCRIPTION, FCVAR_SPONLY|FCVAR_UNLOGGED|FCVAR_DONTRECORD|FCVAR_REPLICATED|FCVAR_NOTIFY);
 	new Handle:hRandom; // I HATE Handles.
 	
 	HookConVarChange((hRandom = CreateConVar("nt_enabled",				"1",	"Should I even be running?", _, true, 0.0, true, 1.0)),												OnEnabledChange);
@@ -201,15 +201,15 @@ public Action:DisplayInformation(client, args)
 			iTarget = iTarget_list[i];
 			switch(g_bValidClient[iTarget][1])
 			{
-				case 0:
+				case false:
 				{
 					if(sClientChecking[0] != 'N' || sClientChecking[2] != '\0')
 					{
 						strcopy(sClientChecking, sizeof(sClientChecking), "No");
 					}
 				}
-				
-				case 1:
+
+				case true:
 				{
 					if(sClientChecking[0] != 'Y' || sClientChecking[3] != '\0')
 					{
@@ -232,10 +232,10 @@ public Action:ToggleImmune(client, args)
 		ReplyToCommand(client, "%s nt_toggle [client|#userid]", defPluginPrefix);
 		return Plugin_Handled;
 	}
-	
+
 	decl String:ArgString[128];
 	GetCmdArgString(ArgString, sizeof(ArgString));
-	
+
 	decl iTarget_list[MAXPLAYERS+1], String:iTarget_name[MAXPLAYERS+1], bool:iTarget_ml;
 	new ListSize = ProcessTargetString(ArgString, client, iTarget_list, MAXPLAYERS, COMMAND_FILTER_NO_BOTS, iTarget_name, sizeof(iTarget_name), iTarget_ml);
 	if (ListSize > 0)
@@ -247,16 +247,16 @@ public Action:ToggleImmune(client, args)
 			iTarget = iTarget_list[i];
 			switch(g_bValidClient[iTarget][1])
 			{
-				case 0:
+				case false:
 				{
 					g_bValidClient[iTarget][1] = true;
-					ReplyToCommand(client, "\x04%N\x03 will now be checked by this plugin.", iTarget); 
+					ReplyToCommand(client, "\x04%N\x03 will now be checked by this plugin.", iTarget);
 				}
-				
-				case 1:
+
+				case true:
 				{
 					g_bValidClient[iTarget][1] = false;
-					ReplyToCommand(client, "\x04%N\x03 will no longer be checked by this plugin.", iTarget); 
+					ReplyToCommand(client, "\x04%N\x03 will no longer be checked by this plugin.", iTarget);
 				}
 			}
 		}
@@ -281,7 +281,7 @@ public ProcessData()
 	new iMaxLatency = g_iLimit[1];
 	new iMaxLoss = g_iLimit[2];
 	new bool:bWarned;
-	
+
 	for(new i = 1; i <= MaxClients; i++)
 	{
 		if(g_bValidClient[i][0] && g_bValidClient[i][1])
@@ -304,7 +304,7 @@ public ProcessData()
 						KickClient(i, "High Choke.");
 						continue;
 					}
-					
+
 					if(g_bWarningVocalize && !bWarned)
 					{
 						PrintToChat(i, "%s Warning, you've failed check \x04%i\x03 for Choke.\nYou have \x04%i\x03 left until you're kicked.", defPluginPrefix, g_iClientChoke[i][1], g_iChokeThreashold - g_iClientChoke[i][1]);
@@ -312,7 +312,7 @@ public ProcessData()
 					}
 				}
 			}
-			
+
 			if(g_bLatencyEnabled)
 			{
 				if(g_iClientLatency[i][0] < iMaxLatency)
@@ -334,7 +334,7 @@ public ProcessData()
 						KickClient(i, "High Latency.");
 						continue;
 					}
-					
+
 					if(g_bWarningVocalize && !bWarned)
 					{
 						PrintToChat(i, "%s Warning, you've failed check \x04%i\x03 for Latency.\nYou have \x04%i\x03 left until you're kicked.", defPluginPrefix, g_iClientLatency[i][1], g_iLatencyThreashold - g_iClientLatency[i][1]);
@@ -342,7 +342,7 @@ public ProcessData()
 					}
 				}
 			}
-			
+
 			if(g_bLossEnabled)
 			{
 				if(g_iClientLoss[i][0] < iMaxLoss)
@@ -364,14 +364,14 @@ public ProcessData()
 						KickClient(i, "High Loss.");
 						continue;
 					}
-					
+
 					if(g_bWarningVocalize && !bWarned)
 					{
 						PrintToChat(i, "%s Warning, you've failed check \x04%i\x03 for Packet Loss.\nYou have \x04%i\x03 left until you're kicked.", defPluginPrefix, g_iClientLoss[i][1], g_iLossThreashold - g_iClientLoss[i][1]);
 					}
 				}
 			}
-			
+
 			if(bWarned)
 			{
 				bWarned = false;
@@ -385,19 +385,19 @@ public GetData()
 	decl CmdRate, RandomVariable;
 	new MinCmdRate = g_iCmdRate[0], MaxCmdRate = g_iCmdRate[1];
 	new iTickRate;
-	
+
 	for(new i; i < 3; i++)
 	{
 		g_iLimit[i] = 999;
 	}
-	
-	
+
+
 	decl String:sCmdClientInfo[4];
 	if(g_bLiamMethod)
 	{
 		iTickRate = RoundToNearest(GetTickInterval());
 	}
-	
+
 	for(new i = 1; i <= MaxClients; i++)
 	{
 		if(g_bValidClient[i][0])
@@ -406,18 +406,18 @@ public GetData()
 			{
 				g_iLimit[0] = g_iClientChoke[i][0];
 			}
-			
+
 			switch(g_bLiamMethod)
 			{
-				case 0:
+				case false:
 				{
 					if(-1 < (g_iClientLatency[i][0] = RoundFloat(GetClientAvgLatency(i, NetFlow_Outgoing) * 1000.0)) < g_iLimit[1])
 					{
 						g_iLimit[1] = g_iClientLatency[i][0];
 					}
 				}
-				
-				case 1: // Liam Method - No idea if it's actually better or not, obviously slower.
+
+				case true: // Liam Method - No idea if it's actually better or not, obviously slower.
 				{
 					if(GetClientInfo(i, "cl_cmdrate", sCmdClientInfo, sizeof(sCmdClientInfo)) && (CmdRate = StringToInt(sCmdClientInfo)))
 					{
@@ -449,14 +449,14 @@ public GetData()
 					}
 				}
 			}
-			
+
 			if(-1 < (g_iClientLoss[i][0] = RoundFloat(GetClientAvgLoss(i, NetFlow_Outgoing) * 100.0)) < g_iLimit[2])
 			{
 				g_iLimit[2] = g_iClientLoss[i][0];
 			}
 		}
 	}
-	
+
 	g_iLimit[0] += g_iChokeAddition;
 	g_iLimit[1] += g_iLatencyAddition;
 	g_iLimit[2] += g_iLossAddition;
@@ -476,7 +476,7 @@ stock PlayerCountIsCorrect()
 			}
 		}
 	}
-	
+
 	return false;
 }
 
@@ -486,19 +486,19 @@ stock LogKick(client, KickVal)
 	{
 		return;
 	}
-	
+
 	if(g_sLogTimeString[0][0] == '\0')
 	{
 		LogError("nt_logformatext cannot be blank. Falling back to defaults.");
 		strcopy(g_sLogTimeString[0][0], sizeof(g_sLogTimeString[]), "%Y_%m_%d");
 	}
-	
+
 	if(g_sLogTimeString[1][0] == '\0')
 	{
 		LogError("nt_logformatint cannot be blank. Falling back to defaults.");
 		strcopy(g_sLogTimeString[1][0], sizeof(g_sLogTimeString[]), "%x");
 	}
-	
+
 	decl String:sFormattedTime[2][512];
 	FormatTime(sFormattedTime[0], sizeof(sFormattedTime[]), g_sLogTimeString[0]);
 	FormatTime(sFormattedTime[1], sizeof(sFormattedTime[]), g_sLogTimeString[1]);
@@ -509,12 +509,12 @@ stock LogKick(client, KickVal)
 		{
 			LogToFile(sFormattedTime[0], "%s: Kicked %N for High Choke (%i/%i).", sFormattedTime[1], client, g_iClientChoke[client][0], g_iLimit[0]);
 		}
-		
+
 		case 1:
 		{
 			LogToFile(sFormattedTime[0], "%s: Kicked %N for High Latency (%i/%i).", sFormattedTime[1], client, g_iClientLatency[client][0], g_iLimit[1]);
 		}
-		
+
 		case 2:
 		{
 			LogToFile(sFormattedTime[0], "%s: Kicked %N for High Loss (%i/%i).", sFormattedTime[1], client, g_iClientLoss[client][0], g_iLimit[2]);
@@ -527,7 +527,7 @@ public OnEnabledChange(Handle:convar, const String:oldValue[], const String:newV
 {
 	switch(GetConVarBool(convar))
 	{
-		case 0:
+		case false:
 		{
 			g_bEnabled = false;
 			if(g_hTimerHandle != INVALID_HANDLE)
@@ -536,8 +536,8 @@ public OnEnabledChange(Handle:convar, const String:oldValue[], const String:newV
 				g_hTimerHandle = INVALID_HANDLE;
 			}
 		}
-		
-		case 1:
+
+		case true:
 		{
 			g_bEnabled = true;
 			if(g_hTimerHandle != INVALID_HANDLE)
@@ -604,7 +604,7 @@ public OnCheckRateChange(Handle:convar, const String:oldValue[], const String:ne
 	g_iCheckRate = GetConVarInt(convar);
 	switch(g_bEnabled)
 	{
-		case 0:
+		case false:
 		{
 			if(g_hTimerHandle != INVALID_HANDLE)
 			{
@@ -612,8 +612,8 @@ public OnCheckRateChange(Handle:convar, const String:oldValue[], const String:ne
 				g_hTimerHandle = INVALID_HANDLE;
 			}
 		}
-		
-		case 1:
+
+		case true:
 		{
 			if(g_hTimerHandle != INVALID_HANDLE)
 			{

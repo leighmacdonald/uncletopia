@@ -179,6 +179,7 @@ void StartVoteScramble()
 public Action Timer_Delay(Handle timer)
 {
 	g_bVoteCooldown = false;
+	return Plugin_Continue;
 }
 
 void ResetVoteScramble()
@@ -244,6 +245,7 @@ public int NativeVote_Handler(Handle vote, MenuAction action, int param1, int pa
 			else NativeVotes_DisplayFail(vote, NativeVotesFail_Loses);
 		}
 	}
+	return 0;
 }
 
 public Action Timer_Scramble(Handle timer) {
@@ -255,6 +257,7 @@ public Action Timer_Scramble(Handle timer) {
 	}
 
 	PrintToChatAll("Scrambling the teams due to vote.");
+	return Plugin_Continue;
 }
 
 public Action Timer_DelayLimitsUpdate(Handle timer) {
@@ -267,14 +270,17 @@ public Action Timer_DelayLimitsUpdate(Handle timer) {
 		SetConVarInt(cvarWinLimit, cvarWinLimit.IntValue - (g_iRoundsSinceLastScramble / 2), false, true);
 	}
 	g_iRoundsSinceLastScramble = 0;
+	return Plugin_Continue;
 }
 
 public Action Timer_DelayRTS(Handle timer, any mins)
 {
 	cvarTimeLimit.SetInt(mins);
+	return Plugin_Continue;
 }
 
 public Action Timer_Retry(Handle timer)
 {
 	VoteScrambleMenu();
+	return Plugin_Continue;
 }

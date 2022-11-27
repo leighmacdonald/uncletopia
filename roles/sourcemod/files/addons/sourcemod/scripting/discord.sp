@@ -96,10 +96,11 @@ public int Native_SendMessage(Handle plugin, int numParams)
 	{
 		LogError("Webhook config not found or invalid! Webhook: %s Url: %s", sWebhook, sUrl);
 		LogError("Message: %s", sMessage);
-		return;
+		return -1;
 	}
 	
 	StoreMsg(sWebhook, sMessage);
+	return 0;
 }
 
 void StoreMsg(char sWebhook[64], char sMessage[4096])
@@ -218,6 +219,7 @@ public int OnRequestComplete(Handle hRequest, bool bFailed, bool bRequestSuccess
 	
 	delete hRequest;
 	g_bSending = false;
+	return 0;
 }
 
 void RestartMessageTimer(bool slowdown)
