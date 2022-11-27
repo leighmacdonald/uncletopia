@@ -9,7 +9,7 @@
 
 - name: Download metamod
   ansible.builtin.get_url:
-    url: https://mms.alliedmods.net/mmsdrop/1.11/mmsource-1.11.0-git1145-linux.tar.gz
+    url: https://mms.alliedmods.net/mmsdrop/1.11/mmsource-1.11.0-git1148-linux.tar.gz
     dest: ~/build_srcds/sourcemod/mm.tar.gz
     mode: "0777"
 
@@ -26,7 +26,7 @@
 
 - name: Download sourcemod
   ansible.builtin.get_url:
-    url: https://sm.alliedmods.net/smdrop/1.10/sourcemod-1.10.0-git6543-linux.tar.gz
+    url: https://sm.alliedmods.net/smdrop/1.11/sourcemod-1.11.0-git6919-linux.tar.gz
     dest: ~/build_srcds/sourcemod/sm.tar.gz
     mode: "0777"
 

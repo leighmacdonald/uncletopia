@@ -29,7 +29,7 @@ sourcemod:
 test: srcds
 	docker stop srcds-localhost-1 || true # dont bail if a container doesnt already exist
 	docker rm srcds-localhost-1 || true
-	ansible-playbook playbooks/deploy.yml --limit localhost
+	ansible-playbook playbooks/deploy.yml --limit localhost -K
 	make logs
 
 logs:
