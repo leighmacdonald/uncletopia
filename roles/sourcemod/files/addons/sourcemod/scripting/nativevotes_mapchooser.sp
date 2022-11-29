@@ -469,6 +469,7 @@ public void Event_TeamPlayWinPanel(Event event, const char[] name, bool dontBroa
 		}
 		
 		CheckMaxRounds(g_TotalRounds);
+		CheckTimeLeft();
 		
 		switch(event.GetInt("winning_team"))
 		{
@@ -564,20 +565,12 @@ public void CheckMaxRounds(int roundcount)
 }
 
 public void CheckTimeLeft() {
-	if (g_Cvar_TimeLimit)
-	{
-		int timelimit = g_Cvar_TimeLimit.IntValue;
-		if (timelimit > 0)
-		{
-			int timeleft;
-			GetMapTimeLeft(timeleft);
+	int timeleft;
+	GetMapTimeLeft(timeleft);
 
-			// tf2 will end the map if the timeleft < 5mins at the end of a round
-			if (timeleft >= (300 + g_Cvar_Bonusroundtime.IntValue))
-			{
-				InitiateVote(MapChange_MapEnd, null);
-			}
-		}
+	// TF2 forces map change if the time remaining is less than 5 minutes
+	if (timeleft <= 310 && timeleft >= 0) { // timelimit < 0 = map has no time limit
+		InitiateVote(MapChange_MapEnd, null);
 	}
 }
 
