@@ -26,7 +26,7 @@
 
 - name: Download sourcemod
   ansible.builtin.get_url:
-    url: https://sm.alliedmods.net/smdrop/1.11/sourcemod-1.11.0-git6919-linux.tar.gz
+    url: https://sm.alliedmods.net/smdrop/1.11/sourcemod-1.11.0-git6920-linux.tar.gz
     dest: ~/build_srcds/sourcemod/sm.tar.gz
     mode: "0777"
 
