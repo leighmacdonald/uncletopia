@@ -22,6 +22,12 @@ cd "${STEAMAPPDIR}"
 
 mkdir -p /replays/replays
 
+# temp disable broken sdkhooks related stuff
+rm -f ${STEAMAPPDIR}/${STEAMAPP}/addons/sourcemod/extensions/sdkhook*
+rm -f ${STEAMAPPDIR}/${STEAMAPP}/addons/sourcemod/extensions/pose*
+rm -f ${STEAMAPPDIR}/${STEAMAPP}/addons/sourcemod/plugins/tf2cen*
+rm -f ${STEAMAPPDIR}/${STEAMAPP}/addons/sourcemod/plugins/tf2-comp*
+
 bash "${STEAMAPPDIR}/srcds_run" -game "${STEAMAPP}" -console -autoupdate \
   -steam_dir "${STEAMCMDDIR}" \
   -steamcmd_script "${HOMEDIR}/${STEAMAPP}_update.txt" \
