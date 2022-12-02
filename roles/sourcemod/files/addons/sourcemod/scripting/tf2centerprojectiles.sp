@@ -11,10 +11,12 @@ Copying and distribution of this file, with or without modification, are permitt
 
 #include <tf2attributes> // https://github.com/FlaminSarge/tf2attributes
 
+#define MY_VERSION "7.2"
+
 public Plugin myinfo = {
 	name = "[TF2] Center Projectiles",
 	author = "rtldg & pufftwitt",
-	version = "7.1",
+	version = MY_VERSION,
 	url = "https://github.com/rtldg/tf2centerprojectiles",
 	description = "Provides the command sm_centerprojectiles [0|1] to shoot rockets from the center (like The Original) for any rocket launcher, shoot pipebombs and sticky bombs from the center, and more!"
 };
@@ -40,6 +42,8 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 
 public void OnPluginStart()
 {
+	CreateConVar("centerprojectiles_version", MY_VERSION, "Plugin version.", (FCVAR_NOTIFY | FCVAR_DONTRECORD));
+
 	RegConsoleCmd("sm_centerprojectiles", sm_centerprojectiles, "sm_centerprojectiles to toggle or sm_centerprojectiles [1|0] to set");
 	g_hCenterProjectiles = RegClientCookie("tf2centerprojectiles", "TF2 Center Projectiles thing", CookieAccess_Protected);
 
