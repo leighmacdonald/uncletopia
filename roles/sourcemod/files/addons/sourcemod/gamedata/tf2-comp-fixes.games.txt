@@ -234,33 +234,33 @@
 
 		"Offsets" {
 			"CBaseCombatWeapon::Deploy" {
-				"linux" "264"
-				"windows" "258"
+				"linux" "267"
+				"windows" "261"
 			}
 
 			"CBaseProjectile::CanCollideWithTeammates" {
-				"linux" "227"
-				"windows" "226"
+				"linux" "230"
+				"windows" "229"
 			}
 
 			"CTeamplayRoundBasedRules::RestartTournament" {
-				"linux" "209"
-				"windows" "207"
+				"linux" "213"
+				"windows" "211"
 			}
 
 			"CTeamplayRules::SetWinningTeam" {
-				"linux" "161"
-				"windows" "160"
+				"linux" "165"
+				"windows" "164"
 			}
 
 			"CTFFlameThrower::DeflectEntity" {
-				"linux" "424"
-				"windows" "417"
+				"linux" "427"
+				"windows" "420"
 			}
 
 			"CTFWeaponBase::SecondaryAttack" {
-				"linux" "290"
-				"windows" "284"
+				"linux" "293"
+				"windows" "287"
 			}
 		}
 
