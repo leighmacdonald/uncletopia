@@ -1,7 +1,0 @@
-http://{{ inventory_hostname }}:27800 {
-    root * /replays
-    file_server
-    tls {{ caddy.cloudflare.email }} {
-        dns cloudflare {{ caddy.cloudflare.api_key }}
-    }
-}

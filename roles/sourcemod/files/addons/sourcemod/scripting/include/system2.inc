@@ -5,25 +5,25 @@
  * License     GPLv3
  * Web         http://dordnung.de
  * -----------------------------------------------------
- * 
+ *
  * Copyright (C) 2013-2020 David Ordnung
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  */
 
 #if defined _system2_included
-    #endinput
+#endinput
 #endif
 
 #define _system2_included
@@ -31,31 +31,26 @@
 // Include request stuff
 #include <system2/request>
 
-
 /**
  * Max length of a command when using formatted natives.
  */
 #define CMD_MAX_LENGTH 2048
 
-
 /**
  * A list of possible compression levels for the System2_Compress native.
  */
-enum CompressLevel
-{
-    LEVEL_1,            // Weekest
+enum CompressLevel {
+    LEVEL_1, // Weekest
     LEVEL_3,
     LEVEL_5,
     LEVEL_7,
-    LEVEL_9             // Strongest
+    LEVEL_9 // Strongest
 }
-
 
 /**
  * A list of possible archive formats for the System2_Compress native.
  */
-enum CompressArchive
-{
+enum CompressArchive {
     ARCHIVE_ZIP,
     ARCHIVE_7Z,
     ARCHIVE_GZIP,
@@ -63,19 +58,15 @@ enum CompressArchive
     ARCHIVE_TAR
 }
 
-
 /**
  * A list of possible operating systems for the System2_GetOS native.
  */
-enum OS
-{
-    OS_UNKNOWN,         // OS couldn't be determined
-    OS_WINDOWS,         // Windows
-    OS_UNIX,            // Linux / Unix
-    OS_MAC              // MAC
+enum OS {
+    OS_UNKNOWN, // OS couldn't be determined
+    OS_WINDOWS, // Windows
+    OS_UNIX,    // Linux / Unix
+    OS_MAC      // MAC
 }
-
-
 
 /**
  * Called when finished with the System2_CopyFile native.
@@ -87,12 +78,10 @@ enum OS
  *
  * @noreturn
  */
-typeset System2CopyCallback
-{
-    function void (bool success, const char[] from, const char[] to, any data);
-    function void (bool success, const char[] from, const char[] to);
+typeset System2CopyCallback {
+    function void(bool success, const char[] from, const char[] to, any data);
+    function void(bool success, const char[] from, const char[] to);
 };
-
 
 /**
  * Called when finished with System2_ExecuteThreaded or System2_ExecuteFormattedThreaded native.
@@ -108,13 +97,10 @@ typeset System2CopyCallback
  *
  * @noreturn
  */
-typeset System2ExecuteCallback
-{
-    function void (bool success, const char[] command, System2ExecuteOutput output, any data);
-    function void (bool success, const char[] command, System2ExecuteOutput output);
+typeset System2ExecuteCallback {
+    function void(bool success, const char[] command, System2ExecuteOutput output, any data);
+    function void(bool success, const char[] command, System2ExecuteOutput output);
 };
-
-
 
 /**
  * Methodmap for the output of an execution.
@@ -129,11 +115,12 @@ methodmap System2ExecuteOutput < Handle {
      *                  You can use this to retrieve the output step by step.
      * @param delimiter Delimiter until which the content should be retrieved.
      * @param include   Whether the delimiter should be included or not.
-     * 
+     *
      * @return          Number of read bytes.
      * @error           Invalid Output.
      */
-    public native int GetOutput(char[] output, int maxlength, int start = 0, const char[] delimiter = "", bool include = true);
+  public
+    native int GetOutput(char[] output, int maxlength, int start = 0, const char[] delimiter = "", bool include = true);
 
     property int Length {
         /**
@@ -142,7 +129,8 @@ methodmap System2ExecuteOutput < Handle {
          * @return      Length of the output.
          * @error       Invalid Output.
          */
-        public native get();
+      public
+        native get();
     }
 
     property int ExitStatus {
@@ -152,11 +140,10 @@ methodmap System2ExecuteOutput < Handle {
          * @return      The exit status.
          * @error       Invalid Output.
          */
-        public native get();
+      public
+        native get();
     }
 }
-
-
 
 /**
  * Copies a file to another location.
@@ -170,14 +157,14 @@ methodmap System2ExecuteOutput < Handle {
  */
 native void System2_CopyFile(System2CopyCallback callback, const char[] from, const char[] to, any data = 0);
 
-
 /**
  * Checks whether 7-ZIP was found and is executable.
  *
  * @param execPath     Buffer which will store the path to the 7-ZIP executable.
  *                     Can be used for example when showing an error message.
  * @param maxlength    Maxlength of the buffer.
- * @param force32Bit   Whether to force using the 32 bit version of 7-ZIP, otherwise the appropriate version will be used.
+ * @param force32Bit   Whether to force using the 32 bit version of 7-ZIP, otherwise the appropriate version will be
+ * used.
  *
  * @return             True if 7-ZIP executable could be found and is executable, otherwise false.
  */
@@ -192,11 +179,15 @@ native bool System2_Check7ZIP(char[] execPath, int maxlength, bool force32Bit = 
  * @param archiveType   Archive type to use.
  * @param level         Compress level to use.
  * @param data          Additional data to pass to the callback.
- * @param force32Bit    Whether to force using the 32 bit version of 7-ZIP, otherwise the appropriate version will be used.
+ * @param force32Bit    Whether to force using the 32 bit version of 7-ZIP, otherwise the appropriate version will be
+ * used.
  *
- * @return              True if compress command could be fired, false when 7-ZIP executable couldn't be found or is not executable.
+ * @return              True if compress command could be fired, false when 7-ZIP executable couldn't be found or is not
+ * executable.
  */
-native bool System2_Compress(System2ExecuteCallback callback, const char[] path, const char[] archive, CompressArchive archiveType = ARCHIVE_ZIP, CompressLevel level = LEVEL_9, any data = 0, bool force32Bit = false);
+native bool System2_Compress(System2ExecuteCallback callback, const char[] path, const char[] archive,
+                             CompressArchive archiveType = ARCHIVE_ZIP, CompressLevel level = LEVEL_9, any data = 0,
+                             bool force32Bit = false);
 
 /**
  * Extracts a lot of archive types with 7zip.
@@ -205,13 +196,14 @@ native bool System2_Compress(System2ExecuteCallback callback, const char[] path,
  * @param archive       Path to the archive file to extract.
  * @param extractDir    Path to the directory to extract to.
  * @param data          Additional data to pass to the callback.
- * @param force32Bit    Whether to force using the 32 bit version of 7-ZIP, otherwise the appropriate version will be used.
+ * @param force32Bit    Whether to force using the 32 bit version of 7-ZIP, otherwise the appropriate version will be
+ * used.
  *
- * @return              True if extract command could be fired, false when 7-ZIP executable couldn't be found or is not executable.
+ * @return              True if extract command could be fired, false when 7-ZIP executable couldn't be found or is not
+ * executable.
  */
-native bool System2_Extract(System2ExecuteCallback callback, const char[] archive, const char[] extractDir, any data = 0, bool force32Bit = false);
-
-
+native bool System2_Extract(System2ExecuteCallback callback, const char[] archive, const char[] extractDir,
+                            any data = 0, bool force32Bit = false);
 
 /**
  * Executes a threaded system command.
@@ -237,7 +229,7 @@ native void System2_ExecuteThreaded(System2ExecuteCallback callback, const char[
  *
  * @noreturn
  */
-native void System2_ExecuteFormattedThreaded(System2ExecuteCallback callback, any data, const char[] command, any ...);
+native void System2_ExecuteFormattedThreaded(System2ExecuteCallback callback, any data, const char[] command, any...);
 
 /**
  * Executes a non threaded system command.
@@ -263,9 +255,7 @@ native bool System2_Execute(char[] output, int maxlength, const char[] command);
  *
  * @return          True on success, otherwise false.
  */
-native bool System2_ExecuteFormatted(char[] output, int maxlength, const char[] command, any ...);
-
-
+native bool System2_ExecuteFormatted(char[] output, int maxlength, const char[] command, any...);
 
 /**
  * Retrieves the absolute path to the gamedir of the current running game (e.g. /home/.../.../cstrike).
@@ -284,8 +274,6 @@ native void System2_GetGameDir(char[] gamedir, int maxlength);
  * @return              OS_UNKNOWN, OS_WINDOWS, OS_UNIX, OS_MAC.
  */
 native OS System2_GetOS();
-
-
 
 /**
  * Retrieves the MD5 hex hash of a string.
@@ -331,132 +319,129 @@ native void System2_GetStringCRC32(const char[] str, char[] buffer, int maxlengt
  */
 native bool System2_GetFileCRC32(const char[] file, char[] buffer, int maxlength);
 
-
 // Include legacy stuff
 #include <system2/legacy>
 
-
-public Extension __ext_system2 =
-{
+public
+Extension __ext_system2 = {
     name = "System2",
     file = "system2.ext",
 
-    #if defined AUTOLOAD_EXTENSIONS
-        autoload = 1,
-    #else
-        autoload = 0,
-    #endif
+#if defined AUTOLOAD_EXTENSIONS
+    autoload = 1,
+#else
+    autoload = 0,
+#endif
 
-    #if defined REQUIRE_EXTENSIONS
-        required = 1,
-    #else
-        required = 0,
-    #endif
+#if defined REQUIRE_EXTENSIONS
+    required = 1,
+#else
+    required = 0,
+#endif
 };
 
-
 #if !defined REQUIRE_EXTENSIONS
-    public void __ext_system2_SetNTVOptional()
-    {
-        MarkNativeAsOptional("System2Request.SetURL");
-        MarkNativeAsOptional("System2Request.GetURL");
-        MarkNativeAsOptional("System2Request.SetPort");
-        MarkNativeAsOptional("System2Request.GetPort");
-        MarkNativeAsOptional("System2Request.SetOutputFile");
-        MarkNativeAsOptional("System2Request.GetOutputFile");
-        MarkNativeAsOptional("System2Request.SetVerifySSL");
-        MarkNativeAsOptional("System2Request.GetVerifySSL");
-        MarkNativeAsOptional("System2Request.SetProxy");
-        MarkNativeAsOptional("System2Request.SetProxyAuthentication");
-        MarkNativeAsOptional("System2Request.Timeout.get");
-        MarkNativeAsOptional("System2Request.Timeout.set");
-        MarkNativeAsOptional("System2Request.Any.get");
-        MarkNativeAsOptional("System2Request.Any.set");
-        
-        MarkNativeAsOptional("System2HTTPRequest.System2HTTPRequest");
-        MarkNativeAsOptional("System2HTTPRequest.SetProgressCallback");
-        MarkNativeAsOptional("System2HTTPRequest.SetData");
-        MarkNativeAsOptional("System2HTTPRequest.GetData");
-        MarkNativeAsOptional("System2HTTPRequest.SetHeader");
-        MarkNativeAsOptional("System2HTTPRequest.GetHeader");
-        MarkNativeAsOptional("System2HTTPRequest.GetHeaderName");
-        MarkNativeAsOptional("System2HTTPRequest.SetUserAgent");
-        MarkNativeAsOptional("System2HTTPRequest.SetBasicAuthentication");
-        MarkNativeAsOptional("System2HTTPRequest.GET");
-        MarkNativeAsOptional("System2HTTPRequest.POST");
-        MarkNativeAsOptional("System2HTTPRequest.PUT");
-        MarkNativeAsOptional("System2HTTPRequest.PATCH");
-        MarkNativeAsOptional("System2HTTPRequest.DELETE");
-        MarkNativeAsOptional("System2HTTPRequest.HEAD");
-        MarkNativeAsOptional("System2HTTPRequest.FollowRedirects.get");
-        MarkNativeAsOptional("System2HTTPRequest.FollowRedirects.set");
-        MarkNativeAsOptional("System2HTTPRequest.Headers.get");
-        
-        MarkNativeAsOptional("System2FTPRequest.System2FTPRequest");
-        MarkNativeAsOptional("System2FTPRequest.SetProgressCallback");
-        MarkNativeAsOptional("System2FTPRequest.SetAuthentication");
-        MarkNativeAsOptional("System2FTPRequest.SetInputFile");
-        MarkNativeAsOptional("System2FTPRequest.GetInputFile");
-        MarkNativeAsOptional("System2FTPRequest.StartRequest");
-        MarkNativeAsOptional("System2FTPRequest.AppendToFile.get");
-        MarkNativeAsOptional("System2FTPRequest.AppendToFile.set");
-        MarkNativeAsOptional("System2FTPRequest.CreateMissingDirs.get");
-        MarkNativeAsOptional("System2FTPRequest.CreateMissingDirs.set");
-        MarkNativeAsOptional("System2FTPRequest.ListFilenamesOnly.get");
-        MarkNativeAsOptional("System2FTPRequest.ListFilenamesOnly.set");
-        
-        MarkNativeAsOptional("System2Response.GetLastURL");
-        MarkNativeAsOptional("System2Response.GetContent");
-        MarkNativeAsOptional("System2Response.ContentLength.get");
-        MarkNativeAsOptional("System2Response.StatusCode.get");
-        MarkNativeAsOptional("System2Response.TotalTime.get");
-        MarkNativeAsOptional("System2Response.DownloadSize.get");
-        MarkNativeAsOptional("System2Response.UploadSize.get");
-        MarkNativeAsOptional("System2Response.DownloadSpeed.get");
-        MarkNativeAsOptional("System2Response.UploadSpeed.get");
-        
-        MarkNativeAsOptional("System2HTTPResponse.GetContentType");
-        MarkNativeAsOptional("System2HTTPResponse.GetHeader");
-        MarkNativeAsOptional("System2HTTPResponse.GetHeaderName");
-        MarkNativeAsOptional("System2HTTPResponse.GetHeadersCount");
-        MarkNativeAsOptional("System2HTTPResponse.HTTPVersion.get");
-        MarkNativeAsOptional("System2HTTPResponse.Headers.get");
+public
+void __ext_system2_SetNTVOptional() {
+    MarkNativeAsOptional("System2Request.SetURL");
+    MarkNativeAsOptional("System2Request.GetURL");
+    MarkNativeAsOptional("System2Request.SetPort");
+    MarkNativeAsOptional("System2Request.GetPort");
+    MarkNativeAsOptional("System2Request.SetOutputFile");
+    MarkNativeAsOptional("System2Request.GetOutputFile");
+    MarkNativeAsOptional("System2Request.SetVerifySSL");
+    MarkNativeAsOptional("System2Request.GetVerifySSL");
+    MarkNativeAsOptional("System2Request.SetProxy");
+    MarkNativeAsOptional("System2Request.SetProxyAuthentication");
+    MarkNativeAsOptional("System2Request.Timeout.get");
+    MarkNativeAsOptional("System2Request.Timeout.set");
+    MarkNativeAsOptional("System2Request.Any.get");
+    MarkNativeAsOptional("System2Request.Any.set");
 
-        MarkNativeAsOptional("System2_URLEncode");
-        MarkNativeAsOptional("System2_URLDecode");
+    MarkNativeAsOptional("System2HTTPRequest.System2HTTPRequest");
+    MarkNativeAsOptional("System2HTTPRequest.SetProgressCallback");
+    MarkNativeAsOptional("System2HTTPRequest.SetData");
+    MarkNativeAsOptional("System2HTTPRequest.GetData");
+    MarkNativeAsOptional("System2HTTPRequest.SetHeader");
+    MarkNativeAsOptional("System2HTTPRequest.GetHeader");
+    MarkNativeAsOptional("System2HTTPRequest.GetHeaderName");
+    MarkNativeAsOptional("System2HTTPRequest.SetUserAgent");
+    MarkNativeAsOptional("System2HTTPRequest.SetBasicAuthentication");
+    MarkNativeAsOptional("System2HTTPRequest.GET");
+    MarkNativeAsOptional("System2HTTPRequest.POST");
+    MarkNativeAsOptional("System2HTTPRequest.PUT");
+    MarkNativeAsOptional("System2HTTPRequest.PATCH");
+    MarkNativeAsOptional("System2HTTPRequest.DELETE");
+    MarkNativeAsOptional("System2HTTPRequest.HEAD");
+    MarkNativeAsOptional("System2HTTPRequest.FollowRedirects.get");
+    MarkNativeAsOptional("System2HTTPRequest.FollowRedirects.set");
+    MarkNativeAsOptional("System2HTTPRequest.Headers.get");
 
-        MarkNativeAsOptional("System2_CopyFile");
+    MarkNativeAsOptional("System2FTPRequest.System2FTPRequest");
+    MarkNativeAsOptional("System2FTPRequest.SetProgressCallback");
+    MarkNativeAsOptional("System2FTPRequest.SetAuthentication");
+    MarkNativeAsOptional("System2FTPRequest.SetInputFile");
+    MarkNativeAsOptional("System2FTPRequest.GetInputFile");
+    MarkNativeAsOptional("System2FTPRequest.StartRequest");
+    MarkNativeAsOptional("System2FTPRequest.AppendToFile.get");
+    MarkNativeAsOptional("System2FTPRequest.AppendToFile.set");
+    MarkNativeAsOptional("System2FTPRequest.CreateMissingDirs.get");
+    MarkNativeAsOptional("System2FTPRequest.CreateMissingDirs.set");
+    MarkNativeAsOptional("System2FTPRequest.ListFilenamesOnly.get");
+    MarkNativeAsOptional("System2FTPRequest.ListFilenamesOnly.set");
 
-        MarkNativeAsOptional("System2_Check7ZIP");
-        MarkNativeAsOptional("System2_Compress");
-        MarkNativeAsOptional("System2_Extract");
+    MarkNativeAsOptional("System2Response.GetLastURL");
+    MarkNativeAsOptional("System2Response.GetContent");
+    MarkNativeAsOptional("System2Response.ContentLength.get");
+    MarkNativeAsOptional("System2Response.StatusCode.get");
+    MarkNativeAsOptional("System2Response.TotalTime.get");
+    MarkNativeAsOptional("System2Response.DownloadSize.get");
+    MarkNativeAsOptional("System2Response.UploadSize.get");
+    MarkNativeAsOptional("System2Response.DownloadSpeed.get");
+    MarkNativeAsOptional("System2Response.UploadSpeed.get");
 
-        MarkNativeAsOptional("System2_ExecuteThreaded");
-        MarkNativeAsOptional("System2_ExecuteFormattedThreaded");
-        MarkNativeAsOptional("System2ExecuteOutput.GetOutput");
-        MarkNativeAsOptional("System2ExecuteOutput.Length.get");
-        MarkNativeAsOptional("System2ExecuteOutput.ExitStatus.get");
+    MarkNativeAsOptional("System2HTTPResponse.GetContentType");
+    MarkNativeAsOptional("System2HTTPResponse.GetHeader");
+    MarkNativeAsOptional("System2HTTPResponse.GetHeaderName");
+    MarkNativeAsOptional("System2HTTPResponse.GetHeadersCount");
+    MarkNativeAsOptional("System2HTTPResponse.HTTPVersion.get");
+    MarkNativeAsOptional("System2HTTPResponse.Headers.get");
 
-        MarkNativeAsOptional("System2_Execute");
-        MarkNativeAsOptional("System2_ExecuteFormatted");
+    MarkNativeAsOptional("System2_URLEncode");
+    MarkNativeAsOptional("System2_URLDecode");
 
-        MarkNativeAsOptional("System2_GetGameDir");
-        MarkNativeAsOptional("System2_GetOS");
+    MarkNativeAsOptional("System2_CopyFile");
 
-        MarkNativeAsOptional("System2_GetStringMD5");
-        MarkNativeAsOptional("System2_GetFileMD5");
-        MarkNativeAsOptional("System2_GetStringCRC32");
-        MarkNativeAsOptional("System2_GetFileCRC32");
+    MarkNativeAsOptional("System2_Check7ZIP");
+    MarkNativeAsOptional("System2_Compress");
+    MarkNativeAsOptional("System2_Extract");
 
-        // Deprecated v2 stuff
-        MarkNativeAsOptional("System2_GetPage");
-        MarkNativeAsOptional("System2_DownloadFile");
-        MarkNativeAsOptional("System2_DownloadFTPFile");
-        MarkNativeAsOptional("System2_UploadFTPFile");
-        MarkNativeAsOptional("System2_CompressFile");
-        MarkNativeAsOptional("System2_ExtractArchive");
-        MarkNativeAsOptional("System2_RunThreadCommand");
-        MarkNativeAsOptional("System2_RunThreadCommandWithData");
-        MarkNativeAsOptional("System2_RunCommand");
-    }
+    MarkNativeAsOptional("System2_ExecuteThreaded");
+    MarkNativeAsOptional("System2_ExecuteFormattedThreaded");
+    MarkNativeAsOptional("System2ExecuteOutput.GetOutput");
+    MarkNativeAsOptional("System2ExecuteOutput.Length.get");
+    MarkNativeAsOptional("System2ExecuteOutput.ExitStatus.get");
+
+    MarkNativeAsOptional("System2_Execute");
+    MarkNativeAsOptional("System2_ExecuteFormatted");
+
+    MarkNativeAsOptional("System2_GetGameDir");
+    MarkNativeAsOptional("System2_GetOS");
+
+    MarkNativeAsOptional("System2_GetStringMD5");
+    MarkNativeAsOptional("System2_GetFileMD5");
+    MarkNativeAsOptional("System2_GetStringCRC32");
+    MarkNativeAsOptional("System2_GetFileCRC32");
+
+    // Deprecated v2 stuff
+    MarkNativeAsOptional("System2_GetPage");
+    MarkNativeAsOptional("System2_DownloadFile");
+    MarkNativeAsOptional("System2_DownloadFTPFile");
+    MarkNativeAsOptional("System2_UploadFTPFile");
+    MarkNativeAsOptional("System2_CompressFile");
+    MarkNativeAsOptional("System2_ExtractArchive");
+    MarkNativeAsOptional("System2_RunThreadCommand");
+    MarkNativeAsOptional("System2_RunThreadCommandWithData");
+    MarkNativeAsOptional("System2_RunCommand");
+}
 #endif

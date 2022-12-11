@@ -1,0 +1,18 @@
+#!/bin/bash
+cd "{{srcds_steam_app_dir}}"
+
+bash "{{srcds_steam_app_dir}}/srcds_run" -game "{{srcds_steam_app}}" -console \
+  -usercon \
+  +fps_max "{{ srcds_fps_max }}" \
+  -tickrate "{{ srcds_tick_rate }}" \
+  -port "{{ srcds_base_port + (loop0 * 10) }}" \
+  +tv_port "{{ srcds_base_port + (loop0 * 10) + 1 }}" \
+  +clientport "{{ srcds_base_port + (loop0 * 10) + 2 }}" \
+  +maxplayers {{ srcds_max_players|default(24) }} \
+  +map "{{ map_rotation['default'] | random }}" \
+  +sv_setsteamaccount "{{ item.gslt }}" \
+  +rcon_password "{{ srcds_rcon_password }}" \
+  +sv_password "{{ srcds_server_password }}" \
+  +sv_region "{{ srcds_region | quote }}" \
+  -ip "{{ ip }}" \
+  -authkey "{{ srcds_workshop_auth_key }}"

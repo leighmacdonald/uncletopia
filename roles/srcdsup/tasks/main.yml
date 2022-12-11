@@ -9,12 +9,6 @@
     mode: 0777
   loop: "{{ services }}"
 
-- name: Generate ssh private key
-  ansible.builtin.template:
-    src: private_key.j2
-    dest: ~/.ssh/id_rsa_stv
-    mode: 0600
-
 - name: srcds-logs volume
   docker_volume:
     name: srcds-{{ item.server_name_short }}-logs
@@ -53,7 +47,6 @@
     recreate: true
     restart_policy: always
     volumes:
-      - /home/tf2server/.ssh/id_rsa_stv:/app/id_rsa.key
       - srcds-{{ item.server_name_short }}-stv:/app/demos
       - srcds-{{ item.server_name_short }}-logs:/app/logs
       - /build/{{ item.server_name_short }}/srcdsup.yml:/app/srcdsup.yml

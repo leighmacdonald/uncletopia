@@ -1,5 +1,7 @@
 ---
 - name: Build uncletopia srcds image
-  hosts: build
+  hosts: tf2
+  become_user: tf2server
+  become: true
   roles:
     - srcds

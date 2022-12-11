@@ -1,69 +1,83 @@
 ---
 
-- name: Create ~/build_srcds/sourcemod/ directory
+- name: Create /home/tf2server/build_sourcemod/ directory
   ansible.builtin.file:
     recurse: true
-    path: ~/build_srcds/sourcemod/
+    path: /home/tf2server/build_sourcemod/
     state: directory
-    mode: "0777"
+    mode: "0755"
 
-- name: Download metamod
+- name: Fetch latest sourcemod version
   ansible.builtin.get_url:
-    url: https://mms.alliedmods.net/mmsdrop/1.11/mmsource-1.11.0-git1148-linux.tar.gz
-    dest: ~/build_srcds/sourcemod/mm.tar.gz
-    mode: "0777"
+    url: https://sm.alliedmods.net/smdrop/1.12/sourcemod-latest-linux
+    dest: /home/tf2server/build_sourcemod/.version-sm-latest
 
-- name: Extract metamod
-  ansible.builtin.unarchive:
-    src: ~/build_srcds/sourcemod/mm.tar.gz
-    dest: ~/build_srcds/sourcemod/
-    remote_src: true
-
-- name: Remove metamod tarball
-  ansible.builtin.file:
-    path: ~/build_srcds/sourcemod/mm.tar.gz
-    state: absent
-
-- name: Download sourcemod
+- name: Fetch latest metamod version
   ansible.builtin.get_url:
-    url: https://sm.alliedmods.net/smdrop/1.12/sourcemod-1.12.0-git6946-linux.tar.gz
-    dest: ~/build_srcds/sourcemod/sm.tar.gz
-    mode: "0777"
+    url: https://mms.alliedmods.net/mmsdrop/1.12/mmsource-latest-linux
+    dest: /home/tf2server/build_sourcemod/.version-mm-latest
 
-- name: Extract sourcemod
+- name: Load latest sourcemod version
+  set_fact:
+    sm_version_latest: "{{ lookup('file', '/home/tf2server/build_sourcemod/.version-sm-latest') }}"
+    mm_version_latest: "{{ lookup('file', '/home/tf2server/build_sourcemod/.version-mm-latest') }}"
+
+- name: Check if mm version rules file exists
+  stat:
+    path: /home/tf2server/build_sourcemod/.version-mm-current
+  register: version_mm_current_exists
+
+- name: Load mm version
+  set_fact:
+    mm_version_current: "{{ lookup('file', '/home/tf2server/build_sourcemod/.version-mm-current') }}"
+  when: (version_mm_current_exists is defined) and (version_mm_current_exists.stat.exists)
+
+- name: Check if sm version rules file exists
+  stat:
+    path: /home/tf2server/build_sourcemod/.version-sm-current
+  register: version_sm_current_exists
+
+- name: Load sm version
+  set_fact:
+    sm_version_current: "{{ lookup('file', '/home/tf2server/build_sourcemod/.version-sm-current') }}"
+  when: (version_sm_current_exists is defined) and (version_sm_current_exists.stat.exists)
+
+- name: Download latest metamod
   ansible.builtin.unarchive:
-    src: ~/build_srcds/sourcemod/sm.tar.gz
-    dest: ~/build_srcds/sourcemod
+    src: https://mms.alliedmods.net/mmsdrop/1.12/{{ mm_version_latest }}
+    dest: /home/tf2server/build_sourcemod/
     remote_src: true
+  when: (mm_version_current is undefined) or (mm_version_latest != mm_version_current)
 
-- name: Remove sourcemod tarball
-  ansible.builtin.file:
-    path: ~/build_srcds/sourcemod/sm.tar.gz
-    state: absent
+- name: Save current metamod version
+  ansible.builtin.copy:
+    dest: /home/tf2server/build_sourcemod/.version-mm-current
+    content: "{{ mm_version_latest }}"
+  when: (mm_version_current is undefined) or (mm_version_latest != mm_version_current)
+
+- name: Download latest sourcemod
+  ansible.builtin.unarchive:
+    src: https://sm.alliedmods.net/smdrop/1.12/{{ sm_version_latest }}
+    dest: /home/tf2server/build_sourcemod/
+    remote_src: true
+  when: (sm_version_current is undefined) or (sm_version_latest != sm_version_current)
+
+- name: Save current sourcemod version
+  ansible.builtin.copy:
+    dest: /home/tf2server/build_sourcemod/.version-sm-current
+    content: "{{ sm_version_latest }}"
+  when: (sm_version_current is undefined) or (sm_version_latest != sm_version_current)
 
 - name: Copy extensions & plugin sources
-  ansible.builtin.synchronize:
+  ansible.posix.synchronize:
+    set_remote_user: true
     src: "{{ role_path }}/files/"
-    dest: ~/build_srcds/sourcemod/
-    recursive: true
-    times: false
-    perms: false
-    owner: false
-    group: false
+    dest: ~/build_sourcemod/
+    recursive: yes
+    archive: no
 
 - name: Build plugins
   ansible.builtin.command:
-    chdir: ~/build_srcds/sourcemod/addons/sourcemod/scripting
+    chdir: /home/tf2server/build_sourcemod/addons/sourcemod/scripting
     cmd: bash build.sh
-    creates: ~/build_srcds/sourcemod/addons/sourcemod/plugins/disabled/basevotes.smx
-
-- name: Create sourcemod release
-  community.general.archive:
-    path: ~/build_srcds/sourcemod/
-    dest: ~/build_srcds/ut-sourcemod.tar.gz
-    mode: "0777"
-
-- name: Cleanup sourcemod build directory
-  ansible.builtin.file:
-    state: absent
-    path: ~/build_srcds/sourcemod
+    creates: /home/tf2server/build_sourcemod/addons/sourcemod/plugins/disabled/basevotes.smx

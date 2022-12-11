@@ -1,5 +1,7 @@
 ---
 - name: Build sourcemod distribution
-  hosts: build
+  hosts: tf2
+  become: true
+  become_user: tf2server
   roles:
     - sourcemod

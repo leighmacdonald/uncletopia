@@ -36,7 +36,7 @@ logs:
 	docker logs -f srcds-localhost-1
 
 srcds:
-	@ansible-playbook -l build $(PLAYBOOK_PATH)/srcds.yml
+	@ansible-playbook -l tf2 $(PLAYBOOK_PATH)/srcds.yml
 
 shell:
 	@docker exec -it srcds-test-1 bash

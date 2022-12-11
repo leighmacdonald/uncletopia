@@ -5,29 +5,28 @@
  * License     GPLv3
  * Web         http://dordnung.de
  * -----------------------------------------------------
- * 
+ *
  * Copyright (C) 2013-2020 David Ordnung
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  */
 
 #if defined _system2_request_included
-    #endinput
+#endinput
 #endif
 
 #define _system2_request_included
-
 
 /**
  *
@@ -35,12 +34,10 @@
  *
  */
 
-
 /**
  * A list of possible HTTP request methods.
  */
-enum HTTPRequestMethod
-{
+enum HTTPRequestMethod {
     METHOD_GET,
     METHOD_POST,
     METHOD_PUT,
@@ -52,14 +49,12 @@ enum HTTPRequestMethod
 /**
  * A list of possible HTTP versions.
  */
-enum HTTPVersion
-{
+enum HTTPVersion {
     VERSION_NONE,
     VERSION_1_0,
     VERSION_1_1,
     VERSION_2_0
 }
-
 
 /**
  * Called when a HTTP request was finished.
@@ -69,7 +64,8 @@ enum HTTPVersion
  * The request can be modified and made again.
  *
  * @param success       Whether the request could made.
- *                      This not means that the request itself was successful, check the StatusCode of the response for that!
+ *                      This not means that the request itself was successful, check the StatusCode of the response for
+ * that!
  * @param error         If success is false this will contain the error message.
  * @param request       A copy of the made HTTP request.
  *                      Can't be deleted, as it will be destroyed after the callback!
@@ -79,9 +75,9 @@ enum HTTPVersion
  *
  * @noreturn
  */
-typeset System2HTTPResponseCallback
-{
-    function void (bool success, const char[] error, System2HTTPRequest request, System2HTTPResponse response, HTTPRequestMethod method);
+typeset System2HTTPResponseCallback {
+    function void(bool success, const char[] error, System2HTTPRequest request, System2HTTPResponse response,
+                  HTTPRequestMethod method);
 };
 
 /**
@@ -92,7 +88,8 @@ typeset System2HTTPResponseCallback
  * The request can be modified and made again.
  *
  * @param success       Whether the request could made.
- *                      This not means that the request itself was successful, check the StatusCode of the response for that!
+ *                      This not means that the request itself was successful, check the StatusCode of the response for
+ * that!
  * @param error         If success is false this will contain the error message.
  * @param request       A copy of the made FTP request.
  *                      Can't be deleted, as it will be destroyed after the callback!
@@ -101,11 +98,9 @@ typeset System2HTTPResponseCallback
  *
  * @noreturn
  */
-typeset System2FTPResponseCallback
-{
-    function void (bool success, const char[] error, System2FTPRequest request, System2FTPResponse response);
+typeset System2FTPResponseCallback {
+    function void(bool success, const char[] error, System2FTPRequest request, System2FTPResponse response);
 };
-
 
 /**
  * Called on a frequent interval while data of a HTTP request is being transferred.
@@ -120,9 +115,8 @@ typeset System2FTPResponseCallback
  *
  * @noreturn
  */
-typeset System2HTTPProgressCallback
-{
-    function void (System2HTTPRequest request, int dlTotal, int dlNow, int ulTotal, int ulNow);
+typeset System2HTTPProgressCallback {
+    function void(System2HTTPRequest request, int dlTotal, int dlNow, int ulTotal, int ulNow);
 };
 
 /**
@@ -138,12 +132,9 @@ typeset System2HTTPProgressCallback
  *
  * @noreturn
  */
-typeset System2FTPProgressCallback
-{
-    function void (System2FTPRequest request, int dlTotal, int dlNow, int ulTotal, int ulNow);
+typeset System2FTPProgressCallback {
+    function void(System2FTPRequest request, int dlTotal, int dlNow, int ulTotal, int ulNow);
 };
-
-
 
 /**
  * Basic methodmap for a request.
@@ -168,7 +159,8 @@ methodmap System2Request < Handle {
      * @noreturn
      * @error           Invalid request.
      */
-    public native void SetURL(const char[] url, any ...);
+  public
+    native void SetURL(const char[] url, any...);
 
     /**
      * Retrieves the URL of the request.
@@ -179,7 +171,8 @@ methodmap System2Request < Handle {
      * @noreturn
      * @error           Invalid request.
      */
-    public native void GetURL(char[] url, int maxlength);
+  public
+    native void GetURL(char[] url, int maxlength);
 
     /**
      * Sets the remote port number to connect to,
@@ -191,7 +184,8 @@ methodmap System2Request < Handle {
      * @error           Invalid request.
      * @error           Invalid port number.
      */
-    public native void SetPort(int port);
+  public
+    native void SetPort(int port);
 
     /**
      * Returns the port of the request.
@@ -199,7 +193,8 @@ methodmap System2Request < Handle {
      * @return          The port of the request or 0 if none set.
      * @error           Invalid request.
      */
-    public native int GetPort();
+  public
+    native int GetPort();
 
     /**
      * Sets the path to the file to which the output of the request will be written to.
@@ -212,7 +207,8 @@ methodmap System2Request < Handle {
      * @noreturn
      * @error           Invalid request.
      */
-    public native void SetOutputFile(const char[] file, any ...);
+  public
+    native void SetOutputFile(const char[] file, any...);
 
     /**
      * Retrieves the path to the file to which the output of the request will be written to.
@@ -223,7 +219,8 @@ methodmap System2Request < Handle {
      * @noreturn
      * @error           Invalid request.
      */
-    public native void GetOutputFile(char[] file, int maxlength);
+  public
+    native void GetOutputFile(char[] file, int maxlength);
 
     /**
      * Sets whether to verify authenticity of the peer's certificate and server cert is for the server it is known as.
@@ -234,7 +231,8 @@ methodmap System2Request < Handle {
      * @noreturn
      * @error           Invalid request.
      */
-    public native void SetVerifySSL(bool verify);
+  public
+    native void SetVerifySSL(bool verify);
 
     /**
      * Returns whether SSL certificates will be verified.
@@ -242,13 +240,14 @@ methodmap System2Request < Handle {
      * @return          True if SSL certificates will be verified, otherwise false.
      * @error           Invalid request.
      */
-    public native bool GetVerifySSL();
+  public
+    native bool GetVerifySSL();
 
     /**
      * Sets proxy for the request.
      *
-     * @param proxy         Hostname or dotted numerical IP address. A numerical IPv6 address must be written within [brackets].
-     *                      To specify port number in this string, append :[port] to the end of the host name (default: 1080).
+     * @param proxy         Hostname or dotted numerical IP address. A numerical IPv6 address must be written within
+     * [brackets]. To specify port number in this string, append :[port] to the end of the host name (default: 1080).
      *                      The proxy string may be prefixed with [scheme]:// to specify which kind of proxy is used.
      *                      http://
      *                      HTTP Proxy. Default when no scheme is specified.
@@ -263,14 +262,15 @@ methodmap System2Request < Handle {
      *                      socks5h://
      *                      SOCKS5 Proxy. Proxy resolves URL hostname.
      * @param useHttpTunnel Tunnel all operations through the HTTP proxy (use http or https)-
-     *                      Tunneling means that an HTTP CONNECT request is sent to the proxy, asking it to connect to a remote host
-     *                      on a specific port number and then the traffic is just passed through the proxy. Proxies tend to white-list
-    *                       specific port numbers it allows CONNECT requests to and often only port 80 and 443 are allowed.
+     *                      Tunneling means that an HTTP CONNECT request is sent to the proxy, asking it to connect to a
+     * remote host on a specific port number and then the traffic is just passed through the proxy. Proxies tend to
+     * white-list specific port numbers it allows CONNECT requests to and often only port 80 and 443 are allowed.
      *
      * @noreturn
      * @error           Invalid request.
      */
-    public native void SetProxy(const char[] proxy, bool useHttpTunnel = false);
+  public
+    native void SetProxy(const char[] proxy, bool useHttpTunnel = false);
 
     /**
      * Sets the username and password to be used in protocol authentication with the proxy.
@@ -281,8 +281,8 @@ methodmap System2Request < Handle {
      * @noreturn
      * @error           Invalid request.
      */
-    public native void SetProxyAuthentication(const char[] username, const char[] password);
-
+  public
+    native void SetProxyAuthentication(const char[] username, const char[] password);
 
     property int Timeout {
         /**
@@ -292,7 +292,8 @@ methodmap System2Request < Handle {
          * @return          The timeout of the request in seconds or -1 if none set.
          * @error           Invalid request.
          */
-        public native get();
+      public
+        native get();
 
         /**
          * Sets the timeout for the request in seconds.
@@ -304,7 +305,8 @@ methodmap System2Request < Handle {
          * @error           Invalid request.
          * @error           Invalid timeout.
          */
-        public native set(int seconds);
+      public
+        native set(int seconds);
     }
 
     property any Any {
@@ -314,7 +316,8 @@ methodmap System2Request < Handle {
          * @return          The any data that was bound or 0 if none set.
          * @error           Invalid request.
          */
-        public native get();
+      public
+        native get();
 
         /**
          * Sets any data to bind to the request (which you can then use in callbacks).
@@ -324,7 +327,8 @@ methodmap System2Request < Handle {
          * @noreturn
          * @error           Invalid request.
          */
-        public native set(any Any);
+      public
+        native set(any Any);
     }
 
     property int MaxSendSpeed {
@@ -336,7 +340,8 @@ methodmap System2Request < Handle {
          * @noreturn
          * @error           Invalid request.
          */
-        public native set(int maxSpeed);
+      public
+        native set(int maxSpeed);
     }
 
     property int MaxRecvSpeed {
@@ -348,10 +353,10 @@ methodmap System2Request < Handle {
          * @noreturn
          * @error           Invalid request.
          */
-        public native set(int maxSpeed);
+      public
+        native set(int maxSpeed);
     }
 }
-
 
 /**
  * Methodmap to create a HTTP request.
@@ -367,14 +372,15 @@ methodmap System2HTTPRequest < System2Request {
      *                  Must be URL-encoded (use System2_URLEncode) in the following format:
      *                  scheme://host:port/path
      *
-     *                  Host is a hostname or dotted numerical IP address. A numerical IPv6 address must be written within [brackets].
-     *                  If no scheme is given, HTTP will be used.
+     *                  Host is a hostname or dotted numerical IP address. A numerical IPv6 address must be written
+     * within [brackets]. If no scheme is given, HTTP will be used.
      * @param ...       URL format arguments.
      *
      * @noreturn
      * @error           Couldn't create request.
      */
-    public native System2HTTPRequest(System2HTTPResponseCallback callback, const char[] url, any ...);
+  public
+    native System2HTTPRequest(System2HTTPResponseCallback callback, const char[] url, any...);
 
     /**
      * Sets the progress callback for the transfer of the request.
@@ -386,8 +392,8 @@ methodmap System2HTTPRequest < System2Request {
      * @noreturn
      * @error           Invalid request.
      */
-    public native void SetProgressCallback(System2HTTPProgressCallback callback);
-
+  public
+    native void SetProgressCallback(System2HTTPProgressCallback callback);
 
     /**
      * Sets the body data to send with the request.
@@ -403,7 +409,8 @@ methodmap System2HTTPRequest < System2Request {
      * @noreturn
      * @error           Invalid request.
      */
-    public native void SetData(const char[] data, any ...);
+  public
+    native void SetData(const char[] data, any...);
 
     /**
      * Retrieves the body data of the request.
@@ -414,8 +421,8 @@ methodmap System2HTTPRequest < System2Request {
      * @noreturn
      * @error           Invalid request.
      */
-    public native void GetData(char[] data, int maxlength);
-
+  public
+    native void GetData(char[] data, int maxlength);
 
     /**
      * Sets a HTTP request header.
@@ -428,7 +435,8 @@ methodmap System2HTTPRequest < System2Request {
      * @noreturn
      * @error           Invalid request.
      */
-    public native void SetHeader(const char[] header, const char[] value, any ...);
+  public
+    native void SetHeader(const char[] header, const char[] value, any...);
 
     /**
      * Retrieves a HTTP request header.
@@ -440,7 +448,8 @@ methodmap System2HTTPRequest < System2Request {
      * @return          True if header was set, otherwise false.
      * @error           Invalid request.
      */
-    public native bool GetHeader(const char[] header, char[] value, int maxlength);
+  public
+    native bool GetHeader(const char[] header, char[] value, int maxlength);
 
     /**
      * Retrieves the name of a header at a given index.
@@ -453,7 +462,8 @@ methodmap System2HTTPRequest < System2Request {
      * @return          True if header was found, otherwise false.
      * @error           Invalid request.
      */
-    public native bool GetHeaderName(int index, char[] name, int maxlength);
+  public
+    native bool GetHeaderName(int index, char[] name, int maxlength);
 
     property int Headers {
         /**
@@ -462,7 +472,8 @@ methodmap System2HTTPRequest < System2Request {
          * @return      The number of set headers.
          * @error       Invalid response.
          */
-        public native get();
+      public
+        native get();
     }
 
     /**
@@ -474,18 +485,18 @@ methodmap System2HTTPRequest < System2Request {
      * @return          ArrayList with all set request header names. Must be deleted afterwards!
      * @error           Invalid request.
      */
-    public ArrayList GetHeaders(int maxlength = 256) {
+  public
+    ArrayList GetHeaders(int maxlength = 256) {
         ArrayList headers = new ArrayList(maxlength);
 
         char[] headerName = new char[maxlength];
-        for (int i=0; i < this.Headers; i++) {
+        for (int i = 0; i < this.Headers; i++) {
             this.GetHeaderName(i, headerName, maxlength);
             headers.PushString(headerName);
         }
 
         return headers;
     }
-
 
     /**
      * Sets the user agent for the request.
@@ -497,7 +508,8 @@ methodmap System2HTTPRequest < System2Request {
      * @noreturn
      * @error           Invalid request.
      */
-    public native void SetUserAgent(const char[] userAgent, any ...);
+  public
+    native void SetUserAgent(const char[] userAgent, any...);
 
     /**
      * Sets basic authentication username and passowrd for the request.
@@ -509,7 +521,8 @@ methodmap System2HTTPRequest < System2Request {
      * @noreturn
      * @error           Invalid request.
      */
-    public native void SetBasicAuthentication(const char[] username, const char[] password);
+  public
+    native void SetBasicAuthentication(const char[] username, const char[] password);
 
     /**
      * Sends the request with the HTTP GET method.
@@ -517,7 +530,8 @@ methodmap System2HTTPRequest < System2Request {
      * @noreturn
      * @error           Invalid request.
      */
-    public native void GET();
+  public
+    native void GET();
 
     /**
      * Sends the request with the HTTP POST method.
@@ -525,40 +539,44 @@ methodmap System2HTTPRequest < System2Request {
      * @noreturn
      * @error           Invalid request.
      */
-    public native void POST();
-    
+  public
+    native void POST();
+
     /**
      * Sends the request with the HTTP PUT method.
      *
      * @noreturn
      * @error           Invalid request.
      */
-    public native void PUT();
-    
+  public
+    native void PUT();
+
     /**
      * Sends the request with the HTTP PATCH method.
      *
      * @noreturn
      * @error           Invalid request.
      */
-    public native void PATCH();
-    
+  public
+    native void PATCH();
+
     /**
      * Sends the request with the HTTP DELETE method.
      *
      * @noreturn
      * @error           Invalid request.
      */
-    public native void DELETE();
-    
+  public
+    native void DELETE();
+
     /**
      * Sends the request with the HTTP HEAD method.
      *
      * @noreturn
      * @error           Invalid request.
      */
-    public native void HEAD();
-
+  public
+    native void HEAD();
 
     property bool FollowRedirects {
         /**
@@ -568,22 +586,23 @@ methodmap System2HTTPRequest < System2Request {
          * @return          True if it follow redirects, otherwise false.
          * @error           Invalid request.
          */
-        public native get();
+      public
+        native get();
 
         /**
          * Sets to follow any Location: header that the server sends as part of an HTTP header in a 3xx response.
-         * For 301, 302 and 303 responses system2 will switch method to GET. All other 3xx codes will make system2 send the same method again.
-         * By default, redirects will be followed.
+         * For 301, 302 and 303 responses system2 will switch method to GET. All other 3xx codes will make system2 send
+         * the same method again. By default, redirects will be followed.
          *
          * @param follow    True to follow redirects, otherwise false.
          *
          * @noreturn
          * @error           Invalid request.
          */
-        public native set(bool follow);
+      public
+        native set(bool follow);
     }
 }
-
 
 /**
  * Methodmap to create a FTP request.
@@ -598,14 +617,15 @@ methodmap System2FTPRequest < System2Request {
      *                  Must be URL-encoded (use System2_URLEncode) in the following format:
      *                  scheme://host:port/path
      *
-     *                  Host is a hostname or dotted numerical IP address. A numerical IPv6 address must be written within [brackets].
-     *                  If no scheme is given, FTP will be used.
+     *                  Host is a hostname or dotted numerical IP address. A numerical IPv6 address must be written
+     * within [brackets]. If no scheme is given, FTP will be used.
      * @param ...       URL format arguments.
      *
      * @noreturn
      * @error           Couldn't create request.
      */
-    public native System2FTPRequest(System2FTPResponseCallback callback, const char[] url, any ...);
+  public
+    native System2FTPRequest(System2FTPResponseCallback callback, const char[] url, any...);
 
     /**
      * Sets the progress callback for the transfer of the request.
@@ -616,8 +636,8 @@ methodmap System2FTPRequest < System2Request {
      * @noreturn
      * @error           Invalid request.
      */
-    public native void SetProgressCallback(System2FTPProgressCallback callback);
-
+  public
+    native void SetProgressCallback(System2FTPProgressCallback callback);
 
     /**
      * Sets authentication needed to access the FTP server.
@@ -628,8 +648,8 @@ methodmap System2FTPRequest < System2Request {
      * @noreturn
      * @error           Invalid request.
      */
-    public native void SetAuthentication(const char[] username, const char[] password);
-
+  public
+    native void SetAuthentication(const char[] username, const char[] password);
 
     /**
      * Sets the path to the file which should be uploaded.
@@ -641,7 +661,8 @@ methodmap System2FTPRequest < System2Request {
      * @noreturn
      * @error           Invalid request.
      */
-    public native void SetInputFile(const char[] file, any ...);
+  public
+    native void SetInputFile(const char[] file, any...);
 
     /**
      * Retrieves the path to the file which should be uploaded.
@@ -652,8 +673,8 @@ methodmap System2FTPRequest < System2Request {
      * @noreturn
      * @error           Invalid request.
      */
-    public native void GetInputFile(char[] file, int maxlength);
-
+  public
+    native void GetInputFile(char[] file, int maxlength);
 
     /**
      * Starts the request.
@@ -664,8 +685,8 @@ methodmap System2FTPRequest < System2Request {
      * @noreturn
      * @error           Invalid request.
      */
-    public native void StartRequest();
-
+  public
+    native void StartRequest();
 
     property bool AppendToFile {
         /**
@@ -675,7 +696,8 @@ methodmap System2FTPRequest < System2Request {
          * @return          True if it appends to the file, false if the file will be replaced.
          * @error           Invalid request.
          */
-        public native get();
+      public
+        native get();
 
         /**
          * Sets whether to append to the FTP file or to replace it when uploading a file.
@@ -686,7 +708,8 @@ methodmap System2FTPRequest < System2Request {
          * @noreturn
          * @error           Invalid request.
          */
-        public native set(bool append);
+      public
+        native set(bool append);
     }
 
     property bool CreateMissingDirs {
@@ -697,7 +720,8 @@ methodmap System2FTPRequest < System2Request {
          * @return          True if it creates missing dirs, otherwise false.
          * @error           Invalid request.
          */
-        public native get();
+      public
+        native get();
 
         /**
          * Sets whether to create any remote directory that it fails to "move" into.
@@ -708,7 +732,8 @@ methodmap System2FTPRequest < System2Request {
          * @noreturn
          * @error           Invalid request.
          */
-        public native set(bool create);
+      public
+        native set(bool create);
     }
 
     property bool ListFilenamesOnly {
@@ -719,7 +744,8 @@ methodmap System2FTPRequest < System2Request {
          * @return          True if only file names should be fetched, false for full directory listing.
          * @error           Invalid request.
          */
-        public native get();
+      public
+        native get();
 
         /**
          * Sets whether to list the names of files in a directory,
@@ -731,11 +757,10 @@ methodmap System2FTPRequest < System2Request {
          * @noreturn
          * @error           Invalid request.
          */
-        public native set(bool append);
+      public
+        native set(bool append);
     }
 }
-
-
 
 /**
  * Basic methodmap for a response of a request.
@@ -751,7 +776,8 @@ methodmap System2Response < Handle {
      * @noreturn
      * @error           Invalid response.
      */
-    public native void GetLastURL(char[] url, int maxlength);
+  public
+    native void GetLastURL(char[] url, int maxlength);
 
     /**
      * Retrieves the content of the response.
@@ -768,8 +794,9 @@ methodmap System2Response < Handle {
      * @return          Number of read bytes.
      * @error           Invalid response.
      */
-    public native int GetContent(char[] content, int maxlength, int start = 0, const char[] delimiter = "", bool include = true);
-
+  public
+    native int GetContent(char[] content, int maxlength, int start = 0, const char[] delimiter = "",
+                          bool include = true);
 
     property int ContentLength {
         /**
@@ -779,7 +806,8 @@ methodmap System2Response < Handle {
          * @return      Length of the content.
          * @error       Invalid response.
          */
-        public native get();
+      public
+        native get();
     }
 
     property int StatusCode {
@@ -789,7 +817,8 @@ methodmap System2Response < Handle {
          * @return      The status code.
          * @error       Invalid response.
          */
-        public native get();
+      public
+        native get();
     }
 
     property float TotalTime {
@@ -800,7 +829,8 @@ methodmap System2Response < Handle {
          * @return      Total time from the request until the response in seconds.
          * @error       Invalid response.
          */
-        public native get();
+      public
+        native get();
     }
 
     property int DownloadSize {
@@ -812,7 +842,8 @@ methodmap System2Response < Handle {
          * @return      Total amount of bytes that were downloaded.
          * @error       Invalid response.
          */
-        public native get();
+      public
+        native get();
     }
 
     property int UploadSize {
@@ -822,7 +853,8 @@ methodmap System2Response < Handle {
          * @return      Total amount of bytes that were uploaded.
          * @error       Invalid response.
          */
-        public native get();
+      public
+        native get();
     }
 
     property int DownloadSpeed {
@@ -832,7 +864,8 @@ methodmap System2Response < Handle {
          * @return      Average download speed in bytes per second.
          * @error       Invalid response.
          */
-        public native get();
+      public
+        native get();
     }
 
     property int UploadSpeed {
@@ -842,10 +875,10 @@ methodmap System2Response < Handle {
          * @return      Average upload speed in bytes per second.
          * @error       Invalid response.
          */
-        public native get();
+      public
+        native get();
     }
 }
-
 
 /**
  * Methodmap for a response of a HTTP request.
@@ -861,7 +894,8 @@ methodmap System2HTTPResponse < System2Response {
      * @noreturn
      * @error           Invalid response.
      */
-    public native void GetContentType(const char[] type, int maxlength);
+  public
+    native void GetContentType(const char[] type, int maxlength);
 
     /**
      * Retrieves a HTTP response header
@@ -873,7 +907,8 @@ methodmap System2HTTPResponse < System2Response {
      * @return          True if header was set, otherwise false.
      * @error           Invalid response.
      */
-    public native bool GetHeader(const char[] name, char[] value, int maxlength);
+  public
+    native bool GetHeader(const char[] name, char[] value, int maxlength);
 
     /**
      * Retrieves the name of a header at a given index.
@@ -886,7 +921,8 @@ methodmap System2HTTPResponse < System2Response {
      * @return          True if header was found, otherwise false.
      * @error           Invalid response.
      */
-    public native bool GetHeaderName(int index, char[] name, int maxlength);
+  public
+    native bool GetHeaderName(int index, char[] name, int maxlength);
 
     property int Headers {
         /**
@@ -895,7 +931,8 @@ methodmap System2HTTPResponse < System2Response {
          * @return      The number of set headers.
          * @error       Invalid response.
          */
-        public native get();
+      public
+        native get();
     }
 
     /**
@@ -907,18 +944,18 @@ methodmap System2HTTPResponse < System2Response {
      * @return          ArrayList with all set response header names. Must be deleted!
      * @error           Invalid request.
      */
-    public ArrayList GetHeaders(int maxlength = 256) {
+  public
+    ArrayList GetHeaders(int maxlength = 256) {
         ArrayList headers = new ArrayList(maxlength);
 
         char[] headerName = new char[maxlength];
-        for (int i=0; i < this.Headers; i++) {
+        for (int i = 0; i < this.Headers; i++) {
             this.GetHeaderName(i, headerName, maxlength);
             headers.PushString(headerName);
         }
 
         return headers;
     }
-
 
     property HTTPVersion HTTPVersion {
         /**
@@ -927,10 +964,10 @@ methodmap System2HTTPResponse < System2Response {
          * @return      The HTTP version.
          * @error       Invalid response.
          */
-        public native get();
+      public
+        native get();
     }
 }
-
 
 /**
  * Methodmap for a response of a FTP request.
@@ -939,33 +976,34 @@ methodmap System2HTTPResponse < System2Response {
 methodmap System2FTPResponse < System2Response {
 }
 
-
-
 /**
  * Converts a plain string to an URL encoded string.
- * All input characters that are not a-z, A-Z, 0-9, '-', '.', '_' or '~' 
+ * All input characters that are not a-z, A-Z, 0-9, '-', '.', '_' or '~'
  * are converted to their "URL escaped" version (%NN where NN is a two-digit hexadecimal number).
  *
  * Be aware that the output string may be larger then the input string.
  *
- * @param output        Buffer to store encoded string in. May point to the input string (will replace the input string).
+ * @param output        Buffer to store encoded string in. May point to the input string (will replace the input
+ * string).
  * @param maxlength     Maxlength of the output buffer.
  * @param input         String to encode.
  * @param ...           Input string format arguments
  *
  * @return              True on success, false otherwise.
  */
-native bool System2_URLEncode(char[] output, int maxlength, const char[] input, any ...);
+native bool System2_URLEncode(char[] output, int maxlength, const char[] input, any...);
 
 /**
  * Converts an URL encoded string to a plain string.
- * All input characters that are URL encoded (%XX where XX is a two-digit hexadecimal number) are converted to their binary versions.
+ * All input characters that are URL encoded (%XX where XX is a two-digit hexadecimal number) are converted to their
+ * binary versions.
  *
- * @param output        Buffer to store decoded string in. May point to the input string (will replace the input string).
+ * @param output        Buffer to store decoded string in. May point to the input string (will replace the input
+ * string).
  * @param maxlength     Maxlength of the output buffer.
  * @param input         String to decode.
  * @param ...           Input string format arguments
  *
  * @return              True on success, false otherwise.
  */
-native bool System2_URLDecode(char[] output, int maxlength, const char[] input, any ...);
+native bool System2_URLDecode(char[] output, int maxlength, const char[] input, any...);

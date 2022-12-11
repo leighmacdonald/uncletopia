@@ -11,13 +11,26 @@
   failed_when: result_i386_check.rc > 1
   when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
 
+#  wget https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
+#  sudo dpkg -i packages-microsoft-prod.deb
+#  rm packages-microsoft-prod.deb
+
+- name: Add .net
+  become: true
+  become_user: root
+  apt:
+    deb: https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
 - name: Enable i386 architecture
   become: true
+  become_user: root
   ansible.builtin.command: dpkg --add-architecture i386
   when: result_i386_check.rc == 1
 
 - name: Install gpg
   become: true
+  become_user: root
   when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
   ansible.builtin.apt:
     update_cache: true
@@ -25,21 +38,61 @@
     state: present
     pkg:
       - gpg
+      - aspnetcore-runtime-6.0
+
+- name: Create a directory if it does not exist
+  ansible.builtin.file:
+    path: ~/dd
+    state: directory
+    mode: '0755'
+
+- name: dd installed
+  ansible.builtin.stat:
+    path: ~/dd/DepotDownloader.dll
+  register: dd_exists
+
+- name: get dd
+  ansible.builtin.unarchive:
+    remote_src: true
+    src: "https://github.com/SteamRE/DepotDownloader/releases/download/DepotDownloader_2.4.7/depotdownloader-2.4.7.zip"
+    dest: ~/dd
+  when: not dd_exists.stat.exists
+
+- name: Create rcon directory if it does not exist
+  ansible.builtin.file:
+    path: ~/rcon
+    state: directory
+    mode: '0755'
+
+- name: rcon installed
+  ansible.builtin.stat:
+    path: ~/rcon/rcon
+  register: rcon_exists
+
+- name: get rcon
+  ansible.builtin.unarchive:
+    remote_src: true
+    src: "https://github.com/leighmacdonald/rcon/releases/download/v1.0.8/rcon-v1.0.8-linux64.zip"
+    dest: ~/rcon/
+  when: not rcon_exists.stat.exists
 
 - name: Download docker gpg key
   become: true
+  become_user: root
   ansible.builtin.apt_key:
     url: https://download.docker.com/linux/ubuntu/gpg
     state: present
 
 - name: Add specified repository into sources list
   become: true
+  become_user: root
   ansible.builtin.apt_repository:
     repo: deb https://download.docker.com/linux/ubuntu focal stable
     state: present
 
 - name: Install OS Dependencies
   become: true
+  become_user: root
   when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
   ansible.builtin.apt:
     update_cache: true
@@ -63,6 +116,7 @@
 
 - name: Add docker group to user
   become: true
+  become_user: root
   ansible.builtin.user:
     name: tf2server
     groups: docker
@@ -71,6 +125,7 @@
 
 - name: Disable irqbalance
   become: true
+  become_user: root
   ansible.builtin.systemd:
     name: irqbalance
     state: stopped
@@ -79,11 +134,13 @@
 
 - name: Reload systemd daemon
   become: true
+  become_user: root
   ansible.builtin.systemd:
     daemon_reload: true
 
 - name: Enable docker service
   become: true
+  become_user: root
   ansible.builtin.systemd:
     name: docker
     state: started
@@ -91,82 +148,9 @@
 
 - name: Enable UFW
   become: true
+  become_user: root
   ansible.builtin.ufw:
     state: reloaded
     policy: deny
   when: ansible_distribution == 'Ubuntu'
 
-- name: Create a directory if it does not exist
-  become: true
-  ansible.builtin.file:
-    path: /replays
-    state: directory
-    mode: '0777'
-
-- name: replays-fw
-  become: true
-  ansible.builtin.ufw:
-    rule: allow
-    port: "27800"
-    proto: tcp
-
-- name: Generate /etc/Caddyfile_replays
-  become: true
-  ansible.builtin.template:
-    src: Caddyfile.j2
-    dest: /etc/Caddyfile_replays
-    mode: 0775
-
-- name: caddy_data_replays volume
-  docker_volume:
-    name: caddy_data_replays
-    state: present
-
-- name: caddy_config_replays volume
-  docker_volume:
-    name: caddy_config_replays
-    state: present
-
-- name: replays-fw-80
-  become: true
-  ansible.builtin.ufw:
-    rule: allow
-    port: "80"
-    proto: tcp
-
-- name: replays-fw-443
-  become: true
-  ansible.builtin.ufw:
-    rule: allow
-    port: "443"
-    proto: tcp
-
-- name: replays-fw-27800
-  become: true
-  ansible.builtin.ufw:
-    rule: allow
-    port: "27800"
-    proto: tcp
-
-- name: Create caddy container
-  docker_container:
-    name: replays-caddy
-    image: slothcroissant/caddy-cloudflaredns:latest
-    restart: true
-    recreate: true
-    network_mode: 'host'
-    purge_networks: true
-    restart_policy: always
-    pull: true
-    volumes:
-      - caddy_data_replays:/data
-      - caddy_config_replays:/config
-      - /etc/Caddyfile_replays:/etc/caddy/Caddyfile
-      - /replays:/replays
-    exposed_ports: ["443", "80"]
-    env:
-      CLOUDFLARE_EMAIL: "{{ caddy.cloudflare.email }}"
-      CLOUDFLARE_API_TOKEN: "{{ caddy.cloudflare.api_key }}"
-      ACME_AGREE: "true"
-    ports:
-      - 27800:27800
