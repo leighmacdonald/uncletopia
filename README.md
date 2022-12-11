@@ -3,6 +3,54 @@
 This repo contains [Ansible](https://docs.ansible.com) playbooks and tasks for
 configuring and administering the uncletopia server cluster.
 
+## Role Descriptions
+
+### adduser
+
+The adduser role will set up the user that the game instance runs under.
+
+### caddy
+
+The [caddy](https://caddyserver.com/) role configured the frontend http server that exposes all the internal services such as the 
+gbans website and grafana.
+
+### gbans
+
+The gbans roles downloads and configures the [gbans](https://github.com/leighmacdonald/gbans) (and postgres) docker instances. gbans is a tools that provides 
+centralized bans, appeals and other simple community components.
+
+### metrics
+
+The metrics role is responsible for configuring the grafana & prometheus stacks. 
+
+### sourcemod (+metamod)
+
+The sourcemod role is responsible for configuring the [metamod](https://www.sourcemm.net/) and [sourcemod](https://www.sourcemod.net/) installation used in the srcds role. It will 
+automatically download the latest metamod and source versions and fully rebuild the entire plugin tree to ensure 
+compatibility.
+
+### srcds
+
+srcds is responsible for downloading and configuring each games docker instance. We 
+do *not* use steamcmd nor its auto update mechanics. Containers should not auto update themselves, so instead we use 
+[depot downloader](https://github.com/SteamRE/DepotDownloader) to download the latest build, then rebuild the images. 
+To save on download/rebuild times, the base tf2 image is cached untouched so subsequent updates only pull deltas. 
+
+### srcdsup
+
+srcdsup downloads and configures the [srcdsup](https://github.com/leighmacdonald/srcdsup) container. This allows demos
+to be uploaded out of band from the game instance to the gbans central instance for long term storage.
+
+
+### system
+
+The system role installs base os dependencies we rely on. This includes things such as 32bit library support, docker, dotnet.
+
+### tf2 
+
+The tf2 role is responsible for configuring and bringing up the srcds docker images. This is the last step in
+deploying the game servers.
+
 ## Setup
 
 Install Ansible & Clone playbooks

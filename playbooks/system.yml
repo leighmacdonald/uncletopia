@@ -1,4 +1,6 @@
 ---
 - hosts: all
+  become: true
+  become_user: tf2server
   roles:
     - system

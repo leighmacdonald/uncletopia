@@ -1,6 +1,13 @@
+#pragma semicolon 1
+#pragma tabsize 4
+#pragma newdecls required
+
+// clang-format off
 #if defined _gbans_globals_included
- #endinput
+#endinput
 #endif
+// clang-format on
+
 #define _gbans_globals_included
 
 #define PLUGIN_AUTHOR "Leigh MacDonald"
@@ -13,41 +20,51 @@
 enum struct PlayerInfo {
     bool authed;
     char ip[16];
-    int ban_type;
-    int permission_level;
+    int banType;
+    int permissionLevel;
     char message[256];
 }
 // clang-format on
 
-
-// Globals must all start with g_
-PlayerInfo g_players[MAXPLAYERS + 1];
+// Globals must all start with g
+PlayerInfo gPlayers[MAXPLAYERS + 1];
 
 // Core gbans options
-ConVar g_port  = null;
-ConVar g_host  = null;
-ConVar g_server_name = null;
-ConVar g_server_key = null;
+ConVar gPort = null;
+ConVar gHost = null;
+ConVar gServerName = null;
+ConVar gServerKey = null;
 
 // STV options
-ConVar g_hTvEnabled = null;
-ConVar g_hAutoRecord = null;
-ConVar g_hMinPlayersStart = null;
-ConVar g_hIgnoreBots = null;
-ConVar g_hTimeStart = null;
-ConVar g_hTimeStop = null;
-ConVar g_hFinishMap = null;
-ConVar g_hDemoPath = null;
-ConVar g_hDemoPathComplete = null;
-
+ConVar gTvEnabled = null;
+ConVar gAutoRecord = null;
+ConVar gMinPlayersStart = null;
+ConVar gIgnoreBots = null;
+ConVar gTimeStart = null;
+ConVar gTimeStop = null;
+ConVar gFinishMap = null;
+ConVar gDemoPathActive = null;
+ConVar gDemoPathComplete = null;
 
 // Stopwatch options
-ConVar g_hStopwatchEnabled = null;
-ConVar g_hStopwatchNameRed = null;
-ConVar g_hStopwatchNameBlu = null;
+ConVar gStopwatchEnabled = null;
+ConVar gStopwatchNameRed = null;
+ConVar gStopwatchNameBlu = null;
 
-char g_access_token[512];
+char gAccessToken[512];
 
-// Store temp clientId for networked callbacks 
-int g_reply_to_client_id = 0;
+// Store temp clientId for networked callbacks
+int gReplyToClientId = 0;
 
+// Reports command
+int gReportSourceId = -1;
+int gReportTargetId = -1;
+bool gReportWaitingForReason = false;
+GB_BanReason gReportTargetReason;
+int gReportStartedAtTime = -1;
+
+// Stv
+bool gStvMapChanged = false;
+bool gIsRecording = false;
+bool gIsManual = false;
+JSON_Object gScores = null;

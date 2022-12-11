@@ -1,5 +1,7 @@
 ---
 - name: Install srcds
+  become: true
+  become_user: tf2server
   hosts: tf2
   roles:
     - srcdsup
