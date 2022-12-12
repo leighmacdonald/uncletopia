@@ -100,6 +100,7 @@
   loop: "{{ services }}"
   loop_control:
     index_var: loop0
+
 - name: /tf/addons/sourcemod/configs/core.cfg
   ansible.builtin.template:
     src: core.cfg.j2
@@ -190,19 +191,28 @@
   loop_control:
     index_var: loop0
 
-- name: /tf/cfg/sourcemod/discord.cfg
+- name: /tf/cfg/sourcemod/stac.cfg
   ansible.builtin.template:
-    src: discord_cfg.cfg.j2
-    dest: /home/tf2server/build_srcds/srcds-{{ item.server_name_short }}/tf/cfg/sourcemod/discord.cfg
+    src: stac.cfg.j2
+    dest: /home/tf2server/build_srcds/srcds-{{ item.server_name_short }}/tf/cfg/sourcemod/stac.cfg
     mode: 0755
   loop: "{{ services }}"
   loop_control:
     index_var: loop0
 
-- name: /tf/cfg/sourcemod/stac.cfg
+- name: /tf/cfg/sourcemod/networktools.cfg
   ansible.builtin.template:
-    src: stac.cfg.j2
-    dest: /home/tf2server/build_srcds/srcds-{{ item.server_name_short }}/tf/cfg/sourcemod/stac.cfg
+    src: networktools.cfg.j2
+    dest: /home/tf2server/build_srcds/srcds-{{ item.server_name_short }}/tf/cfg/sourcemod/networktools.cfg
+    mode: 0755
+  loop: "{{ services }}"
+  loop_control:
+    index_var: loop0
+
+- name: /tf/cfg/sourcemod/discord_accelerator.cfg
+  ansible.builtin.template:
+    src: discord_accelerator.cfg.j2
+    dest: /home/tf2server/build_srcds/srcds-{{ item.server_name_short }}/tf/cfg/sourcemod/discord_accelerator.cfg
     mode: 0755
   loop: "{{ services }}"
   loop_control:

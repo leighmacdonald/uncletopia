@@ -46,6 +46,29 @@ srcdsup:
       pattern: "*.dem"
       remotes: [ gbans_demo ]
 
+discord_accelerator:
+  # Default: "Captain Crash"
+  discord_accelerator_hookname: "TF2 Server Crash"
+
+  # Role ID ir User ID to mention.
+  # You can get Role ID or User ID by making \@User or \@Group
+  # If you want to mention group add & before ID
+  # -
+  # Default: ""
+  discord_accelerator_mention: ""
+
+  # Information text that server crashed in message.
+  # Default: "Server crashed"
+  discord_accelerator_message: "Server crashed"
+
+  # Short server name
+  # Default: ""
+  discord_accelerator_servername: "{{ item.server_name_short }}"
+
+  # Config key from configs/discord.cfg.
+  # Default: "accelerator"
+  discord_accelerator_webhook: "crash"
+
 autorecorder:
     # Enable automatic recording
   # -
