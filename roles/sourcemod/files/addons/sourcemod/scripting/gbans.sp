@@ -58,6 +58,9 @@ void OnPluginStart() {
     gStopwatchNameBlu = CreateConVar("gb_stopwatch_blueteamname", "Team A", "Name for the team that starts BLU.");
     gStopwatchNameRed = CreateConVar("gb_stopwatch_redteamname", "Team B", "Name for the team that starts RED.");
 
+    AddCommandListener(cmd_mp_tournament_teamname, "mp_tournament_redteamname");
+    AddCommandListener(cmd_mp_tournament_teamname, "mp_tournament_blueteamname");
+
     AutoExecConfig(true, "gbans");
 
     RegConsoleCmd("gb_version", onCmdVersion, "Get gbans version");

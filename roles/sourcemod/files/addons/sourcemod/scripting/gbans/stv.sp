@@ -45,6 +45,7 @@ void setupSTV() {
 public
 void OnMapStart() {
     if (!gStvMapChanged) {
+        // STV does not function until a map change has occurred.
         gbLog("Restarting map to enabled STV");
         gStvMapChanged = true;
         char mapName[128];

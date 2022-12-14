@@ -19,8 +19,26 @@ int onMapEndStopwatch() {
 }
 
 public
+Action cmd_mp_tournament_teamname(int client, const char[] command, int argc) {
+    if (GetUserAdmin(client) == INVALID_ADMIN_ID) {
+        return Plugin_Stop;
+    }
+    return Plugin_Continue;
+}
+
+bool isValidStopwatchMap() {
+    char mapName[256];
+    GetCurrentMap(mapName, sizeof(mapName));
+    if (StrContains(mapName, "workshop/")) {
+        gbLog("matched workshop: %s", mapName);
+        return StrContains(mapName, "workshop/pl_", false) == 0;
+    }
+    return StrContains(mapName, "pl_", false) == 0;
+}
+
+public
 int onTeamplayRoundStart(Handle event, const char[] name, bool dontBroadcast) {
-    if (!gStopwatchEnabled.BoolValue || GetConVarBool(FindConVar("mp_tournament"))) {
+    if (!gStopwatchEnabled.BoolValue || !isValidStopwatchMap() || GetConVarBool(FindConVar("mp_tournament"))) {
         return -1;
     }
     // set cvars
