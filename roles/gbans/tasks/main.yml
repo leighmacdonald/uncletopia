@@ -4,3 +4,6 @@
 
 - name: Install gbans
   import_tasks: gbans.yml
+
+- name: Install tf2bdd
+  import_tasks: tf2bdd.yml

@@ -42,8 +42,6 @@
       - /etc/Caddyfile:/etc/caddy/Caddyfile
       - gbans_demos:/demos
     env:
-      CLOUDFLARE_EMAIL: "{{ caddy.cloudflare.email }}"
-      CLOUDFLARE_API_TOKEN: "{{ caddy.cloudflare.api_key }}"
       ACME_AGREE: "true"
     ports:
       - 443:443

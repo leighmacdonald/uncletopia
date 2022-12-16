@@ -1,5 +1,5 @@
 general:
-  site_name: "gbans"
+  site_name: "{{ site_name | default("gbans") }}"
   steam_key: {{ steam_key }}
   owner: {{ gbans_web.owner }}
   # Run mode for the HTTP service

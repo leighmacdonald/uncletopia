@@ -36,7 +36,7 @@
       - gbans_cache_data:/app/.cache
       - /etc/gbans.yml:/app/gbans.yml
     env:
-      GBANS_DATABASE_DSN: "{{ gbans.dsn }}"
+      GBANS_DATABASE_DSN: "{{ gbans_web.dsn }}"
       GBANS_GENERAL_STEAM_KEY: "{{ steam_key }}"
     ports:
       - 127.0.0.1:6006:6006

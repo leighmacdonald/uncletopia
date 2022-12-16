@@ -1,0 +1,30 @@
+---
+
+- name: tf2bdd-service
+  docker_container:
+    name: tf2bdd-service
+    image: leighmacdonald/tf2bdd:latest
+    restart: true
+    recreate: true
+    pull: true
+    restart_policy: always
+    state: started
+    volumes:
+      - /home/tf2server/.db.sqlite:/app/db.sqlite
+    env:
+      STEAM_TOKEN: "{{ steam_key }}"
+      BOT_TOKEN: "{{ bot_detector_bot_token }}"
+    ports:
+      - 127.0.0.1:8899:8899
+
+- name: Join caddy network
+  community.docker.docker_network:
+    name: caddy_net
+    connected:
+      - tf2bdd-service
+    appends: true
+
+- name: Reload networks
+  docker_container:
+    name: tf2bdd-service
+    restart: true
