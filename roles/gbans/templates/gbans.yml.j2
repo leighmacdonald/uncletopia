@@ -8,6 +8,8 @@ general:
   server_status_update_freq: {{ gbans_web.update_freq }}
   map_changer_enabled: false
   banned_steam_group_ids: [ {{ gbans_web.banned_steam_group_ids|join(" , ") }} ]
+  external_url: {{ gbans_host }}
+  warning_limit: 3
 
 http:
   # Listen on this ip address
