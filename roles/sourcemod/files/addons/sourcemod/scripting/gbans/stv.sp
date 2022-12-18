@@ -52,6 +52,7 @@ void OnMapStart() {
         GetCurrentMap(mapName, sizeof(mapName));
         ForceChangeLevel(mapName, "Enable STV");
     }
+    onMapStartStopwatch();
 }
 
 public
@@ -157,8 +158,6 @@ void StartRecord() {
         char sPath[PLATFORM_MAX_PATH];
         char sTime[16];
         char sMap[64];
-        // char serverName[128];
-        // gServerName.GetString(serverName, sizeof(serverName));
 
         gDemoPathActive.GetString(sPath, sizeof(sPath));
         FormatTime(sTime, sizeof(sTime), "%Y%m%d-%H%M%S", GetTime());
@@ -171,7 +170,7 @@ void StartRecord() {
         ServerCommand("tv_record \"%s/%s-%s\"", sPath, sTime, sMap);
         gIsRecording = true;
 
-        LogMessage("[GB] Recording to %s-%s.dem", sTime, sMap);
+        gbLog("Recording to %s-%s.dem", sTime, sMap);
     }
 }
 

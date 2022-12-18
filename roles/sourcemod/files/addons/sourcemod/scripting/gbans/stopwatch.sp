@@ -10,6 +10,14 @@ int onPluginStartStopwatch() {
     return 0;
 }
 
+void onMapStartStopwatch() {
+    // Don't enable for non-pl maps
+    if (gStopwatchEnabled.BoolValue && GetConVarBool(FindConVar("mp_tournament")) && !isValidStopwatchMap()) {
+        gbLog("Disabling mp_tournament");
+        SetConVarBool(FindConVar("mp_tournament"), false);
+    }
+}
+
 public
 int onMapEndStopwatch() {
     if (GetConVarBool(FindConVar("mp_tournament"))) {
@@ -29,18 +37,20 @@ Action cmd_mp_tournament_teamname(int client, const char[] command, int argc) {
 bool isValidStopwatchMap() {
     char mapName[256];
     GetCurrentMap(mapName, sizeof(mapName));
-    if (StrContains(mapName, "workshop/")) {
+    if (StrContains(mapName, "workshop/", false) == 0) {
         gbLog("matched workshop: %s", mapName);
         return StrContains(mapName, "workshop/pl_", false) == 0;
     }
+    gbLog("mapName: %s", mapName);
     return StrContains(mapName, "pl_", false) == 0;
 }
 
 public
 int onTeamplayRoundStart(Handle event, const char[] name, bool dontBroadcast) {
-    if (!gStopwatchEnabled.BoolValue || !isValidStopwatchMap() || GetConVarBool(FindConVar("mp_tournament"))) {
-        return -1;
+    if (!gStopwatchEnabled.BoolValue || !isValidStopwatchMap()) {
+        return 0;
     }
+    gbLog("Enabling mp_tournament");
     // set cvars
     SetConVarBool(FindConVar("mp_tournament"), true);
     SetConVarBool(FindConVar("mp_tournament_allow_non_admin_restart"), false);
