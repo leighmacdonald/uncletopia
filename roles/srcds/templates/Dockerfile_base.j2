@@ -1,0 +1,44 @@
+FROM debian:bullseye-slim
+LABEL maintainer="leigh.macdonald@gmail.com"
+
+ARG PUID=1000
+
+RUN set -x \
+	# Add i386 architecture
+	&& dpkg --add-architecture i386 \
+	# Install, update & upgrade packages
+	&& apt-get update \
+	&& apt-get install -y --no-install-recommends --no-install-suggests \
+        wget \
+        sudo \
+        ca-certificates \
+        lib32z1 \
+        lib32gcc-s1 \
+        libncurses5:i386 \
+        libbz2-1.0:i386 \
+        libtinfo5:i386 \
+        libcurl3-gnutls:i386 \
+        libstdc++6:i386 \
+        libcurl4-gnutls-dev:i386 \
+        libtcmalloc-minimal4:i386 \
+    && useradd -ms /bin/bash -u ${PUID} {{ srcds_user }} \
+    && sudo -u {{ srcds_user }} mkdir -p "{{ srcds_steam_app_dir }}"
+
+# Switch to user
+USER {{ srcds_user }}
+
+WORKDIR {{ srcds_steam_app_dir }}
+
+COPY --chown={{ srcds_user }}:{{ srcds_user }} . .
+
+RUN mkdir ~/.steam/ && ln -s ./bin ~/.steam/sdk32
+
+VOLUME {{ srcds_steam_app_dir }}/{{ srcds_steam_app }}/stv_demos
+VOLUME {{ srcds_steam_app_dir }}/{{ srcds_steam_app }}/logs
+
+CMD ["bash", "entry.sh"]
+
+# Expose ports
+EXPOSE 27015/tcp \
+	27015/udp \
+	27020/udp
