@@ -73,8 +73,8 @@
     set_remote_user: true
     src: "{{ role_path }}/files/"
     dest: ~/build_sourcemod/
-    recursive: yes
-    archive: no
+    recursive: true
+    archive: false
 
 - name: Build plugins
   ansible.builtin.command:

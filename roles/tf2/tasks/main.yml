@@ -1,6 +1,6 @@
 ---
 
-#- name: announce update
+# - name: announce update
 #  ignore_errors: true
 #  rcon:
 #    address: "{{ inventory_hostname }}"

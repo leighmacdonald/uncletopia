@@ -153,4 +153,3 @@
     state: reloaded
     policy: deny
   when: ansible_distribution == 'Ubuntu'
-
