@@ -2,6 +2,7 @@
 cd "{{srcds_steam_app_dir}}"
 
 bash "{{srcds_steam_app_dir}}/srcds_run" -game "{{srcds_steam_app}}" -console \
+  -strictportbind \
   -usercon \
   +fps_max "{{ srcds_fps_max }}" \
   -tickrate "{{ srcds_tick_rate }}" \

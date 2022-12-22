@@ -57,8 +57,8 @@
 
 - name: Copy sourcemod distribution to /tf
   ansible.posix.synchronize:
-    src: ~/build_sourcemod/
-    dest: ~/build_srcds/srcds-{{ item.server_name_short }}/tf/
+    src: /home/tf2server/build_sourcemod/
+    dest: /home/tf2server/build_srcds/srcds-{{ item.server_name_short }}/tf/
     recursive: true
   loop: "{{ services }}"
   # Perform the copy from the *remote* sourcemod build output
