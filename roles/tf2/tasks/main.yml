@@ -73,15 +73,15 @@
   loop: "{{ services }}"
   loop_control:
     index_var: loop0
-#
-#- name: srcds-restart
-#  docker_container:
-#    name: srcds-{{ item.server_name_short }}
-#    recreate: false
-#    restart: true
-#  loop: "{{ services }}"
-#  loop_control:
-#    index_var: loop0
+
+- name: srcds-restart
+  docker_container:
+    name: srcds-{{ item.server_name_short }}
+    recreate: false
+    restart: true
+  loop: "{{ services }}"
+  loop_control:
+    index_var: loop0
 
 - name: srcds-fw
   become: true
