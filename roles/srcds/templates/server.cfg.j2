@@ -200,3 +200,8 @@ sm_cvar sm_mapvote_curate {% if item.rotation|default("all") == "all" %}1{% else
 
 // Disable glow for the more "serious" servers running stopwatch
 tf_spawn_glows_duration {% if item.rotation|default("all") == "stopwatch" %}0{% else %}10{% endif %}
+
+// Stopwatch switches
+mp_match_end_at_timelimit {% if item.rotation|default("all") == "stopwatch" %}1{% else %}0{% endif %}
+
+sm_cvar gb_rules_round_time {% if item.rotation|default("all") == "stopwatch" %}300{% else %}-1{% endif %}
