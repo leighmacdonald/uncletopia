@@ -3,11 +3,19 @@
 #pragma newdecls required
 
 public
-int onPluginStartStopwatch() {
+void onPluginStartStopwatch() {
+    // Stopwatch mode settings
+    gStopwatchEnabled = CreateConVar("gb_stopwatch_enabled", "0", "Enables stopwatch mode", _, true, 0.0, true, 1.0);
+    gStopwatchNameBlu = CreateConVar("gb_stopwatch_blueteamname", "Team A", "Name for the team that starts BLU.");
+    gStopwatchNameRed = CreateConVar("gb_stopwatch_redteamname", "Team B", "Name for the team that starts RED.");
+
+    AddCommandListener(cmd_mp_tournament_teamname, "mp_tournament_redteamname");
+    AddCommandListener(cmd_mp_tournament_teamname, "mp_tournament_blueteamname");
     HookEvent("teamplay_round_start", onTeamplayRoundStart, EventHookMode_PostNoCopy);
+    // HookEvent("mp_match_end_at_timelimit", onMatchEnd, EventHookMode_PostNoCopy);
+
     RegConsoleCmd("tournament_readystate", cmd_block);
     RegConsoleCmd("tournament_teamname", cmd_block);
-    return 0;
 }
 
 void onMapStartStopwatch() {
@@ -17,6 +25,13 @@ void onMapStartStopwatch() {
         SetConVarBool(FindConVar("mp_tournament"), false);
     }
 }
+
+// public
+// int onMatchEnd(Handle event, const char[] name, bool dontBroadcast) {
+//     gbLog("Game ended");
+//     FindAndSet
+//     return 0;
+// }
 
 public
 int onMapEndStopwatch() {

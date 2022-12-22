@@ -51,6 +51,9 @@ ConVar gStopwatchEnabled = null;
 ConVar gStopwatchNameRed = null;
 ConVar gStopwatchNameBlu = null;
 
+// Game ruleset options
+ConVar gRulesRoundTime = null;
+
 char gAccessToken[512];
 
 // Store temp clientId for networked callbacks

@@ -12,6 +12,21 @@
 #include "globals.sp"
 
 public
+void onPluginStartSTV() {
+    // STV settings
+    gAutoRecord = CreateConVar("gb_stv_enable", "1", "Enable automatic recording", _, true, 0.0, true, 1.0);
+    gMinPlayersStart =
+        CreateConVar("gb_stv_minplayers", "1", "Minimum players on server to start recording", _, true, 0.0);
+    gIgnoreBots = CreateConVar("gb_stv_ignorebots", "1", "Ignore bots in the player count", _, true, 0.0, true, 1.0);
+    gTimeStart = CreateConVar("gb_stv_timestart", "-1", "Hour in the day to start recording (0-23, -1 disables)");
+    gTimeStop = CreateConVar("gb_stv_timestop", "-1", "Hour in the day to stop recording (0-23, -1 disables)");
+    gFinishMap =
+        CreateConVar("gb_stv_finishmap", "1", "If 1, continue recording until the map ends", _, true, 0.0, true, 1.0);
+    gDemoPathActive = CreateConVar("gb_stv_path", "stv_demos/active", "Path to store currently recording demos");
+    gDemoPathComplete = CreateConVar("gb_stv_path_complete", "stv_demos/complete", "Path to store complete demos");
+}
+
+public
 void setupSTV() {
     RegAdminCmd("gb_stv_record", Command_Record, ADMFLAG_KICK, "Starts a SourceTV demo");
     RegAdminCmd("gb_stv_stoprecord", Command_StopRecord, ADMFLAG_KICK, "Stops the current SourceTV demo");
