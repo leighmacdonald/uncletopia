@@ -11,7 +11,7 @@
 #define _gbans_globals_included
 
 #define PLUGIN_AUTHOR "Leigh MacDonald"
-#define PLUGIN_VERSION "0.00"
+#define PLUGIN_VERSION "0.0.1"
 #define PLUGIN_NAME "gbans"
 
 #define MAX_SCORES 256

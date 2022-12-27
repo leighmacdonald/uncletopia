@@ -91,4 +91,3 @@
   ansible.builtin.command:
     chdir: ~/build_sourcemod/addons/sourcemod/scripting
     cmd: bash build.sh
-    creates: ~/build_sourcemod/addons/sourcemod/plugins/disabled/basevotes.smx

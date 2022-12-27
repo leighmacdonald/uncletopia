@@ -254,12 +254,14 @@
 
 - name: Build image
   community.docker.docker_image:
-    name: "leighmacdonald/uncletopia-srcds:{{ item.server_name_short }}-latest"
+    name: "leighmacdonald/uncletopia-srcds"
+    tag: "{{ item.server_name_short }}-latest"
     build:
       path: "~/build_srcds/srcds-{{ item.server_name_short }}/"
     source: build
     state: "present"
     force_source: true
+    force_tag: true
   loop: "{{ services }}"
   loop_control:
     index_var: loop0

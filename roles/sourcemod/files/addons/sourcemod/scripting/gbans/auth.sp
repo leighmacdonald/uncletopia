@@ -152,7 +152,7 @@ public
 void readCachedFile(const char[] name) {
     char path[PLATFORM_MAX_PATH];
     BuildPath(Path_SM, path, sizeof(path), "data/gbans/%s.cache", name);
-    File fp = OpenFile(path, "r");
+    // File fp = OpenFile(path, "r");
     // ReadFileString(fp, )
 }
 

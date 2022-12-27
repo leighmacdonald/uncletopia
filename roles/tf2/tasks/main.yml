@@ -31,12 +31,12 @@
   docker_container:
     name: srcds-{{ item.server_name_short }}
     image: "leighmacdonald/uncletopia-srcds:{{ item.server_name_short }}-latest"
-    state: present
+    state: started
     restart: true
     network_mode: host
     # Disables https://en.wikipedia.org/wiki/Speculative_Store_Bypass
     # https://github.com/moby/moby/issues/41389
-    # security_opts: ["seccomp:unconfined"]
+    security_opts: ["seccomp:unconfined"]
     pull: false
     interactive: true
     tty: true
@@ -73,15 +73,15 @@
   loop: "{{ services }}"
   loop_control:
     index_var: loop0
-
-- name: srcds-restart
-  docker_container:
-    name: srcds-{{ item.server_name_short }}
-    recreate: false
-    restart: true
-  loop: "{{ services }}"
-  loop_control:
-    index_var: loop0
+#
+#- name: srcds-restart
+#  docker_container:
+#    name: srcds-{{ item.server_name_short }}
+#    recreate: true
+#    restart: true
+#  loop: "{{ services }}"
+#  loop_control:
+#    index_var: loop0
 
 - name: srcds-fw
   become: true
