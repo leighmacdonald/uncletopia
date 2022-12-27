@@ -135,14 +135,13 @@ Action Command_StopRecord(int client, int args) {
 
 void CheckStatus() {
     if (gAutoRecord.BoolValue && !gIsManual) {
-        int iMinClients = gMinPlayersStart.IntValue;
         int iTimeStart = gTimeStart.IntValue;
         int iTimeStop = gTimeStop.IntValue;
         bool bReverseTimes = (iTimeStart > iTimeStop);
         char sCurrentTime[4];
         FormatTime(sCurrentTime, sizeof(sCurrentTime), "%H", GetTime());
         int iCurrentTime = StringToInt(sCurrentTime);
-        if (GetPlayerCount() >= iMinClients &&
+        if (GetPlayerCount() >= gMinPlayersStart.IntValue &&
             (iTimeStart < 0 || (iCurrentTime >= iTimeStart && (bReverseTimes || iCurrentTime < iTimeStop)))) {
             StartRecord();
         } else if (gIsRecording && !gFinishMap.BoolValue && (iTimeStop < 0 || iCurrentTime >= iTimeStop)) {
