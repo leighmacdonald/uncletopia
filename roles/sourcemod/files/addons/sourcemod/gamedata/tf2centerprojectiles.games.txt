@@ -13,8 +13,8 @@
 			// https://asherkin.github.io/vtable/
 			"IsViewModelFlipped"
 			{
-				"windows" "439"
-				"linux"   "446"
+				"windows" "440"
+				"linux"   "447"
 			}
 		}
 	}
