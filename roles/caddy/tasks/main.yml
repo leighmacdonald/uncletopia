@@ -28,7 +28,7 @@
 - name: Create caddy container
   docker_container:
     name: caddy
-    image: slothcroissant/caddy-cloudflaredns:latest
+    image: caddy/caddy:2.6.2-alpine
     restart: true
     recreate: true
     purge_networks: true
@@ -40,7 +40,6 @@
       - caddy_data:/data
       - caddy_config:/config
       - /etc/Caddyfile:/etc/caddy/Caddyfile
-      - gbans_demos:/demos
     env:
       ACME_AGREE: "true"
     ports:

@@ -3,10 +3,10 @@
 - name: tf2bdd-service
   docker_container:
     name: tf2bdd-service
-    image: leighmacdonald/tf2bdd:latest
+    image: leighmacdonald/tf2bdd:1.0.0
     restart: true
     recreate: true
-    pull: true
+    pull: false
     restart_policy: always
     state: started
     volumes:
@@ -28,3 +28,4 @@
   docker_container:
     name: tf2bdd-service
     restart: true
+

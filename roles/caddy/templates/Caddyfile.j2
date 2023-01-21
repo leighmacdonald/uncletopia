@@ -1,24 +1,19 @@
-{% for tls_name in caddy.tls_configs %}
-({{ tls_name }}) {
-        tls {
-                dns cloudflare {{ caddy.tls_configs[tls_name].api_key }}
-        }
+{
+    cert_issuer zerossl {{ zerossl_key }}
 }
-{% endfor %}
 
 {% for host in caddy.hosts %}
 {{ host }} {
     {% if caddy.hosts[host].forward %}
     reverse_proxy /* {{ caddy.hosts[host].address }} {
-                header_up Host {host}
-                header_up X-Real-IP {remote_host}                       
-                header_up X-Forwarded-For {remote_host}
-                header_up X-Forwarded-Proto {scheme}
-        }
+        header_up Host {host}
+        header_up X-Real-IP {remote_host}                       
+        header_up X-Forwarded-For {remote_host}
+        header_up X-Forwarded-Proto {scheme}
+    }
     {% else %}
     reverse_proxy /* {{ caddy.hosts[host].address }}
     {% endif %}
-    import {{ caddy.hosts[host].tls_name }}
 }
 {% endfor %}
 

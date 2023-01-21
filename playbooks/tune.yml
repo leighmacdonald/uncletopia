@@ -1,7 +1,7 @@
 ---
 - hosts: tf2
   become: true
-  name: 'yep'
+  name: 'tune'
   tasks:
     - ansible.builtin.package:
         name: sysfsutils
