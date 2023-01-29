@@ -90,7 +90,7 @@ void onMapEndSTV() {
 }
 
 public
-void OnClientPutInServer(int client) {
+void OnClientPutInServerSTV(int client) {
     CheckStatus();
 }
 

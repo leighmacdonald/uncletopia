@@ -74,6 +74,9 @@ Action onAdminCmdReload(int clientId, int argc) {
 
 void reloadAdmins() {
     gbLog("Refreshing admin users");
+    GroupId reservedGrp = CreateAdmGroup("reserved");
+    SetAdmGroupAddFlag(reservedGrp, Admin_Reservation, true);
+
     System2HTTPRequest req = newReq(onAdminsReqReceived, "/api/server/admins");
     req.GET();
     delete req;
@@ -157,8 +160,13 @@ void readCachedFile(const char[] name) {
 }
 
 public
-void onClientPostAdminCheck(int clientId) {
-    gbLog("Post admin check ran");
+void OnClientPutInServer(int clientId) {
+    OnClientPutInServerMutes(clientId);
+    OnClientPutInServerSTV(clientId);
+}
+
+public
+void OnClientPutInServerMutes(int clientId) {
     switch (gPlayers[clientId].banType) {
         case BSNoComm: {
             if (!BaseComm_IsClientMuted(clientId)) {
@@ -168,8 +176,15 @@ void onClientPostAdminCheck(int clientId) {
                 BaseComm_SetClientGag(clientId, true);
             }
             ReplyToCommand(clientId, "You are currently muted/gag, it will expire automatically");
-            LogAction(0, clientId, "Muted \"%L\" for an unfinished mute punishment.", clientId);
+            gbLog("Muted \"%L\" for an unfinished mute punishment.", clientId);
         }
+    }
+}
+
+public
+void onClientPostAdminCheck(int clientId) {
+    switch (gPlayers[clientId].banType) {
+        // BSNoComm handled in OnClientPutInServer
         case BSBanned: {
             KickClient(clientId, gPlayers[clientId].message);
             LogAction(0, clientId, "Kicked \"%L\" for an unfinished ban.", clientId);
