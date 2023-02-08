@@ -50,6 +50,9 @@ void onPluginStartCore() {
     gServerName = CreateConVar("gb_core_server_name", "", "Short hand server name");
     gServerKey = CreateConVar("gb_core_server_key", "", "GBans server key used to authenticate with the service");
 
+    gHideConnections =
+        CreateConVar("gb_hide_connections", "1", "Dont show the disconnect message to users", _, true, 0.0, true, 1.0);
+
     AutoExecConfig(true, "gbans");
 
     RegConsoleCmd("gb_version", onCmdVersion, "Get gbans version");
@@ -61,6 +64,9 @@ void onPluginStartCore() {
     RegAdminCmd("gb_ban", onAdminCmdBan, ADMFLAG_BAN);
     RegAdminCmd("gb_reauth", onAdminCmdReauth, ADMFLAG_ROOT);
     RegAdminCmd("gb_reload", onAdminCmdReload, ADMFLAG_ROOT);
+
+    HookEvent("player_disconnect", Event_PlayerDisconnect, EventHookMode_Pre);
+    HookEvent("player_connect_client", Event_PlayerConnect, EventHookMode_Pre);
 }
 
 public

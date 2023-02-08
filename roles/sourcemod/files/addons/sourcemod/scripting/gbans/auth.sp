@@ -169,6 +169,7 @@ public
 void OnClientPutInServerMutes(int clientId) {
     switch (gPlayers[clientId].banType) {
         case BSNoComm: {
+            gbLog("muting...");
             if (!BaseComm_IsClientMuted(clientId)) {
                 BaseComm_SetClientMute(clientId, true);
             }

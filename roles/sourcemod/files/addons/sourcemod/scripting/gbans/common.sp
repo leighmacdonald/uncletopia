@@ -46,12 +46,3 @@ stock bool isValidClient(int client) {
     }
     return true;
 }
-
-// stock bool isValidClient(int iClient) {
-//     if (iClient >= 1 && iClient <= MaxClients && IsClientConnected(iClient) && IsClientInGame(iClient) &&
-//         !IsFakeClient(iClient)) {
-//         return true;
-//     }
-
-//     return false;
-// }
