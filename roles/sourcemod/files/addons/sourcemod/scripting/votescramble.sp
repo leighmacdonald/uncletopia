@@ -18,7 +18,7 @@ public Plugin myinfo =
 
 ConVar cvarVoteTime, cvarVoteTimeDelay, cvarVoteChatPercent, cvarVoteMenuPercent, cvarTimeLimit, cvarMinimumVotesNeeded, cvarSkipSecondVote, cvarMaxRounds, cvarWinLimit;
 
-int g_iVoters, g_iVotes, g_iVotesNeeded, g_iRoundsSinceLastScramble;
+int g_iVoters, g_iVotes, g_iVotesNeeded, g_iRoundsSinceLastScramble, g_iMinutesSinceLastScramble;
 bool g_bVoted[MAXPLAYERS + 1], g_bVoteCooldown, g_bScrambleTeams, g_bBonusRoundTime, g_bScrambleDuringBRT;
 
 public void Event_RoundWin(Event event, const char[] name, bool dontBroadcast)
@@ -42,6 +42,7 @@ public void Event_RoundStart(Event event, const char[] name, bool dontBroadcast)
 	if (g_bScrambleTeams) {
 		g_bScrambleTeams = false;
 
+		// scrambles occur twice if done during bonusroundtime (why??) with 5s between
 		if (g_bScrambleDuringBRT) {
 			CreateTimer(6.0, Timer_DelayLimitsUpdate);
 		}
@@ -74,6 +75,8 @@ public void OnPluginStart()
 
 	HookEvent("teamplay_win_panel", Event_RoundWin);
 	HookEvent("teamplay_round_start", Event_RoundStart);
+
+	CreateTimer(60.0, Timer_CountMinutes, _, TIMER_REPEAT);
 }
 
 public void OnMapStart()
@@ -82,6 +85,7 @@ public void OnMapStart()
 	g_iVotesNeeded = 0;
 	g_iVotes = 0;
 	g_iRoundsSinceLastScramble = 0;
+	g_iMinutesSinceLastScramble = 0;
 	g_bVoteCooldown = false;
 	g_bScrambleTeams = false;
 	g_bBonusRoundTime = false;
@@ -248,6 +252,12 @@ public int NativeVote_Handler(Handle vote, MenuAction action, int param1, int pa
 	return 0;
 }
 
+public Action Timer_CountMinutes(Handle timer) {
+	g_iMinutesSinceLastScramble++;
+	PrintToChatAll("%s", g_iMinutesSinceLastScramble);
+	return Plugin_Continue;
+}
+
 public Action Timer_Scramble(Handle timer) {
 	ServerCommand("mp_scrambleteams");
 
@@ -266,13 +276,24 @@ public Action Timer_DelayLimitsUpdate(Handle timer) {
 	if (cvarMaxRounds.IntValue != 0) {
 		SetConVarInt(cvarMaxRounds, cvarMaxRounds.IntValue - g_iRoundsSinceLastScramble, false, true);
 	}
+
 	if (cvarWinLimit.IntValue != 0) {
 		int rounds;
 		rounds = cvarWinLimit.IntValue - g_iRoundsSinceLastScramble;
 		rounds = rounds > 1 ? rounds : 1;
 		SetConVarInt(cvarWinLimit, rounds, false, true);
 	}
+
+	if (cvarTimeLimit.IntValue != 0) {
+		int time;
+		time = cvarTimeLimit.IntValue - g_iMinutesSinceLastScramble;
+		time = time > 5 ? time : 5;
+		SetConVarInt(cvarTimeLimit, time, false, true)
+	}
+
 	g_iRoundsSinceLastScramble = 0;
+	g_iMinutesSinceLastScramble = 0;
+
 	return Plugin_Continue;
 }
 
