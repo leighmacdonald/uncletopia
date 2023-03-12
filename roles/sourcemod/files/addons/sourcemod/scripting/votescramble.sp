@@ -288,7 +288,7 @@ public Action Timer_DelayLimitsUpdate(Handle timer) {
 		int time;
 		time = cvarTimeLimit.IntValue - g_iMinutesSinceLastScramble;
 		time = time > 5 ? time : 5;
-		SetConVarInt(cvarTimeLimit, time, false, true)
+		SetConVarInt(cvarTimeLimit, time, false, true);
 	}
 
 	g_iRoundsSinceLastScramble = 0;
