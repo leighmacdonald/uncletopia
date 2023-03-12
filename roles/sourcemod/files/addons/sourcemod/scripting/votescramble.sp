@@ -267,7 +267,10 @@ public Action Timer_DelayLimitsUpdate(Handle timer) {
 		SetConVarInt(cvarMaxRounds, cvarMaxRounds.IntValue - g_iRoundsSinceLastScramble, false, true);
 	}
 	if (cvarWinLimit.IntValue != 0) {
-		SetConVarInt(cvarWinLimit, cvarWinLimit.IntValue - (g_iRoundsSinceLastScramble / 2), false, true);
+		int rounds;
+		rounds = cvarWinLimit.IntValue - g_iRoundsSinceLastScramble;
+		rounds = rounds > 1 ? rounds : 1;
+		SetConVarInt(cvarWinLimit, rounds, false, true);
 	}
 	g_iRoundsSinceLastScramble = 0;
 	return Plugin_Continue;
