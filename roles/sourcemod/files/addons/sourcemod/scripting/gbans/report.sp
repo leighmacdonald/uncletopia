@@ -3,6 +3,7 @@
 #pragma newdecls required
 
 #include <adminmenu>
+#include <sourcetvmanager>
 
 const reportTimeout = 30;
 const reportMinReasonLen = 10;

@@ -59,6 +59,7 @@ void setupSTV() {
 
 public
 void OnMapStart() {
+    reloadAdmins();
     if (!gStvMapChanged) {
         // STV does not function until a map change has occurred.
         gbLog("Restarting map to enabled STV");

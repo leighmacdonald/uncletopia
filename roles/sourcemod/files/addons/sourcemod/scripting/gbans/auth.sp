@@ -60,7 +60,6 @@ void onAuthReqReceived(bool success, const char[] error, System2HTTPRequest requ
         gAccessToken = token;
         gbLog("Successfully authenticated with gbans server");
         json_cleanup_and_delete(resp);
-        reloadAdmins();
     } else {
         gbLog("Error on authentication request: %s", error);
     }
@@ -73,11 +72,8 @@ Action onAdminCmdReload(int clientId, int argc) {
 }
 
 void reloadAdmins() {
-    gbLog("Refreshing admin users");
-    GroupId reservedGrp = CreateAdmGroup("reserved");
-    SetAdmGroupAddFlag(reservedGrp, Admin_Reservation, true);
-
-    System2HTTPRequest req = newReq(onAdminsReqReceived, "/api/server/admins");
+    gbLog("Fetching admin users");
+    System2HTTPRequest req = newReq(onAdminsReqReceived, "/export/sourcemod/admins_simple.ini");
     req.GET();
     delete req;
 }
@@ -94,47 +90,17 @@ void onAdminsReqReceived(bool success, const char[] error, System2HTTPRequest re
         }
         char[] content = new char[response.ContentLength + 1];
         response.GetContent(content, response.ContentLength + 1);
-        JSON_Object resp = json_decode(content);
-        bool ok = resp.GetBool("status");
-        if (!ok) {
-            gbLog("Invalid response status, cannot reload admins");
+        char path[PLATFORM_MAX_PATH];
+        BuildPath(Path_SM, path, PLATFORM_MAX_PATH, "configs/admins_simple.ini");
+
+        gbLog(path);
+        Handle f = OpenFile(path, "w", false, "");
+        if (!WriteFileString(f, content, false)) {
+            gbLog("Failed to write admin file");
             return;
         }
-        JSON_Array adminArray = view_as<JSON_Array>(resp.GetObject("result"));
-
-        int length = adminArray.Length;
-        AdminId adm;
-        int immunity;
-        for (int i = 0; i < length; i += 1) {
-            char flags[32];
-            char steamId[32];
-            JSON_Object perm = adminArray.GetObject(i);
-            perm.GetString("flags", flags, sizeof(flags));
-            perm.GetString("steam_id", steamId, sizeof(steamId));
-
-            if ((adm = FindAdminByIdentity(AUTHMETHOD_STEAM, steamId)) == INVALID_ADMIN_ID) {
-                // "" = anon admin
-                adm = CreateAdmin("");
-                if (!adm.BindIdentity(AUTHMETHOD_STEAM, steamId)) {
-                    LogError("Could not bind prefetched gbans admin (identity \"%s\")", steamId);
-                    continue;
-                }
-            }
-
-            /* Apply each flag */
-            int len = strlen(flags);
-            AdminFlag flag;
-            for (int j = 0; j < len; j++) {
-                if (!FindFlagByChar(flags[j], flag)) {
-                    continue;
-                }
-                adm.SetFlag(flag, true);
-            }
-            adm.ImmunityLevel = immunity;
-        }
-
-        gbLog("Successfully reloaded %d admins", length);
-        json_cleanup_and_delete(resp);
+        CloseHandle(f);
+        ServerCommand("sm_reloadadmins");
     } else {
         // Try and load cached data on failure
 
@@ -169,7 +135,6 @@ public
 void OnClientPutInServerMutes(int clientId) {
     switch (gPlayers[clientId].banType) {
         case BSNoComm: {
-            gbLog("muting...");
             if (!BaseComm_IsClientMuted(clientId)) {
                 BaseComm_SetClientMute(clientId, true);
             }
