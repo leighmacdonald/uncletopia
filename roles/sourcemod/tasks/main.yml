@@ -9,29 +9,31 @@
 - name: Fetch latest sourcemod version
   ansible.builtin.get_url:
     url: https://sm.alliedmods.net/smdrop/1.12/sourcemod-latest-linux
-    dest: ~/build_sourcemod/.version-sm-latest
+    dest: /home/tf2server/build_sourcemod/.version-sm-latest
 
 - name: Fetch latest metamod version
   ansible.builtin.get_url:
     url: https://mms.alliedmods.net/mmsdrop/1.12/mmsource-latest-linux
-    dest: ~/build_sourcemod/.version-mm-latest
+    dest: /home/tf2server/build_sourcemod/.version-mm-latest
 
 - name: Load latest sourcemod version
   set_fact:
     sm_version_latest: "{{ lookup('file', '/home/tf2server/build_sourcemod/.version-sm-latest') }}"
+  ignore_errors: true
 
 - name: load mm version
   set_fact:
     mm_version_latest: "{{ lookup('file', '/home/tf2server/build_sourcemod/.version-mm-latest') }}"
+  ignore_errors: true
 
 - name: set default mm
   set_fact:
-    mm_version_latest: "mmsource-1.12.0-git1165-linux.tar.gz"
+    mm_version_latest: "mmsource-1.12.0-git1167-linux.tar.gz"
   when: (mm_version_latest is undefined)
 
 - name: set default sm
   set_fact:
-    sm_version_latest: "sourcemod-1.12.0-git6954-linux.tar.gz"
+    sm_version_latest: "sourcemod-1.12.0-git6986-linux.tar.gz"
   when: (sm_version_latest is undefined)
 
 - name: Check if mm version rules file exists
@@ -43,6 +45,7 @@
   set_fact:
     mm_version_current: "{{ lookup('file', '/home/tf2server/build_sourcemod/.version-mm-current') }}"
   when: (version_mm_current_exists is defined) and (version_mm_current_exists.stat.exists)
+  ignore_errors: true
 
 - name: Check if sm version rules file exists
   stat:
@@ -53,6 +56,7 @@
   set_fact:
     sm_version_current: "{{ lookup('file', '/home/tf2server/build_sourcemod/.version-sm-current') }}"
   when: (version_sm_current_exists is defined) and (version_sm_current_exists.stat.exists)
+  ignore_errors: true
 
 - name: Download latest metamod
   ansible.builtin.unarchive:
