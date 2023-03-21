@@ -37,7 +37,9 @@ sv_allow_wait_command 1
 
 // Voice chat
 sv_voiceenable 1
-sv_voicecodec vaudio_celt
+// celt causes crashes for many linux users. This is easier than telling people how to fix it.
+// sv_voicecodec vaudio_celt
+sv_voicecodec steam
 
 // AFK Kick after 3 mins
 mp_idlemaxtime 3
