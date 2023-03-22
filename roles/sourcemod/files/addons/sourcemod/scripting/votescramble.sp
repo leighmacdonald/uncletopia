@@ -254,7 +254,6 @@ public int NativeVote_Handler(Handle vote, MenuAction action, int param1, int pa
 
 public Action Timer_CountMinutes(Handle timer) {
 	g_iMinutesSinceLastScramble++;
-	PrintToChatAll("%s", g_iMinutesSinceLastScramble);
 	return Plugin_Continue;
 }
 
