@@ -28,4 +28,3 @@
   docker_container:
     name: tf2bdd-service
     restart: true
-

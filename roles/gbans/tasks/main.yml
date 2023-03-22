@@ -7,3 +7,6 @@
 
 - name: Install tf2bdd
   import_tasks: tf2bdd.yml
+
+- name: Install bd-api
+  import_tasks: bd-api.yml
