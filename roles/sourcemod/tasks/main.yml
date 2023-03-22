@@ -8,12 +8,12 @@
 
 - name: Fetch latest sourcemod version
   ansible.builtin.get_url:
-    url: https://sm.alliedmods.net/smdrop/1.12/sourcemod-latest-linux
+    url: https://sm.alliedmods.net/smdrop/1.11/sourcemod-latest-linux
     dest: /home/tf2server/build_sourcemod/.version-sm-latest
 
 - name: Fetch latest metamod version
   ansible.builtin.get_url:
-    url: https://mms.alliedmods.net/mmsdrop/1.12/mmsource-latest-linux
+    url: https://mms.alliedmods.net/mmsdrop/1.11/mmsource-latest-linux
     dest: /home/tf2server/build_sourcemod/.version-mm-latest
 
 - name: Load latest sourcemod version
@@ -28,12 +28,12 @@
 
 - name: set default mm
   set_fact:
-    mm_version_latest: "mmsource-1.12.0-git1167-linux.tar.gz"
+    mm_version_latest: "mmsource-1.11.0-git1148-linux.tar.gz"
   when: (mm_version_latest is undefined)
 
 - name: set default sm
   set_fact:
-    sm_version_latest: "sourcemod-1.12.0-git6986-linux.tar.gz"
+    sm_version:latest: "sourcemod-1.11.0-git6934-linux.tar.gz"
   when: (sm_version_latest is undefined)
 
 - name: Check if mm version rules file exists
@@ -60,8 +60,7 @@
 
 - name: Download latest metamod
   ansible.builtin.unarchive:
-    # src: https://mms.alliedmods.net/mmsdrop/1.12/mmsource-1.12.0-git1165-linux.tar.gz
-    src: https://mms.alliedmods.net/mmsdrop/1.12/{{ mm_version_latest }}
+    src: https://mms.alliedmods.net/mmsdrop/1.11/{{ mm_version_latest }}
     dest: ~/build_sourcemod/
     remote_src: true
   when: (mm_version_current is undefined) or (mm_version_latest != mm_version_current)
@@ -74,8 +73,7 @@
 
 - name: Download latest sourcemod
   ansible.builtin.unarchive:
-    # src: https://sm.alliedmods.net/smdrop/1.12/sourcemod-1.12.0-git6954-linux.tar.gz
-    src: https://sm.alliedmods.net/smdrop/1.12/{{ sm_version_latest }}
+    src: https://sm.alliedmods.net/smdrop/1.11/{{ sm_version_latest }}
     dest: ~/build_sourcemod/
     remote_src: true
   when: (sm_version_current is undefined) or (sm_version_latest != sm_version_current)
