@@ -3,3 +3,4 @@ collections:
   - community.general
   - community.docker
   - ansible.posix
+  - githubixx.ansible_role_wireguard

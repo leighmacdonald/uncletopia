@@ -1,0 +1,10 @@
+---
+# hub/spoke vpn config
+#
+#
+- hosts: all
+  name: vpn
+  become: true
+  roles:
+    - role: ansible-role-wireguard
+      tags: role-wireguard

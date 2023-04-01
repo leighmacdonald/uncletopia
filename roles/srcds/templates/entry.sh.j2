@@ -16,4 +16,5 @@ bash "{{srcds_steam_app_dir}}/srcds_run" -game "{{srcds_steam_app}}" -console \
   +sv_password "{{ srcds_server_password }}" \
   +sv_region "{{ srcds_region | quote }}" \
   -ip "{{ ip }}" \
+  {% if srcds_use_sdr %}-enablefakeip {% endif %}\
   -authkey "{{ srcds_workshop_auth_key }}"

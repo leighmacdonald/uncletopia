@@ -1,8 +1,8 @@
 log on
 mp_logdetail "3"
 
-sv_minrate 80000
-sv_maxrate 120000
+sv_minrate 128000
+sv_maxrate 0
 sv_maxupdaterate 66
 sv_minupdaterate 20
 sv_maxcmdrate 66
@@ -28,7 +28,7 @@ tv_delaymapchange 0
 tv_delay 0
 tv_maxrate 0
 tv_port "{{ srcds_base_port + (loop0 * 10) + 1 }}"
-tv_allow_camera_man 1
+tv_allow_camera_man 1origin/stv
 tv_password "{{ stv_password }}"
 // Hostname
 tv_name "{{ item.name }} | STV"
