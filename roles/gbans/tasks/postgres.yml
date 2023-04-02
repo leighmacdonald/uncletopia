@@ -12,6 +12,7 @@
     recreate: true
     pull: true
     purge_networks: true
+    restart_policy: always
     networks:
       - name: caddy_net
     volumes:
