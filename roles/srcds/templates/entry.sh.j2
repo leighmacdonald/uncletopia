@@ -12,9 +12,9 @@ bash "{{srcds_steam_app_dir}}/srcds_run" -game "{{srcds_steam_app}}" -console \
   +maxplayers {{ srcds_max_players|default(24) }} \
   +map "{{ map_rotation['default'] | random }}" \
   +sv_setsteamaccount "{{ item.gslt }}" \
-  +rcon_password "{{ srcds_rcon_password }}" \
+  +rcon_password "{{ item.srcds_rcon_password | default(srcds_rcon_password) }}" \
   +sv_password "{{ srcds_server_password }}" \
   +sv_region "{{ srcds_region | quote }}" \
   -ip "{{ ip }}" \
-  {% if srcds_use_sdr %}-enablefakeip {% endif %}\
+  {% if srcds_use_sdr %}-enablefakeip {% endif %} \
   -authkey "{{ srcds_workshop_auth_key }}"
