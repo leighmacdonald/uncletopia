@@ -41,9 +41,6 @@ srcds:
 shell:
 	@docker exec -it srcds-test-1 bash
 
-node_exporter:
-	@ansible-playbook $(PROD_OPTS) $(PLAYBOOK_PATH)/node_exporter.yml
-
 web:
 	@ansible-playbook $(PROD_OPTS) $(PLAYBOOK_PATH)/web.yml --limit metrics
 

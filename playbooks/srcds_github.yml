@@ -1,6 +1,0 @@
----
-- name: Build uncletopia srcds image
-  hosts: localhost
-  connection: local
-  roles:
-    - srcds

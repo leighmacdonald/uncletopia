@@ -2,6 +2,5 @@
 - import_playbook: playbooks/adduser.yml
 - import_playbook: playbooks/system.yml
 - import_playbook: playbooks/web.yml
-- import_playbook: playbooks/node_exporter.yml
 - import_playbook: playbooks/sourcemod.yml
 - import_playbook: playbooks/srcdsup.yml

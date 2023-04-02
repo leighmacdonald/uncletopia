@@ -1,6 +1,149 @@
 ---
 - hosts: all
   become: true
-  become_user: tf2server
-  roles:
-    - system
+  tasks:
+    - name: Set timezone
+      community.general.timezone:
+        name: "{{ timezone }}"
+
+    - name: Check if i386 is enabled
+      ansible.builtin.shell: dpkg --print-foreign-architectures | grep i386
+      register: result_i386_check
+      changed_when: result_i386_check.rc == 1
+      failed_when: result_i386_check.rc > 1
+      when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+    - name: Add nginx stable repository from PPA and install its signing key on Ubuntu target
+      ansible.builtin.apt_repository:
+        repo: ppa:damentz/liquorix
+      tags:
+        - testing
+
+    - name: Add .net
+      apt:
+        deb: https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb
+      when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+    - name: Enable i386 architecture
+      ansible.builtin.command: dpkg --add-architecture i386
+      when: result_i386_check.rc == 1
+
+    - name: Install gpg
+      when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 0
+        state: present
+        pkg:
+          - linux-image-liquorix-amd64
+          - gpg
+          - aspnetcore-runtime-6.0
+
+    - name: Create a directory if it does not exist
+      ansible.builtin.file:
+        path: ~/dd
+        state: directory
+        mode: '0755'
+
+    - name: dd installed
+      ansible.builtin.stat:
+        path: ~/dd/DepotDownloader.dll
+      register: dd_exists
+
+    - name: get dd
+      ansible.builtin.unarchive:
+        remote_src: true
+        src: "https://github.com/SteamRE/DepotDownloader/releases/download/DepotDownloader_2.4.7/depotdownloader-2.4.7.zip"
+        dest: ~/dd
+      when: not dd_exists.stat.exists
+
+    - name: Create rcon directory if it does not exist
+      ansible.builtin.file:
+        path: ~/rcon
+        state: directory
+        mode: '0755'
+
+    - name: rcon installed
+      ansible.builtin.stat:
+        path: ~/rcon/rcon
+      register: rcon_exists
+
+    - name: get rcon
+      ansible.builtin.unarchive:
+        remote_src: true
+        src: "https://github.com/leighmacdonald/rcon/releases/download/v1.0.8/rcon-v1.0.8-linux64.zip"
+        dest: ~/rcon/
+      when: not rcon_exists.stat.exists
+
+    - name: Download docker gpg key
+      become: true
+      become_user: root
+      ansible.builtin.apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: Add specified repository into sources list
+      become: true
+      become_user: root
+      ansible.builtin.apt_repository:
+        repo: deb https://download.docker.com/linux/ubuntu focal stable
+        state: present
+
+    - name: Install OS Dependencies
+      when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 0
+        state: present
+        pkg:
+          - wget
+          - unzip
+          - apt-transport-https
+          - ca-certificates
+          - gpg
+          - curl
+          - gnupg
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+          - python3-docker
+          - python3-distutils
+          - libc6:i386
+          - lib32stdc++6
+
+    - name: Add docker group to user
+      become: true
+      ansible.builtin.user:
+        name: tf2server
+        groups: docker
+        append: true
+        state: present
+
+    - name: Disable irqbalance
+      become: true
+      ansible.builtin.systemd:
+        name: irqbalance
+        state: stopped
+        masked: true
+        enabled: false
+
+    - name: Reload systemd daemon
+      become: true
+      ansible.builtin.systemd:
+        daemon_reload: true
+
+    - name: Enable docker service
+      become: true
+      ansible.builtin.systemd:
+        name: docker
+        state: started
+        enabled: true
+
+    - name: Enable UFW
+      become: true
+      ansible.builtin.ufw:
+        state: enabled
+        policy: deny
+      when: ansible_distribution == 'Ubuntu'
+
+
