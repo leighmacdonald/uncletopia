@@ -1,13 +1,7 @@
-steam_key: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+steam_key: ZXZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ
+zerossl_key: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
-http:
-  listen_http: 0.0.0.0:8004
-  domain: example.com
-  static_path: frontend/dist/static
-  cookie_key: change-me
-
-database:
-  dsn: postgres://uncletopia-web:uncletopia-web@uncletopia-web-postgres/uncletopia-web
+bot_detector_bot_token: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
 paypal:
   client_id: asdf
@@ -20,12 +14,15 @@ patreon:
   access_token: asdfasdf
   refresh_token: asdfasdfasdf
 
-gbans:
-  owner: 76561198084134025
+gbans_web:
+  # steamid64
+  owner: 0000000000000000000
   dsn: postgresql://gbans:gbans@gbans-postgres/gbans
   run_mode: "release"
-  cookie_key: xxxxxxxxxxxxxxxxxxxxxxxxxxxx
-  address: https://gbans.example.com
+  cookie_key: must_change_me
+  address: https://kittyland.com
+  banned_steam_group_ids: [ ]
+    # - 000000000000000000
   port: 6006
   update_freq: 15s
   network_bans_enabled: true
@@ -34,48 +31,59 @@ gbans:
       url: https://raw.githubusercontent.com/PazerOP/tf2_bot_detector/master/staging/cfg/playerlist.official.json
       type: tf2bd
   relay:
-    enabled: false
-    channel_ids: [879587487339671572]
+    enabled: true
+    channel_ids: [000000000000000000]
   ip2location:
-    enabled: false
-    api_key: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    enabled: true
+    api_key: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
   word_filter:
     enabled: false
     sources:
       - https://raw.githubusercontent.com/RobertJGabriel/Google-profanity-words/master/list.txt
   discord:
-    app_id: 11111111111111111
-    guild_id: 22222222222222222222
-    mod_channel_id: 33333333333333333333
+    app_id: 000000000000000000
+    guild_id: 000000000000000000
+    mod_channel_id: 00000000000000000
     public_log_enabled: true
-    public_log_channel_id: 4444444444444444444
-    token: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    roles: [11111111111111111111, 2222222222222222222]
-    mod_channel_ids: [1111111111111111111]
+    public_log_channel_id: 00000000000000000
+    token: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+    roles: [00000000000000000, 11111111111111111]
+    mod_channel_ids: [00000000000000000]
+    log_channel_id: 00000000000000000
   logging:
     srcds_log_addr: ":27115"
-    srcds_log_external_host: "example.com:27115"
+    srcds_log_external_host: ""
 
 caddy:
-  cloudflare:
-    api_key: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    email: username@example.com
+  tls_configs:
+    kittyland:
+      api_key: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+      email: a@gmail.com
+    kittyland2:
+      api_key: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+      email: b@gmail.com
   static:
-    stv.example.com:
-      root: /demos
+    fastdl.kittyland.com:
+      root: /fastdl
   hosts:
-    docker.example.com:
-      address: portainer:9000
-      forward: false
-    metrics.example.com:
+    metrics.kittyland.com:
       address: grafana:3000
       forward: false
-    update.example.com:
+      tls_name: kittyland
+    update.kittyland.com:
       address: swp:8181
       forward: true
-    uncletopia.com:
-      address: uncletopia-web:8004
-      forward: false
-    gbans.example.com:
+      tls_name: kittyland
+    kittyland.com:
       address: gbans-service:6006
       forward: false
+      tls_name: kittyland
+    www.kittyland2.com:
+      address: kittyland2-web:8003
+      forward: false
+      tls_name: kittyland2
+    kittyland2.com:
+      address: kittyland2-web:8003
+      forward: false
+      tls_name: kittyland2
+

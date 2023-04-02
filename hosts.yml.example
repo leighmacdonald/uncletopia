@@ -1,31 +1,37 @@
 all:
   children:
-    build:
-      hosts:
-        example.com:
-
-    development:
+    vpn:
       children:
-        tf2:
-          hosts:
-            localhost:
-    staging:
-      children:
-        tf2:
-          hosts:
-            test-[1:2].example.com:
-    production:
-      children:
-        metrics:
-          hosts:
-            mtl-1.ca.example.com:
-        web:
-          hosts:
-            mtl-1.ca.example.com:
-        tf2:
+#        development:
+#          children:
+#            tf2:
+#              hosts:
+#                localhost:
+        staging:
           children:
-            na:
+            tf2:
+              hosts:
+                test-[1:3].kittyland.com:
+        production:
+          children:
+            metrics:
+              hosts:
+                web-1.kittyland.com:
+            web:
+              hosts:
+                web-1.kittyland.com:
+            tf2:
               children:
-                nae:
+                na:
+                  children:
+                    nae:
+                      hosts:
+                        atl-1.kittyland.com:
+                        nyc-1.kittyland.com:
+                    nac:
+                      hosts:
+                        chi-[1:2].kittyland.com:
+                eu:
                   hosts:
-                    atl-1.us.example.com:
+                    lon-1.kittyland.com:
+                    frk-1.kittyland.com:

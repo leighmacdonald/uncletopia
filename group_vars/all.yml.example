@@ -1,36 +1,67 @@
----
-
-gbans_host: "https://example.com"
+gbans_host: "https://kittyland.com"
 gbans_port: "443"
+site_name: "kittyland servers"
 
-# https://github.com/crescentrose/chat-log
-chat_logs_token: "xxxxxxxxxxxxxxxxxxxxxxxxx"
-
+chat_logs_token: "blah.blah.blah.blah.blah.blah"
 ssh_keys:
-  - "ssh-rsa xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx== key"
+  - "ssh-rsa xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx== name"
 
-dockerhub:
-  publish: false
-  username: your_username
-  password: your_password
 
 log:
   file_enable: true
-  # UDP logger targets (logaddress_add)
-  net_enable: false
-  net_hosts: ["example.com:27115"]
+  net_enable: true
+  net_hosts: ["10.20.30.40:27115", "sink.kittyland.com:27115"]
 
-prometheus_host: "1.2.3.4"
-metrics_host: "1.2.3.4"
+prometheus_host: "n.n.n.n"
+metrics_host: "n.n.n.n"
 
-is_vpn_client: true
+caddy:
+  cloudflare:
+    api_key: your-api-key
+    email: name@mail.com
 
-vpn_server_public_key: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx="
-vpn_host: "1.2.3.4"
-vpn_port: 41194
-vpn_allowed_ips: "10.10.10.0/24"
-# Extra vpn configs for admins
-vpn_clients_extra:
-  - public_key: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx=
-    client_addr: 10.10.10.10/32
-    name: username
+gbans:
+  gb_core_host: "https://kittyland.com"
+  gb_core_port: 443
+  gb_core_server_key: "{{ item.gbans_key }}"
+  gb_core_server_name: "{{ item.server_name_short }}"
+  gb_stv_enable: 1
+  gb_stv_finishmap: "1"
+  gb_stv_ignorebots: "1"
+  gb_stv_minplayers: "1"
+  gb_stv_path: "stv_demos/active"
+  gb_stv_path_complete: "stv_demos/complete"
+  gb_stv_timestart: "-1"
+  gb_stv_timestop: "-1"
+  gb_stopwatch_enabled: "{% if item.stopwatch | default(false) %}1{% else %}0{% endif %}"
+  gb_stopwatch_blueteamname: "Team A"
+  gb_stopwatch_redteamname: "Team B"
+
+wireguard_preup:
+  - echo 1 > /proc/sys/net/ipv4/ip_forward
+  - ufw allow 51820/udp
+wireguard_postup:
+  - ufw route allow in on wg0
+  - ufw route allow out on wg0
+wireguard_persistent_keepalive: "30"
+# Directory to store WireGuard configuration on the remote hosts
+wireguard_remote_directory: "/etc/wireguard"
+# The default port WireGuard will listen if not specified otherwise.
+wireguard_port: "51820"
+# The default interface name that WireGuard should use if not specified otherwise.
+wireguard_interface: "wg0"
+# The default owner of the wg.conf file
+wireguard_conf_owner: root
+# The default mode of the wg.conf file
+wireguard_conf_mode: 0600
+# The default state of the wireguard service
+wireguard_service_enabled: "yes"
+wireguard_service_state: "started"
+wireguard_interface_restart: true
+wireguard_unmanaged_peers:
+  my_desktop:
+    public_key: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx=
+    # preshared_key: ... e.g. from ansible-vault?
+    allowed_ips: 10.20.30.100/32
+    # endpoint: ""
+    persistent_keepalive: 30

@@ -1,21 +1,31 @@
 timezone: "America/New_York"
-sv_region: 0
+srcds_region: 0
 # external ip
 ip: "1.2.3.4"
-vpn:
-  client_addr: "10.10.10.11/32"
-  private_key: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx="
-  public_key: "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy="
+srcds_use_sdr: false
+wireguard_addresses:
+  - "10.20.30.10/24"
 services:
-  - name: "Example |  1"
-    server_name_short: "exm-1"
-    gslt: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-    gbans_key: "xxxxxxxxxxxxxxxxxxxx"
-    log_secret: 12345
+  - name: "Kittyland | 1 | All Maps"
+    server_name_short: "Kittyland-1"
+    gslt: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+    gbans_key: "yyyyyyyyyyyyyyyyyyyy"
+    log_secret: 111111111
     rotation: "all"
-  - name: "Example | 2"
-    server_name_short: "exm-2"
-    gslt: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-    gbans_key: "xxxxxxxxxxxxxxxxxxxx"
-    log_secret: 67890
+    srcds_rcon_password: aaaaaaaaaaa
+  - name: "Kittyland | 2 | Community"
+    server_name_short: "Kittyland-2"
+    gslt: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+    gbans_key: "yyyyyyyyyyyyyyyyyyyy"
+    log_secret: 22222222
+    rotation: "community"
+    srcds_rcon_password: bbbbbbbbbb
+  - name: "Kittyland | 3 | All Maps"
+    server_name_short: "Kittyland-3"
+    gslt: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+    gbans_key: "yyyyyyyyyyyyyyyyyyyy"
+    log_secret: 333333333
     rotation: "all"
+    stopwatch: false
+    srcds_rcon_password: ccccccccc
+

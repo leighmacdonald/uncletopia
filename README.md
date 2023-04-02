@@ -1,13 +1,9 @@
 # Uncletopia
 
-This repo contains [Ansible](https://docs.ansible.com) playbooks and tasks for
+This repo contains [Ansible](https://docs.ansible.com) playbooks and roles for
 configuring and administering the uncletopia server cluster.
 
 ## Role Descriptions
-
-### adduser
-
-The adduser role will set up the user that the game instance runs under.
 
 ### caddy
 
@@ -41,15 +37,6 @@ To save on download/rebuild times, the base tf2 image is cached untouched so sub
 srcdsup downloads and configures the [srcdsup](https://github.com/leighmacdonald/srcdsup) container. This allows demos
 to be uploaded out of band from the game instance to the gbans central instance for long term storage.
 
-
-### system
-
-The system role installs base os dependencies we rely on. This includes things such as 32bit library support, docker, dotnet.
-
-### tf2 
-
-The tf2 role is responsible for configuring and bringing up the srcds docker images. This is the last step in
-deploying the game servers.
 
 ## Setup
 

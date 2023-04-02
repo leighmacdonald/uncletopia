@@ -1,116 +1,53 @@
+# Global srcds defaults
+srcds_user: "tf2server"
+srcds_homedir: "/home/tf2server"
+srcds_steam_app: "tf"
+srcds_steam_app_dir: "/home/tf2server/tf-dedicated"
+srcds_steam_app_id: 232250
 srcds_base_port: 27015
-server_password: ""
-rcon_password: "global_rcon_pass"
+srcds_tv_port: 27020
+srcds_max_players: 32
+srcds_rcon_password: "default_global_rcon_pass"
+srcds_server_password: ""
+srcds_start_map: ""
+srcds_region: 3
+srcds_hostname: "TF2"
+srcds_fps_max: 67
+srcds_tick_rate: 67
+srcds_client_port: ""
+srcds_workshop_auth_key: ""
+srcds_use_sdr: false
+
 fastdl_url: ""
-sv_tags: "your_network"
+sv_tags: "kittyland,nodogs"
 sv_pure: 1
 start_map: "pl_badwater"
 
 # https://crash.limetech.org/
-mini_dump_steamid:
+mini_dump_steamid: 00000000000000000
 
-image_tag: leighmacdonald/uncletopia-srcds:latest
+stv_enable: true
+stv_password: "your_global_stv_password"
+stv_name: "Level 3 Sentry"
 
-stv_enable: false
-stv_password: ""
-stv_name: "STV"
-
-# Params to generate /tf/addons/sourcemod/configs/admin_overrides.cfg
-admin_overrides:
-  - [ "admin_allspec_flag", "b" ]
-  
+# Uploads demos/logs to gbans service
 srcdsup:
   update_interval: 5m
   remotes:
-    - name: gbans_demo
+    - name: "{{ item.server_name_short }}"
       type: gbans_demo
-      url: https://example.com/api/demo
-    - name: gbans_log
-      type: gbans_log
-      url: https://example.com/api/log
-    - name: chat_log
-      type: gbans_log
-      url: https://chat-log.example.com/upload
-      password: "xxxxxxxxxxxxxxxxxxxxxxx"
+      url: "https://kittyland.com"
+      password: "{{ item.gbans_key }}"
   rules:
-    - name: logs
-      root: /app/logs/
-      pattern: "*.log"
-      remotes: [ gbans_log, chat_log ]
-    - name: stac_logs
-      root: /app/logs/stac/
-      pattern: "*.log"
-      remotes: [ gbans_ac ]
+#    - name: stac_logs
+#      root: /app/logs/stac/
+#      pattern: "*.log"
+#      remotes: [ gbans_ac ]
     - name: demos
-      root: /app/demos/
+      root: /app/demos/complete/
       pattern: "*.dem"
-      remotes: [ gbans_demo ]
+      remotes: [ "{{ item.server_name_short }}" ]
 
-discord_accelerator:
-  # Default: "Captain Crash"
-  discord_accelerator_hookname: "TF2 Server Crash"
-
-  # Role ID ir User ID to mention.
-  # You can get Role ID or User ID by making \@User or \@Group
-  # If you want to mention group add & before ID
-  # -
-  # Default: ""
-  discord_accelerator_mention: ""
-
-  # Information text that server crashed in message.
-  # Default: "Server crashed"
-  discord_accelerator_message: "Server crashed"
-
-  # Short server name
-  # Default: ""
-  discord_accelerator_servername: "{{ item.server_name_short }}"
-
-  # Config key from configs/discord.cfg.
-  # Default: "accelerator"
-  discord_accelerator_webhook: "crash"
-
-autorecorder:
-    # Enable automatic recording
-  # -
-  # Default: "1"
-  # Minimum: "0.000000"
-  # Maximum: "1.000000"
-  sm_autorecord_enable: "1"
-
-  # If 1, continue recording until the map ends
-  # -
-  # Default: "1"
-  # Minimum: "0.000000"
-  # Maximum: "1.000000"
-  sm_autorecord_finishmap: "1"
-
-  # Ignore bots in the player count
-  # -
-  # Default: "1"
-  # Minimum: "0.000000"
-  # Maximum: "1.000000"
-  sm_autorecord_ignorebots: "1"
-
-  # Minimum players on server to start recording
-  # -
-  # Default: "4"
-  # Minimum: "0.000000"
-  sm_autorecord_minplayers: "4"
-
-  # Path to store recorded demos
-  # -
-  # Default: "."
-  sm_autorecord_path: "stv_demos"
-
-  # Hour in the day to start recording (0-23, -1 disables)
-  # -
-  # Default: "-1"
-  sm_autorecord_timestart: "-1"
-
-  # Hour in the day to stop recording (0-23, -1 disables)
-  # -
-  # Default: "-1"
-  sm_autorecord_timestop: "-1"
 
 # Params to generate /tf/cfg/sourcemod/sourcemod.cfg
 sourcemod:
@@ -243,6 +180,7 @@ sourcemod:
   # Default: 0
   sm_vote_progress_client_console: 0
 
+discord_accelerator:
   # What nickname hook will have.
   # -
   # Default: "Captain Crash"
@@ -253,12 +191,12 @@ sourcemod:
   #  If you want to mention group add & before ID
   #  -
   #  Default: ""
-  discord_accelerator_mention: "100742067323416576"
+  discord_accelerator_mention: "yourdiscodroleid"
 
   #  Short server name
   #  -
   #  Default: ""
-  discord_accelerator_servername: "srcds"
+  discord_accelerator_servername: "{{ item.server_name_short }}"
 
   #  Config key from configs/discord.cfg.
   #  -
@@ -271,13 +209,14 @@ sourcemod:
   discord_accelerator_message: "Server crashed"
 
 discord:
-  stac_webhook: ""
-  crash_webhook: ""
+  stac_webhook: "https://discord.com/api/webhooks/xxxxxxxxxxxxxxxxxxxxxxxxxx"
+  crash_webhook: "https://discord.com/api/webhooks/xxxxxxxxxxxxxxxxxxxxxxxxx"
 
 motd: |
-  Welcome to Uncletopia! If you enjoyed your time here, remember to add this server to your favorites via the server browser!
-  This is Uncle Dane's custom community server. The experience on Uncletopia is intended to be very similar to TF2 Casual Mode, with a few quality-of-life changes. If you’d like to learn more, please visit -- UNCLETOPIA.COM -- You can easily connect with the Uncletopia community, give feedback, report players, and access other resources by joining the official Uncletopia Discord at -- UNCLETOPIA.COM/DISCORD --
-  If teams are unbalanced, type !scramble in chat to vote to scramble the teams. If you would like to change the current map, you can nominate a map with !nominate and rock the vote with !rtv. There is a no-tolerance policy against slurs and toxicity. Thanks for playing!
+  Your multi
+  line
+  motd
+  text message
 
 map_rotation:
   default:
@@ -299,6 +238,135 @@ map_rotation:
     - pl_snowycoast
     - pl_swiftwater_final1
     - pl_upward
+
+  stopwatch:
+    - cp_gullywash_final1
+    - cp_metalworks
+    - cp_process_final
+    - cp_snakewater_final1
+    - cp_sunshine
+    - workshop/koth_bagel.ugc2514036946
+    - koth_highpass
+    - koth_lakeside_final
+    - workshop/koth_product.ugc454272353
+    - workshop/koth_ramjam_rc1.ugc459778887
+    - workshop/koth_clearcut_b15.ugc2107050255
+    - workshop/cp_process_f11.ugc2302948105
+    - workshop/cp_reckoner.ugc674719999
+    - workshop/koth_ashville.ugc2130459942
+    - workshop/pl_barnblitz_pro.ugc582280235
+    - workshop/pl_badwater_pro_v12.ugc2142942074
+    - workshop/pl_snowycoast_pro.ugc1761528829
+    - workshop/pl_vigil.ugc1266210012
+    - pl_swiftwater_final1
+    - pl_upward
+    - pl_borneo
+    - cp_granary
+
+  community:
+    # ad
+    - workshop/cp_bruhstbowl_b5.ugc2878604990
+    - workshop/cp_fulgur_rc2a.ugc2068252300
+    - workshop/cp_glacier_rc6.ugc2905735376
+    - workshop/cp_snowbase_b18.ugc2081770490
+    - workshop/cp_hazyfort_rc6.ugc1365963729
+    # cp
+    - workshop/cp_alloy.ugc592805587
+    - workshop/cp_croissant.ugc458840209
+    - workshop/cp_glassworks.ugc454118349
+    - workshop/cp_indulge.ugc528106646
+    - workshop/cp_propaganda.ugc1603743849
+    - workshop/cp_mannbase.ugc1900737467
+    - workshop/cp_kalinka.ugc1272700588
+    # koth
+    - workshop/koth_trenchfoot.ugc731436616
+    - workshop/koth_kemptown.ugc767410655
+    # pl
+    - workshop/pl_cashworks.ugc2904065412
+    - workshop/pl_boundary.ugc456799153
+    - workshop/pl_divulgence.ugc2884808746
+    - workshop/pl_emerge.ugc888027758
+    - workshop/pl_corrode.ugc546577989
+    - workshop/pl_shoreleave.ugc1238849347
+    - workshop/pl_badwater_pro_v12.ugc2142942074
+    - workshop/pl_highwood.ugc1769496557
+    # 1st batch
+    - workshop/cp_caldera.ugc2834196889
+    - workshop/cp_logjam.ugc454812035
+    - workshop/cp_overgrown.ugc503939302
+    - workshop/cp_reckoner.ugc674719999
+    - workshop/cp_sulphur.ugc619869471
+    - workshop/cp_villa.ugc2113052569
+    - workshop/koth_ashville.ugc2130459942
+    - workshop/koth_bagel.ugc2514036946
+    - workshop/koth_product.ugc454272353
+    - workshop/koth_ramjam_rc1.ugc459778887
+    - workshop/koth_slaughter.ugc1712845210
+    - workshop/koth_synthetic.ugc1549817316
+    - workshop/pl_barnblitz_pro.ugc582280235
+    - workshop/pl_cactus_canyon_redux.ugc2579644293
+    - workshop/pl_fifthcurve_rc1.ugc648227046
+    - workshop/pl_eruption.ugc2807898013
+    - workshop/pl_vigil.ugc1266210012
+    - workshop/rd_asteroid_redux.ugc2154902912
+
+  nopl:
+    # ad
+    - cp_altitude
+    - cp_dustbowl
+    - cp_egypt_final
+    - cp_gorge
+    - cp_gravelpit
+    - cp_junction_final
+    - cp_mercenarypark
+    - cp_mossrock
+    - cp_mountainlab
+    - cp_steel
+    # 5cp
+    - cp_5gorge
+    - cp_badlands
+    - cp_coldfront
+    - cp_fastlane
+    - cp_foundry
+    - cp_freight_final1
+    - cp_granary
+    - cp_gullywash_final1
+    - cp_metalworks
+    - cp_powerhouse
+    - cp_process_final
+    - cp_snakewater_final1
+    - cp_sunshine
+    - cp_vanguard
+    - cp_well
+    - cp_yukon_final
+    # 3cp?
+    - cp_standin_final
+    # koth
+    - koth_badlands
+    - koth_highpass
+    - koth_king
+    - koth_lakeside_final
+    - koth_harvest_final
+    - koth_suijin
+    - koth_viaduct
+    - koth_cascade
+    - koth_brazil
+    - koth_lazarus
+    - koth_sawmill
+    - koth_nucleus
+    - koth_harvest_final
+    # payload (evil version)
+    - plr_bananabay
+    - plr_hightower
+    - plr_nightfall_final
+    - plr_pipeline
+    # ctf
+    - ctf_2fort
+    - ctf_doublecross
+    - ctf_landfall
+    - ctf_sawmill
+    - ctf_turbine
+    - ctf_well
 
   all:
     # ad
@@ -329,6 +397,8 @@ map_rotation:
     - cp_vanguard
     - cp_well
     - cp_yukon_final
+    # 3cp?
+    - cp_standin_final
     # koth
     - koth_badlands
     - koth_highpass
@@ -368,21 +438,7 @@ map_rotation:
     - ctf_sawmill
     - ctf_turbine
     - ctf_well
-
-sm_permissions:
-  # Admins
-  - ["STEAM_0:1:1111", "z", "aaaa"]
-
-  # Mods
-  - ["STEAM_1:1:22222", "abcdegjk", "bbbb"]
-
-  # Community manager
-  - ["STEAM_0:1:3333", "aj", "ccccc"]
-
-  # Reserved slots
-  - ["STEAM_1:0:4444", "a", "ddddd"]
-
-
+    - pl_rumford_event
 
 rtv:
   # When to change the map after a succesful RTV: 0 - Instant, 1 - RoundEnd, 2 - MapEnd
@@ -464,7 +520,7 @@ mapchooser:
   # -
   # Default: "5"
   # Minimum: "0.000000"
-  sm_mapvote_exclude: "6"
+  sm_mapvote_exclude: "5"
 
   # Number of extensions allowed each map.
   # -
@@ -524,6 +580,7 @@ mapchooser:
   # Minimum: "5.000000"
   sm_mapvote_voteduration: "15"
 
+
 nativevotes:
   # Show current vote progress as chat messages
   # -
@@ -570,15 +627,15 @@ networktools:
   nt_latency_addition: "150"
   nt_latency_enable: "1"
   nt_liammethod: "0"
-  nt_logenabled: "0"
+  nt_logenabled: "1"
   nt_logformatext: "%Y_%m_%d"
   nt_logformatint: "%x"
   nt_loss_addition: "15"
   nt_loss_enable: "0"
   nt_loss_threashold: "6"
-  nt_minplayercount: "23"
+  nt_minplayercount: "16"
   nt_warningvocalize: "1"
-  
+
 funvotes:
   sm_vote_alltalk: "0.60"
   sm_vote_burn: "0.60"
@@ -590,7 +647,7 @@ basevotes:
   sm_vote_ban: "0.60"
   sm_vote_kick: "0.60"
   sm_vote_map: "0.60"
-  
+
 stac:
   stac_enabled: "1"
   stac_verbose_info: "0"
@@ -612,5 +669,7 @@ stac:
   stac_log_to_file: "1"
   stac_fixpingmasking_enabled: "1"
   stac_max_userinfo_spam_detections: "35"
-  stac_kick_unauthed_clients: "0"
-  stac_silent: "0"
+  stac_kick_unauthed_clients: "1"
+  stac_silent: "2"
+  stac_max_connections_from_ip: "5"
+  stac_quiet: "1"
