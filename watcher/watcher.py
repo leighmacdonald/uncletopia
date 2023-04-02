@@ -5,16 +5,10 @@ import logging
 import json
 from os import environ
 import websocket
-import requests
+from discord_webhook import DiscordWebhook, DiscordEmbed
 
 # Url to an instance of https://github.com/xPaw/SteamWebPipes
 ANNOUNCE_URL = "wss://update.uncletopia.com"
-
-# Tower/AWX api url https://github.com/ansible/awx
-AWX_URL = "https://deploy.uncletopia.com/api/v2"
-
-# Name of AWX job template to execute
-TEMPLATE_CONFIG = "Deploy TF2 Config"
 
 # Trigger update for specific app id's
 # TF2 should be 232250 for the server component, not 440 which is the client
@@ -29,33 +23,8 @@ log = logging.getLogger(__name__)
 class WatcherException(Exception):
     pass
 
-
-def api_request(method, path, data=None):
-    u = AWX_URL + path
-    resp = getattr(requests, method.lower())(u, json=data, headers={
-        "Content-Type": "application/json",
-        "Authorization": "Bearer {}".format(PAT)})
-    if not resp.ok:
-        raise WatcherException("Invalid http response: {}".format(resp.status_code))
-    return resp.json()
-
-
-def find_template(name: str):
-    for res in api_request("get", "/job_templates/")["results"]:
-        if res["name"].lower() == name.lower():
-            return res
-    raise WatcherException("Failed to find matching template")
-
-
-def run_template(template_name: str):
-    try:
-        tpl = find_template(template_name)
-        api_request("post", "/job_templates/{}/launch/".format(tpl["id"]))
-    except WatcherException:
-        log.exception("Application error", exc_info=True)
-    except Exception:
-        log.exception("Unhandled exception", exc_info=True)
-
+def update():
+    pass
 
 def on_message(_, message):
     try:
@@ -63,7 +32,7 @@ def on_message(_, message):
         if data["Type"] == "Changelist":
             if APP_ID in data["Apps"]:
                 log.info("Appid update triggered: {} {}".format(data["ChangeNumber"], ",".join(data["Apps"].keys())))
-                run_template(TEMPLATE_CONFIG)
+                update()
             else:
                 log.debug("Appid update skipped: {} {}".format(data["ChangeNumber"], ",".join(data["Apps"].keys())))
         elif data["Type"] == "UsersOnline":
