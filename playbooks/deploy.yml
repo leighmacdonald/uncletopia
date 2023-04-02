@@ -86,7 +86,7 @@
       loop: "{{ services }}"
       loop_control:
         index_var: loop0
-      when: ansible_distribution == 'Ubuntu' and not srcds_use_sdr
+      when: ansible_distribution == 'Ubuntu'
 
     - name: stv-fw-enable
       become: true
@@ -97,18 +97,18 @@
       loop: "{{ services }}"
       loop_control:
         index_var: loop0
-      when: ansible_distribution == 'Ubuntu' and not srcds_use_sdr
+      when: ansible_distribution == 'Ubuntu'
 
-    - name: srcds-fw-deny
-      become: true
-      ansible.builtin.ufw:
-        rule: deny
-        port: "{{ srcds_base_port + (loop0 * 10) }}"
-        proto: udp
-      loop: "{{ services }}"
-      loop_control:
-        index_var: loop0
-      when: ansible_distribution == 'Ubuntu' and srcds_use_sdr
+#    - name: srcds-fw-deny
+#      become: true
+#      ansible.builtin.ufw:
+#        rule: deny
+#        port: "{{ srcds_base_port + (loop0 * 10) }}"
+#        proto: udp
+#      loop: "{{ services }}"
+#      loop_control:
+#        index_var: loop0
+#      when: ansible_distribution == 'Ubuntu' and srcds_use_sdr
 
     - name: srcds-fw-client-outbound
       become: true
