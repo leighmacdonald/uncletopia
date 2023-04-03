@@ -1,9 +1,9 @@
 ---
-- name: Install portainer
-  import_tasks: portainer.yml
 
 - name: Install prometheus
   import_tasks: prom.yml
 
 - name: Install grafana
   import_tasks: grafana.yml
+  tags:
+    - metrics-server
