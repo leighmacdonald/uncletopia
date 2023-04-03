@@ -1,4 +1,5 @@
 ---
+
 - name: Create prometheus_data volume
   docker_volume:
     name: prometheus_data
@@ -22,6 +23,11 @@
     restart: true
     purge_networks: true
     restart_policy: always
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      # required for tempo to directly write to prom
+      - --web.enable-remote-write-receiver
+      - --enable-feature=exemplar-storage
     recreate: true
     networks:
       - name: caddy_net
@@ -32,45 +38,3 @@
       - 127.0.0.1:9090:9090
   tags:
     - metrics-server
-
-- name: Generate /etc/alertmanager.yml
-  become: true
-  ansible.builtin.template:
-    src: alertmanager.yml.j2
-    dest: /etc/alertmanager.yml
-    mode: 0775
-  tags:
-    - metrics-server
-
-- name: Create alertmanager container
-  docker_container:
-    name: alertmanager
-    image: prom/alertmanager:latest
-    restart: true
-    purge_networks: true
-    restart_policy: always
-    recreate: true
-    networks:
-      - name: caddy_net
-    volumes:
-      - /etc/alertmanager.yml:/etc/alertmanager/alertmanager.yml
-    ports:
-      - 127.0.0.1:9093:9093
-  tags:
-    - metrics-server
-
-- name: Create node_exporter container
-  docker_container:
-    name: node_exporter
-    image: prom/node-exporter:latest
-    restart_policy: always
-    restart: true
-    volumes:
-      - "/:/host:ro,rslave"
-    command:
-      - "--path.rootfs=/host"
-    ports:
-      - "{{ vpn_hosts[inventory_hostname] }}:9100:9100"
-  tags:
-    - metrics-client
-

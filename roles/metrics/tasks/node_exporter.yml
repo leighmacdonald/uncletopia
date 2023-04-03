@@ -1,0 +1,17 @@
+---
+
+- name: Create node_exporter container
+  docker_container:
+    name: node_exporter
+    image: prom/node-exporter:latest
+    restart_policy: always
+    restart: true
+    volumes:
+      - "/:/host:ro,rslave"
+    command:
+      - "--path.rootfs=/host"
+    ports:
+      - "{{ vpn_hosts[inventory_hostname] }}:9100:9100"
+  tags:
+    - metrics-client
+

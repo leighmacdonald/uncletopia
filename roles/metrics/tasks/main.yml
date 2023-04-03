@@ -1,9 +1,24 @@
 ---
 
-- name: Install prometheus
-  import_tasks: prom.yml
+- name: node_exporter
+  import_tasks: node_exporter.yml
 
-- name: Install grafana
+- name: prometheus
+  import_tasks: prom.yml
+  tags:
+    - metrics-server
+
+- name: alertmanager
+  import_tasks: alertmanager.yml
+  tags:
+    - metrics-server
+
+- name: tempo
+  import_tasks: tempo.yml
+  tags:
+    - metrics-server
+
+- name: grafana
   import_tasks: grafana.yml
   tags:
     - metrics-server

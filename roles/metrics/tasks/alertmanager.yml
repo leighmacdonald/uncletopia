@@ -1,0 +1,27 @@
+---
+
+- name: Generate /etc/alertmanager.yml
+  become: true
+  ansible.builtin.template:
+    src: alertmanager.yml.j2
+    dest: /etc/alertmanager.yml
+    mode: 0775
+  tags:
+    - metrics-server
+
+- name: Create alertmanager container
+  docker_container:
+    name: alertmanager
+    image: prom/alertmanager:latest
+    restart: true
+    purge_networks: true
+    restart_policy: always
+    recreate: true
+    networks:
+      - name: caddy_net
+    volumes:
+      - /etc/alertmanager.yml:/etc/alertmanager/alertmanager.yml
+    ports:
+      - 127.0.0.1:9093:9093
+  tags:
+    - metrics-server
