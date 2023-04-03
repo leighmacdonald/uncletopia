@@ -20,7 +20,7 @@ route:
   # alerts as-is. This is unlikely to be what you want, unless you have
   # a very low alert volume or your upstream notification system performs
   # its own grouping. Example: group_by: [...]
-  group_by: ['alertname', 'cluster', 'service']
+  group_by: ['...']
 
   # When a new group of alerts is created by an incoming alert, wait at
   # least 'group_wait' to send the initial notification.
@@ -38,72 +38,12 @@ route:
   repeat_interval: 3h
 
   # A default receiver
-  receiver: team-X-mails
-
-  # All the above attributes are inherited by all child routes and can
-  # overwritten on each.
-
-  # The child route trees.
-  routes:
-    # This routes performs a regular expression match on alert labels to
-    # catch alerts that are related to a list of services.
-    - matchers:
-        - service=~"foo1|foo2|baz"
-      receiver: team-X-mails
-      # The service has a sub-route for critical alerts, any alerts
-      # that do not match, i.e. severity != critical, fall-back to the
-      # parent node and are sent to 'team-X-mails'
-      routes:
-        - matchers:
-            - severity="critical"
-          receiver: team-X-pager
-    - matchers:
-        - service="files"
-      receiver: team-Y-mails
-
-      routes:
-        - matchers:
-            - severity="critical"
-          receiver: team-Y-pager
-
-    # This route handles all alerts coming from a database service. If there's
-    # no team to handle it, it defaults to the DB team.
-    - matchers:
-        - service="database"
-      receiver: team-DB-pager
-      # Also group alerts by affected database.
-      group_by: [alertname, cluster, database]
-      routes:
-        - matchers:
-            - owner="team-X"
-          receiver: team-X-pager
-          continue: true
-        - matchers:
-            - owner="team-Y"
-          receiver: team-Y-pager
-
-
-# Inhibition rules allow to mute a set of alerts given that another alert is
-# firing.
-# We use this to mute any warning-level notifications if the same alert is
-# already critical.
-inhibit_rules:
-  - source_matchers: [severity="critical"]
-    target_matchers: [severity="warning"]
-    # Apply inhibition if the alertname is the same.
-    # CAUTION:
-    #   If all label names listed in `equal` are missing
-    #   from both the source and target alerts,
-    #   the inhibition rule will apply!
-    equal: [alertname, cluster, service]
-
+  receiver: default_receiver
 
 receivers:
-  - name: discord
+  - name: default_receiver
     discord_configs:
-    - webhook_url: {{ alertmanager.webhook_url }}
-
-  - name: 'admins'
+      - webhook_url: {{ alertmanager.webhook_url }}
     email_configs:
 {% for email in alertmanager.emails %}
       - to: '{{ email }}'
