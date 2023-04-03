@@ -1,2 +1,0 @@
-service_discovery:
-  prometheus: https://example.com/api/hosts
