@@ -4,8 +4,7 @@ cd "{{srcds_steam_app_dir}}"
 bash "{{srcds_steam_app_dir}}/srcds_run" -game "{{srcds_steam_app}}" -console \
   -strictportbind \
   -usercon \
-  +fps_max "{{ srcds_fps_max }}" \
-  -tickrate "{{ srcds_tick_rate }}" \
+  -secured \
   -port "{{ srcds_base_port + (loop0 * 10) }}" \
   +tv_port "{{ srcds_base_port + (loop0 * 10) + 1 }}" \
   +clientport "{{ srcds_base_port + (loop0 * 10) + 2 }}" \
@@ -15,6 +14,6 @@ bash "{{srcds_steam_app_dir}}/srcds_run" -game "{{srcds_steam_app}}" -console \
   +rcon_password "{{ item.srcds_rcon_password | default(srcds_rcon_password) }}" \
   +sv_password "{{ srcds_server_password }}" \
   +sv_region "{{ srcds_region | quote }}" \
-  -ip "{{ ip }}" \
+  +ip 0.0.0.0 \
   {% if srcds_use_sdr %}-enablefakeip {% endif %} \
   -authkey "{{ srcds_workshop_auth_key }}"

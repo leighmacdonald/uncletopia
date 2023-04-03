@@ -12,8 +12,6 @@ srcds_server_password: ""
 srcds_start_map: ""
 srcds_region: 3
 srcds_hostname: "TF2"
-srcds_fps_max: 67
-srcds_tick_rate: 67
 srcds_client_port: ""
 srcds_workshop_auth_key: ""
 srcds_use_sdr: false
