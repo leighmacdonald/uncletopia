@@ -21,9 +21,10 @@ scrape_configs:
   - job_name: 'node'
     static_configs:
       - targets: [{% for addr in vpn_hosts.values() %}'{{ addr }}:9100'{% if not loop.last %}, {% endif %}{% endfor %}]
+# TODO
+{#    http_sd_configs:#}
+{#      - url: '{{ service_discovery.prometheus }}'#}
 
-    http_sd_configs:
-      - url: '{{ service_discovery.prometheus }}'
     # Renames instances to just the hostname
     relabel_configs:
       - source_labels: [__address__]
