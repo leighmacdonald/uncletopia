@@ -3,6 +3,8 @@
   docker_volume:
     name: prometheus_data
     state: present
+  tags:
+    - metrics-server
 
 - name: Generate /etc/prometheus.yml
   become: true
@@ -10,6 +12,8 @@
     src: prometheus.yml.j2
     dest: /etc/prometheus.yml
     mode: 0775
+  tags:
+    - metrics-server
 
 - name: Create prometheus container
   docker_container:
@@ -26,3 +30,18 @@
       - /etc/prometheus.yml:/etc/prometheus/prometheus.yml
     ports:
       - 127.0.0.1:9090:9090
+  tags:
+    - metrics-server
+
+- name: Create node_exporter container
+  docker_container:
+    name: node_exporter
+    image: prom/node-exporter:latest
+    volumes:
+      - "/:/host:ro,rslave"
+    command:
+      - "--path.rootfs=/host"
+    ports:
+      - "{{ vpn_hosts[inventory_hostname] }}:9100:9100"
+  tags:
+    - metrics-client

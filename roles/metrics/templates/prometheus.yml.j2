@@ -20,7 +20,7 @@ scrape_configs:
 
   - job_name: 'node'
     static_configs:
-      - targets: ['node.roto.su:9100']
+      - targets: [{% for addr in vpn_hosts.values() %}'{{ addr }}:9100'{% if not loop.last %}, {% endif %}{% endfor %}]
 
     http_sd_configs:
       - url: '{{ service_discovery.prometheus }}'
@@ -53,4 +53,3 @@ scrape_configs:
     metrics_path: /metrics
     static_configs:
       - targets: ['gbans-service:6006']
-
