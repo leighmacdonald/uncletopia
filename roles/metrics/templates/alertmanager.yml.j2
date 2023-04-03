@@ -99,24 +99,12 @@ inhibit_rules:
 
 
 receivers:
-  - name: 'team-X-mails'
+  - name: discord
+    discord_configs:
+    - webhook_url: {{ alertmanager.webhook_url }}
+
+  - name: 'admins'
     email_configs:
-      - to: 'team-X+alerts@example.org'
-
-  - name: 'team-X-pager'
-    email_configs:
-      - to: 'team-X+alerts-critical@example.org'
-    pagerduty_configs:
-      - service_key: <team-X-key>
-
-  - name: 'team-Y-mails'
-    email_configs:
-      - to: 'team-Y+alerts@example.org'
-
-  - name: 'team-Y-pager'
-    pagerduty_configs:
-      - service_key: <team-Y-key>
-
-  - name: 'team-DB-pager'
-    pagerduty_configs:
-      - service_key: <team-DB-key>
+{% for email in alertmanager.emails %}
+      - to: '{{ email }}'
+{% endfor %}

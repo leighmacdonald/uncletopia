@@ -5,6 +5,9 @@ bot_detector_bot_token: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
 alertmanager:
   webhook_url: https://discord.com/api/webhooks/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+  emails:
+    - a@gmail.com
+    - b@gmail.com
 
 paypal:
   client_id: asdf
