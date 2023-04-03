@@ -3,6 +3,9 @@ zerossl_key: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
 bot_detector_bot_token: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
+alertmanager:
+  webhook_url: https://discord.com/api/webhooks/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
 paypal:
   client_id: asdf
   secret: asdf
