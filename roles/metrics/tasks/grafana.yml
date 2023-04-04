@@ -10,7 +10,7 @@
     image: grafana/grafana-oss:latest-ubuntu
     restart: true
     recreate: true
-    restart_policy: always
+    restart_policy: unless-stopped
     purge_networks: true
     networks:
       - name: caddy_net

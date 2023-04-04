@@ -15,7 +15,7 @@
     image: prom/alertmanager:latest
     restart: true
     purge_networks: true
-    restart_policy: always
+    restart_policy: unless-stopped
     recreate: true
     networks:
       - name: caddy_net

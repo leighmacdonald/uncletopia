@@ -23,7 +23,7 @@
     pull: true
     restart: true
     purge_networks: true
-    restart_policy: always
+    restart_policy: unless-stopped
     command:
       - --config.file=/etc/prometheus/prometheus.yml
       # required for tempo to directly write to prom
