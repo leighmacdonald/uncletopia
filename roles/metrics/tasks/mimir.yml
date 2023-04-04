@@ -1,0 +1,40 @@
+---
+
+- name: Create mimir_data volume
+  docker_volume:
+    name: mimir_data
+    state: present
+  tags:
+    - metrics-server
+
+- name: Generate /etc/mimir.yml
+  become: true
+  ansible.builtin.template:
+    src: mimir.yml.j2
+    dest: /etc/mimir.yml
+    mode: 0775
+  tags:
+    - metrics-server
+
+- name: Create mimir container
+  docker_container:
+    name: mimir
+    image: grafana/mimir:latest
+    pull: true
+    restart: true
+    purge_networks: true
+    restart_policy: unless-stopped
+    labels:
+      logging: "promtail"
+      logging_jobname: "containerlogs"
+    recreate: true
+    networks:
+      - name: caddy_net
+    volumes:
+      - mimir_data:/data
+      - /etc/mimir.yml:/etc/mimir.yml
+    ports:
+      - 127.0.0.1:9009:9009
+      # - "{{ vpn_hosts[metrics_hostname] }}:9090:9090"
+  tags:
+    - metrics-server
