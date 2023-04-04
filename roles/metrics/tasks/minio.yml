@@ -15,8 +15,8 @@
     restart_policy: unless-stopped
     recreate: true
     env:
-      MINIO_ROOT_USER: {{ minio.user | default(mimir) }}
-      MINIO_ROOT_PASSWORD: {{ minio.password | default(mimir) }}
+      MINIO_ROOT_USER: "{{ minio.user | default(mimir) }}"
+      MINIO_ROOT_PASSWORD: "{{ minio.password | default(mimir) }}"
     labels:
       logging: "promtail"
       logging_jobname: "containerlogs"
