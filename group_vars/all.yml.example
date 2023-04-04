@@ -6,6 +6,11 @@ chat_logs_token: "blah.blah.blah.blah.blah.blah"
 ssh_keys:
   - "ssh-rsa xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx== name"
 
+vpn_hosts:
+  host-1.kittyland.com
+  host-2.kittyland.com
+
+metrics_hostname: host-1.kittyland.com
 
 log:
   file_enable: true
@@ -14,11 +19,6 @@ log:
 
 prometheus_host: "n.n.n.n"
 metrics_host: "n.n.n.n"
-
-caddy:
-  cloudflare:
-    api_key: your-api-key
-    email: name@mail.com
 
 gbans:
   gb_core_host: "https://kittyland.com"
