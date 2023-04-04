@@ -36,6 +36,6 @@
       - /etc/mimir.yml:/etc/mimir.yml
     ports:
       - 127.0.0.1:9009:9009
-      # - "{{ vpn_hosts[metrics_hostname] }}:9090:9090"
+      - "{{ vpn_hosts[metrics_hostname] }}:9009:9009"
   tags:
     - metrics-server
