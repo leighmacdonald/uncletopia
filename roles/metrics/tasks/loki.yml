@@ -22,6 +22,9 @@
     restart_policy: unless-stopped
     recreate: true
     command: ["-config.file=/etc/loki.yml"]
+    labels:
+      logging: "promtail"
+      logging_jobname: "containerlogs"
     networks:
       - name: caddy_net
     volumes:

@@ -35,6 +35,9 @@
       - gbans_demos:/app/demos
       - gbans_cache_data:/app/.cache
       - /etc/gbans.yml:/app/gbans.yml
+    labels:
+      logging: "promtail"
+      logging_jobname: "containerlogs"
     env:
       GBANS_DATABASE_DSN: "{{ gbans_web.dsn }}"
       GBANS_GENERAL_STEAM_KEY: "{{ steam_key }}"

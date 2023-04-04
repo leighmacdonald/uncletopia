@@ -23,6 +23,9 @@
     command: ["-config.file=/etc/promtail.yml"]
     networks:
       - name: caddy_net
+    labels:
+      logging: "promtail"
+      logging_jobname: "containerlogs"
     volumes:
       - /etc/promtail.yml:/etc/promtail.yml
       - /etc/machine-id:/etc/machine-id

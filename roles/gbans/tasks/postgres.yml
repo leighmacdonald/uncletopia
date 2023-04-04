@@ -23,6 +23,9 @@
       POSTGRES_USER: gbans
     ports:
       - 127.0.0.1:5432:5432
+    labels:
+      logging: "promtail"
+      logging_jobname: "containerlogs"
     command: [
       "postgres",
       "-c", "max_connections=100",

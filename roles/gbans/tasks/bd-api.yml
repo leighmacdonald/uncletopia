@@ -13,6 +13,9 @@
       STEAM_API_KEY: "{{ steam_key }}"
     ports:
       - 127.0.0.1:8888:8888
+    labels:
+      logging: "promtail"
+      logging_jobname: "containerlogs"
 
 - name: Join caddy network [bd-api]
   community.docker.docker_network:

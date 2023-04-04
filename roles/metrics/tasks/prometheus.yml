@@ -27,7 +27,6 @@
     labels:
       logging: "promtail"
       logging_jobname: "containerlogs"
-
     command:
       - --config.file=/etc/prometheus/prometheus.yml
       # required for tempo to directly write to prom

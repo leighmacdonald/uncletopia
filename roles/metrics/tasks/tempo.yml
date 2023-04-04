@@ -24,6 +24,9 @@
     recreate: true
     networks:
       - name: caddy_net
+    labels:
+      logging: "promtail"
+      logging_jobname: "containerlogs"
     volumes:
       - /etc/tempo.yml:/etc/tempo.yml
       - tempo_data:/tmp/tempo

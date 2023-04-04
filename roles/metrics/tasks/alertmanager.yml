@@ -17,6 +17,9 @@
     purge_networks: true
     restart_policy: unless-stopped
     recreate: true
+    labels:
+      logging: "promtail"
+      logging_jobname: "containerlogs"
     networks:
       - name: caddy_net
     volumes:

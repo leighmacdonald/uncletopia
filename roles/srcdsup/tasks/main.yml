@@ -50,6 +50,9 @@
       - srcds-{{ item.server_name_short }}-stv:/app/demos
       - srcds-{{ item.server_name_short }}-logs:/app/logs
       - /build/{{ item.server_name_short }}/srcdsup.yml:/app/srcdsup.yml
+    labels:
+      logging: "promtail"
+      logging_jobname: "containerlogs"
   loop: "{{ services }}"
   loop_control:
     index_var: loop0
