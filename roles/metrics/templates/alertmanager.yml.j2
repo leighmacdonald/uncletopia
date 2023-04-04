@@ -1,7 +1,7 @@
 global:
   # The smarthost and SMTP sender used for mail notifications.
   smtp_smarthost: '{{ smtp.host }}:{{ smtp.port }}'
-  smtp_from: '{{ smtp.from }}'
+  smtp_from: '{{ smtp.from_addr }}'
   smtp_auth_username: '{{ smtp.username }}'
   smtp_auth_password: '{{ smtp.password }}'
 
