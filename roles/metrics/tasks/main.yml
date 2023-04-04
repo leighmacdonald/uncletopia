@@ -4,12 +4,20 @@
   import_tasks: node_exporter.yml
 
 - name: prometheus
-  import_tasks: prom.yml
+  import_tasks: prometheus.yml
   tags:
     - metrics-server
 
 - name: alertmanager
   import_tasks: alertmanager.yml
+  tags:
+    - metrics-server
+
+- name: promtail
+  import_tasks: promtail.yml
+
+- name: loki
+  import_tasks: loki.yml
   tags:
     - metrics-server
 

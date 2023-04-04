@@ -1,0 +1,30 @@
+---
+
+- name: Generate /etc/loki.yml
+  become: true
+  ansible.builtin.template:
+    src: loki.yml.j2
+    dest: /etc/loki.yml
+    mode: 0770
+
+- name: Create loki_data volume
+  docker_volume:
+    name: loki_data
+    state: present
+
+- name: Create loki container
+  docker_container:
+    name: tempo
+    image: grafana/loki:latest
+    restart: true
+    pull: true
+    purge_networks: true
+    restart_policy: always
+    recreate: true
+    networks:
+      - name: caddy_net
+    volumes:
+      - /etc/loki.yml:/etc/loki/local-config.yaml
+      - loki_data:/loki
+    ports:
+      - 127.0.0.1:3100:3100
