@@ -3,6 +3,11 @@
 - name: node_exporter
   import_tasks: node_exporter.yml
 
+- name: minio
+  import_tasks: minio.yml
+  tags:
+    - metrics-server
+
 - name: prometheus
   import_tasks: prometheus.yml
   tags:

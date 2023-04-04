@@ -1,41 +1,46 @@
-multitenancy_enabled: false
+target: all,alertmanager,overrides-exporter
+
+common:
+  storage:
+    backend: s3
+    s3:
+      endpoint: minio:9000
+      access_key_id: {{ minio.user | default(mimir) }}
+      secret_access_key: {{ minio.password | default(mimir) }}
+      insecure: true
+      bucket_name: mimir
 
 blocks_storage:
-  backend: filesystem
-  bucket_store:
-    sync_dir: /data/mimir/tsdb-sync
-  filesystem:
-    dir: /data/mimir/data/tsdb
+  storage_prefix: blocks
   tsdb:
-    dir: /data/mimir/tsdb
+    dir: /data/ingester
 
-compactor:
-  data_dir: /data/mimir/compactor
-  sharding_ring:
-    kvstore:
-      store: memberlist
+#memberlist:
+#  join_members: [ mimir-1 ]
 
-distributor:
-  ring:
-    instance_addr: 127.0.0.1
-    kvstore:
-      store: memberlist
-
-ingester:
-  ring:
-    instance_addr: 127.0.0.1
-    kvstore:
-      store: memberlist
-    replication_factor: 1
-
-ruler_storage:
-  backend: filesystem
-  filesystem:
-    dir: /data/mimir/rules
+#compactor:
+#  data_dir: /data/mimir/compactor
+#  sharding_ring:
+#    kvstore:
+#      store: memberlist
+#
+#distributor:
+#  ring:
+#    instance_addr: 127.0.0.1
+#    kvstore:
+#      store: memberlist
+#
+#ingester:
+#  ring:
+#    instance_addr: 127.0.0.1
+#    kvstore:
+#      store: memberlist
+#    replication_factor: 1
+#
 
 server:
   http_listen_port: 9009
-  log_level: error
+  log_level: info
 
 store_gateway:
   sharding_ring:
