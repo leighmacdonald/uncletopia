@@ -20,6 +20,7 @@
   docker_container:
     name: prometheus
     image: prom/prometheus:latest
+    pull: true
     restart: true
     purge_networks: true
     restart_policy: always

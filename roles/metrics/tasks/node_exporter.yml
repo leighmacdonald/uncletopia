@@ -6,6 +6,7 @@
     image: prom/node-exporter:latest
     restart_policy: always
     restart: true
+    pull: true
     volumes:
       - "/:/host:ro,rslave"
     command:

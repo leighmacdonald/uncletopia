@@ -6,15 +6,11 @@
     src: tempo.yml.j2
     dest: /etc/tempo.yml
     mode: 0770
-  tags:
-    - metrics-server
 
 - name: Create tempo_data volume
   docker_volume:
     name: tempo_data
     state: present
-  tags:
-    - metrics-server
 
 - name: Create tempo container
   docker_container:
@@ -22,6 +18,7 @@
     image: grafana/tempo:latest
     command: [ "-config.file=/etc/tempo.yml" ]
     restart: true
+    pull: true
     purge_networks: true
     restart_policy: always
     recreate: true
@@ -35,5 +32,3 @@
       - 127.0.0.1:3200:3200
       # otel grpc
       - 127.0.0.1:4317:4317
-  tags:
-    - metrics-server
