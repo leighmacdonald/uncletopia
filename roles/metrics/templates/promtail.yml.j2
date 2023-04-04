@@ -6,7 +6,7 @@ positions:
   filename: /tmp/positions.yaml
 
 client:
-  url: http://{{ vpn_hosts[metrics_hostname] }}:3100/api/prom/push
+  url: http://{% if inventory_hostname == metrics_hostname %}loki{% else %}{{ vpn_hosts[metrics_hostname] }}{% endif %}:3100/api/prom/push
 
 scrape_configs:
 

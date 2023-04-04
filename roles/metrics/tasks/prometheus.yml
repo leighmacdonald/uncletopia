@@ -24,6 +24,10 @@
     restart: true
     purge_networks: true
     restart_policy: unless-stopped
+    labels:
+      logging: "promtail"
+      logging_jobname: "containerlogs"
+
     command:
       - --config.file=/etc/prometheus/prometheus.yml
       # required for tempo to directly write to prom
@@ -37,5 +41,6 @@
       - /etc/prometheus.yml:/etc/prometheus/prometheus.yml
     ports:
       - 127.0.0.1:9090:9090
+      # - "{{ vpn_hosts[metrics_hostname] }}:9090:9090"
   tags:
     - metrics-server

@@ -36,6 +36,9 @@
     networks:
       - name: caddy_net
     pull: true
+    labels:
+      logging: "promtail"
+      logging_jobname: "containerlogs"
     volumes:
       - caddy_data:/data
       - caddy_config:/config

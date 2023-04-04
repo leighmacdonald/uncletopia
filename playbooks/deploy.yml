@@ -43,6 +43,9 @@
         pull: false
         interactive: true
         tty: true
+        labels:
+          logging: "promtail"
+          logging_jobname: "containerlogs"
         recreate: true
         restart_policy: always
         cpuset_cpus: "{{ loop0 }},{{ loop0 + ansible_processor_cores }}"

@@ -5,7 +5,7 @@
   ansible.builtin.template:
     src: loki.yml.j2
     dest: /etc/loki.yml
-    mode: 0770
+    mode: 0775
 
 - name: Create loki_data volume
   docker_volume:
@@ -14,17 +14,19 @@
 
 - name: Create loki container
   docker_container:
-    name: tempo
+    name: loki
     image: grafana/loki:latest
     restart: true
     pull: true
     purge_networks: true
     restart_policy: unless-stopped
     recreate: true
+    command: ["-config.file=/etc/loki.yml"]
     networks:
       - name: caddy_net
     volumes:
-      - /etc/loki.yml:/etc/loki/local-config.yaml
+      - /etc/loki.yml:/etc/loki.yml
       - loki_data:/loki
     ports:
       - 127.0.0.1:3100:3100
+      - "{{ vpn_hosts[metrics_hostname] }}:3100:3100"
