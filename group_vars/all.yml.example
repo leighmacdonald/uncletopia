@@ -12,6 +12,14 @@ vpn_hosts:
 
 metrics_hostname: host-1.kittyland.com
 
+rsyslog_rules:
+  - rule_name: "remote-udp"
+    priority: 99
+    ruleset: |
+      module(load="omfwd")
+      action(type="omfwd" target="metrics.kittyland.com" port="514" protocol="udp")
+    state: "present"
+
 log:
   file_enable: true
   net_enable: true

@@ -1,23 +1,35 @@
-server:
-  http_listen_port: 9080
-  grpc_listen_port: 0
+---
 
-positions:
-  filename: /tmp/positions.yaml
+- name: Enable rsyslog
+  role: hadret.rsyslog
 
-clients:
-  - url: http://{{ vpn_hosts[metrics_hostname] }}:3100/loki/api/v1/push
+- name: Generate /etc/promtail.yml
+  become: true
+  ansible.builtin.template:
+    src: promtail.yml.j2
+    dest: /etc/promtail.yml
+    mode: 0770
 
-scrape_configs:
-  - job_name: docker_scrape
-    docker_sd_configs:
-      - host: unix:///var/run/docker.sock
-        refresh_interval: 5s
-    relabel_configs:
-      - source_labels: ['__meta_docker_container_name']
-        regex: '/(.*)'
-        target_label: 'container'
-      - source_labels: ['__meta_docker_container_log_stream']
-        target_label: 'logstream'
-      - source_labels: ['__meta_docker_container_label_logging_jobname']
-        target_label: 'job'
+- name: Create promtail container
+  docker_container:
+    name: promtail
+    image: grafana/promtail:latest
+    restart: true
+    pull: true
+    purge_networks: true
+    restart_policy: always
+    recreate: true
+    networks:
+      - name: caddy_net
+    volumes:
+      - /etc/tempo.yml:/etc/promtail.yml
+      - /etc/machine-id:/etc/machine-id
+      - /var/log/journal/:/var/log/journal/
+      - /run/log/journal/:/run/log/journal/
+      - /var/run/docker.sock:/var/run/docker.sock
+      - tempo_data:/tmp/tempo
+    ports:
+      # tempo
+      - 127.0.0.1:3200:3200
+      # otel grpc
+      - 127.0.0.1:4317:4317
