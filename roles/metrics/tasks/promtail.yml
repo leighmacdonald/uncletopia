@@ -19,10 +19,11 @@
     purge_networks: true
     restart_policy: always
     recreate: true
+    command: ["-config.file=/etc/promtail.yml"]
     networks:
       - name: caddy_net
     volumes:
-      - /etc/tempo.yml:/etc/promtail.yml
+      - /etc/promtail.yml:/etc/promtail.yml
       - /etc/machine-id:/etc/machine-id
       - /var/log/journal/:/var/log/journal/
       - /run/log/journal/:/run/log/journal/
