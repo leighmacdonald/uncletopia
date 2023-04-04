@@ -2,7 +2,7 @@ global:
   scrape_interval:     15s # By default, scrape targets every 15 seconds.
 
 remote_write:
-  - url: http://{{ vpn_hosts[metrics_hostname] }}:9009/api/v1/push
+  - url: http://mimir:9009/api/v1/push
 
 scrape_configs:
   - job_name: 'prometheus'
