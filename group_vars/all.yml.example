@@ -6,9 +6,20 @@ chat_logs_token: "blah.blah.blah.blah.blah.blah"
 ssh_keys:
   - "ssh-rsa xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx== name"
 
+smtp:
+  # tls required
+  enabled: false
+  host: smtp.host.com
+  port: 587
+  username:
+  password:
+  from_addr: alert@kittyland.com
+  from_name: Alerts
+  identity: kittyland.com
+
 vpn_hosts:
-  host-1.kittyland.com
-  host-2.kittyland.com
+  host-1.kittyland.com: 10.0.0.1
+  host-2.kittyland.com: 10.0.0.2
 
 metrics_hostname: host-1.kittyland.com
 
