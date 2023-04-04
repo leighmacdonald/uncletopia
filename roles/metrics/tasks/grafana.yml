@@ -1,4 +1,11 @@
 ---
+- name: Generate /etc/grafana.ini
+  become: true
+  ansible.builtin.template:
+    src: grafana.ini.j2
+    dest: /etc/grafana.ini
+    mode: 0770
+
 - name: Create grafana_data volume
   docker_volume:
     name: grafana_data
@@ -16,6 +23,7 @@
       - name: caddy_net
     pull: true
     volumes:
+      - /etc/grafana.ini:/etc/grafana/grafana.ini
       - grafana_data:/var/lib/grafana
     ports:
       - 127.0.0.1:3000:3000
