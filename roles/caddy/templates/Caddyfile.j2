@@ -1,28 +1,28 @@
 {
-    cert_issuer zerossl {{ zerossl_key }}
-    servers {
-        metrics
-    }
+        cert_issuer zerossl {{ zerossl_key }}
+        servers {
+                metrics
+        }
 }
 
 {% for host in caddy.hosts %}
 {{ host }} {
-    {% if caddy.hosts[host].forward %}
-    reverse_proxy /* {{ caddy.hosts[host].address }} {
-        header_up Host {host}
-        header_up X-Real-IP {remote_host}                       
-        header_up X-Forwarded-For {remote_host}
-        header_up X-Forwarded-Proto {scheme}
-    }
-    {% else %}
-    reverse_proxy /* {{ caddy.hosts[host].address }}
-    {% endif %}
+{% if caddy.hosts[host].forward %}
+        reverse_proxy /* {{ caddy.hosts[host].address }} {
+                header_up Host {host}
+                header_up X-Real-IP {remote_host}
+                header_up X-Forwarded-For {remote_host}
+                header_up X-Forwarded-Proto {scheme}
+        }
+{% else %}
+        reverse_proxy /* {{ caddy.hosts[host].address }}
+{% endif %}
 }
 {% endfor %}
 
 {% for host in caddy.static  %}
 {{ host }} {
-    root * {{ caddy.static[host].root }}
-    file_server browse
+        root * {{ caddy.static[host].root }}
+        file_server browse
 }
 {% endfor %}

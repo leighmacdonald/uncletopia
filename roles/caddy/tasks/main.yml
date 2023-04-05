@@ -28,7 +28,7 @@
 - name: Create caddy container
   docker_container:
     name: caddy
-    image: caddy/caddy:2.6.2-alpine
+    image: caddy/caddy:latest
     restart: true
     recreate: true
     purge_networks: true
@@ -48,4 +48,4 @@
     ports:
       - 443:443
       - 80:80
-      - 127.0.0.1:2019
+      - 127.0.0.1:2019:2019
