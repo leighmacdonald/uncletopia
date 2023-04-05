@@ -10,6 +10,10 @@ scrape_configs:
     static_configs:
       - targets: ['localhost:9090']
 
+  - job_name: caddy
+    static_configs:
+      - targets: ['caddy:2019']
+
   - job_name: 'node'
     static_configs:
       - targets: [{% for addr in vpn_hosts.values() %}'{{ addr }}:9100'{% if not loop.last %}, {% endif %}{% endfor %}]

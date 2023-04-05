@@ -1,5 +1,8 @@
 {
     cert_issuer zerossl {{ zerossl_key }}
+    servers {
+        metrics
+    }
 }
 
 {% for host in caddy.hosts %}
