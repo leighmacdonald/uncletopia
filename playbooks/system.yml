@@ -130,6 +130,25 @@
       ansible.builtin.systemd:
         daemon_reload: true
 
+    - name: Configure docker
+      become: true
+      ansible.builtin.copy:
+        dest: "/etc/docker/daemon.json"
+        content: |
+          {
+            "builder": {
+              "gc": {
+                "defaultKeepStorage": "20GB",
+                "enabled": true
+              }
+            },
+            "metrics-addr": "{{ vpn_hosts[inventory_hostname] }}:9323",
+            "experimental": true,
+            "features": {
+              "buildkit": true
+            }
+          }
+
     - name: Enable docker service
       become: true
       ansible.builtin.systemd:
