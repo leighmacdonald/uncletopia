@@ -28,7 +28,7 @@
 - name: Create caddy container
   docker_container:
     name: caddy
-    image: caddy/caddy:latest
+    image: caddy/caddy:2.6.4-alpine
     restart: true
     recreate: true
     purge_networks: true
