@@ -30,6 +30,7 @@ vpn_hosts:
     dns: dns: host-2.internal.kittyland.com
 
 metrics_hostname: host-1.kittyland.com
+metrics_hostname_internal: host-1.internal.kittyland.com
 
 rsyslog_rules:
   - rule_name: "remote-udp"
