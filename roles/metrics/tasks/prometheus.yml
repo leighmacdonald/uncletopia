@@ -35,6 +35,6 @@
       - /etc/prometheus.yml:/etc/prometheus/prometheus.yml
     ports:
       - 127.0.0.1:9090:9090
-      # - "{{ vpn_hosts[metrics_hostname] }}:9090:9090"
+      # - "{{ vpn_hosts[metrics_hostname].ip }}:9090:9090"
   tags:
     - metrics-server

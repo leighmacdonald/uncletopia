@@ -12,7 +12,7 @@
     command:
       - "--path.rootfs=/host"
     ports:
-      - "{{ vpn_hosts[inventory_hostname] }}:9100:9100"
+      - "{{ vpn_hosts[inventory_hostname].ip }}:9100:9100"
     labels:
       logging: "promtail"
       logging_jobname: "containerlogs"

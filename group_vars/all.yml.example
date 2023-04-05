@@ -22,8 +22,12 @@ smtp:
   identity: kittyland.com
 
 vpn_hosts:
-  host-1.kittyland.com: 10.0.0.1
-  host-2.kittyland.com: 10.0.0.2
+  host-1.kittyland.com:
+    ip: 10.0.0.1
+    dns: host-1.internal.kittyland.com
+  host-2.kittyland.com:
+    ip: 10.0.0.2
+    dns: dns: host-2.internal.kittyland.com
 
 metrics_hostname: host-1.kittyland.com
 

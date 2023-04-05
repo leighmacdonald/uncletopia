@@ -32,4 +32,4 @@
       - loki_data:/loki
     ports:
       - 127.0.0.1:3100:3100
-      - "{{ vpn_hosts[metrics_hostname] }}:3100:3100"
+      - "{{ vpn_hosts[metrics_hostname].ip }}:3100:3100"

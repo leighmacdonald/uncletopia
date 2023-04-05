@@ -142,7 +142,7 @@
                 "enabled": true
               }
             },
-            "metrics-addr": "{{ vpn_hosts[inventory_hostname] }}:9323",
+            "metrics-addr": "{{ vpn_hosts[inventory_hostname].ip }}:9323",
             "experimental": true,
             "features": {
               "buildkit": true

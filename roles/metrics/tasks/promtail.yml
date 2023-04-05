@@ -34,4 +34,4 @@
       - /var/run/docker.sock:/var/run/docker.sock
       - tempo_data:/tmp/tempo
     ports:
-      - "{{ vpn_hosts[metrics_hostname] }}:9080:9080"
+      - "{{ vpn_hosts[metrics_hostname].ip }}:9080:9080"
