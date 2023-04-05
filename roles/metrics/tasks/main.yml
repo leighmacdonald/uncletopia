@@ -31,10 +31,10 @@
   tags:
     - metrics-server
 
-- name: mimir
-  import_tasks: mimir.yml
-  tags:
-    - metrics-server
+#- name: mimir
+#  import_tasks: mimir.yml
+#  tags:
+#    - metrics-server
 
 - name: grafana
   import_tasks: grafana.yml

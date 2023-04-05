@@ -7,7 +7,6 @@ positions:
 
 clients:
   - url: http://{% if inventory_hostname == metrics_hostname %}loki{% else %}{{ vpn_hosts[metrics_hostname] }}{% endif %}:3100/api/prom/push
-    tenant_id: {{ inventory_hostname }}
 
 scrape_configs:
 

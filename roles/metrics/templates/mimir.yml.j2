@@ -10,25 +10,35 @@ common:
       insecure: true
       bucket_name: mimir
 
+usage_stats:
+  enabled: false
+
 blocks_storage:
-  storage_prefix: blocks
-  tsdb:
-    dir: /data/ingester
+  s3:
+    bucket_name: mimir-blocks
 
-#memberlist:
-#  join_members: [ mimir-1 ]
+alertmanager_storage:
+  s3:
+    bucket_name: mimir-alertmanager
 
-#compactor:
-#  data_dir: /data/mimir/compactor
-#  sharding_ring:
-#    kvstore:
-#      store: memberlist
+ruler_storage:
+  s3:
+    bucket_name: mimir-ruler
 #
-#distributor:
-#  ring:
-#    instance_addr: 127.0.0.1
-#    kvstore:
-#      store: memberlist
+memberlist:
+  join_members: [ localhost:7946 ]
+
+compactor:
+  data_dir: /data/mimir/compactor
+  sharding_ring:
+    kvstore:
+      store: memberlist
+
+distributor:
+  ring:
+    instance_addr: 127.0.0.1
+    kvstore:
+      store: memberlist
 #
 ingester:
   ring:
