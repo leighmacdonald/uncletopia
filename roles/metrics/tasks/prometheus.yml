@@ -27,7 +27,7 @@
       - --enable-feature=exemplar-storage
       # Agent mode disabled local disk storage. We send to mimir for long term storage
       # so this would be redundant.
-      - --enable-feature=agent
+      # - --enable-feature=agent
     recreate: true
     networks:
       - name: caddy_net
@@ -35,6 +35,6 @@
       - /etc/prometheus.yml:/etc/prometheus/prometheus.yml
     ports:
       - 127.0.0.1:9090:9090
-      # - "{{ vpn_hosts[metrics_hostname].ip }}:9090:9090"
+      - "{{ vpn_hosts[metrics_hostname].ip }}:9090:9090"
   tags:
     - metrics-server
