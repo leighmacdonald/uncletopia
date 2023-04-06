@@ -46,6 +46,11 @@
         labels:
           logging: "promtail"
           logging_jobname: "containerlogs"
+        log_driver: json-file
+        log_options:
+          mode: non-blocking
+          max-size: "1m"
+          max-file: "5"
         recreate: true
         restart_policy: always
         cpuset_cpus: "{{ loop0 }},{{ loop0 + ansible_processor_cores }}"
