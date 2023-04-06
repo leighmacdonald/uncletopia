@@ -13,6 +13,9 @@
   tags:
     - metrics-server
 
+- name: cadvisor
+  import_tasks: cadvisor.yml
+
 - name: alertmanager
   import_tasks: alertmanager.yml
   tags:

@@ -17,10 +17,21 @@ scrape_configs:
     static_configs:
     - targets: ['grafana:3000']
 
+  - job_name: wireguard
+    static_configs:
+      - targets: ['{{ metrics_hostname_internal }}:9586']
+
   - job_name: caddy
     static_configs:
-      - targets: ['{{ metrics_hostname_internal }}:2019']
+      - targets: ['caddy:2019']
 
+  - job_name: 'cadvisor'
+    static_configs:
+{% for hostname, conf in vpn_hosts.items() %}
+      - targets: ['{{ conf.dns }}:8080']
+        labels:
+          instance: {{ hostname }}
+{% endfor %}
   - job_name: 'docker'
     static_configs:
 {% for hostname, conf in vpn_hosts.items() %}

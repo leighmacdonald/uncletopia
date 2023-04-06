@@ -1,0 +1,29 @@
+---
+
+- name: Create cadvisor container
+  docker_container:
+    name: cadvisor
+    image: gcr.io/cadvisor/cadvisor:v0.47.0
+    restart: true
+    recreate: true
+    privileged: true
+    restart_policy: unless-stopped
+    purge_networks: true
+    networks:
+      - name: caddy_net
+    labels:
+      logging: "promtail"
+      logging_jobname: "containerlogs"
+    pull: true
+    devices:
+      - /dev/kmsg
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+      - grafana_data:/var/lib/grafana
+    ports:
+      - "{{ vpn_hosts[inventory_hostname].ip }}:8080:8080"
+  tags: ['cadvisor']
