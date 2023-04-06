@@ -21,8 +21,6 @@
     restart_policy: unless-stopped
     recreate: true
     command: ["-config.file=/etc/promtail.yml"]
-    networks:
-      - name: caddy_net
     labels:
       logging: "promtail"
       logging_jobname: "containerlogs"

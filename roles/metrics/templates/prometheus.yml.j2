@@ -16,10 +16,10 @@ scrape_configs:
   - job_name: 'grafana'
     static_configs:
     - targets: ['grafana:3000']
-
-  - job_name: wireguard
-    static_configs:
-      - targets: ['{{ metrics_hostname_internal }}:9586']
+{##}
+{#  - job_name: wireguard#}
+{#    static_configs:#}
+{#      - targets: ['{{ metrics_hostname_internal }}:9586']#}
 
   - job_name: caddy
     static_configs:
@@ -28,17 +28,18 @@ scrape_configs:
   - job_name: 'cadvisor'
     static_configs:
 {% for hostname, conf in vpn_hosts.items() %}
-      - targets: ['{{ conf.dns }}:8080']
+      - targets: ['{{ conf.dns }}:8084']
         labels:
           instance: {{ hostname }}
 {% endfor %}
-  - job_name: 'docker'
-    static_configs:
-{% for hostname, conf in vpn_hosts.items() %}
-      - targets: ['{{ conf.dns }}:9100']
-        labels:
-          instance: {{ hostname }}
-{% endfor %}
+
+{#  - job_name: 'docker'#}
+{#    static_configs:#}
+{#{% for hostname, conf in vpn_hosts.items() %}#}
+{#      - targets: ['{{ conf.dns }}:9323']#}
+{#        labels:#}
+{#          instance: {{ hostname }}#}
+{#{% endfor %}#}
 
   - job_name: 'node'
     static_configs:

@@ -2,3 +2,7 @@ FROM leighmacdonald/uncletopia-srcds-base:latest
 
 WORKDIR {{ srcds_steam_app_dir }}
 COPY --chown={{ srcds_user }}:{{ srcds_user }} . .
+
+LABEL \
+  org.opencontainers.image.title="Uncletopia TF2 SRCDS" \
+  org.opencontainers.image.description="Configured TF2 image"

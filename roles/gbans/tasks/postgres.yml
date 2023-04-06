@@ -12,7 +12,7 @@
     recreate: true
     pull: true
     purge_networks: true
-    restart_policy: always
+    restart_policy: unless-stopped
     networks:
       - name: caddy_net
     volumes:
@@ -50,8 +50,7 @@
   docker_container:
     name: gbans-postgres_exporter
     image: quay.io/prometheuscommunity/postgres-exporter:latest
-    restart: true
-    recreate: true
+    restart_policy: unless-stopped
     purge_networks: true
     networks:
       - name: caddy_net

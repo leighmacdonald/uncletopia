@@ -1,5 +1,11 @@
 ---
 
+- name: Create caddy_net network
+  community.docker.docker_network:
+    name: caddy_net
+  tags:
+    - cadvisor
+
 - name: Create cadvisor container
   docker_container:
     name: cadvisor
@@ -9,21 +15,24 @@
     privileged: true
     restart_policy: unless-stopped
     purge_networks: true
-    networks:
-      - name: caddy_net
     labels:
       logging: "promtail"
       logging_jobname: "containerlogs"
+    command: [ '--listen_ip="0.0.0.0"', '--v=3' ]
     pull: true
-    devices:
-      - /dev/kmsg
+#    devices:
+#      - /dev/kmsg
     volumes:
       - /:/rootfs:ro
       - /var/run:/var/run:ro
       - /sys:/sys:ro
       - /var/lib/docker/:/var/lib/docker:ro
       - /dev/disk/:/dev/disk:ro
-      - grafana_data:/var/lib/grafana
+    expose:
+      - 8080
+    networks:
+      - name: caddy_net
     ports:
-      - "{{ vpn_hosts[inventory_hostname].ip }}:8080:8080"
-  tags: ['cadvisor']
+      - "{{ vpn_hosts[inventory_hostname].ip }}:8084:8080"
+  tags:
+    - cadvisor

@@ -2,6 +2,8 @@
 
 - name: node_exporter
   import_tasks: node_exporter.yml
+  tags:
+    - metrics-client
 
 - name: minio
   import_tasks: minio.yml
@@ -15,6 +17,8 @@
 
 - name: cadvisor
   import_tasks: cadvisor.yml
+  tags:
+    - metrics-client
 
 - name: alertmanager
   import_tasks: alertmanager.yml
@@ -23,6 +27,8 @@
 
 - name: promtail
   import_tasks: promtail.yml
+  tags:
+    - metrics-client
 
 - name: loki
   import_tasks: loki.yml

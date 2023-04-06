@@ -1,5 +1,4 @@
 FROM debian:bullseye-slim
-LABEL maintainer="leigh.macdonald@gmail.com"
 
 ARG PUID=1000
 
@@ -42,3 +41,17 @@ CMD ["bash", "entry.sh"]
 EXPOSE 27015/tcp \
 	27015/udp \
 	27020/udp
+
+LABEL \
+  maintainer="Leigh MacDonald <leigh.macdonald@gmail.com>" \
+  org.opencontainers.image.title="SRCDS Base" \
+  org.opencontainers.image.description="Base srcds image" \
+  org.opencontainers.image.vendor="Uncletopia" \
+  org.opencontainers.image.authors="Leigh MacDonald <leigh.macdonald@gmail.com>" \
+  org.opencontainers.image.licenses="MIT" \
+  org.opencontainers.image.url="https://uncletopia.com/" \
+  org.opencontainers.image.source="https://github.com/leighmacdonald/uncletopia/" \
+  org.opencontainers.image.documentation="https://github.com/leighmacdonald/uncletopia/blob/master/README.md" \
+  org.opencontainers.image.created="{{ ansible_date_time.iso8601 }}" \
+  org.opencontainers.image.revision="master" \
+  org.opencontainers.image.version="latest"

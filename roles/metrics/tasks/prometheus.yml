@@ -6,6 +6,7 @@
     state: present
   tags:
     - metrics-server
+    - prometheus
 
 - name: Generate /etc/prometheus.yml
   become: true
@@ -15,6 +16,7 @@
     mode: 0775
   tags:
     - metrics-server
+    - prometheus
 
 - name: Create prometheus container
   docker_container:
@@ -46,3 +48,4 @@
       - "{{ vpn_hosts[metrics_hostname].ip }}:9090:9090"
   tags:
     - metrics-server
+    - prometheus

@@ -18,4 +18,5 @@
       logging_jobname: "containerlogs"
   tags:
     - metrics-client
+    - node_exporter
 
