@@ -1,0 +1,31 @@
+---
+
+- name: Generate /etc/srcds_watch.yml
+  become: true
+  ansible.builtin.template:
+    src: srcds_watch.yml.j2
+    dest: /etc/srcds_watch.yml
+    mode: 0770
+  tags:
+    - srcds_watch
+
+- name: Create srcds_watch container
+  docker_container:
+    name: srcds_watch
+    image: docker pull ghcr.io/leighmacdonald/srcds_watch:master
+    restart: true
+    pull: true
+    purge_networks: true
+    restart_policy: unless-stopped
+    recreate: true
+    networks:
+      - name: caddy_net
+    labels:
+      logging: "promtail"
+      logging_jobname: "containerlogs"
+    volumes:
+      - /etc/srcds_watch.yml:/app/srcds_watch.yml
+    ports:
+      - 127.0.0.1:8877:8877
+  tags:
+    - srcds_watch

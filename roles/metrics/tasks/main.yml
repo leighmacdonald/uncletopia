@@ -30,6 +30,11 @@
   tags:
     - metrics-client
 
+- name: srcds_watch
+  import_tasks: srcds_watch.yml
+  tags:
+    - metrics-client
+
 - name: loki
   import_tasks: loki.yml
   tags:
