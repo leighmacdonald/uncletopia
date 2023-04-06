@@ -33,6 +33,14 @@ scrape_configs:
           instance: {{ hostname }}
 {% endfor %}
 
+  - job_name: 'promtail'
+    static_configs:
+{% for hostname, conf in vpn_hosts.items() %}
+      - targets: ['{{ conf.dns }}:9080']
+        labels:
+          instance: {{ hostname }}
+{% endfor %}
+
 {#  - job_name: 'docker'#}
 {#    static_configs:#}
 {#{% for hostname, conf in vpn_hosts.items() %}#}

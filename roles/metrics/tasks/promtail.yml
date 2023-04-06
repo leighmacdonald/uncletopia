@@ -10,6 +10,9 @@
     src: promtail.yml.j2
     dest: /etc/promtail.yml
     mode: 0770
+  tags:
+    - promtail
+    - metrics-client
 
 - name: Create promtail container
   docker_container:
@@ -17,13 +20,14 @@
     image: grafana/promtail:latest
     restart: true
     pull: true
-    purge_networks: true
     restart_policy: unless-stopped
     recreate: true
     command: ["-config.file=/etc/promtail.yml"]
     labels:
       logging: "promtail"
       logging_jobname: "containerlogs"
+    networks:
+      - name: caddy_net
     volumes:
       - /etc/promtail.yml:/etc/promtail.yml
       - /etc/machine-id:/etc/machine-id
@@ -32,4 +36,8 @@
       - /var/run/docker.sock:/var/run/docker.sock
       - tempo_data:/tmp/tempo
     ports:
-      - "{{ vpn_hosts[metrics_hostname].ip }}:9080:9080"
+      - "127.0.0.1:9080:9080"
+      - "{{ vpn_hosts[inventory_hostname].ip }}:9080:9080"
+  tags:
+    - promtail
+    - metrics-client

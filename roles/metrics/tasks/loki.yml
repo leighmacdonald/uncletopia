@@ -6,11 +6,15 @@
     src: loki.yml.j2
     dest: /etc/loki.yml
     mode: 0775
+  tags:
+    - loki
 
 - name: Create loki_data volume
   docker_volume:
     name: loki_data
     state: present
+  tags:
+    - loki
 
 - name: Create loki container
   docker_container:
@@ -33,3 +37,6 @@
     ports:
       - 127.0.0.1:3100:3100
       - "{{ vpn_hosts[metrics_hostname].ip }}:3100:3100"
+  tags:
+    - loki
+
