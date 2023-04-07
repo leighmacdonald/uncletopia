@@ -16,11 +16,19 @@
     - name: Add liquorix kernel repo
       ansible.builtin.apt_repository:
         repo: ppa:damentz/liquorix
+      when: perf_kernel | default(true) == true
 
     - name: Add .net repo
       apt:
         deb: https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb
       when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+    - name: Configure cpufrequtils
+      become: true
+      ansible.builtin.copy:
+        dest: "/etc/default/cpufrequtils"
+        content: |
+          GOVERNOR="performance"
 
     - name: Enable i386 architecture
       ansible.builtin.command: dpkg --add-architecture i386
@@ -36,6 +44,7 @@
           - linux-image-liquorix-amd64
           - gpg
           - aspnetcore-runtime-6.0
+          - cpufrequtils
 
     - name: Create a directory if it does not exist
       ansible.builtin.file:
@@ -109,6 +118,11 @@
           - libc6:i386
           - lib32stdc++6
 
+    - name: Reload systemd daemon
+      become: true
+      ansible.builtin.systemd:
+        daemon_reload: true
+
     - name: Add docker group to user
       become: true
       ansible.builtin.user:
@@ -125,29 +139,22 @@
         masked: true
         enabled: false
 
-    - name: Reload systemd daemon
+    # ondemand service will force ondemand
+    - name: Disable ondemand
       become: true
       ansible.builtin.systemd:
-        daemon_reload: true
+        name: ondemand
+        state: stopped
+        masked: true
+        enabled: false
 
-    - name: Configure docker
+    - name: Disable irqbalance
       become: true
-      ansible.builtin.copy:
-        dest: "/etc/docker/daemon.json"
-        content: |
-          {
-            "builder": {
-              "gc": {
-                "defaultKeepStorage": "20GB",
-                "enabled": true
-              }
-            },
-            "metrics-addr": "{{ vpn_hosts[inventory_hostname].ip }}:9323",
-            "experimental": true,
-            "features": {
-              "buildkit": true
-            }
-          }
+      ansible.builtin.systemd:
+        name: irqbalance
+        state: stopped
+        masked: true
+        enabled: false
 
     - name: Enable docker service
       become: true
@@ -162,5 +169,4 @@
         state: enabled
         policy: deny
       when: ansible_distribution == 'Ubuntu'
-
 

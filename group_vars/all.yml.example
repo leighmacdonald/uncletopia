@@ -2,6 +2,9 @@ gbans_host: "https://kittyland.com"
 gbans_port: "443"
 site_name: "kittyland servers"
 
+# Use custom performance kernel, can be problemtatic on some hardware configs
+perf_kernel: true
+
 chat_logs_token: "blah.blah.blah.blah.blah.blah"
 ssh_keys:
   - "ssh-rsa xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx== name"
