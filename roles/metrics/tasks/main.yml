@@ -20,11 +20,6 @@
   tags:
     - metrics-client
 
-- name: alertmanager
-  import_tasks: alertmanager.yml
-  tags:
-    - metrics-server
-
 - name: promtail
   import_tasks: promtail.yml
   tags:
