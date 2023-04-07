@@ -30,3 +30,19 @@
       - grafana_data:/var/lib/grafana
     ports:
       - 127.0.0.1:3000:3000
+
+- name: Create grafana_image_renderer container
+  docker_container:
+    name: grafana_image_renderer
+    image: grafana/grafana-image-renderer:latest
+    restart: true
+    recreate: true
+    restart_policy: unless-stopped
+    networks:
+      - name: caddy_net
+    labels:
+      logging: "promtail"
+      logging_jobname: "containerlogs"
+    pull: true
+    ports:
+      - 127.0.0.1:8081:8081

@@ -32,9 +32,6 @@ vpn_hosts:
     ip: 10.0.0.2
     dns: dns: host-2.internal.kittyland.com
 
-metrics_hostname: host-1.kittyland.com
-metrics_hostname_internal: host-1.internal.kittyland.com
-
 rsyslog_rules:
   - rule_name: "remote-udp"
     priority: 99
@@ -48,8 +45,10 @@ log:
   net_enable: true
   net_hosts: ["10.20.30.40:27115", "sink.kittyland.com:27115"]
 
-prometheus_host: "n.n.n.n"
 metrics_host: "n.n.n.n"
+metrics_hostname_external: metrics.kittyland.com
+metrics_hostname: host-1.kittyland.com
+metrics_hostname_internal: host-1.internal.kittyland.com
 
 gbans:
   gb_core_host: "https://kittyland.com"

@@ -41,15 +41,15 @@
 ;http_port = 3000
 
 # The public facing domain name used to access grafana from a browser
-;domain = localhost
+domain = {{ metrics_hostname_external }}
 
 # Redirect to correct domain if host header does not match domain
 # Prevents DNS rebinding attacks
-;enforce_domain = false
+enforce_domain = true
 
 # The full public facing url you use in browser, used for redirects and emails
 # If you use reverse proxy and sub path specify full url (with sub path)
-;root_url = %(protocol)s://%(domain)s:%(http_port)s/
+root_url = %(protocol)s://%(domain)s/
 
 # Serve Grafana from subpath specified in `root_url` setting. By default it is set to `false` for compatibility reasons.
 ;serve_from_sub_path = false
@@ -61,7 +61,7 @@
 ;static_root_path = public
 
 # enable gzip
-;enable_gzip = false
+enable_gzip = true
 
 # https certs & key file
 ;cert_file =
@@ -226,7 +226,7 @@
 # No ip addresses are being tracked, only simple counters to track
 # running instances, dashboard and error counts. It is very helpful to us.
 # Change this option to false to disable reporting.
-;reporting_enabled = true
+reporting_enabled = false
 
 # The name of the distributor of the Grafana instance. Ex hosted-grafana, grafana-labs
 ;reporting_distributor = grafana-labs
@@ -308,17 +308,17 @@
 ;disable_brute_force_login_protection = false
 
 # set to true if you host Grafana behind HTTPS. default is false.
-;cookie_secure = false
+cookie_secure = true
 
 # set cookie SameSite attribute. defaults to `lax`. can be set to "lax", "strict", "none" and "disabled"
-;cookie_samesite = lax
+cookie_samesite = strict
 
 # set to true if you want to allow browsers to render Grafana in a <frame>, <iframe>, <embed> or <object>. default is false.
 ;allow_embedding = false
 
 # Set to true if you want to enable http strict transport security (HSTS) response header.
 # HSTS tells browsers that the site should only be accessed using HTTPS.
-;strict_transport_security = false
+strict_transport_security = true
 
 # Sets how long a browser should cache HSTS. Only applied if strict_transport_security is enabled.
 ;strict_transport_security_max_age_seconds = 86400
@@ -769,7 +769,7 @@ ehlo_identity = uncletopia.com
 ;level = info
 
 # optional settings to set different levels for specific loggers. Ex filters = sqlstore:debug
-;filters =
+filters = rendering:debug
 
 # For "console" mode only
 [log.console]
@@ -1042,7 +1042,7 @@ ehlo_identity = uncletopia.com
 # Metrics available at HTTP URL /metrics and /metrics/plugins/:pluginId
 [metrics]
 # Disable / Enable internal metrics
-;enabled           = true
+enabled           = true
 # Graphite Publish interval
 ;interval_seconds  = 10
 # Disable total stats (stat_totals_*) metrics to be generated
@@ -1150,9 +1150,9 @@ ehlo_identity = uncletopia.com
 [rendering]
 # Options to configure a remote HTTP image rendering service, e.g. using https://github.com/grafana/grafana-image-renderer.
 # URL to a remote HTTP image renderer service, e.g. http://localhost:8081/render, will enable Grafana to render panels and dashboards to PNG-images using HTTP requests to an external service.
-;server_url =
+server_url = http://grafana_image_renderer:8081/render
 # If the remote HTTP image renderer service runs on a different server than the Grafana server you may have to configure this to a URL where Grafana is reachable, e.g. http://grafana.domain/.
-;callback_url =
+callback_url = http://grafana:3000/
 # An auth token that will be sent to and verified by the renderer. The renderer will deny any request without an auth token matching the one configured on the renderer side.
 ;renderer_token = -
 # Concurrent render request limit affects when the /render HTTP endpoint is used. Rendering many images at the same time can overload the server,
