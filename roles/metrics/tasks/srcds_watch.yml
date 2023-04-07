@@ -12,7 +12,7 @@
 - name: Create srcds_watch container
   docker_container:
     name: srcds_watch
-    image: docker pull ghcr.io/leighmacdonald/srcds_watch:master
+    image: ghcr.io/leighmacdonald/srcds_watch:master
     restart: true
     pull: true
     purge_networks: true
@@ -27,5 +27,6 @@
       - /etc/srcds_watch.yml:/app/srcds_watch.yml
     ports:
       - 127.0.0.1:8877:8877
+      - "{{ vpn_hosts[inventory_hostname].ip }}:8877:8877"
   tags:
     - srcds_watch

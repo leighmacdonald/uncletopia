@@ -57,6 +57,14 @@ scrape_configs:
           instance: {{ hostname }}
 {% endfor %}
 
+  - job_name: 'srcds'
+    static_configs:
+{% for hostname, conf in vpn_hosts.items() %}
+      - targets: ['{{ conf.dns }}:8877']
+        labels:
+          instance: {{ hostname }}
+{% endfor %}
+
 {#    http_sd_configs:#}
 {#      - url: '{{ service_discovery.prometheus }}'#}
 

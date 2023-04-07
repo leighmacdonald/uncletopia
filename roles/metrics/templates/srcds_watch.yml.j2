@@ -2,8 +2,9 @@ listen_host: 0.0.0.0
 listen_port: 8877
 
 targets:
-{% for i, service in services %}
+{% for service in services %}
   - name: "{{ service.server_name_short }}"
-    host: "{{ instance_hostname }}"
-    port: "{{ 27015 + (10 * loop0) }}"
+    host: "{{ inventory_hostname }}"
+    port: {{ 27015 + (10 * loop.index0) }}
     password: "{{ service.srcds_rcon_password | default(srcds_rcon_password) }}"
+{% endfor %}
