@@ -18,10 +18,8 @@
     labels:
       logging: "promtail"
       logging_jobname: "containerlogs"
-    command: [ '--listen_ip="0.0.0.0"', '--v=3' ]
+    command: [ '--listen_ip="0.0.0.0"', '--docker_only=true' ]
     pull: true
-#    devices:
-#      - /dev/kmsg
     volumes:
       - /:/rootfs:ro
       - /var/run:/var/run:ro
