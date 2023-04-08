@@ -8,12 +8,47 @@
   tags:
     - grafana
 
-- name: Generate /etc/grafana/provisioning/datasources/datasources.yml
+- name: Create a directory if it does not exist
+  become: true
+  ansible.builtin.file:
+    path: /etc/grafana/provisioning/datasources/
+    state: directory
+    mode: '0777'
+  tags:
+    - grafana
+
+- name: Create a directory if it does not exist
+  become: true
+  ansible.builtin.file:
+    path: /etc/grafana/provisioning/dashboards/
+    state: directory
+    mode: '0777'
+  tags:
+    - grafana
+
+- name: Generate /etc/grafana_datasources.yml
   become: true
   ansible.builtin.template:
     src: datasources.yml.j2
     dest: /etc/grafana_datasources.yml
     mode: 0770
+  tags:
+    - grafana
+
+- name: Generate /etc/grafana_dashboards.yml
+  become: true
+  ansible.builtin.template:
+    src: dashboards.yml.j2
+    dest: /etc/grafana_dashboards.yml
+    mode: 0770
+  tags:
+    - grafana
+
+- name: Copy dashboard sources
+  become: true
+  ansible.builtin.copy:
+    src: "{{ role_path }}/files/"
+    dest: /etc/grafana_dashboards
   tags:
     - grafana
 
@@ -59,6 +94,8 @@
     volumes:
       - /etc/grafana.ini:/etc/grafana/grafana.ini
       - /etc/grafana_datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml
+      - /etc/grafana_dashboards.yml:/etc/grafana/provisioning/dashboards/dashboards.yml
+      - /etc/grafana_dashboards:/etc/grafana_dashboards
       - grafana_data:/var/lib/grafana
     ports:
       - 127.0.0.1:3000:3000
