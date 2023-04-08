@@ -50,6 +50,7 @@ ConVar gDemoPathComplete = null;
 ConVar gStopwatchEnabled = null;
 ConVar gStopwatchNameRed = null;
 ConVar gStopwatchNameBlu = null;
+ConVar gStopwatchChangelvlTime = null;
 
 // Game ruleset options
 ConVar gRulesRoundTime = null;
