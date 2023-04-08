@@ -5,11 +5,42 @@
     src: grafana.ini.j2
     dest: /etc/grafana.ini
     mode: 0770
+  tags:
+    - grafana
+
+- name: Generate /etc/grafana/provisioning/datasources/datasources.yml
+  become: true
+  ansible.builtin.template:
+    src: datasources.yml.j2
+    dest: /etc/grafana_datasources.yml
+    mode: 0770
+  tags:
+    - grafana
 
 - name: Create grafana_data volume
   docker_volume:
     name: grafana_data
     state: present
+  tags:
+    - grafana
+
+- name: Create grafana_image_renderer container
+  docker_container:
+    name: grafana_image_renderer
+    image: grafana/grafana-image-renderer:latest
+    restart: true
+    recreate: true
+    restart_policy: unless-stopped
+    networks:
+      - name: caddy_net
+    labels:
+      logging: "promtail"
+      logging_jobname: "containerlogs"
+    pull: true
+    ports:
+      - 127.0.0.1:8081:8081
+  tags:
+    - grafana
 
 - name: Create grafana container
   docker_container:
@@ -27,22 +58,10 @@
     pull: true
     volumes:
       - /etc/grafana.ini:/etc/grafana/grafana.ini
+      - /etc/grafana_datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml
       - grafana_data:/var/lib/grafana
     ports:
       - 127.0.0.1:3000:3000
+  tags:
+    - grafana
 
-- name: Create grafana_image_renderer container
-  docker_container:
-    name: grafana_image_renderer
-    image: grafana/grafana-image-renderer:latest
-    restart: true
-    recreate: true
-    restart_policy: unless-stopped
-    networks:
-      - name: caddy_net
-    labels:
-      logging: "promtail"
-      logging_jobname: "containerlogs"
-    pull: true
-    ports:
-      - 127.0.0.1:8081:8081
