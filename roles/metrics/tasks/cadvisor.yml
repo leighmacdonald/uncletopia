@@ -12,13 +12,15 @@
     image: gcr.io/cadvisor/cadvisor:v0.47.0
     restart: true
     recreate: true
-    privileged: true
     restart_policy: unless-stopped
-    purge_networks: true
     labels:
       logging: "promtail"
       logging_jobname: "containerlogs"
-    command: [ '--listen_ip="0.0.0.0"', '--docker_only=true' ]
+    command:
+      - '--listen_ip="0.0.0.0"'
+      - '--docker_only=true'
+      - '--housekeeping_interval=30s'
+      - '--disable_metrics=disk,diskIO,hugetlb,referenced_memory,resctrl'
     pull: true
     volumes:
       - /:/rootfs:ro
