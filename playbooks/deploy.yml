@@ -41,8 +41,8 @@
         # https://github.com/moby/moby/issues/41389
         security_opts: [ "seccomp:unconfined" ]
         pull: false
-        interactive: true
-        tty: true
+#        interactive: true
+#        tty: true
         labels:
           logging: "promtail"
           logging_jobname: "containerlogs"
@@ -53,7 +53,8 @@
           max-file: "5"
         recreate: true
         restart_policy: always
-        cpuset_cpus: "{{ loop0 }},{{ loop0 + ansible_processor_cores }}"
+        cpuset_cpus: "{{ loop0 }}"
+        #cpuset_cpus: "{{ loop0 }},{{ loop0 + ansible_processor_cores }}"
         # Uncomment when not using host network_mode
         # ports:
         #   - "{{ srcds_base_port + (loop0 * 10) }}:{{ srcds_base_port + (loop0 * 10) }}/tcp"
