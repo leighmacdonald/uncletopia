@@ -12,7 +12,7 @@ TODO:
 */
 
 #include <tf2_stocks>
-
+#include <morecolors>
 
 new Float:g_fCapMultipliers[] = { 0.0, // Harmonic numbers
 	1.0000, 1.5000, 1.8333, 2.0833, 2.2833, 2.4500, 2.5929, 2.7179, 

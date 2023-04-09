@@ -87,6 +87,7 @@ TODO:
 */
 
 #pragma semicolon 1 // Force strict semicolon mode.
+#pragma newdecls required
 
 #include <sourcemod>
 #include <tf2_stocks>
@@ -107,7 +108,7 @@ TODO:
 #define MAXWEPNAMELEN 72
 #define MAXITEMCLASSLEN 64
 
-public Plugin:myinfo = {
+public Plugin myinfo = {
 	name = "Supplemental Stats v2",
 	author = "F2 (v1 by Jean-Denis Caron)",
 	description = "Logs additional information about the game.",
@@ -116,12 +117,12 @@ public Plugin:myinfo = {
 };
 
 
-bool:g_bIsPaused;
-bool:g_bBlockLog = false;
-String:g_sBlockLog[64];
+bool g_bIsPaused;
+bool g_bBlockLog = false;
+char g_sBlockLog[64];
 
-string:lastWeaponDamage[MAXPLAYERS+1][MAXWEPNAMELEN];
-string lastPostHumousWeaponDamage[MAXPLAYERS+1][MAXWEPNAMELEN]; 
+char lastWeaponDamage[MAXPLAYERS+1][MAXWEPNAMELEN];
+char lastPostHumousWeaponDamage[MAXPLAYERS+1][MAXWEPNAMELEN]; 
 float lastPostHumousWeaponDamageTime[MAXPLAYERS+1]; 
 int lastHealth[MAXPLAYERS+1];
 int lastHealingOnHit[MAXPLAYERS+1]; 
@@ -131,34 +132,34 @@ int lastAirshotHeight[MAXPLAYERS+1];
 bool g_bPlayerTakenDirectHit[MAXPLAYERS+1];
 int medpackHealAmount[MAXPLAYERS+1];
 float g_fPauseStartTime;
-string g_sTauntNames[][] = { "", "taunt_scout", "taunt_sniper", "taunt_soldier", "taunt_demoman", "taunt_medic", "taunt_heavy", "taunt_pyro", "taunt_spy", "taunt_engineer" };
+char g_sTauntNames[][] = { "", "taunt_scout", "taunt_sniper", "taunt_soldier", "taunt_demoman", "taunt_medic", "taunt_heavy", "taunt_pyro", "taunt_spy", "taunt_engineer" };
 
 
 // ---- ACCURACY ----
 Handle g_hCvarEnableAccuracy = INVALID_HANDLE;
 bool g_bEnableAccuracy;
 
-new g_iIgnoreDamageEnt[5];
+int g_iIgnoreDamageEnt[5];
 float g_fLastHitscanHit[MAXPLAYERS+1];
 
 const MAXROCKETS = 5;
-g_iRocketCreatedEntity[MAXROCKETS];
+int g_iRocketCreatedEntity[MAXROCKETS];
 float g_fRocketCreatedTime[MAXROCKETS];
-g_iRocketCreatedNext = 0;
+int g_iRocketCreatedNext = 0;
 
 const float MAXROCKETJUMPTIME = 0.15;
 bool g_bRocketHurtMe[MAXPLAYERS+1];
 bool g_bRocketHurtEnemy[MAXPLAYERS+1];
-string g_sRocketFiredLogLine[MAXPLAYERS+1][1024];
+char g_sRocketFiredLogLine[MAXPLAYERS+1][1024];
 
 const float MAXHITSCANTIME = 0.05;
 bool g_bHitscanHurtEnemy[MAXPLAYERS+1];
-string g_sHitscanFiredLogLine[MAXPLAYERS+1][1024];
+char g_sHitscanFiredLogLine[MAXPLAYERS+1][1024];
 
 const MAXSTICKIES = 14;
 bool g_bStickyHurtMe[MAXPLAYERS+1][MAXSTICKIES];
 bool g_bStickyHurtEnemy[MAXPLAYERS+1][MAXSTICKIES];
-g_iStickyId[MAXPLAYERS+1][MAXSTICKIES];
+int g_iStickyId[MAXPLAYERS+1][MAXSTICKIES];
 
 const SHOT_PROJECTILE_MIN = 0; // inclusive
 const SHOT_ROCKET = 0;
@@ -215,7 +216,7 @@ public void OnPluginStart() {
 	
 	g_hCvarEnableAccuracy = CreateConVar("supstats_accuracy", "1", "Enable accuracy");
 	HookConVarChange(g_hCvarEnableAccuracy, CvarChange_EnableAccuracy);
-	string cvarEnableAccuracy[16];
+	char cvarEnableAccuracy[16];
 	GetConVarString(g_hCvarEnableAccuracy, cvarEnableAccuracy, sizeof(cvarEnableAccuracy));
 	CvarChange_EnableAccuracy(g_hCvarEnableAccuracy, cvarEnableAccuracy, cvarEnableAccuracy);
 	
@@ -232,20 +233,20 @@ public void OnPluginStart() {
 	AddCommandListener(Listener_Pause, "pause");
 	
 	
-	for (new client = 1; client <= MaxClients; client++) {
+	for (int client = 1; client <= MaxClients; client++) {
 		if (IsClientInGame(client) && !IsClientSourceTV(client)) {
 			SDKHook(client, SDKHook_OnTakeDamage, OnTakeDamage);
 		}
 	}
 	
-	string map[64];
+	char map[64];
 	GetCurrentMap(map, sizeof(map));
 	LogToGame("Loading map \"%s\"", map);
 
 	g_fPauseStartTime = GetEngineTime(); // Just in case it is already paused
 }
 
-public void OnLibraryAdded(const string name[]) {
+public void OnLibraryAdded(const char[] name) {
 	// Set up auto updater
 	if (StrEqual(name, "updater"))
 		Updater_AddPlugin(UPDATE_URL);
@@ -256,13 +257,13 @@ public void OnMapStart() {
 		g_iIgnoreDamageEnt[i] = 0;
 	
 	for (int client = 0; client < MaxClients; client++) {
-		for (new i = 0; i < MAXSTICKIES; i++)
+		for (int i = 0; i < MAXSTICKIES; i++)
 			g_iStickyId[client][i] = 0;
 	}
 	g_bIsPaused = false; // The game is automatically unpaused during a map change
 }
 
-public void OnClientPutInServer(client) {
+public void OnClientPutInServer(int client) {
 	SDKHook(client, SDKHook_OnTakeDamage, OnTakeDamage);
 	lastPostHumousWeaponDamage[client][0] = '\0';
 }
@@ -277,12 +278,12 @@ public void OnPluginEnd() {
 	RemoveGameLogHook(GameLog);
 }
 
-public void CvarChange_EnableAccuracy(Handle cvar, const string oldVal[], const string newVal[]) {
+public void CvarChange_EnableAccuracy(Handle cvar, const char[] oldVal, const char[] newVal) {
 	g_bEnableAccuracy = StringToInt(newVal) != 0;
 }
 
 
-public Action BlockLogLine(const string logline[]) {
+public Action BlockLogLine(const char[] logline) {
 	if (g_bBlockLog && (g_sBlockLog[0] == '\0' || StrContains(logline, g_sBlockLog, false) != -1))
 		// If we don't use g_sBlockLog, then chargeready is sometimes blocked
 		return Plugin_Handled;
@@ -290,12 +291,12 @@ public Action BlockLogLine(const string logline[]) {
 	return Plugin_Continue;
 }
 
-public Action GameLog(const String:message[]) {
+public Action GameLog(const char[] message) {
 	return BlockLogLine(message);
 }
 
 
-public Action Listener_Pause(client, const string command[], argc) {
+public Action Listener_Pause(int client, const char[] command, int argc) {
 	if (client == 0)
 		return Plugin_Continue; // Using "rcon pause" won't do anything
 	
@@ -334,15 +335,16 @@ public Action CheckPause(Handle timer, int client) {
 	}
 
 	g_bIsPaused = isPaused;
+    return Plugin_Continue;
 }
 
-public Action Event_PlayerHealed(Handle event, const string name[], bool dontBroadcast) {
-	string patientName[NAMELEN];
-	string healerName[NAMELEN];
-	string patientSteamId[64];
-	string healerSteamId[64];
-	string patientTeam[64];
-	string healerTeam[64];
+public Action Event_PlayerHealed(Handle event, const char[] name, bool dontBroadcast) {
+	char patientName[NAMELEN];
+	char healerName[NAMELEN];
+	char patientSteamId[64];
+	char healerSteamId[64];
+	char patientTeam[64];
+	char healerTeam[64];
 	char strAirshot[64] = "";
 
 	int patientId = GetEventInt(event, "patient");
@@ -399,7 +401,7 @@ public Action Event_PlayerHealed(Handle event, const string name[], bool dontBro
 
 
 
-string classNames[][] = {
+char classNames[][] = {
 	"undefined",
 	"scout",
 	"sniper",
@@ -417,19 +419,19 @@ string classNames[][] = {
 //	PrintToChatAll("heal on hit - amount(%i) client(%i)", GetEventInt(event, "amount"), GetEventInt(event, "entindex"));
 //}
 
-public void Event_PlayerSpawned(Handle event, const string name[], bool dontBroadcast) {
-	string playerName[NAMELEN];
-	string playerSteamID[64];
-	string playerTeam[64];
+public void Event_PlayerSpawned(Handle event, const char[] name, bool dontBroadcast) {
+	char playerName[NAMELEN];
+	char playerSteamID[64];
+	char playerTeam[64];
 	
-	new userid = GetEventInt(event, "userid");
-	new client = GetClientOfUserId(userid);
-	new clss = GetEventInt(event, "class");
+	int userid = GetEventInt(event, "userid");
+	int client = GetClientOfUserId(userid);
+	int clss = GetEventInt(event, "class");
 	
 	if (!IsRealPlayer(client))
 		return; // eg. SourceTV
 	
-	for (new i = 0; i < MAXSTICKIES; i++)
+	for (int i = 0; i < MAXSTICKIES; i++)
 		g_iStickyId[client][i] = 0;
 	
 	GetClientName(client, playerName, sizeof(playerName));
@@ -445,19 +447,19 @@ public void Event_PlayerSpawned(Handle event, const string name[], bool dontBroa
 
 
 // "%s<%i><%s><%s>" triggered "chargedeployed" (medigun "%s")
-public EventPre_player_chargedeployed(Handle event, const string name[], bool dontBroadcast) {
+public void EventPre_player_chargedeployed(Handle event, const char[] name, bool dontBroadcast) {
 	g_bBlockLog = true;
 	strcopy(g_sBlockLog, sizeof(g_sBlockLog), "chargedeployed");
 }
 
-public Event_player_chargedeployed(Handle event, const string name[], bool dontBroadcast) {
+public void Event_player_chargedeployed(Handle event, const char[] name, bool dontBroadcast) {
 	g_bBlockLog = false;
 	g_sBlockLog = "";
 	
-	string playerName[NAMELEN];
-	string playerAuth[64];
-	string playerTeam[16];
-	string medigun[64];
+	char playerName[NAMELEN];
+	char playerAuth[64];
+	char playerTeam[16];
+	char medigun[64];
 	
 	int userid = GetEventInt(event, "userid");
 	int client = GetClientOfUserId(userid);
@@ -470,10 +472,12 @@ public Event_player_chargedeployed(Handle event, const string name[], bool dontB
 	LogToGame("\"%s<%i><%s><%s>\" triggered \"chargedeployed\" (medigun \"%s\")", playerName, userid, playerAuth, playerTeam, medigun);
 }
 
-GetMedigunName(client, String:medigun[], medigunLen) {
-	new weaponid = GetPlayerWeaponSlot(client, 1);
+void GetMedigunName(int client, char[] medigun, int medigunLen) {
+	int weaponid = GetPlayerWeaponSlot(client, 1);
 	if (weaponid >= 0) {
-		new healing, bool:postHumousDamage, defid;
+		int healing;
+        bool postHumousDamage;
+        int defid;
 		if (GetWeaponLogName(medigun, medigunLen, client, weaponid, healing, defid, postHumousDamage, client)) {
 			// We found the weapon
 		} else {
@@ -486,11 +490,11 @@ GetMedigunName(client, String:medigun[], medigunLen) {
 
 
 // Medkit pickup with healing
-public Event_ItemPickup(Handle event, const string name[], bool dontBroadcast) {
-	string item[64];
+public void Event_ItemPickup(Handle event, const char[] name, bool dontBroadcast) {
+	char item[64];
 	GetEventString(event, "item", item, sizeof(item));
-	new userid = GetEventInt(event, "userid");
-	new client = GetClientOfUserId(userid);
+	int userid = GetEventInt(event, "userid");
+	int client = GetClientOfUserId(userid);
 	
 	if (strncmp(item, "medkit_", 7, true) == 0 && medpackHealAmount[client] != 0) {
 		LogItemPickup(userid, item, medpackHealAmount[client]);
@@ -501,13 +505,13 @@ public Event_ItemPickup(Handle event, const string name[], bool dontBroadcast) {
 	LogItemPickup(userid, item);
 }
 
-LogItemPickup(userid, string item[], healing = 0) {
-	string playerName[NAMELEN];
-	string playerSteamId[64];
-	string playerTeam[64];
-	string strHealing[64] = "";
+void LogItemPickup(int userid, char[] item, int healing = 0) {
+	char playerName[NAMELEN];
+	char playerSteamId[64];
+	char playerTeam[64];
+	char strHealing[64] = "";
 	
-	new client = GetClientOfUserId(userid);
+	int client = GetClientOfUserId(userid);
 	GetClientAuthStringNew(client, playerSteamId, sizeof(playerSteamId), false);
 	GetClientName(client, playerName, sizeof(playerName));
 	GetPlayerTeamStr(GetClientTeam(client), playerTeam, sizeof(playerTeam));
@@ -526,9 +530,9 @@ LogItemPickup(userid, string item[], healing = 0) {
 
 
 
-FindStickySpot(int client, int inflictor, bool mayCreate = false) {
-	new emptyStickyPos = -1, foundStickyPos = -1;
-	for (new i = 0; i < MAXSTICKIES; i++) {
+int FindStickySpot(int client, int inflictor, bool mayCreate = false) {
+	int emptyStickyPos = -1, foundStickyPos = -1;
+	for (int i = 0; i < MAXSTICKIES; i++) {
 		if (g_iStickyId[client][i] == inflictor) {
 			foundStickyPos = i;
 			break;
@@ -559,7 +563,7 @@ public Action OnTakeDamage(int victim, int &attacker, int &inflictor, float &dam
 		if (g_bEnableAccuracy && IsRealPlayer(attacker) && inflictor > MaxClients) {
 			TFClassType cls = TF2_GetPlayerClass(attacker);
 			if (cls == TFClass_Soldier) {
-				for (new i = 0; i < MAXROCKETS; i++) {
+				for (int i = 0; i < MAXROCKETS; i++) {
 					if (g_iRocketCreatedEntity[i] == inflictor && g_fRocketCreatedTime[i] >= GetEngineTime() - MAXROCKETJUMPTIME) {
 						g_bRocketHurtMe[attacker] = true;
 						break;
@@ -567,7 +571,7 @@ public Action OnTakeDamage(int victim, int &attacker, int &inflictor, float &dam
 				}
 			} else if (cls == TFClass_DemoMan) {
 				if (inflictor > MaxClients) {
-					string entityName[32];
+					char entityName[32];
 					GetEntityClassname(inflictor, entityName, sizeof(entityName));
 					int shotType;
 					if (GetTrieValue(g_tShotTypes, entityName, shotType) && shotType == SHOT_STICKY) {
@@ -613,7 +617,7 @@ public Action OnTakeDamage(int victim, int &attacker, int &inflictor, float &dam
         int defid;
         bool postHumousDamage;
 		if (!GetWeaponLogName(lastWeaponDamage[attacker], MAXWEPNAMELEN, attacker, weapon, healing, defid, postHumousDamage, inflictor)) {
-			new Float:now = GetEngineTime();
+			float now = GetEngineTime();
 			if (lastPostHumousWeaponDamageTime[attacker] >= now - 15.0) {
 				strcopy(lastWeaponDamage[attacker], MAXWEPNAMELEN, lastPostHumousWeaponDamage[attacker]);
 				lastPostHumousWeaponDamageTime[attacker] = now;
@@ -627,14 +631,14 @@ public Action OnTakeDamage(int victim, int &attacker, int &inflictor, float &dam
 		if (healing > 0) {
 			if (StrEqual(lastWeaponDamage[attacker], "blackbox")) {
 				// TODO: Handle this more generic using the add_health_on_radius_damage attribute. Also, this is not perfectly precise.
-				new actualHealing = RoundToNearest(damage / 4.25);
+				int actualHealing = RoundToNearest(damage / 4.25);
 				if (actualHealing > healing)
 					actualHealing = healing; // The healing variable decides the maximum amount of healing
 				
 				healing = actualHealing;
 			}
 			
-			new maxHealth = GetMaxHealth(attacker);
+			int maxHealth = GetMaxHealth(attacker);
 			if (lastHealth[attacker] < maxHealth) {
 				lastHealingOnHit[attacker] = min(maxHealth - lastHealth[attacker], healing);
 			}
@@ -676,10 +680,10 @@ public Action OnTakeDamage(int victim, int &attacker, int &inflictor, float &dam
 			if (inflictor > MaxClients && IsValidEntity(inflictor)) {
 				// Projectile shot
 				
-				string classname[128];
+				char classname[128];
 				GetEntityClassname(inflictor, classname, sizeof(classname));
 				
-				new shotType;
+				int shotType;
 				if (GetTrieValue(g_tShotTypes, classname, shotType)) {
 					// The class checks are required to avoid pyros getting a shot_hit on a reflect rocket, without any shot_fired.
 					bool isRocket = shotType == SHOT_ROCKET && attackerClass == TFClass_Soldier;
@@ -687,9 +691,10 @@ public Action OnTakeDamage(int victim, int &attacker, int &inflictor, float &dam
 					bool isSticky = shotType == SHOT_STICKY && attackerClass == TFClass_DemoMan;
 					bool isNeedle = shotType == SHOT_NEEDLE && attackerClass == TFClass_Medic;
 					if (isRocket || isGrenade || isNeedle) {
-						bool foundIgnore = false, foundEmpty = -1;
+						bool foundIgnore = false;
+                        int foundEmpty = -1;
 						if (!isNeedle) {
-							for (new i = 0; i < sizeof(g_iIgnoreDamageEnt); i++) {
+							for (int i = 0; i < sizeof(g_iIgnoreDamageEnt); i++) {
 								if (g_iIgnoreDamageEnt[i] == inflictor) {
 									foundIgnore = true;
 									break;
@@ -717,7 +722,7 @@ public Action OnTakeDamage(int victim, int &attacker, int &inflictor, float &dam
 								LogHit(attacker, lastWeaponDamage[attacker]);
 						}
 					} else if (isSticky) {
-						new stickyPos = FindStickySpot(attacker, inflictor, true);
+						int stickyPos = FindStickySpot(attacker, inflictor, true);
 						
 						if (stickyPos != -1) {
 							g_bStickyHurtEnemy[attacker][stickyPos] = true;
@@ -727,12 +732,12 @@ public Action OnTakeDamage(int victim, int &attacker, int &inflictor, float &dam
 			} else if (inflictor > 0 && inflictor <= MaxClients && IsValidEntity(weapon)) {
 				// Hitscan shot
 				
-				string classname[128];
+				char classname[128];
 				GetEntityClassname(weapon, classname, sizeof(classname));
 				
-				new shotType;
+				int shotType;
 				if (GetTrieValue(g_tShotTypes, classname, shotType) && shotType >= SHOT_HITSCAN_MIN && shotType < SHOT_HITSCAN_MAX) {
-					new Float:now = GetEngineTime();
+					float now = GetEngineTime();
 					if ((now - g_fLastHitscanHit[attacker]) > 0.05) {
 						LogHit(attacker, lastWeaponDamage[attacker]);
 						
@@ -741,8 +746,8 @@ public Action OnTakeDamage(int victim, int &attacker, int &inflictor, float &dam
 					}
 				}
 			} else {
-				string attackerName[64];
-                string victimName[64];
+				char attackerName[64];
+                char victimName[64];
 				GetClientName(attacker, attackerName, sizeof(attackerName));
 				GetClientName(victim, victimName, sizeof(victimName));
 				LogError("Accuracy: attacker(%s) victim(%s) inflictor(%i) weapon(%i) defid(%i)", attackerName, victimName, inflictor, weapon, defid);
@@ -754,23 +759,23 @@ public Action OnTakeDamage(int victim, int &attacker, int &inflictor, float &dam
 	return Plugin_Continue;
 }
 
-public void Event_PlayerHurt(Handle event, const string name[], bool dontBroadcast) {
-	new victimid = GetEventInt(event, "userid");
-	new victim = GetClientOfUserId(victimid);
-	new attackerid = GetEventInt(event, "attacker");
-	new attacker = GetClientOfUserId(attackerid);
-	new damage = GetEventInt(event, "damageamount");
+public void Event_PlayerHurt(Handle event, const char[] name, bool dontBroadcast) {
+	int victimid = GetEventInt(event, "userid");
+	int victim = GetClientOfUserId(victimid);
+	int attackerid = GetEventInt(event, "attacker");
+	int attacker = GetClientOfUserId(attackerid);
+	int damage = GetEventInt(event, "damageamount");
 	
 	bool crit = GetEventBool(event, "crit");
 	bool minicrit = GetEventBool(event, "minicrit");
 	
 	if (victim != attacker && attacker != 0) {
-		string attackerName[NAMELEN];
-		string attackerSteamID[64];
-		string attackerTeam[32];
-		string victimName[NAMELEN];
-		string victimSteamID[64];
-		string victimTeam[32];
+		char attackerName[NAMELEN];
+		char attackerSteamID[64];
+		char attackerTeam[32];
+		char victimName[NAMELEN];
+		char victimSteamID[64];
+		char victimTeam[32];
 		
 		GetClientName(attacker, attackerName, sizeof(attackerName));
 		GetClientAuthStringNew(attacker, attackerSteamID, sizeof(attackerSteamID), false);
@@ -780,13 +785,13 @@ public void Event_PlayerHurt(Handle event, const string name[], bool dontBroadca
 		GetClientAuthStringNew(victim, victimSteamID, sizeof(victimSteamID), false);
 		GetPlayerTeamStr(GetClientTeam(victim), victimTeam, sizeof(victimTeam));
 		
-		string strHealing[32] = "";
-		string strCrit[32] = "";
-		string strRealDamage[32] = "";
-		string strHeadshot[32] = "";
+		char strHealing[32] = "";
+		char strCrit[32] = "";
+		char strRealDamage[32] = "";
+		char strHeadshot[32] = "";
 		char strAirshot[64] = "";
 
-		new healing = lastHealingOnHit[attacker];
+		int healing = lastHealingOnHit[attacker];
 		if (healing != 0 && IsPlayerAlive(attacker))
 			FormatEx(strHealing, sizeof(strHealing), " (healing \"%i\")", healing);
 		
@@ -833,22 +838,15 @@ public void Event_PlayerHurt(Handle event, const string name[], bool dontBroadca
 	}
 }
 
-
-
-
-
-
-
-public void OnProjectileTouch(entity, other) {
+public void OnProjectileTouch(int entity, int other) {
 	if (other > 0 && other <= MaxClients) {
 		g_bPlayerTakenDirectHit[other] = true;
 	}
 }
 
-
 // ---- ACCURACY ----
-public void OnEntityCreated(entity, const String:classname[]) {
-	new shotType;
+public void OnEntityCreated(int entity, const char[] classname) {
+	int shotType;
 	if (!GetTrieValue(g_tShotTypes, classname, shotType))
 		return;
 	
@@ -856,12 +854,12 @@ public void OnEntityCreated(entity, const String:classname[]) {
 		SDKHook(entity, SDKHook_Touch, OnProjectileTouch); // Detecting direct hits
 		
 		if (g_bEnableAccuracy) {
-			new Float:now = GetEngineTime();
-			new Float:oldestTime = now + 1.0;
-			new oldest = -1;
+			float now = GetEngineTime();
+			float oldestTime = now + 1.0;
+			int oldest = -1;
 			bool found = false;
 			
-			for (new j = 0; j < MAXROCKETS; j++) {
+			for (int j = 0; j < MAXROCKETS; j++) {
 				if (g_iRocketCreatedEntity[g_iRocketCreatedNext] == 0) {
 					g_iRocketCreatedEntity[g_iRocketCreatedNext] = entity;
 					g_fRocketCreatedTime[g_iRocketCreatedNext] = now;
@@ -894,21 +892,23 @@ public void OnEntityCreated(entity, const String:classname[]) {
 	}
 }
 
-public void OnHealArrowTouch(entity, other) {
+public void OnHealArrowTouch(int entity, int other) {
 	if (other > 0 && other <= MaxClients) {
-		new TFTeam:team = TFTeam:GetClientTeam(other);
+		TFTeam team = view_as<TFTeam>(GetClientTeam(other));
 		if (team == TFTeam_Red || team == TFTeam_Blue) { // Ignore if we hit a spectator. (This check might not be necessary.)
-			new owner = GetEntPropEnt(entity, Prop_Send, "m_hOwnerEntity");
+			int owner = GetEntPropEnt(entity, Prop_Send, "m_hOwnerEntity");
 			if (IsClientValid(owner) && TF2_GetPlayerClass(owner) == TFClass_Medic) {
-				new weapon = GetEntPropEnt(entity, Prop_Send, "m_hLauncher");
+				int weapon = GetEntPropEnt(entity, Prop_Send, "m_hLauncher");
 				if (IsValidEntity(weapon)) {
 					// Enables logging of airshots for healing arrows
 					lastAirshot[owner] = false;
 					SetLastAirshotValues(owner, other);
 
 					if (g_bEnableAccuracy) {
-						new healing, defid, bool:postHumousDamage;
-						string weap[64];
+						int healing;
+                        int defid;
+                        bool postHumousDamage;
+						char weap[64];
 						weap[0] = '\0';
 						if (GetWeaponLogName(weap, sizeof(weap), owner, weapon, healing, defid, postHumousDamage, entity)) {
 							LogHit(owner, weap);
@@ -920,18 +920,18 @@ public void OnHealArrowTouch(entity, other) {
 	}
 }
 
-public void OnEntityDestroyed(entity) {
+public void OnEntityDestroyed(int entity) {
 	if (entity <= MaxClients)
 		return;
 	
-	for (new i = 0; i < sizeof(g_iIgnoreDamageEnt); i++) {
+	for (int i = 0; i < sizeof(g_iIgnoreDamageEnt); i++) {
 		if (g_iIgnoreDamageEnt[i] == entity) {
 			g_iIgnoreDamageEnt[i] = 0;
 			break;
 		}
 	}
 	
-	for (new i = 0; i < MAXROCKETS; i++) {
+	for (int i = 0; i < MAXROCKETS; i++) {
 		if (g_iRocketCreatedEntity[i] == entity) {
 			g_iRocketCreatedEntity[i] = 0;
 			break;
@@ -939,13 +939,13 @@ public void OnEntityDestroyed(entity) {
 	}
 	
 	if (g_bEnableAccuracy) {
-		string clsname[32];
+		char clsname[32];
 		GetEntityClassname(entity, clsname, sizeof(clsname));
-		new shotType;
+		int shotType;
 		if (GetTrieValue(g_tShotTypes, clsname, shotType) && shotType == SHOT_STICKY) {
-			new owner = GetEntPropEnt(entity, Prop_Send, "m_hThrower");
+			int owner = GetEntPropEnt(entity, Prop_Send, "m_hThrower");
 			if (IsRealPlayer(owner)) { // Check that the owner didn't disconnect
-				new stickyPos = FindStickySpot(owner, entity);
+				int stickyPos = FindStickySpot(owner, entity);
 				
 				bool shot = true;
 				bool hit = false;
@@ -958,9 +958,11 @@ public void OnEntityDestroyed(entity) {
 				}
 				
 				if (shot || hit) {
-					string weap[64];
+					char weap[64];
 					weap[0] = '\0';
-					new healing, defid, bool:postHumousDamage;
+					int healing;
+                    int defid;
+                    bool postHumousDamage;
 					GetWeaponLogName(weap, sizeof(weap), owner, GetPlayerWeaponSlot(owner, 1), healing, defid, postHumousDamage, entity); // We are setting inflictor = attacker
 					
 					if (shot) 
@@ -974,25 +976,27 @@ public void OnEntityDestroyed(entity) {
 }
 
 
-public Action LogRocketShot(Handle:timer, any:client) {
+public Action LogRocketShot(Handle timer, any client) {
 	if (!IsRealPlayer(client))
-		return;
+		return Plugin_Continue;
 	
 	if (!g_bRocketHurtMe[client] || g_bRocketHurtEnemy[client]) {
 		LogToGame("%s", g_sRocketFiredLogLine[client]);
 	}
+    return Plugin_Continue;
 }
 
-public Action LogHitscanShot(Handle:timer, any:client) {
+public Action LogHitscanShot(Handle timer, any client) {
 	if (!IsRealPlayer(client))
-		return;
+		return Plugin_Continue;
 	
 	if (g_bHitscanHurtEnemy[client]) {
 		LogToGame("%s", g_sHitscanFiredLogLine[client]);
 	}
+    return Plugin_Continue;
 }
 
-public Action TF2_CalcIsAttackCritical(attacker, weapon, String:weaponname[], &bool:result) {
+public Action TF2_CalcIsAttackCritical(int attacker, int weapon, char[] weaponname, bool &result) {
 	if (!g_bEnableAccuracy)
 		return Plugin_Continue;
 	
@@ -1002,7 +1006,7 @@ public Action TF2_CalcIsAttackCritical(attacker, weapon, String:weaponname[], &b
         bool postHumousDamage;
 		int shotType;
 		if (GetTrieValue(g_tShotTypes, weaponname, shotType)) {
-			string weap[64];
+			char weap[64];
 			weap[0] = '\0';
 			GetWeaponLogName(weap, sizeof(weap), attacker, weapon, healing, defid, postHumousDamage, attacker); // We are setting inflictor = attacker
 			
@@ -1015,9 +1019,9 @@ public Action TF2_CalcIsAttackCritical(attacker, weapon, String:weaponname[], &b
 				LogShot(attacker, weap);
 			} else if (shotType == SHOT_HITSCAN) {
 				bool sticky = false;
-				new aiment = GetClientAimTarget(attacker, false);
+				int aiment = GetClientAimTarget(attacker, false);
 				if (aiment >= 0 && IsValidEntity(aiment)) {
-					new String:aimentstr[64];
+					char aimentstr[64];
 					Entity_GetClassName(aiment, aimentstr, sizeof(aimentstr));
 					if (StrEqual(aimentstr, "tf_projectile_pipe_remote", false)) {
 						sticky = true;
@@ -1038,17 +1042,13 @@ public Action TF2_CalcIsAttackCritical(attacker, weapon, String:weaponname[], &b
 	return Plugin_Continue;
 }
 
-
-
-
-
-void LogShot(attacker, const String:weapon[]) {
+void LogShot(int attacker, const char[] weapon) {
 	// For performance, don't use FormatShot.
 	
 	int attackerid = GetClientUserId(attacker);
-	string attackerName[NAMELEN];
-	string attackerSteamID[64];
-	string attackerTeam[32];
+	char attackerName[NAMELEN];
+	char attackerSteamID[64];
+	char attackerTeam[32];
 	
 	GetClientName(attacker, attackerName, sizeof(attackerName));
 	GetClientAuthStringNew(attacker, attackerSteamID, sizeof(attackerSteamID), false);
@@ -1063,11 +1063,11 @@ void LogShot(attacker, const String:weapon[]) {
 		weapon);
 }
 
-void FormatShot(attacker, const String:weapon[], String:dest[], destlen) {
+void FormatShot(int attacker, const char[] weapon, char[] dest, int destlen) {
 	int attackerid = GetClientUserId(attacker);
-	string attackerName[NAMELEN];
-	string attackerSteamID[64];
-	string attackerTeam[32];
+	char attackerName[NAMELEN];
+	char attackerSteamID[64];
+	char attackerTeam[32];
 	
 	GetClientName(attacker, attackerName, sizeof(attackerName));
 	GetClientAuthStringNew(attacker, attackerSteamID, sizeof(attackerSteamID), false);
@@ -1084,11 +1084,11 @@ void FormatShot(attacker, const String:weapon[], String:dest[], destlen) {
 	
 }
 
-void LogHit(attacker, const String:weapon[]) {
+void LogHit(int attacker, const char[] weapon) {
 	int attackerid = GetClientUserId(attacker);
-	string attackerName[NAMELEN];
-	string attackerSteamID[64];
-	string attackerTeam[32];
+	char attackerName[NAMELEN];
+	char attackerSteamID[64];
+	char attackerTeam[32];
 	
 	GetClientName(attacker, attackerName, sizeof(attackerName));
 	GetClientAuthStringNew(attacker, attackerSteamID, sizeof(attackerSteamID), false);
@@ -1104,7 +1104,7 @@ void LogHit(attacker, const String:weapon[]) {
 // ---- ACCURACY ----
 
 
-void SetLastAirshotValues(attacker, victim) {
+void SetLastAirshotValues(int attacker, int victim) {
 	if ((GetEntityFlags(victim) & (FL_ONGROUND | FL_INWATER)) == 0) {
 		// The victim is in the air
 		float distance = DistanceAboveGroundBox(victim);
@@ -1116,7 +1116,7 @@ void SetLastAirshotValues(attacker, victim) {
 }
 
 
-float DistanceAboveGroundBox(victim) {
+float DistanceAboveGroundBox(int victim) {
 	float vStart[3];
 	float vDirection[3] = { 0.0, 0.0, -16384.0 };
 	float vHullMins[3]  = { -24.0, -24.0, 0.0 };
@@ -1140,7 +1140,7 @@ float DistanceAboveGroundBox(victim) {
 	return distance;
 }
 
-public bool TraceEntityFilterPlayer(entity, contentsMask) {
+public bool TraceEntityFilterPlayer(int entity, int contentsMask) {
 	return entity > MaxClients || !entity;
 }
 
@@ -1148,7 +1148,7 @@ public bool TraceEntityFilterPlayer(entity, contentsMask) {
 
 
 // F2's WeaponLogName
-bool GetWeaponLogName(string logname[], int lognameLen, int attacker, int weapon, int &healing, int &defid, bool &postHumousDamage, int inflictor = -1) {
+bool GetWeaponLogName(char[] logname, int lognameLen, int attacker, int weapon, int &healing, int &defid, bool &postHumousDamage, int inflictor = -1) {
 	defid = -1;
 	if (IsValidEntity(weapon))
 		defid = GetEntProp(weapon, Prop_Send, "m_iItemDefinitionIndex");
@@ -1249,13 +1249,13 @@ int g_iSlotWeaponDefid[MAXWEAPONS];
 int g_iSlotWeaponSlot[MAXWEAPONS]; // translates defid -> weapon slot
 int g_iSlotWeaponCount = 0;
 
-void WeaponIndexFromName(const string weaponname[]) {
+int WeaponIndexFromName(const char[] weaponname) {
 	int size = GetArraySize(g_hAllWeaponsName);
 	
 	int partialmatch = -1;
 	
 	for (int i = 0; i < size; i++) {
-		string cname[MAXWEPNAMELEN];
+		char cname[MAXWEPNAMELEN];
 		GetArrayString(g_hAllWeaponsName, i, cname, sizeof(cname));
 		
 		if (StrEqual(cname, weaponname, false)) {
@@ -1275,7 +1275,7 @@ const int MAXDEFID = 2048;
 int g_iCachedWeaponBucket[MAXDEFID+1];
 int g_iCachedWeaponDefid[WEPCACHESIZE];
 int g_iCachedWeaponTime[WEPCACHESIZE];
-string g_sCachedWeaponName[WEPCACHESIZE][MAXWEPNAMELEN];
+char g_sCachedWeaponName[WEPCACHESIZE][MAXWEPNAMELEN];
 int g_iCachedWeaponHealing[WEPCACHESIZE];
 bool g_bCachedWeaponPostHumousDamage[WEPCACHESIZE];
 int g_iCachedWeaponLength = 0;
@@ -1286,7 +1286,7 @@ void InitWeaponCache() {
 	Array_Fill(g_iCachedWeaponDefid, sizeof(g_iCachedWeaponDefid), -1);
 }
 
-bool WeaponFromDefid(int defid, string name[], int maxlen, int &healing, bool &postHumousDamage) {
+bool WeaponFromDefid(int defid, char[] name, int maxlen, int &healing, bool &postHumousDamage) {
 	if (defid <= MAXDEFID) {
 		int bucket = g_iCachedWeaponBucket[defid];
 		if (bucket != -1) {
@@ -1353,7 +1353,7 @@ void ImportWeaponDefinitions() {
 	g_iAllWeaponsCount = 0;
 	g_iSlotWeaponCount = 0;
 	
-	string path[] = "scripts/items/items_game.txt";
+	char path[] = "scripts/items/items_game.txt";
 	
 	if (!FileExists(path, true))
 		SetFailState("Could not find items_game.txt: %s", path);
@@ -1383,7 +1383,7 @@ void ImportWeaponDefinitions() {
 			continue;
 		
 		//if (KvizExist(kv, ":nth-child(%i).item_paintkit", itemId)) {
-		//	string prefab[64];
+		//	char prefab[64];
 		//	if (KvizGetStringExact(kv, ":nth-child(%i).prefab", itemId)) {
 		//		
 		//	}
@@ -1394,13 +1394,13 @@ void ImportWeaponDefinitions() {
 		bool isUpgradableStockWeapon = (defid >= 190 && defid <= 212);
 		
 		// Get the craft class
-		string craftclass[32];
+		char craftclass[32];
 		GetItemString(kv, kvPrefabs, "craft_class", craftclass, sizeof(craftclass), "");
 		
 		// Get the slot for the item
-		string itemslot[32];
+		char itemslot[32];
 		GetItemString(kv, kvPrefabs, "item_slot", itemslot, sizeof(itemslot));
-		new slot = -1;
+		int slot = -1;
 		if (StrEqual(itemslot, "primary", false))
 			slot = 0;
 		else if (StrEqual(itemslot, "secondary", false))
@@ -1419,7 +1419,7 @@ void ImportWeaponDefinitions() {
 			slot = 7;
 		
 		// Get the item class
-		string itemclass[MAXITEMCLASSLEN];
+		char itemclass[MAXITEMCLASSLEN];
 		GetItemString(kv, kvPrefabs, "item_class", itemclass, sizeof(itemclass));
 		
 		// Check if the item is a weapon
@@ -1436,7 +1436,7 @@ void ImportWeaponDefinitions() {
 			if (g_iSlotWeaponCount >= MAXWEAPONS)
 				SetFailState("Too many weapons. (%i)", g_iSlotWeaponCount);
 			
-			new pos = g_iSlotWeaponCount - 1;
+			int pos = g_iSlotWeaponCount - 1;
 			
 			// Insert slot & defid using insertion sort
 			while (pos >= 0 && g_iSlotWeaponDefid[pos] > defid) {
@@ -1456,7 +1456,7 @@ void ImportWeaponDefinitions() {
 			if (g_iAllWeaponsCount >= MAXWEAPONS)
 				SetFailState("Too many weapons. (%i)", g_iAllWeaponsCount);
 			
-			string itemname[MAXWEPNAMELEN] = "";
+			char itemname[MAXWEPNAMELEN] = "";
 			
 			if (defid == 130) {
 				strcopy(itemname, sizeof(itemname), "sticky_resistance"); // Scottish Resistance has the wrong name in items_game.txt
@@ -1506,7 +1506,7 @@ void ImportWeaponDefinitions() {
 			PushArrayString(g_hAllWeaponsName, itemname);
 			g_iAllWeaponsDefid[g_iAllWeaponsCount] = defid;
 			g_iAllWeaponsHealingOnHit[g_iAllWeaponsCount] = 0;
-			string attr[16];
+			char attr[16];
 			if (GetItemAttribute(kv, kvPrefabs, "add_onhit_addhealth", attr, sizeof(attr)) || GetItemAttribute(kv, kvPrefabs, "add_health_on_radius_damage", attr, sizeof(attr))) {
 				//PrintToChatAll("health on hit(%i) name(%s)", attr, itemname);
 				g_iAllWeaponsHealingOnHit[g_iAllWeaponsCount] = StringToInt(attr);
@@ -1527,11 +1527,11 @@ void ImportWeaponDefinitions() {
 	InitWeaponCache();
 }
 
-void GetItemString(Handle kv, Handle kvPrefabs, const string key[], string value[], int valueLen, const string def[] = "") {
+void GetItemString(Handle kv, Handle kvPrefabs, const char[] key, char[] value, int valueLen, const char[] def = "") {
 	if (KvizGetString(kv, value, valueLen, "", key))
 		return;
 	
-	string prefabs[128];
+	char prefabs[128];
 	KvizGetString(kv, prefabs, sizeof(prefabs), "", "prefab");
 	if (StrEqual(prefabs, "")) {
 		strcopy(value, valueLen, def);
@@ -1539,7 +1539,7 @@ void GetItemString(Handle kv, Handle kvPrefabs, const string key[], string value
 	}
 	
 	int pos;
-	string prefab[64];
+	char prefab[64];
 	do {
 		pos = FindCharInString(prefabs, ' ', true);
 		if (pos == -1) {
@@ -1556,17 +1556,17 @@ void GetItemString(Handle kv, Handle kvPrefabs, const string key[], string value
 	strcopy(value, valueLen, def);
 }
 
-bool GetItemStringFromPrefab(Handle kvPrefabs, const string prefab[], const string key[], string value[], valueLen) {
+bool GetItemStringFromPrefab(Handle kvPrefabs, const char[] prefab, const char[] key, char[] value, int valueLen) {
 	if (KvizGetStringExact(kvPrefabs, value, valueLen, "%s.%s", prefab, key))
 		return true;
 	
-	string prefabs[128];
+	char prefabs[128];
 	KvizGetString(kvPrefabs, prefabs, sizeof(prefabs), "", "%s.prefab", prefab);
 	if (StrEqual(prefabs, ""))
 		return false;
 	
 	int pos;
-	string nextPrefab[64];
+	char nextPrefab[64];
 	do {
 		pos = FindCharInString(prefabs, ' ', true);
 		if (pos == -1) {
@@ -1586,18 +1586,18 @@ bool GetItemStringFromPrefab(Handle kvPrefabs, const string prefab[], const stri
 }
 
 
-bool GetItemTag(Handle kv, Handle kvPrefabs, const string key[], bool def = false) {
+bool GetItemTag(Handle kv, Handle kvPrefabs, const char[] key, bool def = false) {
 	int ret;
 	if (KvizGetNumExact(kv, ret, "tags.%s", key))
 		return ret != 0;
 	
-	string prefabs[128];
+	char prefabs[128];
 	KvizGetString(kv, prefabs, sizeof(prefabs), "", "prefab");
 	if (StrEqual(prefabs, ""))
 		return def;
 	
 	int pos;
-	string prefab[64];
+	char prefab[64];
 	do {
 		pos = FindCharInString(prefabs, ' ', true);
 		if (pos == -1) {
@@ -1614,17 +1614,17 @@ bool GetItemTag(Handle kv, Handle kvPrefabs, const string key[], bool def = fals
 	return def;
 }
 
-bool GetItemAttribute(Handle kv, Handle kvPrefabs, const string attr[], string value[], int valueLen) {
+bool GetItemAttribute(Handle kv, Handle kvPrefabs, const char[] attr, char[] value, int valueLen) {
 	if (KvizGetStringExact(kv, value, valueLen, "attributes:any-child.attribute_class:has-value(%s):parent.value", attr))
 		return true;
 	
-	string prefabs[128];
+	char prefabs[128];
 	KvizGetString(kv, prefabs, sizeof(prefabs), "", "prefab");
 	if (StrEqual(prefabs, ""))
 		return false;
 	
 	int pos;
-	string prefab[64];
+	char prefab[64];
 	do {
 		pos = FindCharInString(prefabs, ' ', true);
 		if (pos == -1) {
