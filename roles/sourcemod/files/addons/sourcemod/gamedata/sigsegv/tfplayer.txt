@@ -1,0 +1,1115 @@
+// tfplayer
+
+"Games"
+{
+	"#default"
+	{
+		"#supported"
+		{
+			engine "tf2"
+		}
+		
+		"sigsegv"
+		{
+			"addrs"
+			{
+				"CTFPlayer::ApplyAbsVelocityImpulse"
+				{
+					type   "func ebpprologue unistr"
+					sym    "_ZN9CTFPlayer23ApplyAbsVelocityImpulseERK6Vector"
+					unistr "mult_aiming_knockback_resistance"
+				}
+				"CTFPlayer::ApplyGenericPushbackImpulse"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer27ApplyGenericPushbackImpulseERK6VectorPS_"
+				}
+				"CTFPlayer::ApplyPushFromDamage"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer19ApplyPushFromDamageERK15CTakeDamageInfo6Vector"
+				}
+				"CTFPlayer::IsMiniBoss"
+				{
+					type "sym"
+					sym  "_ZNK9CTFPlayer10IsMiniBossEv"
+				}
+				"CTFPlayer::IsPlayerClass"
+				{
+					type "sym"
+					sym  "_ZNK9CTFPlayer13IsPlayerClassEi"
+				}
+				"CTFPlayer::ShouldGib"
+				{
+					type   "func ebpprologue unistr"
+					sym    "_ZN9CTFPlayer9ShouldGibERK15CTakeDamageInfo"
+					unistr "crit_kill_will_gib"
+				}
+				"CTFPlayer::SpeakConceptIfAllowed"
+				{
+					type   "func ebpprologue unistr"
+					sym    "_ZN9CTFPlayer21SpeakConceptIfAllowedEiPKcPcjP16IRecipientFilter"
+					unistr "disguiseclass:%s"
+				}
+				"CTFPlayer::TFPlayerThink"
+				{
+					// weird function with dual ebx/ebp frame pointers for 16-byte alignment
+					type   "func ebpprologue unistr"
+					sym    "_ZN9CTFPlayer13TFPlayerThinkEv"
+					unistr "Heal Target: ClipSize Data Limit Exceeded: %d (max 500)\n"
+					// alt: "disguise_as_dispenser_on_crouch"
+					// alt: "#TF_Powerup_Supernova_Deploy"
+					// alt: "respawn_ghost"
+					// alt: "reviver"
+					// alt: "sticky_jump_landed"
+					// alt: "rocket_jump_landed"
+					// alt: "head_scale"
+					// alt: "torso_scale"
+					// alt: "hand_scale"
+				}
+				"CTFPlayer::Taunt"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer5TauntE8taunts_ti"
+				}
+				"CTFPlayer::FireBullet"
+				{
+					type   "func ebpprologue unistr"
+					sym    "_ZN9CTFPlayer10FireBulletEP13CTFWeaponBaseRK17FireBulletsInfo_tbii"
+					unistr "penetration_damage_penalty"
+				}
+				"CTFPlayer::ForceChangeTeam"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer15ForceChangeTeamEib"
+				}
+				"CTFPlayer::ForceRespawn"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer12ForceRespawnEv"
+				}
+				
+				"CTFPlayer::StartBuildingObjectOfType"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer25StartBuildingObjectOfTypeEii"
+				}
+				
+				"CTFPlayer::GetLoadoutItem"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer14GetLoadoutItemEiib"
+				}
+				
+				"CTFPlayer::HandleCommand_JoinClass"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer23HandleCommand_JoinClassEPKcb"
+				}
+				"CTFPlayer::HandleCommand_JoinTeam"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer22HandleCommand_JoinTeamEPKc"
+				}
+				"CTFPlayer::HandleCommand_JoinTeam_NoMenus"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer30HandleCommand_JoinTeam_NoMenusEPKc"
+				}
+				"CTFPlayer::IsReadyToPlay"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer13IsReadyToPlayEv"
+				}
+				"CTFPlayer::GetAutoTeam"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer11GetAutoTeamEi"
+				}
+				
+				"CTFPlayer::ShouldDropAmmoPack"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer18ShouldDropAmmoPackEv"
+				}
+				
+				"CTFPlayer::Event_Killed"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer12Event_KilledERK15CTakeDamageInfo"
+				}
+				
+				"CTFPlayer::TeleportEffect"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer14TeleportEffectEv"
+				}
+				
+				"CTFPlayer::HasTheFlag"
+				{
+					type "sym"
+					sym  "_ZNK9CTFPlayer10HasTheFlagEP11ETFFlagTypei"
+				}
+				
+				"CTFPlayer::CanBuild"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer8CanBuildEii"
+				}
+				
+				"CTFPlayer::ManageRegularWeapons"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer20ManageRegularWeaponsEP19TFPlayerClassData_t"
+				}
+				
+				"CTFPlayer::ReapplyPlayerUpgrades"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer21ReapplyPlayerUpgradesEv"
+				}
+				"CTFPlayer::ReapplyItemUpgrades"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer19ReapplyItemUpgradesEP13CEconItemView"
+				}
+				"CTFPlayer::RememberUpgrade"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer15RememberUpgradeEiP13CEconItemViewiib"
+				}
+				"CTFPlayer::ForgetFirstUpgradeForItem"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer25ForgetFirstUpgradeForItemEP13CEconItemView"
+				}
+				
+				"CTFPlayer::CreateFeignDeathRagdoll"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer23CreateFeignDeathRagdollERK15CTakeDamageInfobbb"
+				}
+				
+				"CTFPlayer::MedicGetChargeLevel"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer19MedicGetChargeLevelEPP13CTFWeaponBase"
+				}
+				
+				"CTFPlayer::DoTauntAttack"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer13DoTauntAttackEv"
+				}
+				
+				"CTFPlayer::TeamFortress_CalculateMaxSpeed"
+				{
+					type "sym"
+					sym  "_ZNK9CTFPlayer30TeamFortress_CalculateMaxSpeedEb"
+				}
+				
+				"CTFPlayer::OnTakeDamage"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer12OnTakeDamageERK15CTakeDamageInfo"
+				}
+				
+				"CTFPlayer::UpdateModel"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer11UpdateModelEv"
+				}
+				
+				"CTFPlayer::GetOverrideStepSound"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer20GetOverrideStepSoundEPKc"
+				}
+				
+				"CTFPlayer::GetSceneSoundToken"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer18GetSceneSoundTokenEv"
+				}
+				
+				"CTFPlayer::Weapon_OwnsThisID"
+				{
+					type "sym"
+					sym  "_ZNK9CTFPlayer17Weapon_OwnsThisIDEi"
+				}
+				
+				"CTFPlayer::GetObjectOfType"
+				{
+					type "sym"
+					sym  "_ZNK9CTFPlayer15GetObjectOfTypeEii"
+				}
+				
+				"CTFPlayer::GetDesiredHandScale"
+				{
+					type "sym"
+					sym  "_ZNK9CTFPlayer19GetDesiredHandScaleEv"
+				}
+				"CTFPlayer::GetDesiredHeadScale"
+				{
+					type "sym"
+					sym  "_ZNK9CTFPlayer19GetDesiredHeadScaleEv"
+				}
+				"CTFPlayer::GetDesiredTorsoScale"
+				{
+					type "sym"
+					sym  "_ZNK9CTFPlayer20GetDesiredTorsoScaleEv"
+				}
+			
+				"CTFPlayer::GetHandScaleSpeed"
+				{
+					type "sym"
+					sym  "_ZNK9CTFPlayer17GetHandScaleSpeedEv"
+				}
+				"CTFPlayer::GetHeadScaleSpeed"
+				{
+					type "sym"
+					sym  "_ZNK9CTFPlayer17GetHeadScaleSpeedEv"
+				}
+				"CTFPlayer::GetTorsoScaleSpeed"
+				{
+					type "sym"
+					sym  "_ZNK9CTFPlayer18GetTorsoScaleSpeedEv"
+				}
+				
+				"CTFPlayer::PlayTauntRemapInputScene"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer24PlayTauntRemapInputSceneEv"
+				}
+				
+				"CTFPlayer::FindPartnerTauntInitiator"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer25FindPartnerTauntInitiatorEv"
+				}
+				
+				"CTFPlayer::WantsLagCompensationOnEntity"
+				{
+					type "sym"
+					sym  "_ZNK9CTFPlayer28WantsLagCompensationOnEntityEPK11CBasePlayerPK8CUserCmdPK7CBitVecILi2048EE"
+				}
+				
+				"CTFPlayer::GetMaxAmmo"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer10GetMaxAmmoEii"
+				}
+				
+				"CTFPlayer::CreateRagdollEntity [args]"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer19CreateRagdollEntityEbbbbbbbbib"
+				}
+				
+				"CTFPlayer::ClientCommand"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer13ClientCommandERK8CCommand"
+				}
+				
+				"CTFPlayer::StateEnter"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer10StateEnterEi"
+				}
+				"CTFPlayer::StateLeave"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer10StateLeaveEv"
+				}
+				
+				"CTFPlayer::GiveNamedItem"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer13GiveNamedItemEPKciPK13CEconItemViewb"
+				}
+				
+				"CTFPlayer::GiveDefaultItems"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer16GiveDefaultItemsEv"
+				}
+				
+				"CTFPlayer::DropAmmoPack"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer12DropAmmoPackERK15CTakeDamageInfobb"
+				}
+				
+				"CTFPlayer::OnKilledOther_Effects"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer21OnKilledOther_EffectsEP11CBaseEntityRK15CTakeDamageInfo"
+				}
+				
+				"CTFPlayer::TakeHealth"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer10TakeHealthEfi"
+				}
+				
+				"CTFPlayer::AddCustomAttribute"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer18AddCustomAttributeEPKcff"
+				}
+				"CTFPlayer::RemoveCustomAttribute"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer21RemoveCustomAttributeEPKc"
+				}
+				"CTFPlayer::RemoveAllCustomAttributes"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer25RemoveAllCustomAttributesEv"
+				}
+				
+				"CTFPlayer::OnNavAreaChanged"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer16OnNavAreaChangedEP8CNavAreaS1_"
+				}
+				
+				"CTFPlayer::EndPurchasableUpgrades"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer22EndPurchasableUpgradesEv"
+				}
+				
+				"CTFPlayer::Weapon_GetWeaponByType"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer22Weapon_GetWeaponByTypeEi"
+				}
+				
+				"CTFPlayer::GetEquippedWearableForLoadoutSlot"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer33GetEquippedWearableForLoadoutSlotEi"
+				}
+				
+				"CTFPlayer::CanHearAndReadChatFrom"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer22CanHearAndReadChatFromEP11CBasePlayer"
+				}
+				
+				"CTFPlayer::DeathSound"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer10DeathSoundERK15CTakeDamageInfo"
+				}
+				
+				"CTFPlayer::SpyDeadRingerDeath"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer18SpyDeadRingerDeathERK15CTakeDamageInfo"
+				}
+				
+				"CTFPlayer::GetNumObjects"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer13GetNumObjectsEii"
+				}
+				
+				"CTFPlayer::DoClassSpecialSkill"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer19DoClassSpecialSkillEv"
+				}
+				
+				"CTFPlayer::CanAttack"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer9CanAttackEi"
+				}
+				
+				"CTFPlayer::ChangeTeam"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer10ChangeTeamEibbb"
+				}
+				
+				"CTFPlayer::ItemIsAllowed"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer13ItemIsAllowedEP13CEconItemView"
+				}
+				
+				"CTFPlayer::IsAllowedToPickUpFlag"
+				{
+					type "sym"
+					sym  "_ZNK9CTFPlayer21IsAllowedToPickUpFlagEv"
+				}
+				
+				"CTFPlayer::ModifyOrAppendCriteria::kSlotCriteriaName"
+				{
+					type "sym"
+					sym  "_ZZN9CTFPlayer22ModifyOrAppendCriteriaER14AI_CriteriaSetE17kSlotCriteriaName"
+				}
+				
+				"CTFPlayerShared::AddCond"
+				{
+					type "sym"
+					sym  "_ZN15CTFPlayerShared7AddCondE7ETFCondfP11CBaseEntity"
+				}
+				"CTFPlayerShared::RemoveCond"
+				{
+					type "sym"
+					sym  "_ZN15CTFPlayerShared10RemoveCondE7ETFCondb"
+				}
+				"CTFPlayerShared::InCond"
+				{
+					type "sym"
+					sym  "_ZNK15CTFPlayerShared6InCondE7ETFCond"
+				}
+				"CTFPlayerShared::StunPlayer"
+				{
+					type "sym"
+					sym  "_ZN15CTFPlayerShared10StunPlayerEffiP9CTFPlayer"
+				}
+				"CTFPlayerShared::OnConditionAdded"
+				{
+					type "sym"
+					sym  "_ZN15CTFPlayerShared16OnConditionAddedE7ETFCond"
+				}
+				"CTFPlayerShared::OnConditionRemoved"
+				{
+					type "sym"
+					sym  "_ZN15CTFPlayerShared18OnConditionRemovedE7ETFCond"
+				}
+				"CTFPlayerShared::IsInvulnerable"
+				{
+					type "sym"
+					sym  "_ZNK15CTFPlayerShared14IsInvulnerableEv"
+				}
+				"CTFPlayerShared::ModifyRage"
+				{
+					type "sym"
+					sym  "_ZN15CTFPlayerShared10ModifyRageEf"
+				}
+				"CTFPlayerShared::SetRageMeter"
+				{
+					type "sym"
+					sym  "_ZN15CTFPlayerShared12SetRageMeterEf"
+				}
+				"CTFPlayerShared::GetConditionsBits"
+				{
+					type "sym regex"
+					sym  "_ZNK15CTFPlayerShared17GetConditionsBitsER7CBitVecILi[[:digit:]]{3}EE"
+				}
+				"CTFPlayerShared::GetConditionDuration"
+				{
+					type "sym"
+					sym  "_ZNK15CTFPlayerShared20GetConditionDurationE7ETFCond"
+				}
+				"CTFPlayerShared::GetConditionProvider"
+				{
+					type "sym"
+					sym  "_ZNK15CTFPlayerShared20GetConditionProviderE7ETFCond"
+				}
+				"CTFPlayerShared::GetDisguiseTeam"
+				{
+					type "sym"
+					sym  "_ZNK15CTFPlayerShared15GetDisguiseTeamEv"
+				}
+				"CTFPlayerShared::IsStealthed"
+				{
+					type "sym"
+					sym  "_ZNK15CTFPlayerShared11IsStealthedEv"
+				}
+				"CTFPlayerShared::GetPercentInvisible"
+				{
+					type "sym"
+					sym  "_ZNK15CTFPlayerShared19GetPercentInvisibleEv"
+				}
+				"CTFPlayerShared::RadiusCurrencyCollectionCheck"
+				{
+					type "sym"
+					sym  "_ZN15CTFPlayerShared29RadiusCurrencyCollectionCheckEv"
+				}
+				"CTFPlayerShared::IsControlStunned"
+				{
+					type "sym"
+					sym  "_ZN15CTFPlayerShared16IsControlStunnedEv"
+				}
+				"CTFPlayerShared::IsLoserStateStunned"
+				{
+					type "sym"
+					sym  "_ZNK15CTFPlayerShared19IsLoserStateStunnedEv"
+				}
+				"CTFPlayerShared::RadiusSpyScan"
+				{
+					type "sym"
+					sym  "_ZN15CTFPlayerShared13RadiusSpyScanEv"
+				}
+				"CTFPlayerShared::GetActiveTFWeapon"
+				{
+					type "sym"
+					sym  "_ZNK15CTFPlayerShared17GetActiveTFWeaponEv"
+				}
+
+				"CTFPlayerShared::MakeBleed"
+				{
+					type "sym"
+					sym  "_ZN15CTFPlayerShared9MakeBleedEP9CTFPlayerP13CTFWeaponBasefibi"
+				}
+
+				"CTFPlayerShared::OnRemovePhase"
+				{
+					type "sym"
+					sym  "_ZN15CTFPlayerShared13OnRemovePhaseEv"
+				}
+				
+				"CTFPlayerClassShared::SetCustomModel"
+				{
+					type "sym"
+					sym  "_ZN20CTFPlayerClassShared14SetCustomModelEPKcb"
+				}
+				
+				"CTFPlayerSharedUtils::GetEconItemViewByLoadoutSlot"
+				{
+					type "sym"
+					sym  "_ZN20CTFPlayerSharedUtils28GetEconItemViewByLoadoutSlotEP9CTFPlayeriPP11CEconEntity"
+				}
+				
+				"CTFPlayerShared::SetRevengeCrits"
+				{
+					type "sym"
+					sym  "_ZN15CTFPlayerShared15SetRevengeCritsEi"
+				}
+
+				"CTFPlayerShared::SetChargeEffect"
+				{
+					type "sym"
+					sym  "_ZN15CTFPlayerShared15SetChargeEffectE20medigun_charge_typesbbRK16MedigunEffects_tfP9CTFPlayer"
+				}
+				
+				"CTFPlayerShared::PulseMedicRadiusHeal"
+				{
+					type "sym"
+					sym  "_ZN15CTFPlayerShared20PulseMedicRadiusHealEv"
+				}
+
+				"CTFPlayerShared::TestAndExpireChargeEffect"
+				{
+					type "sym"
+					sym  "_ZN15CTFPlayerShared25TestAndExpireChargeEffectE20medigun_charge_types"
+				}
+
+				"CTFPlayerShared::GetMaxBuffedHealth"
+				{
+					type "sym"
+					sym  "_ZN15CTFPlayerShared18GetMaxBuffedHealthEbb"
+				}
+
+				"CTFPlayerShared::OnRemoveTaunting"
+				{
+					type "sym"
+					sym  "_ZN15CTFPlayerShared16OnRemoveTauntingEv"
+				}
+				
+				"CTFPlayerShared::CalculateObjectCost"
+				{
+					type "sym"
+					sym  "_ZN15CTFPlayerShared19CalculateObjectCostEP9CTFPlayeri"
+				}
+				"CTFPlayerMove::StartCommand"
+				{
+					type "sym"
+					sym  "_ZN13CTFPlayerMove12StartCommandEP11CBasePlayerP8CUserCmd"
+				}
+				"CTFPlayerMove::SetupMove"
+				{
+					type "sym"
+					sym  "_ZN13CTFPlayerMove9SetupMoveEP11CBasePlayerP8CUserCmdP11IMoveHelperP9CMoveData"
+				}
+				"CTFPlayer::InputSetCustomModel"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer19InputSetCustomModelER11inputdata_t"
+				}
+				"CTFPlayer::PainSound"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer9PainSoundERK15CTakeDamageInfo"
+				}
+				"CTFPlayer::UseActionSlotItemPressed"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer24UseActionSlotItemPressedEv"
+				}
+				"CTFPlayer::UseActionSlotItemReleased"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer25UseActionSlotItemReleasedEv"
+				}
+				"CTFPlayer::GetEntityForLoadoutSlot"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer23GetEntityForLoadoutSlotEib"
+				}
+				"CTFPlayerShared::Burn"
+				{
+					type "sym"
+					sym  "_ZN15CTFPlayerShared4BurnEP9CTFPlayerP13CTFWeaponBasef"
+				}
+				"CTFPlayer::DoAnimationEvent"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer16DoAnimationEventE17PlayerAnimEvent_ti"
+				}
+				"CTFPlayer::CanAirDash"
+				{
+					type "sym"
+					sym  "_ZNK9CTFPlayer10CanAirDashEv"
+				}
+				"HandleRageGain"
+				{
+					type "sym"
+					sym  "_Z14HandleRageGainP9CTFPlayerjff"
+				}
+				"CTFPlayer::GetAttributeList"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer16GetAttributeListEv"
+				}
+				"CTFPlayer::IsAllowedToTaunt"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer16IsAllowedToTauntEv"
+				}
+				"CTFPlayer::PlaySpecificSequence"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer20PlaySpecificSequenceEPKc"
+				}
+				"CTFPlayer::ModifyOrAppendCriteria"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer22ModifyOrAppendCriteriaER14AI_CriteriaSet"
+				}
+				"SendProxy_PlayerObjectList"
+				{
+					type "sym"
+					sym  "_Z26SendProxy_PlayerObjectListPK8SendPropPKvS3_P8DVariantii"
+				}
+				"SendProxyArrayLength_PlayerObjects"
+				{
+					type "sym"
+					sym  "_Z34SendProxyArrayLength_PlayerObjectsPKvi"
+				}
+				"CTFPlayer::GetObjectCount"
+				{
+					type "sym"
+					sym  "_ZNK9CTFPlayer14GetObjectCountEv"
+				}
+				"CTFPlayer::GetObject"
+				{
+					type "sym"
+					sym  "_ZNK9CTFPlayer9GetObjectEi"
+				}
+				"CTFPlayer::StartedBuildingObject"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer21StartedBuildingObjectEi"
+				}
+				"CTFPlayer::AddObject"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer9AddObjectEP11CBaseObject"
+				}
+				"CTFPlayer::Touch"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer5TouchEP11CBaseEntity"
+				}
+				"CTFPlayer::StateTransition"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer15StateTransitionEi"
+				}
+				"CTFPlayer::RemoveCurrency"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer14RemoveCurrencyEi"
+				}
+				"CTFPlayer::ShouldTransmit"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer14ShouldTransmitEPK18CCheckTransmitInfo"
+				}
+				"CTFPlayer::GetAttributeManager"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer19GetAttributeManagerEv"
+				}
+				"CTFPlayer::UpdateOnRemove"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer14UpdateOnRemoveEv"
+				}
+				"CTFPlayer::PlayTauntSceneFromItem"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer22PlayTauntSceneFromItemEPK13CEconItemView"
+				}
+				"CTFPlayer::CanMoveDuringTaunt"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer18CanMoveDuringTauntEv"
+				}
+				"CTFPlayer::RegenThink"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer10RegenThinkEv"
+				}
+				"CTFPlayer::ParseSharedTauntDataFromEconItemView"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer36ParseSharedTauntDataFromEconItemViewEPK13CEconItemView"
+				}
+				"CTFPlayer::CancelTaunt"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer11CancelTauntEv"
+				}
+				"CTFPlayer::IsAllowedToInitiateTauntWithPartner"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer35IsAllowedToInitiateTauntWithPartnerEPK13CEconItemViewPci"
+				}
+				"CTFPlayer::InputIgnitePlayer"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer17InputIgnitePlayerER11inputdata_t"
+				}
+				"CTFPlayer::RemoveObject"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer12RemoveObjectEP11CBaseObject"
+				}
+				"CTFPlayer::Spawn"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer5SpawnEv"
+				}
+				"CTFPlayer::InspectButtonPressed"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer20InspectButtonPressedEv"
+				}
+				"CTFPlayer::CheckInstantLoadoutRespawn"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer26CheckInstantLoadoutRespawnEv"
+				}
+				"CTFPlayer::ForceRegenerateAndRespawn"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer25ForceRegenerateAndRespawnEv"
+				}
+				"CTFPlayer::GiveAmmo"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer8GiveAmmoEiib11EAmmoSource"
+				}
+				"CTFPlayer::DropCurrencyPack"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer16DropCurrencyPackE17CurrencyRewards_tibP11CBasePlayer"
+				}
+				"CTFPlayer::ManageBuilderWeapons"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer20ManageBuilderWeaponsEP19TFPlayerClassData_t"
+				}
+				"CTFPlayer::IsReadyToSpawn"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer14IsReadyToSpawnEv"
+				}
+				"CTFPlayer::ShouldGainInstantSpawn"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer22ShouldGainInstantSpawnEv"
+				}
+				"CTFPlayer::OnTakeDamage_Alive"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer18OnTakeDamage_AliveERK15CTakeDamageInfo"
+				}
+				"CTFPlayer::PickupWeaponFromOther"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer21PickupWeaponFromOtherEP16CTFDroppedWeapon"
+				}
+				"CTFPlayer::BeginPurchasableUpgrades"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer24BeginPurchasableUpgradesEv"
+				}
+				"CTFPlayer::Regenerate"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer10RegenerateEb"
+				}
+				"CTFPlayer::ItemsMatch"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer10ItemsMatchEP19TFPlayerClassData_tP13CEconItemViewS3_P13CTFWeaponBase"
+				}
+				"CTFPlayer::PlayScene"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer9PlaySceneEPKcfP11AI_ResponseP16IRecipientFilter"
+				}
+				"CTFPlayer::TryToPickupBuilding"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer19TryToPickupBuildingEv"
+				}
+				"CTFPlayerShared::UpdateChargeMeter"
+				{
+					type "sym"
+					sym  "_ZN15CTFPlayerShared17UpdateChargeMeterEv"
+				}
+				"CTFPlayer::EndClassSpecialSkill"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer20EndClassSpecialSkillEv"
+				}
+				"CTFPlayer::GetMaxHealthForBuffing"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer22GetMaxHealthForBuffingEv"
+				}
+				"CTFPlayer::DetonateObjectOfType"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer20DetonateObjectOfTypeEiib"
+				}
+				"CTFPlayerClassShared::CanBuildObject"
+				{
+					type "sym"
+					sym  "_ZN20CTFPlayerClassShared14CanBuildObjectEi"
+				}
+				"CTFPlayer::RemoveAllOwnedEntitiesFromWorld"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer31RemoveAllOwnedEntitiesFromWorldEb"
+				}
+				"CTFPlayerClassShared::GetHandModelName"
+				{
+					type "sym"
+					sym  "_ZNK20CTFPlayerClassShared16GetHandModelNameEi"
+				}
+				"CTFPlayer::GetPassiveWeapons"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer17GetPassiveWeaponsER10CUtlVectorIP13CTFWeaponBase10CUtlMemoryIS2_iEE"
+				}
+				"CTFPlayer::TeamFortress_SetSpeed"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer21TeamFortress_SetSpeedEv"
+				}
+				"CTFPlayer::PrecacheMvM"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer11PrecacheMvMEv"
+				}
+				"CTFPlayer::PostThink"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer9PostThinkEv"
+				}
+				"CTFPlayer::CreateViewModel"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer15CreateViewModelEi"
+				}
+				"CTFPlayer::ClearTauntAttack"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer16ClearTauntAttackEv"
+				}
+				"CTFPlayer::ApplyPunchImpulseX"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer18ApplyPunchImpulseXEf"
+				}
+				"CTFPlayer::HandleAnimEvent"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer15HandleAnimEventEP11animevent_t"
+				}
+				"CTFPlayerShared::IsPlayerDominated"
+				{
+					type "sym"
+					sym  "_ZN15CTFPlayerShared17IsPlayerDominatedEi"
+				}
+				"CTFPlayerShared::IsPlayerDominatingMe"
+				{
+					type "sym"
+					sym  "_ZN15CTFPlayerShared20IsPlayerDominatingMeEi"
+				}
+				"CTFPlayerShared::SetPlayerDominated"
+				{
+					type "sym"
+					sym  "_ZN15CTFPlayerShared18SetPlayerDominatedEP9CTFPlayerb"
+				}
+				"CTFPlayerShared::SetPlayerDominatingMe"
+				{
+					type "sym"
+					sym  "_ZN15CTFPlayerShared21SetPlayerDominatingMeEP9CTFPlayerb"
+				}
+				"CTFPlayer::UpdateExpression"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer16UpdateExpressionEv"
+				}
+				"CTFPlayerShared::ConditionGameRulesThink"
+				{
+					type "sym"
+					sym  "_ZN15CTFPlayerShared23ConditionGameRulesThinkEv"
+				}
+				"CTFPlayer::GetOpposingTFTeam"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer17GetOpposingTFTeamEv"
+				}
+				"CTFPlayerShared::FadeInvis"
+				{
+					type "sym"
+					sym  "_ZN15CTFPlayerShared9FadeInvisEf"
+				}
+				"CTFPlayerShared::UpdateCloakMeter"
+				{
+					type "sym"
+					sym  "_ZN15CTFPlayerShared16UpdateCloakMeterEv"
+				}
+				"CTFPlayer::SetOffHandWeapon"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer16SetOffHandWeaponEP13CTFWeaponBase"
+				}
+				"CTFPlayer::HolsterOffHandWeapon"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer20HolsterOffHandWeaponEv"
+				}
+				"CTFPlayer::TraceAttack"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer11TraceAttackERK15CTakeDamageInfoRK6VectorP10CGameTraceP15CDmgAccumulator"
+				}
+				"CTFPlayerShared::IsCritBoosted"
+				{
+					type "sym"
+					sym  "_ZNK15CTFPlayerShared13IsCritBoostedEv"
+				}
+				"CTFPlayerShared::CTFPlayerShared"
+				{
+					type "sym"
+					sym  "_ZN15CTFPlayerSharedC2Ev"
+				}
+				"CTFPlayerShared::SelfBurn"
+				{
+					type "sym"
+					sym  "_ZN15CTFPlayerShared8SelfBurnEf"
+				}
+				"CTFPlayerShared::GetCarryingRuneType"
+				{
+					type "sym"
+					sym  "_ZNK15CTFPlayerShared19GetCarryingRuneTypeEv"
+				}
+				"CTFPlayer::GetRuneHealthBonus"
+				{
+					type "sym"
+					sym  "_ZNK9CTFPlayer18GetRuneHealthBonusEv"
+				}
+				"CTFPlayer::GetMaxHealth"
+				{
+					type "sym"
+					sym  "_ZNK9CTFPlayer12GetMaxHealthEv"
+				}
+				"CTFPlayer::CanDisguise"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer11CanDisguiseEv"
+				}
+				"CTFPlayer::CanGoInvisible"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer14CanGoInvisibleEb"
+				}
+				"CTFPlayer::ClearDisguiseWeaponList"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer23ClearDisguiseWeaponListEv"
+				}
+				"CTFPlayerShared::DetermineDisguiseWeapon"
+				{
+					type "sym"
+					sym  "_ZN15CTFPlayerShared23DetermineDisguiseWeaponEb"
+				}
+				"CTFPlayerShared::DetermineDisguiseWearables"
+				{
+					type "sym"
+					sym  "_ZN15CTFPlayerShared26DetermineDisguiseWearablesEv"
+				}
+				"CTFPlayer::CreateDisguiseWeaponList"
+				{
+					type "sym"
+					sym  "_ZN9CTFPlayer24CreateDisguiseWeaponListEPS_"
+				}
+				"CTFPlayerShared::RemoveDisguiseWeapon"
+				{
+					type "sym"
+					sym  "_ZN15CTFPlayerShared20RemoveDisguiseWeaponEv"
+				}
+				"CTFPlayerShared::SetScoutHypeMeter"
+				{
+					type "sym"
+					sym  "_ZN15CTFPlayerShared17SetScoutHypeMeterEf"
+				}
+				"CTFPlayerShared::UpdateEnergyDrinkMeter"
+				{
+					type "sym"
+					sym  "_ZN15CTFPlayerShared22UpdateEnergyDrinkMeterEv"
+				}
+			//	"GetTFConditionName"
+			//	{
+			//		type "sym"
+			//		sym  "_Z18GetTFConditionName7ETFCond"
+			//	}
+			//	"GetTFConditionFromName"
+			//	{
+			//		type "sym"
+			//		sym  "_Z22GetTFConditionFromNamePKc"
+			//	}
+			}
+			
+			"addrs_group"
+			{
+				"[common]"
+				{
+					type "sym"
+					lib  "server"
+				}
+				
+				"CTFPlayer::RemoveInvisibility" "_ZN9CTFPlayer18RemoveInvisibilityEv"
+				"CTFPlayer::CheckBlockBackstab" "_ZN9CTFPlayer18CheckBlockBackstabEPS_"
+				
+				"CTFPlayerShared::SetDefaultItemChargeMeters" "_ZN15CTFPlayerShared26SetDefaultItemChargeMetersEv"
+				"CTFPlayerShared::SetItemChargeMeter"         "_ZN15CTFPlayerShared18SetItemChargeMeterE19loadout_positions_tf"
+			}
+		}
+	}
+}

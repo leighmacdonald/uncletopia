@@ -1,0 +1,152 @@
+// globals
+
+"Games"
+{
+	"#default"
+	{
+		"#supported"
+		{
+			engine "tf2"
+			engine "css"
+			engine "ep1"
+			engine "ep2"
+			engine "hl2dm"
+			engine "dods"
+			engine "sdk2013"
+			engine "l4d"
+			engine "nd"
+			engine "l4d2"
+			engine "blade"
+			engine "insurgency"
+			engine "contagion"
+			engine "bms"
+			engine "doi"
+			engine "pkvii"
+		}
+		
+		"sigsegv"
+		{
+			"addrs_group"
+			{
+				"[common]"
+				{
+					type "sym"
+					lib  "server"
+				}
+				
+				"gpGlobals" "gpGlobals"
+				
+				"debugoverlay" "debugoverlay"
+				
+				"usermessages" "usermessages"
+				
+				"TheNavMesh"  "TheNavMesh"
+				"TheNavAreas" "TheNavAreas"
+				
+				"g_pObjectiveResource" "g_pObjectiveResource"
+				
+				"CGameRulesProxy::s_pGameRulesProxy" "_ZN15CGameRulesProxy17s_pGameRulesProxyE"
+				
+				"g_hUpgradeEntity" "g_hUpgradeEntity"
+				
+				"g_MannVsMachineUpgrades" "g_MannVsMachineUpgrades"
+				
+				"g_hControlPointMasters" "g_hControlPointMasters"
+				
+				"g_pPopulationManager" "g_pPopulationManager"
+				
+//				"s_pszNextPopfile" "s_pszNextPopfile"
+				
+				"lagcompensation" "lagcompensation"
+				
+				"s_pTokenBuf" "_ZL11s_pTokenBuf"
+				
+				"g_aTeamNames"  "g_aTeamNames"
+				"g_aTeamColors" "g_aTeamColors"
+
+				"g_aClassNames"                    "g_aClassNames"
+				"g_aPlayerClassNames"              "g_aPlayerClassNames"
+				"g_aPlayerClassNames_NonLocalized" "g_aPlayerClassNames_NonLocalized"
+				"g_aRawPlayerClassNames"           "g_aRawPlayerClassNames"
+				"g_aRawPlayerClassNamesShort"      "g_aRawPlayerClassNamesShort"
+				
+				"g_aWeaponNames" "g_aWeaponNames"
+				
+				"g_szLoadoutStrings"           "g_szLoadoutStrings"
+				"g_szLoadoutStringsForDisplay" "g_szLoadoutStringsForDisplay"
+				
+				"g_szBotModels"                "g_szBotModels"
+				"g_szBotBossModels"            "g_szBotBossModels"
+				"g_szPlayerRobotModels"        "g_szPlayerRobotModels"
+				"g_szBotBossSentryBusterModel" "g_szBotBossSentryBusterModel"
+				
+				"s_TankModel"     "_ZL11s_TankModel"
+				"s_TankModelRome" "_ZL15s_TankModelRome"
+				
+				"g_szRomePromoItems_Hat"  "g_szRomePromoItems_Hat"
+				"g_szRomePromoItems_Misc" "g_szRomePromoItems_Misc"
+				
+				"g_TeamVisualSections" "g_TeamVisualSections"
+				
+				"s_TFTeamManager" "s_TFTeamManager"
+				
+				"g_EventQueue" "g_EventQueue"
+				"g_voteController" "g_voteController"
+
+				"g_TETFParticleEffect" "_ZL20g_TETFParticleEffect"
+				"g_pFullFileSystem" "g_pFullFileSystem"
+
+				"CSceneEntity::m_pcvSndMixahead" "_ZN12CSceneEntity16m_pcvSndMixaheadE"
+
+				"DT_TFPlayer::g_SendTable" "_ZN11DT_TFPlayer11g_SendTableE"
+				"DT_CSPlayer::g_SendTable" "_ZN11DT_CSPlayer11g_SendTableE"
+				"g_CTFPlayer_ClassReg" "_ZL20g_CTFPlayer_ClassReg"
+				"g_CCSPlayer_ClassReg" "_ZL20g_CCSPlayer_ClassReg"
+				
+				"g_MedigunEffects" "g_MedigunEffects"
+				"g_pMonsterResource" "g_pMonsterResource"
+				
+				"CBaseEntity::m_nPredictionRandomSeed" "_ZN11CBaseEntity23m_nPredictionRandomSeedE"
+				"g_RecipientFilterPredictionSystem" "_ZL33g_RecipientFilterPredictionSystem"
+				
+				"g_pPlayerResource" "g_pPlayerResource"
+				"g_EntityListPool" "g_EntityListPool"
+				"g_DeleteList" "_ZL12g_DeleteList"
+				"g_bDisableEhandleAccess" "g_bDisableEhandleAccess"
+				"s_RemoveImmediateSemaphore" "_ZL26s_RemoveImmediateSemaphore"
+				"g_WorldEntity" "_ZL13g_WorldEntity"
+				"DT_TFPlayerResource::g_SendTable" "_ZN19DT_TFPlayerResource11g_SendTableE"
+				"DT_PlayerResource::g_SendTable" "_ZN17DT_PlayerResource11g_SendTableE"
+				"s_lastTeleporter" "_ZL16s_lastTeleporter"
+				"g_pParticleSystemMgr" "_ZL19s_ParticleSystemMgr"
+				"g_pParticleSystemQuery" "g_pParticleSystemQuery"
+				"g_pszMPConcepts" "g_pszMPConcepts"
+				"CNavArea::m_masterMarker" "_ZN8CNavArea14m_masterMarkerE"
+				"CNavArea::m_openList" "_ZN8CNavArea10m_openListE"
+				"g_SentGameRulesMasks" "g_SentGameRulesMasks"
+				"CNavArea::s_nCurrVisTestCounter" "_ZN8CNavArea21s_nCurrVisTestCounterE"
+				
+			}
+			
+			"addrs_group"
+			{
+				"[common]"
+				{
+					type "sym"
+					lib  "engine"
+				}
+				"g_PropTypeFns" "g_PropTypeFns"
+				
+				"g_MapListMgr" "_ZL12g_MapListMgr"
+				"g_FrameSnapshotManager" "_ZL22g_FrameSnapshotManager"
+				"g_SharedEdictChangeInfo" "g_SharedEdictChangeInfo"
+				"g_FreeEdicts" "_ZL12g_FreeEdicts"
+				"hltv" "hltv"
+				"s_StaticPropMgr" "_ZL15s_StaticPropMgr"
+				"modelloader" "modelloader"
+				"VTable for CStaticProp" "_ZTV11CStaticProp"
+				
+			}
+		}
+	}
+}

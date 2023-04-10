@@ -1,0 +1,30 @@
+// NextBotPlayerBody
+
+"Games"
+{
+	"#default"
+	{
+		"#supported"
+		{
+			engine "tf2"
+		}
+		
+		"sigsegv"
+		{
+			"addrs"
+			{
+				"PlayerBody::GetMaxHeadAngularVelocity"
+				{
+					type "sym"
+					sym  "_ZNK10PlayerBody25GetMaxHeadAngularVelocityEv"
+				}
+				"PlayerBody::GetHullWidth"
+				{
+					type "sym"
+					sym  "_ZNK10PlayerBody12GetHullWidthEv"
+				}
+				
+			}
+		}
+	}
+}

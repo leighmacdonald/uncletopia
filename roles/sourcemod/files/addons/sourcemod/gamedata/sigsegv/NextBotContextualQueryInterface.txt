@@ -1,0 +1,87 @@
+// NextBotContextualQueryInterface
+
+"Games"
+{
+	"#default"
+	{
+		"#supported"
+		{
+			engine "tf2"
+		}
+		
+		"sigsegv"
+		{
+			"addrs"
+			{
+//				"IContextualQuery::~IContextualQuery [D0]"
+//				{
+//					type "sym"
+//					sym  "_ZN16IContextualQueryD0Ev"
+//				}
+//				"IContextualQuery::~IContextualQuery [D2]"
+//				{
+//					type   "func knownvtidx"
+//					sym    "_ZN16IContextualQueryD2Ev"
+//					vtable ".?AVIContextualQuery@@"
+//					idx    "0x00"
+//				}
+				"IContextualQuery::ShouldPickUp"
+				{
+					type   "func knownvtidx"
+					sym    "_ZNK16IContextualQuery12ShouldPickUpEPK8INextBotP11CBaseEntity"
+					vtable ".?AVIContextualQuery@@"
+					idx    "0x01"
+				}
+				"IContextualQuery::ShouldHurry"
+				{
+					type   "func knownvtidx"
+					sym    "_ZNK16IContextualQuery11ShouldHurryEPK8INextBot"
+					vtable ".?AVIContextualQuery@@"
+					idx    "0x02"
+				}
+				"IContextualQuery::ShouldRetreat"
+				{
+					type   "func knownvtidx"
+					sym    "_ZNK16IContextualQuery13ShouldRetreatEPK8INextBot"
+					vtable ".?AVIContextualQuery@@"
+					idx    "0x03"
+				}
+				"IContextualQuery::ShouldAttack"
+				{
+					type   "func knownvtidx"
+					sym    "_ZNK16IContextualQuery12ShouldAttackEPK8INextBotPK12CKnownEntity"
+					vtable ".?AVIContextualQuery@@"
+					idx    "0x04"
+				}
+				"IContextualQuery::IsHindrance"
+				{
+					type   "func knownvtidx"
+					sym    "_ZNK16IContextualQuery11IsHindranceEPK8INextBotP11CBaseEntity"
+					vtable ".?AVIContextualQuery@@"
+					idx    "0x05"
+				}
+				"IContextualQuery::SelectTargetPoint"
+				{
+					type   "func knownvtidx"
+					sym    "_ZNK16IContextualQuery17SelectTargetPointEPK8INextBotPK20CBaseCombatCharacter"
+					vtable ".?AVIContextualQuery@@"
+					idx    "0x06"
+				}
+				"IContextualQuery::IsPositionAllowed"
+				{
+					type   "func knownvtidx"
+					sym    "_ZNK16IContextualQuery17IsPositionAllowedEPK8INextBotRK6Vector"
+					vtable ".?AVIContextualQuery@@"
+					idx    "0x07"
+				}
+				"IContextualQuery::SelectMoreDangerousThreat"
+				{
+					type   "func knownvtidx"
+					sym    "_ZNK16IContextualQuery25SelectMoreDangerousThreatEPK8INextBotPK20CBaseCombatCharacterPK12CKnownEntityS8_"
+					vtable ".?AVIContextualQuery@@"
+					idx    "0x08"
+				}
+			}
+		}
+	}
+}

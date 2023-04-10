@@ -181,6 +181,15 @@
   loop_control:
     index_var: loop0
 
+- name: /tf/cfg/sourcemod/sigsegv_convars.cfg
+  ansible.builtin.template:
+    src: sigsegv_convars.cfg.j2
+    dest: ~/build_srcds/srcds-{{ item.server_name_short }}/tf/cfg/sourcemod/sigsegv_convars.cfg
+    mode: 0755
+  loop: "{{ services }}"
+  loop_control:
+    index_var: loop0
+
 - name: /tf/cfg/sourcemod/randomcycle.cfg
   ansible.builtin.template:
     src: randomcycle.cfg.j2

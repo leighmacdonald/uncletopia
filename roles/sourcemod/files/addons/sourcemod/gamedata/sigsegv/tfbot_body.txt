@@ -1,0 +1,24 @@
+// tfbot_body
+
+"Games"
+{
+	"#default"
+	{
+		"#supported"
+		{
+			engine "tf2"
+		}
+		
+		"sigsegv"
+		{
+			"addrs"
+			{
+				"CTFBotBody::GetHeadAimTrackingInterval"
+				{
+					type "sym"
+					sym  "_ZNK10CTFBotBody26GetHeadAimTrackingIntervalEv"
+				}
+			}
+		}
+	}
+}

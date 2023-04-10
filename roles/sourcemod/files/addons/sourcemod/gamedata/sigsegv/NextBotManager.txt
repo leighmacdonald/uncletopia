@@ -1,0 +1,43 @@
+// NextBotManager
+
+"Games"
+{
+	"#default"
+	{
+		"#supported"
+		{
+			engine "tf2"
+		}
+		
+		"sigsegv"
+		{
+			"addrs"
+			{
+				"TheNextBots"
+				{
+					type "sym"
+					sym  "_Z11TheNextBotsv"
+				}
+				
+				"NextBotManager::CollectAllBots"
+				{
+					type "sym"
+					sym  "_ZN14NextBotManager14CollectAllBotsEP10CUtlVectorIP8INextBot10CUtlMemoryIS2_iEE"
+				}
+
+				"NextBotManager::Update"
+				{
+					type "sym"
+					sym  "_ZN14NextBotManager6UpdateEv"
+				}
+				
+				"NextBotManager::ShouldUpdate"
+				{
+					type "sym"
+					sym  "_ZN14NextBotManager12ShouldUpdateEP8INextBot"
+				}
+				
+			}
+		}
+	}
+}

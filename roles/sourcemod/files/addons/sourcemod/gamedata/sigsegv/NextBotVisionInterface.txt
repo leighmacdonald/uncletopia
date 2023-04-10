@@ -1,0 +1,64 @@
+// NextBotVisionInterface
+
+"Games"
+{
+	"#default"
+	{
+		"#supported"
+		{
+			engine "tf2"
+		}
+		
+		"sigsegv"
+		{
+			"addrs"
+			{
+				"IVision::Update"
+				{
+					type "sym"
+					sym  "_ZN7IVision6UpdateEv"
+				}
+				"IVision::UpdateKnownEntities"
+				{
+					type "sym"
+					sym  "_ZN7IVision19UpdateKnownEntitiesEv"
+				}
+				"IVision::AddKnownEntity"
+				{
+					type "sym"
+					sym  "_ZN7IVision14AddKnownEntityEP11CBaseEntity"
+				}
+				"IVision::ForgetEntity"
+				{
+					type "sym"
+					sym  "_ZN7IVision12ForgetEntityEP11CBaseEntity"
+				}
+				"IVision::ForgetAllKnownEntities"
+				{
+					type "sym"
+					sym  "_ZN7IVision22ForgetAllKnownEntitiesEv"
+				}
+				"IVision::IsLineOfSightClear"
+				{
+					type "sym"
+					sym  "_ZNK7IVision18IsLineOfSightClearERK6Vector"
+				}
+				"IVision::IsAbleToSee"
+				{
+					type "sym"
+					sym  "_ZZNK7IVision11IsAbleToSeeEP11CBaseEntityNS_20FieldOfViewCheckTypeEP6VectorE6tm_fmt"
+				}
+				"IVision::IsAbleToSee2"
+				{
+					type "sym"
+					sym  "_ZNK7IVision11IsAbleToSeeEP11CBaseEntityNS_20FieldOfViewCheckTypeEP6Vector"
+				}
+				"IVision::IsLineOfSightClearToEntity"
+				{
+					type "sym"
+					sym  "_ZNK7IVision26IsLineOfSightClearToEntityEPK11CBaseEntityP6Vector"
+				}
+			}
+		}
+	}
+}

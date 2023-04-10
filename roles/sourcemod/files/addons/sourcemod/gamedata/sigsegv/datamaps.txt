@@ -1,0 +1,68 @@
+// datamaps
+
+"Games"
+{
+	"#default"
+	{
+		"#supported"
+		{
+			engine "tf2"
+			engine "css"
+			engine "ep1"
+			engine "ep2"
+			engine "hl2dm"
+			engine "dods"
+			engine "sdk2013"
+			engine "l4d"
+			engine "nd"
+			engine "l4d2"
+			engine "blade"
+			engine "insurgency"
+			engine "contagion"
+			engine "bms"
+			engine "doi"
+			engine "pkvii"
+		}
+		
+		"sigsegv"
+		{
+			"addrs_group"
+			{
+				"[common]"
+				{
+					type "datamap"
+					lib  "server"
+				}
+				
+				"CBaseEntity"          "_ZN11CBaseEntity9m_DataMapE"
+				"CBaseObject"          "_ZN11CBaseObject9m_DataMapE"
+				"CBasePlayer"          "_ZN11CBasePlayer9m_DataMapE"
+				"CBaseTrigger"         "_ZN12CBaseTrigger9m_DataMapE"
+				"CEconItemView"        "_ZN13CEconItemView9m_DataMapE"
+				"CFilterTFBotHasTag"   "_ZN18CFilterTFBotHasTag9m_DataMapE"
+				"CFuncNavCost"         "_ZN12CFuncNavCost9m_DataMapE"
+				"CFuncNavPrerequisite" "_ZN20CFuncNavPrerequisite9m_DataMapE"
+				"CItem"                "_ZN5CItem9m_DataMapE"
+				"CPathTrack"           "_ZN10CPathTrack9m_DataMapE"
+				"CSmokeStack"          "_ZN11CSmokeStack9m_DataMapE"
+				"CSpellPickup"         "_ZN12CSpellPickup9m_DataMapE"
+				"CTFPowerup"           "_ZN10CTFPowerup9m_DataMapE"
+				"CTFTeamSpawn"         "_ZN12CTFTeamSpawn9m_DataMapE"
+				"CEnvEntityMaker"      "_ZN15CEnvEntityMaker9m_DataMapE"
+				"CTFPointWeaponMimic"  "_ZN19CTFPointWeaponMimic9m_DataMapE"
+				"CLogicCase"           "_ZN10CLogicCase9m_DataMapE"
+				"CGameUI"              "_ZN7CGameUI9m_DataMapE"
+				"CBaseFilter"          "_ZN11CBaseFilter9m_DataMapE"
+				"CTriggerCamera"       "_ZN14CTriggerCamera9m_DataMapE"
+				"CBaseCombatWeapon"    "_ZN17CBaseCombatWeapon9m_DataMapE"
+				"CFuncRotating"        "_ZN13CFuncRotating9m_DataMapE"
+				"CPropVehicle"         "_ZN12CPropVehicle9m_DataMapE"
+				"CPropVehicleDriveable" "_ZN21CPropVehicleDriveable9m_DataMapE"
+				"CBaseAnimating"       "_ZN14CBaseAnimating9m_DataMapE"
+				"CTriggerIgnite"       "_ZN14CTriggerIgnite9m_DataMapE"
+				"CTriggerCatapult"     "_ZN16CTriggerCatapult9m_DataMapE"
+				"CObjectTeleporter"    "_ZN17CObjectTeleporter9m_DataMapE"
+			}
+		}
+	}
+}

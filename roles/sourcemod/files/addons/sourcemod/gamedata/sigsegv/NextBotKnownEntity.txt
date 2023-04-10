@@ -1,0 +1,184 @@
+// NextBotKnownEntity
+
+"Games"
+{
+	"#default"
+	{
+		"#supported"
+		{
+			engine "tf2"
+			engine "css"
+			engine "ep1"
+			engine "ep2"
+			engine "hl2dm"
+			engine "dods"
+			engine "sdk2013"
+			engine "l4d"
+			engine "nd"
+			engine "l4d2"
+			engine "blade"
+			engine "insurgency"
+			engine "contagion"
+			engine "bms"
+			engine "doi"
+			engine "pkvii"
+		}
+		
+		"sigsegv"
+		{
+			"addrs"
+			{
+//				"CKnownEntity::~CKnownEntity [D0]"
+//				{
+//					type "sym"
+//					sym  "_ZN12CKnownEntityD0Ev"
+//				}
+//				"CKnownEntity::~CKnownEntity [D1]"
+//				{
+//					type "sym"
+//					sym  "_ZN12CKnownEntityD1Ev"
+//				}
+//				"CKnownEntity::~CKnownEntity [D2]"
+//				{
+//					type   "func knownvtidx"
+//					sym    "_ZN12CKnownEntityD2Ev"
+//					vtable ".?AVCKnownEntity@@"
+//					idx    "0x00"
+//				}
+				"CKnownEntity::Destroy"
+				{
+					type   "func knownvtidx"
+					sym    "_ZN12CKnownEntity7DestroyEv"
+					vtable ".?AVCKnownEntity@@"
+					idx    "0x01"
+				}
+				"CKnownEntity::UpdatePosition"
+				{
+					type   "func knownvtidx"
+					sym    "_ZN12CKnownEntity14UpdatePositionEv"
+					vtable ".?AVCKnownEntity@@"
+					idx    "0x02"
+				}
+				"CKnownEntity::GetEntity"
+				{
+					type   "func knownvtidx"
+					sym    "_ZNK12CKnownEntity9GetEntityEv"
+					vtable ".?AVCKnownEntity@@"
+					idx    "0x03"
+				}
+				"CKnownEntity::GetLastKnownPosition"
+				{
+					type   "func knownvtidx"
+					sym    "_ZNK12CKnownEntity20GetLastKnownPositionEv"
+					vtable ".?AVCKnownEntity@@"
+					idx    "0x04"
+				}
+				"CKnownEntity::HasLastKnownPositionBeenSeen"
+				{
+					type   "func knownvtidx"
+					sym    "_ZNK12CKnownEntity28HasLastKnownPositionBeenSeenEv"
+					vtable ".?AVCKnownEntity@@"
+					idx    "0x05"
+				}
+				"CKnownEntity::MarkLastKnownPositionAsSeen"
+				{
+					type   "func knownvtidx"
+					sym    "_ZN12CKnownEntity27MarkLastKnownPositionAsSeenEv"
+					vtable ".?AVCKnownEntity@@"
+					idx    "0x06"
+				}
+				"CKnownEntity::GetLastKnownArea"
+				{
+					type   "func knownvtidx"
+					sym    "_ZNK12CKnownEntity16GetLastKnownAreaEv"
+					vtable ".?AVCKnownEntity@@"
+					idx    "0x07"
+				}
+				"CKnownEntity::GetTimeSinceLastKnown"
+				{
+					type   "func knownvtidx"
+					sym    "_ZNK12CKnownEntity21GetTimeSinceLastKnownEv"
+					vtable ".?AVCKnownEntity@@"
+					idx    "0x08"
+				}
+				"CKnownEntity::GetTimeSinceBecameKnown"
+				{
+					type   "func knownvtidx"
+					sym    "_ZNK12CKnownEntity23GetTimeSinceBecameKnownEv"
+					vtable ".?AVCKnownEntity@@"
+					idx    "0x09"
+				}
+				"CKnownEntity::UpdateVisibilityStatus"
+				{
+					type   "func knownvtidx"
+					sym    "_ZN12CKnownEntity22UpdateVisibilityStatusEb"
+					vtable ".?AVCKnownEntity@@"
+					idx    "0x0a"
+				}
+				"CKnownEntity::IsVisibleInFOVNow"
+				{
+					type   "func knownvtidx"
+					sym    "_ZNK12CKnownEntity17IsVisibleInFOVNowEv"
+					vtable ".?AVCKnownEntity@@"
+					idx    "0x0b"
+				}
+				"CKnownEntity::IsVisibleRecently"
+				{
+					type   "func knownvtidx"
+					sym    "_ZNK12CKnownEntity17IsVisibleRecentlyEv"
+					vtable ".?AVCKnownEntity@@"
+					idx    "0x0c"
+				}
+				"CKnownEntity::GetTimeSinceBecameVisible"
+				{
+					type   "func knownvtidx"
+					sym    "_ZNK12CKnownEntity25GetTimeSinceBecameVisibleEv"
+					vtable ".?AVCKnownEntity@@"
+					idx    "0x0d"
+				}
+				"CKnownEntity::GetTimeWhenBecameVisible"
+				{
+					type   "func knownvtidx"
+					sym    "_ZNK12CKnownEntity24GetTimeWhenBecameVisibleEv"
+					vtable ".?AVCKnownEntity@@"
+					idx    "0x0e"
+				}
+				"CKnownEntity::GetTimeSinceLastSeen"
+				{
+					type   "func knownvtidx"
+					sym    "_ZNK12CKnownEntity20GetTimeSinceLastSeenEv"
+					vtable ".?AVCKnownEntity@@"
+					idx    "0x0f"
+				}
+				"CKnownEntity::WasEverVisible"
+				{
+					type   "func knownvtidx"
+					sym    "_ZNK12CKnownEntity14WasEverVisibleEv"
+					vtable ".?AVCKnownEntity@@"
+					idx    "0x10"
+				}
+				"CKnownEntity::IsObsolete"
+				{
+					type   "func knownvtidx"
+					sym    "_ZNK12CKnownEntity10IsObsoleteEv"
+					vtable ".?AVCKnownEntity@@"
+					idx    "0x11"
+				}
+				"CKnownEntity::operator=="
+				{
+					type   "func knownvtidx"
+					sym    "_ZNK12CKnownEntityeqERKS_"
+					vtable ".?AVCKnownEntity@@"
+					idx    "0x12"
+				}
+				"CKnownEntity::Is"
+				{
+					type   "func knownvtidx"
+					sym    "_ZNK12CKnownEntity2IsEP11CBaseEntity"
+					vtable ".?AVCKnownEntity@@"
+					idx    "0x13"
+				}
+			}
+		}
+	}
+}

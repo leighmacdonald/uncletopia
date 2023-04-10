@@ -1,0 +1,56 @@
+// NextBotPath
+
+"Games"
+{
+	"#default"
+	{
+		"#supported"
+		{
+			engine "tf2"
+		}
+		
+		"sigsegv"
+		{
+			"addrs"
+			{
+				"Path::IsValid"
+				{
+					type "sym"
+					sym  "_ZNK4Path7IsValidEv"
+				}
+//				"Path::Compute<CTFBotPathCost> [goal]"
+//				{
+//					type  "fixed"
+//					sym   "_ZN4Path7ComputeI14CTFBotPathCostEEbP8INextBotRK6VectorRT_fb"
+//					addr  "0x4e3ab0"
+//					build "3283568"
+//				}
+//				"Path::Compute<CTFBotPathCost> [subject]"
+//				{
+//					type "sym"
+//					sym  "_ZN4Path7ComputeI14CTFBotPathCostEEbP8INextBotP20CBaseCombatCharacterRT_fb"
+//				}
+				"Path::BuildTrivialPath"
+				{
+					type "sym"
+					sym  "_ZN4Path16BuildTrivialPathEP8INextBotRK6Vector"
+				}
+				"Path::ComputePathDetails"
+				{
+					type "sym"
+					sym  "_ZN4Path18ComputePathDetailsEP8INextBotRK6Vector"
+				}
+				"Path::Optimize"
+				{
+					type "sym"
+					sym  "_ZN4Path8OptimizeEP8INextBot"
+				}
+				"Path::PostProcess"
+				{
+					type "sym"
+					sym  "_ZN4Path11PostProcessEv"
+				}
+			}
+		}
+	}
+}
