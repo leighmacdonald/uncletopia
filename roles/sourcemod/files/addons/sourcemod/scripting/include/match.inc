@@ -34,16 +34,23 @@ TODO:
 #endif
 #define _match_included
 
+#pragma newdecls required
+
 #include <smlib/math>
 #include <f2stocks>
 
 
-new Handle:match_hCvarTimelimit, Handle:match_hCvarWinlimit, Handle:match_hCvarWindiff, Handle:match_hCvarMaxRounds, Handle:match_hCvarTournament;
-new bool:g_bInMatch = false;
-new Float:g_fMatchStartTime = 0.0, Float:g_fLastRoundEnd = 0.0;
-new bool:g_bIsBonusRoundTime = false;
-new bool:g_bFirstRoundStarted = false;
-new g_iRoundsPlayed = 0;
+Handle match_hCvarTimelimit;
+Handle match_hCvarWinlimit;
+Handle match_hCvarWindiff;
+Handle match_hCvarMaxRounds;
+Handle match_hCvarTournament;
+bool g_bInMatch = false;
+float g_fMatchStartTime = 0.0;
+float g_fLastRoundEnd = 0.0;
+bool g_bIsBonusRoundTime = false;
+bool g_bFirstRoundStarted = false;
+int g_iRoundsPlayed = 0;
 
 stock Match_dummy() {
 	// To avoid warnings regarding these variables not being used

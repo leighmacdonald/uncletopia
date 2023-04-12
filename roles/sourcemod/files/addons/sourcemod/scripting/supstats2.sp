@@ -335,7 +335,7 @@ public Action CheckPause(Handle timer, int client) {
 	}
 
 	g_bIsPaused = isPaused;
-    return Plugin_Continue;
+	return Plugin_Continue;
 }
 
 public Action Event_PlayerHealed(Handle event, const char[] name, bool dontBroadcast) {
@@ -476,8 +476,8 @@ void GetMedigunName(int client, char[] medigun, int medigunLen) {
 	int weaponid = GetPlayerWeaponSlot(client, 1);
 	if (weaponid >= 0) {
 		int healing;
-        bool postHumousDamage;
-        int defid;
+		bool postHumousDamage;
+		int defid;
 		if (GetWeaponLogName(medigun, medigunLen, client, weaponid, healing, defid, postHumousDamage, client)) {
 			// We found the weapon
 		} else {
@@ -614,8 +614,8 @@ public Action OnTakeDamage(int victim, int &attacker, int &inflictor, float &dam
 		strcopy(lastWeaponDamage[attacker], MAXWEPNAMELEN, g_sTauntNames[attackerClass]);
 	} else {
 		int healing; 
-        int defid;
-        bool postHumousDamage;
+		int defid;
+		bool postHumousDamage;
 		if (!GetWeaponLogName(lastWeaponDamage[attacker], MAXWEPNAMELEN, attacker, weapon, healing, defid, postHumousDamage, inflictor)) {
 			float now = GetEngineTime();
 			if (lastPostHumousWeaponDamageTime[attacker] >= now - 15.0) {
@@ -692,7 +692,7 @@ public Action OnTakeDamage(int victim, int &attacker, int &inflictor, float &dam
 					bool isNeedle = shotType == SHOT_NEEDLE && attackerClass == TFClass_Medic;
 					if (isRocket || isGrenade || isNeedle) {
 						bool foundIgnore = false;
-                        int foundEmpty = -1;
+						int foundEmpty = -1;
 						if (!isNeedle) {
 							for (int i = 0; i < sizeof(g_iIgnoreDamageEnt); i++) {
 								if (g_iIgnoreDamageEnt[i] == inflictor) {
@@ -747,7 +747,7 @@ public Action OnTakeDamage(int victim, int &attacker, int &inflictor, float &dam
 				}
 			} else {
 				char attackerName[64];
-                char victimName[64];
+				char victimName[64];
 				GetClientName(attacker, attackerName, sizeof(attackerName));
 				GetClientName(victim, victimName, sizeof(victimName));
 				LogError("Accuracy: attacker(%s) victim(%s) inflictor(%i) weapon(%i) defid(%i)", attackerName, victimName, inflictor, weapon, defid);
@@ -906,8 +906,8 @@ public void OnHealArrowTouch(int entity, int other) {
 
 					if (g_bEnableAccuracy) {
 						int healing;
-                        int defid;
-                        bool postHumousDamage;
+						int defid;
+						bool postHumousDamage;
 						char weap[64];
 						weap[0] = '\0';
 						if (GetWeaponLogName(weap, sizeof(weap), owner, weapon, healing, defid, postHumousDamage, entity)) {
@@ -961,8 +961,8 @@ public void OnEntityDestroyed(int entity) {
 					char weap[64];
 					weap[0] = '\0';
 					int healing;
-                    int defid;
-                    bool postHumousDamage;
+					int defid;
+					bool postHumousDamage;
 					GetWeaponLogName(weap, sizeof(weap), owner, GetPlayerWeaponSlot(owner, 1), healing, defid, postHumousDamage, entity); // We are setting inflictor = attacker
 					
 					if (shot) 
@@ -983,7 +983,7 @@ public Action LogRocketShot(Handle timer, any client) {
 	if (!g_bRocketHurtMe[client] || g_bRocketHurtEnemy[client]) {
 		LogToGame("%s", g_sRocketFiredLogLine[client]);
 	}
-    return Plugin_Continue;
+	return Plugin_Continue;
 }
 
 public Action LogHitscanShot(Handle timer, any client) {
@@ -993,7 +993,7 @@ public Action LogHitscanShot(Handle timer, any client) {
 	if (g_bHitscanHurtEnemy[client]) {
 		LogToGame("%s", g_sHitscanFiredLogLine[client]);
 	}
-    return Plugin_Continue;
+	return Plugin_Continue;
 }
 
 public Action TF2_CalcIsAttackCritical(int attacker, int weapon, char[] weaponname, bool &result) {
@@ -1002,8 +1002,8 @@ public Action TF2_CalcIsAttackCritical(int attacker, int weapon, char[] weaponna
 	
 	if (attacker > 0 && attacker <= MaxClients) {
 		int healing;
-        int defid;
-        bool postHumousDamage;
+		int defid;
+		bool postHumousDamage;
 		int shotType;
 		if (GetTrieValue(g_tShotTypes, weaponname, shotType)) {
 			char weap[64];
@@ -1244,7 +1244,7 @@ int g_iAllWeaponsDefid[MAXWEAPONS]; // defids of all weapons
 int g_iAllWeaponsHealingOnHit[MAXWEAPONS];
 bool g_bAllWeaponsPostHumousDamage[MAXWEAPONS];
 int g_iAllWeaponsCount = 0;
-
+f
 int g_iSlotWeaponDefid[MAXWEAPONS];
 int g_iSlotWeaponSlot[MAXWEAPONS]; // translates defid -> weapon slot
 int g_iSlotWeaponCount = 0;

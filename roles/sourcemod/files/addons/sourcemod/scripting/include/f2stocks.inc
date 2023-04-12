@@ -2,7 +2,7 @@
  #endinput
 #endif
 #define _f2stocks_included
-
+#pragma newdecls required
 
 /*
 
@@ -14,7 +14,7 @@ TODO:
 #include <tf2_stocks>
 #include <morecolors>
 
-new Float:g_fCapMultipliers[] = { 0.0, // Harmonic numbers
+float g_fCapMultipliers[] = { 0.0, // Harmonic numbers
 	1.0000, 1.5000, 1.8333, 2.0833, 2.2833, 2.4500, 2.5929, 2.7179, 
 	2.8290, 2.9290, 3.0199, 3.1032, 3.1801, 3.2516, 3.3182, 3.3807, 
 	3.4396, 3.4951, 3.5477, 3.5977, 3.6454, 3.6908, 3.7343, 3.7760, 
@@ -26,11 +26,11 @@ new Float:g_fCapMultipliers[] = { 0.0, // Harmonic numbers
 };
 
 
-new String:g_sClassNames[TFClassType][16] = {
+char g_sClassNames[TFClassType][16] = {
 	"Unknown", "Scout", "Sniper", "Soldier", "Demoman", "Medic", "Heavy", "Pyro", "Spy", "Engineer"
 };
 
-stock F2STOCKS_Dummy() {
+stock void F2STOCKS_Dummy() {
 	g_fCapMultipliers[0] = 0.0; // To avoid getting a "not used" warning
 	g_sClassNames[0] = "Unknown";
 }
@@ -38,22 +38,22 @@ stock F2STOCKS_Dummy() {
 
 
 
-new PrintToSTV_iLastStvClient; // Cached STV client id
-stock PrintToSTV(const String:format[], any:...) {
-	new stv = FindSTV();
+int PrintToSTV_iLastStvClient; // Cached STV client id
+stock void PrintToSTV(const char []format, any ...) {
+	int stv = FindSTV();
 	if (stv < 1)
 		return;
 	
-	decl String:buffer[512];
+	char buffer[512];
 	VFormat(buffer, sizeof(buffer), format, 2);
 	PrintToChat(stv, "%s", buffer);
 }
 
-stock FindSTV() {
+stock int FindSTV() {
 	if (!(PrintToSTV_iLastStvClient >= 1 && PrintToSTV_iLastStvClient <= MaxClients && IsClientConnected(PrintToSTV_iLastStvClient) && IsClientInGame(PrintToSTV_iLastStvClient) && IsClientSourceTV(PrintToSTV_iLastStvClient))) {
 		PrintToSTV_iLastStvClient = -1;
 		
-		for (new client = 1; client <= MaxClients; client++) {
+		for (int client = 1; client <= MaxClients; client++) {
 			if (IsClientConnected(client) && IsClientInGame(client) && IsClientSourceTV(client)) {
 				PrintToSTV_iLastStvClient = client;
 				break;
@@ -82,11 +82,11 @@ stock float TF2_GetPlayerUberLevel(int client, int &medigunEntity = -1) { // Thi
 	return 0.0;
 }
 
-stock Float:TF2_GetPlayerUberBuildTime(client) {
+stock float TF2_GetPlayerUberBuildTime(int client) {
 	if (IsRealPlayer(client) && TF2_GetPlayerClass(client) == TFClass_Medic) {
-		new index = GetPlayerWeaponSlot(client, 1);
+		int index = GetPlayerWeaponSlot(client, 1);
 		if (index >= 0) {
-			new defid = GetEntProp(index, Prop_Send, "m_iItemDefinitionIndex");
+			int defid = GetEntProp(index, Prop_Send, "m_iItemDefinitionIndex");
 			if (defid == 35)
 				return 32.0; // Kritzkrieg
 			
@@ -100,10 +100,10 @@ stock Float:TF2_GetPlayerUberBuildTime(client) {
 	return 40.0;
 }
 
-stock TF2_GetMedigunName(client, String:medigun[], medigunLen) {
-	new weaponid = GetPlayerWeaponSlot(client, 1);
+stock void F2_GetMedigunName(int client, char[] medigun, int medigunLen) {
+	int weaponid = GetPlayerWeaponSlot(client, 1);
 	if (weaponid >= 0) {
-		new defid = GetEntProp(weaponid, Prop_Send, "m_iItemDefinitionIndex");
+		int defid = GetEntProp(weaponid, Prop_Send, "m_iItemDefinitionIndex");
 		if (defid == 29 || defid == 211 || defid == 663 || defid == 796 || defid == 805 || defid == 885 || defid == 894 || defid == 903 || defid == 912 || defid == 961 || defid == 970)
 			strcopy(medigun, medigunLen, "medigun");
 		else if (defid == 35)
@@ -119,9 +119,9 @@ stock TF2_GetMedigunName(client, String:medigun[], medigunLen) {
 	}
 }
 
-stock TF2_GetHealingTarget(client) {
-	new String:classname[64];
-	new index = GetEntPropEnt(client, Prop_Send, "m_hActiveWeapon");
+stock int TF2_GetHealingTarget(int client) {
+	char classname[64];
+	int index = GetEntPropEnt(client, Prop_Send, "m_hActiveWeapon");
 	if (index > 0) {
 		GetEntityNetClass(index, classname, sizeof(classname));
 	
@@ -134,47 +134,49 @@ stock TF2_GetHealingTarget(client) {
 	return -1;
 }
 
-stock TF2_GetCurrentWeaponClass(client, String:name[], maxlength) {
+stock void TF2_GetCurrentWeaponClass(int client, char[] name, int maxlength) {
 	if (client > 0) {
-		new index = GetEntPropEnt(client, Prop_Send, "m_hActiveWeapon");
+		int index = GetEntPropEnt(client, Prop_Send, "m_hActiveWeapon");
 		if (index > 0)
 			GetEntityNetClass(index, name, maxlength);
 	}
 }
 
-stock any:max(any:val1, any:val2) {
+stock any max(any val1, any val2) {
 	return val1 > val2 ? val1 : val2;
 }
 
-stock any:min(any:val1, any:val2) {
+stock any min(any val1, any val2) {
 	return val1 < val2 ? val1 : val2;
 }
 
-stock bool:IsClientValid(client) {
+stock bool IsClientValid(int client) {
 	return client > 0 && client <= MaxClients && IsClientConnected(client) && IsClientInGame(client) && !IsClientSourceTV(client);
 }
-stock bool:IsValidClient(client) {
+
+stock bool IsValidClient(int client) {
 	return IsClientValid(client);
 }
 
-stock bool:IsClientValid2(client) {
+stock bool IsClientValid2(int client) {
 	return IsClientConnected(client) && IsClientInGame(client) && !IsClientSourceTV(client);
 }
-stock bool:IsValidClient2(client) {
+
+stock bool IsValidClient2(int client) {
 	return IsClientValid2(client);
 }
 
-stock bool:IsRealPlayer(client) {
+stock bool IsRealPlayer(int client) {
 	return client > 0 && client <= MaxClients && IsClientConnected(client) && IsClientInGame(client) && !IsClientSourceTV(client);
 }
 
-stock bool:IsRealPlayer2(client) {
+stock bool IsRealPlayer2(int client) {
 	return IsClientConnected(client) && IsClientInGame(client) && !IsClientSourceTV(client);
 }
 
-stock GetRealPlayerCount() {
-	new c = 0;
-	for (new client = 1; client <= MaxClients; client++)
+stock int GetRealPlayerCount() {
+	int c = 0;
+	for (int client = 1; client <= MaxClients; client++)
 		if (IsRealPlayer2(client))
 			c++;
 	return c;
@@ -183,7 +185,7 @@ stock GetRealPlayerCount() {
 
 // As opposed to CPrintToChatEx, this function only colorizes message, NOT the parameters
 // Requires <morecolors>
-stock CPrintToChatEx2(client, author, const String:message[], any:...) {
+stock void CPrintToChatEx2(int client, int author, const char[] message, any ...) {
 	MC_CheckTrie();
 	if(client <= 0 || client > MaxClients) {
 		ThrowError("Invalid client index %i", client);
@@ -197,7 +199,8 @@ stock CPrintToChatEx2(client, author, const String:message[], any:...) {
 	if(!IsClientInGame(author)) {
 		ThrowError("Client %i is not in game", author);
 	}
-	decl String:buffer[MC_MAX_MESSAGE_LENGTH], String:buffer2[MC_MAX_MESSAGE_LENGTH];
+	char buffer[MC_MAX_MESSAGE_LENGTH];
+	char buffer2[MC_MAX_MESSAGE_LENGTH];
 	SetGlobalTransTarget(client);
 	Format(buffer, sizeof(buffer), "\x01%s", message);
 	MC_ReplaceColorCodes(buffer, author);
@@ -207,7 +210,7 @@ stock CPrintToChatEx2(client, author, const String:message[], any:...) {
 
 // As opposed to CPrintToChatAllEx, this function only colorizes message, NOT the parameters
 // Requires <morecolors>
-stock CPrintToChatAllEx2(author, const String:message[], any:...) {
+stock void CPrintToChatAllEx2(int author, const char[] message, any ...) {
 	MC_CheckTrie();
 	if(author <= 0 || author > MaxClients) {
 		ThrowError("Invalid client index %i", author);
@@ -215,8 +218,9 @@ stock CPrintToChatAllEx2(author, const String:message[], any:...) {
 	if(!IsClientInGame(author)) {
 		ThrowError("Client %i is not in game", author);
 	}
-	decl String:buffer[MC_MAX_MESSAGE_LENGTH], String:buffer2[MC_MAX_MESSAGE_LENGTH];
-	for(new i = 1; i <= MaxClients; i++) {
+	char buffer[MC_MAX_MESSAGE_LENGTH];
+	char buffer2[MC_MAX_MESSAGE_LENGTH];
+	for(int i = 1; i <= MaxClients; i++) {
 		if(!IsClientInGame(i) || MC_SkipList[i]) {
 			MC_SkipList[i] = false;
 			continue;
@@ -231,7 +235,7 @@ stock CPrintToChatAllEx2(author, const String:message[], any:...) {
 
 // As opposed to CPrintToChat, this function only colorizes message, NOT the parameters
 // Requires <morecolors>
-stock CPrintToChat2(client, const String:message[], any:...) {
+stock void CPrintToChat2(int client, const char[] message, any ...) {
 	MC_CheckTrie();
 	if(client <= 0 || client > MaxClients) {
 		ThrowError("Invalid client index %i", client);
@@ -239,7 +243,8 @@ stock CPrintToChat2(client, const String:message[], any:...) {
 	if(!IsClientInGame(client)) {
 		ThrowError("Client %i is not in game", client);
 	}
-	decl String:buffer[MC_MAX_MESSAGE_LENGTH], String:buffer2[MC_MAX_MESSAGE_LENGTH];
+	char buffer[MC_MAX_MESSAGE_LENGTH];
+	char buffer2[MC_MAX_MESSAGE_LENGTH];
 	SetGlobalTransTarget(client);
 	Format(buffer, sizeof(buffer), "\x01%s", message);
 	MC_ReplaceColorCodes(buffer);
@@ -249,10 +254,11 @@ stock CPrintToChat2(client, const String:message[], any:...) {
 
 // As opposed to CPrintToChatAll, this function only colorizes message, NOT the parameters
 // Requires <morecolors>
-stock CPrintToChatAll2(const String:message[], any:...) {
+stock void CPrintToChatAll2(const char[] message, any ...) {
 	MC_CheckTrie();
-	decl String:buffer[MC_MAX_MESSAGE_LENGTH], String:buffer2[MC_MAX_MESSAGE_LENGTH];
-	for(new i = 1; i <= MaxClients; i++) {
+	char buffer[MC_MAX_MESSAGE_LENGTH];
+	char buffer2[MC_MAX_MESSAGE_LENGTH];
+	for(int i = 1; i <= MaxClients; i++) {
 		if(!IsClientInGame(i) || MC_SkipList[i]) {
 			MC_SkipList[i] = false;
 			continue;
@@ -266,26 +272,26 @@ stock CPrintToChatAll2(const String:message[], any:...) {
 }
 
 
-stock GetPlayerTeamStr(team, String:teamstr[], teamstrLen) {
+stock void GetPlayerTeamStr(int team, char[] teamstr, int teamstrLen) {
 	switch (team) {
-		case (_:TFTeam_Red):
+		case (view_as<int>(TFTeam_Red)):
 			strcopy(teamstr, teamstrLen, "Red");
-		case (_:TFTeam_Blue):
+		case view_as<int>(TFTeam_Blue):
 			strcopy(teamstr, teamstrLen, "Blue");
 		default:
 			strcopy(teamstr, teamstrLen, "unknown");
 	}
 }
 
-stock TF2_GetPlayerScore(client) {
+stock int TF2_GetPlayerScore(int client) {
 	if (!IsClientConnected(client))
 		return -1;
 	
-	new offset = FindSendPropInfo("CTFPlayerResource", "m_iTotalScore");
+	int offset = FindSendPropInfo("CTFPlayerResource", "m_iTotalScore");
 	if (offset < 1)
 		return -1;	
 				
-	new entity = GetPlayerResourceEntity();
+	int entity = GetPlayerResourceEntity();
 	if (entity == -1)
 		return -1;
 	
@@ -293,19 +299,19 @@ stock TF2_GetPlayerScore(client) {
 }
 
 // Based on smlib's implementation File_Copy
-stock bool:CopyFile(const String:source[], const String:destination[]) {
-	new Handle:file_source = OpenFile(source, "rb");
+stock bool CopyFile(const char[] source, const char[] destination) {
+	Handle file_source = OpenFile(source, "rb");
 	if (file_source == INVALID_HANDLE)
 		return false;
 
-	new Handle:file_destination = OpenFile(destination, "wb");
+	Handle file_destination = OpenFile(destination, "wb");
 	if (file_destination == INVALID_HANDLE) {
 		CloseHandle(file_source);
 		return false;
 	}
 
-	new buffer[4096];
-	new cache;
+	int buffer[4096];
+	int cache;
 
 	while (!IsEndOfFile(file_source)) {
 		cache = ReadFile(file_source, buffer, sizeof(buffer), 1);
@@ -319,21 +325,21 @@ stock bool:CopyFile(const String:source[], const String:destination[]) {
 }
 
 
-stock SetPlayerOutline(client, bool:enable) {
+stock void SetPlayerOutline(int client, bool enable) {
 	SetEntProp(client, Prop_Send, "m_bGlowEnabled", enable ? 1 : 0, 1);
 }
 
-stock bool:GetPlayerOutline(client) {
+stock bool GetPlayerOutline(int client) {
 	return GetEntProp(client, Prop_Send, "m_bGlowEnabled", 1) != 0;
 }
 
 
 
 // Based on psychonic's post https://forums.alliedmods.net/showpost.php?p=1865459&postcount=3
-new Handle:fnGetMaxHealth = INVALID_HANDLE;
-stock GetMaxHealth(client) {
+Handle fnGetMaxHealth = INVALID_HANDLE;
+stock any GetMaxHealth(int client) {
 	if (fnGetMaxHealth == INVALID_HANDLE) {
-		new Handle:hConf = LoadGameConfigFile("sdkhooks.games");
+		Handle hConf = LoadGameConfigFile("sdkhooks.games");
 		if (hConf == INVALID_HANDLE)
 			SetFailState("Cannot find sdkhooks.games gamedata");
 		
@@ -351,26 +357,26 @@ stock GetMaxHealth(client) {
 	return SDKCall(fnGetMaxHealth, client);
 }
 
-stock IntToBits(val, String:bitval[33]) {
+stock void IntToBits(int val, char bitval[33]) {
 	bitval[32] = '\0';
-	for (new pos = 31; pos >= 0; pos--) {
+	for (int pos = 31; pos >= 0; pos--) {
 		bitval[pos] = (val&1) == 1 ? '1' : '0';
 		val >>= 1;
 	}
 }
 
-stock bool:F2_String_StartsWith(const String:haystack[], const String:needle[], bool:caseSensitive = true) {
-	new needleLen = strlen(needle);
+stock bool F2_String_StartsWith(const char[] haystack, const char[] needle, bool caseSensitive = true) {
+	int needleLen = strlen(needle);
 	return strncmp(haystack, needle, needleLen, caseSensitive) == 0;
 }
 
-stock bool:F2_String_EndsWith(const String:haystack[], const String:needle[], bool:caseSensitive = true) {
-	new haystackLen = strlen(haystack);
-	new needleLen = strlen(needle);
+stock bool F2_String_EndsWith(const char[] haystack, const char[] needle, bool caseSensitive = true) {
+	int haystackLen = strlen(haystack);
+	int needleLen = strlen(needle);
 	if (needleLen > haystackLen)
 		return false;
 	
-	for (new i = haystackLen - needleLen, j = 0; j < needleLen; i++, j++) {
+	for (int i = haystackLen - needleLen, j = 0; j < needleLen; i++, j++) {
 		if (haystack[i] != needle[j] && (caseSensitive || CharToLower(haystack[i]) != CharToLower(needle[j])))
 			return false;
 	}
@@ -378,13 +384,14 @@ stock bool:F2_String_EndsWith(const String:haystack[], const String:needle[], bo
 	return true;
 }
 
-stock bool:SteamID_Equal(const String:id1[], const String:id2[]) {
+stock bool SteamID_Equal(const char[] id1, const char[] id2) {
 	// Compares two SteamIDs in the form of STEAM_0:X:YYYY, [U:1:ZZZZ] or X:YYYY
 	
-	new steam1, steam2;
+	int steam1;
+	int steam2;
 	
 	if (F2_String_StartsWith(id1, "STEAM_0:", false)) {
-		new a = id1[8] == '1' ? 1 : 0;
+		int a = id1[8] == '1' ? 1 : 0;
 		steam1 = StringToInt(id1[10]);
 		if (steam1 == 0)
 			return false;
@@ -393,7 +400,7 @@ stock bool:SteamID_Equal(const String:id1[], const String:id2[]) {
 		if (StringToIntEx(id1[5], steam1) != strlen(id1) - 5 - 1)
 			return false;
 	} else {
-		new a = id1[0] == '1' ? 1 : 0;
+		int a = id1[0] == '1' ? 1 : 0;
 		steam1 = StringToInt(id1[2]);
 		if (steam1 == 0)
 			return false;
@@ -401,7 +408,7 @@ stock bool:SteamID_Equal(const String:id1[], const String:id2[]) {
 	}
 	
 	if (F2_String_StartsWith(id2, "STEAM_0:", false)) {
-		new a = id2[8] == '1' ? 1 : 0;
+		int a = id2[8] == '1' ? 1 : 0;
 		steam2 = StringToInt(id2[10]);
 		if (steam2 == 0)
 			return false;
@@ -410,7 +417,7 @@ stock bool:SteamID_Equal(const String:id1[], const String:id2[]) {
 		if (StringToIntEx(id2[5], steam2) != strlen(id2) - 5 - 1)
 			return false;
 	} else {
-		new a = id2[0] == '1' ? 1 : 0;
+		int a = id2[0] == '1' ? 1 : 0;
 		steam2 = StringToInt(id2[2]);
 		if (steam2 == 0)
 			return false;
@@ -420,10 +427,10 @@ stock bool:SteamID_Equal(const String:id1[], const String:id2[]) {
 	return steam1 == steam2;
 }
 
-stock bool:SteamID_ToOldFormat(String:oldID[], oldIDsize, const String:newID[]) {
+stock bool SteamID_ToOldFormat(char[] oldID, int oldIDsize, const char[] newID) {
 	// Converts [U:1:ZZZZ] to STEAM_0:X:YYYY
 	
-	new steamidNum;
+	int steamidNum;
 	if (StringToIntEx(newID[5], steamidNum) != strlen(newID) - 5 - 1)
 		return false;
 	
@@ -431,7 +438,7 @@ stock bool:SteamID_ToOldFormat(String:oldID[], oldIDsize, const String:newID[]) 
 	return true;
 }
 
-stock bool:GetClientAuthStringOld(client, String:steamid[], steamidSize, bool:validate = true)
+stock bool GetClientAuthStringOld(int client, char[] steamid, int steamidSize, bool validate = true)
 {
 	if (!GetClientAuthId(client, AuthId_Steam2, steamid, steamidSize, validate))
 	{
@@ -445,13 +452,13 @@ stock bool:GetClientAuthStringOld(client, String:steamid[], steamidSize, bool:va
 	return true;
 }
 
-stock bool:GetClientAuthStringNew(client, String:steamid[], steamidSize, bool:validate = true) {
+stock bool GetClientAuthStringNew(int client, char[] steamid, int steamidSize, bool validate = true) {
 	if (IsFakeClient(client)) {
 		strcopy(steamid, steamidSize, "BOT");
 		return true;
 	}
 	
-	new accountID = GetSteamAccountID(client, validate);
+	int accountID = GetSteamAccountID(client, validate);
 	if (accountID == 0) {
 		strcopy(steamid, steamidSize, "");
 		return false;
@@ -497,7 +504,8 @@ enum MapType {
 	MapType_Payload,
 	MapType_PayloadRace
 };
-stock MapType:GetMapType() {
+
+stock MapType GetMapType() {
 	/*
 	5cp: round count == 0
 	tc: Round count > 0, switch teams on win: no
@@ -507,7 +515,7 @@ stock MapType:GetMapType() {
 	koth: tf_logic_koth
 	pl: mapobj_cart_dispenser
 	*/
-	new ent = -1;
+	int ent = -1;
 	
 	if (FindEntityByClassname(-1, "tf_logic_arena") != -1)
 		return MapType_Arena;
@@ -519,7 +527,7 @@ stock MapType:GetMapType() {
 		return MapType_CTF;
 	
 	ent = -1;
-	new cartcount = 0;
+	int cartcount = 0;
 	while ((ent = FindEntityByClassname(ent, "mapobj_cart_dispenser")) != -1) {
 		cartcount++;
 	}
@@ -529,20 +537,20 @@ stock MapType:GetMapType() {
 		return MapType_PayloadRace;
 	
 	ent = -1;
-	new cpcount = 0;
+	int cpcount = 0;
 	while ((ent = FindEntityByClassname(ent, "team_control_point")) != -1) {
 		cpcount++;
 	}
 	
 	ent = -1;
-	new roundcount = 0;
+	int roundcount = 0;
 	while ((ent = FindEntityByClassname(ent, "team_control_point_round")) != -1) {
 		roundcount++;
 	}
 	
 	ent = -1;
-	new bool:switchonwin = false;
-	new bool:scorepercapture = false;
+	bool switchonwin = false;
+	bool scorepercapture = false;
 	if ((ent = FindEntityByClassname(ent, "team_control_point_master")) != -1) {
 		switchonwin = GetEntProp(ent, Prop_Data, "m_bSwitchTeamsOnWin", 4) == 1;
 		scorepercapture = GetEntProp(ent, Prop_Data, "m_bScorePerCapture", 4) == 1;
