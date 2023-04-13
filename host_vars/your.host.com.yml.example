@@ -12,6 +12,7 @@ services:
     gbans_key: "yyyyyyyyyyyyyyyyyyyy"
     log_secret: 111111111
     rotation: "all"
+    pve_mode: true
     srcds_rcon_password: aaaaaaaaaaa
   - name: "Kittyland | 2 | Community"
     server_name_short: "Kittyland-2"

@@ -136,6 +136,16 @@
   loop_control:
     index_var: loop0
 
+- name: /tf/addons/sourcemod/configs/danepve.cfg
+  ansible.builtin.template:
+    src: discord.cfg.j2
+    dest: ~/build_srcds/srcds-{{ item.server_name_short }}/tf/addons/sourcemod/configs/danepve.cfg
+    mode: 0755
+  loop: "{{ services }}"
+  when: item.pve_mode|default(false) == true
+  loop_control:
+    index_var: loop0
+
 - name: /tf/cfg/sourcemod/gbans.cfg
   ansible.builtin.template:
     src: gbans.cfg.j2

@@ -27,6 +27,28 @@ mini_dump_steamid: 00000000000000000
 stv_enable: true
 stv_password: "your_global_stv_password"
 stv_name: "Level 3 Sentry"
+pve:
+  bot_attrs:
+    metal regen: 5000
+    maxammo metal increased: 25
+  names:
+    - Uncle Brain
+    - Uncle Lane
+    - Uncle Rain
+    - Uncle Grain
+    - Uncle Slain
+    - Uncle Crane
+    - Uncle Strain
+    - Uncle Vain
+    - Uncle Train
+    - Uncle Stain
+    - Uncle Plane
+    - Uncle Insane
+    - Uncle Urethane
+    - Uncle Novocain
+    - Uncle Hurricane
+    - Uncle Pain
+
 
 # Uploads demos/logs to gbans service
 srcdsup:
