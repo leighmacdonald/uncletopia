@@ -27,6 +27,10 @@ mini_dump_steamid: 00000000000000000
 stv_enable: true
 stv_password: "your_global_stv_password"
 stv_name: "Level 3 Sentry"
+
+plugins_disabled: []
+extensions_disabled: []
+
 pve:
   bot_attrs:
     metal regen: 5000

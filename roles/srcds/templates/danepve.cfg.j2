@@ -2,7 +2,7 @@ UncleDanePVE
 {
 	Names
 	{
-{% for i, name in pve.names %}
+{% for name in pve.names %}
 		"{{ loop.index }}"  "{{ name }}"
 {% endfor %}
 	}

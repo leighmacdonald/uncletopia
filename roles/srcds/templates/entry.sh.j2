@@ -1,6 +1,22 @@
 #!/bin/bash
 cd "{{srcds_steam_app_dir}}"
 
+{% for name in plugins_disabled %}
+F={{srcds_steam_app_dir}}/tf/addons/sourcemod/plugins/{{ name }}
+if test -f "$F"; then
+    echo "Disabling $F"
+    mv -v "$F" {{srcds_steam_app_dir}}/tf/addons/sourcemod/plugins/disabled/
+fi
+{% endfor %}
+
+{% for name in extentions_disabled %}
+E={{srcds_steam_app_dir}}/tf/addons/sourcemod/extensions/{{ name }}
+if test -f "$E"; then
+    echo "Disabling $E"
+    mv -v "$E" {{srcds_steam_app_dir}}/tf/addons/sourcemod/plugins/disabled/
+fi
+{% endfor %}
+
 bash "{{srcds_steam_app_dir}}/srcds_run" -game "{{srcds_steam_app}}" -console \
   -strictportbind \
   -usercon \
