@@ -1,18 +1,18 @@
 #!/bin/bash
 cd "{{srcds_steam_app_dir}}"
 
-{% for name in plugins_disabled %}
+{% for name in item.plugins_disabled|default(plugins_disabled) %}
 F={{srcds_steam_app_dir}}/tf/addons/sourcemod/plugins/{{ name }}
 if test -f "$F"; then
-    echo "Disabling $F"
+    echo "Disabling plugin $F"
     mv -v "$F" {{srcds_steam_app_dir}}/tf/addons/sourcemod/plugins/disabled/
 fi
 {% endfor %}
 
-{% for name in extentions_disabled %}
+{% for name in item.extensions_disabled|default(extensions_disabled) %}
 E={{srcds_steam_app_dir}}/tf/addons/sourcemod/extensions/{{ name }}
 if test -f "$E"; then
-    echo "Disabling $E"
+    echo "Disabling extension $E"
     mv -v "$E" {{srcds_steam_app_dir}}/tf/addons/sourcemod/plugins/disabled/
 fi
 {% endfor %}
@@ -28,7 +28,7 @@ bash "{{srcds_steam_app_dir}}/srcds_run" -game "{{srcds_steam_app}}" -console \
   +map "{{ map_rotation['default'] | random }}" \
   +sv_setsteamaccount "{{ item.gslt }}" \
   +rcon_password "{{ item.srcds_rcon_password | default(srcds_rcon_password) }}" \
-  +sv_password "{{ srcds_server_password }}" \
+  +sv_password "{{ item.srcds_server_password | default(srcds_server_password) }}" \
   +sv_region "{{ srcds_region | quote }}" \
   +ip 0.0.0.0 \
   {% if srcds_use_sdr %}-enablefakeip {% endif %} \
