@@ -1,7 +1,7 @@
 // Hostname for server.
 hostname "{{ item.name | default(srcds_hostname) }}"
 
-tf_classlimit 3
+tf_classlimit {{ item.tf_classlimit|default(3) }}
 sv_vote_issue_classlimits_allowed 0
 sv_vote_issue_classlimits_max 3
 

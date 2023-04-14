@@ -160,31 +160,23 @@ tf_avoidteammates_pushaway 0
 tf_preround_push_from_damage_enable 1
 
 
-// Class limit
+// Classrestrict plugin
 sm_classrestrict_enabled 1
 sm_classrestrict_immunity 0
+{% for team in ["blu","red"] %}
+sm_classrestrict_{{ team }}_demomen {{ item.tf_classlimit|default(3) }}
+sm_classrestrict_{{ team }}_engineers {{ item.tf_classlimit|default(3) }}
+sm_classrestrict_{{ team }}_heavies {{ item.tf_classlimit|default(3) }}
+sm_classrestrict_{{ team }}_medics {{ item.tf_classlimit|default(3) }}
+sm_classrestrict_{{ team }}_pyros {{ item.tf_classlimit|default(3) }}
+sm_classrestrict_{{ team }}_scouts {{ item.tf_classlimit|default(3) }}
+sm_classrestrict_{{ team }}_snipers {{ item.tf_classlimit|default(3) }}
+sm_classrestrict_{{ team }}_soldiers {{ item.tf_classlimit|default(3) }}
+sm_classrestrict_{{ team }}_spies {{ item.tf_classlimit|default(3) }}
+{% endfor %}
 
-sm_classrestrict_blu_demomen 3
-sm_classrestrict_blu_engineers 3
-sm_classrestrict_blu_heavies 3
-sm_classrestrict_blu_medics 3
-sm_classrestrict_blu_pyros 3
-sm_classrestrict_blu_scouts 3
-sm_classrestrict_blu_snipers 3
-sm_classrestrict_blu_soldiers 3
-sm_classrestrict_blu_spies 3
-
-sm_classrestrict_red_demomen 3
-sm_classrestrict_red_engineers 3
-sm_classrestrict_red_heavies 3
-sm_classrestrict_red_medics 3
-sm_classrestrict_red_pyros 3
-sm_classrestrict_red_scouts 3
-sm_classrestrict_red_snipers 3
-sm_classrestrict_red_soldiers 3
-sm_classrestrict_red_spies 3
-
-tf_classlimit 3
+// Built in class limit commands
+tf_classlimit {{ item.tf_classlimit|default(3) }}
 sv_vote_issue_classlimits_allowed 0
 sv_vote_issue_classlimits_max 3
 
