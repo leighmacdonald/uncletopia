@@ -1244,7 +1244,7 @@ int g_iAllWeaponsDefid[MAXWEAPONS]; // defids of all weapons
 int g_iAllWeaponsHealingOnHit[MAXWEAPONS];
 bool g_bAllWeaponsPostHumousDamage[MAXWEAPONS];
 int g_iAllWeaponsCount = 0;
-f
+
 int g_iSlotWeaponDefid[MAXWEAPONS];
 int g_iSlotWeaponSlot[MAXWEAPONS]; // translates defid -> weapon slot
 int g_iSlotWeaponCount = 0;
