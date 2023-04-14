@@ -6,7 +6,7 @@
 #include <tf2>
 
 // ====[ CONSTANTS ]===========================================================
-S#define OVERRIDE_CLASSNAME		(1 << 0)	// Item will override the entity's classname.
+#define OVERRIDE_CLASSNAME		(1 << 0)	// Item will override the entity's classname.
 #define OVERRIDE_ITEM_DEF			(1 << 1)	// Item will override the item's definition index.
 #define OVERRIDE_ITEM_LEVEL		(1 << 2)	// Item will override the entity's level.
 #define OVERRIDE_ITEM_QUALITY		(1 << 3)	// Item will override the entity's quality.

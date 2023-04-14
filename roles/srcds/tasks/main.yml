@@ -138,7 +138,7 @@
 
 - name: /tf/addons/sourcemod/configs/danepve.cfg
   ansible.builtin.template:
-    src: discord.cfg.j2
+    src: danepve.cfg.j2
     dest: ~/build_srcds/srcds-{{ item.server_name_short }}/tf/addons/sourcemod/configs/danepve.cfg
     mode: 0755
   loop: "{{ services }}"
