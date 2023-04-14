@@ -52,6 +52,6 @@ mp_idlemaxtime 3
 {#sv_mincmdrate 10#}
 {#sv_maxcmdrate 66#}
 
-sv_visiblemaxplayers 24
+sv_visiblemaxplayers {{ item.sv_visiblemaxplayers|default(24) }}
 
 heartbeat
