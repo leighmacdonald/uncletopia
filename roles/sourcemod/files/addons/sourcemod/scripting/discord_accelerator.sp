@@ -1,3 +1,7 @@
+#pragma semicolon 1
+#pragma tabsize 4
+#pragma newdecls required
+
 #include <sourcemod>
 #include <accelerator>
 #include <discord>
@@ -7,11 +11,11 @@
 #define PLUGIN_VERSION "1.0"
 #define URL_ENTRY "MinidumpUrl"
 
-ConVar  g_cMention = null,
-        g_cHookName = null,
-        g_cServerName = null,
-        g_cWebhook = null,
-        g_cCrashMessage = null;
+ConVar g_cMention = null;
+ConVar g_cHookName = null;
+ConVar g_cServerName = null;
+ConVar g_cWebhook = null;
+ConVar g_cCrashMessage = null;
 
 public Plugin myinfo = 
 {
@@ -65,7 +69,7 @@ public void OnCrashUpdated(int num, const char [] crashId)
     char sUrlPath[50];
     if (GetFromCoreFile(URL_ENTRY, sUrlPath, sizeof(sUrlPath))) {
         ReplaceString(sUrlPath, sizeof(sUrlPath), "/submit", sUrlPath);
-        Format(sUrlPath, sizeof(sUrlPath), "%s/?id=", sUrlPath)
+        Format(sUrlPath, sizeof(sUrlPath), "%s/?id=", sUrlPath);
         ReplaceString(sMSG, sizeof(sMSG), "{CRASHURL}", sUrlPath);
     } else {
         ReplaceString(sMSG, sizeof(sMSG), "{CRASHURL}", DEFAULT_URL);
@@ -83,7 +87,7 @@ public void OnCrashUpdated(int num, const char [] crashId)
     SendMessage(sMSG);
 }
 
-SendMessage(char[] sMessage)
+void SendMessage(char[] sMessage)
 {
     char sWebhook[32];
     g_cWebhook.GetString(sWebhook, sizeof(sWebhook));
@@ -96,8 +100,7 @@ bool GetFromCoreFile(const char[] entry, char[] value, int maxlength)
     BuildPath(Path_SM, path_core, sizeof(path_core), "configs/core.cfg");
     KeyValues kv = new KeyValues("Core");
     kv.ImportFromFile(path_core);
-    if (!kv.JumpToKey(entry))
-    {
+    if (!kv.JumpToKey(entry)) {
         delete kv;
         return false;
     }

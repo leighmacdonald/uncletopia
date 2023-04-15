@@ -1,9 +1,11 @@
+#pragma semicolon 1
+#pragma tabsize 4
+#pragma newdecls required
+
 #include <sourcemod>
 #include <gamemode>
 #include <tf2>
 #include <tf2_stocks>
-
-#pragma semicolon 1
 
 #define PLUGIN_VERSION "1.0"
 

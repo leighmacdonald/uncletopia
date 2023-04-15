@@ -1,4 +1,6 @@
 #pragma semicolon 1
+#pragma tabsize 4
+#pragma newdecls required
 
 #define PLUGIN_AUTHOR "Nanochip, viora, raspy"
 #define PLUGIN_VERSION "1.5"
@@ -16,10 +18,26 @@ public Plugin myinfo =
 	url = "https://uncletopia.com"
 };
 
-ConVar cvarVoteTime, cvarVoteTimeDelay, cvarVoteChatPercent, cvarVoteMenuPercent, cvarTimeLimit, cvarMinimumVotesNeeded, cvarSkipSecondVote, cvarMaxRounds, cvarWinLimit;
+ConVar cvarVoteTime;
+ConVar cvarVoteTimeDelay;
+ConVar cvarVoteChatPercent;
+ConVar cvarVoteMenuPercent;
+ConVar cvarTimeLimit;
+ConVar cvarMinimumVotesNeeded;
+ConVar cvarSkipSecondVote;
+ConVar cvarMaxRounds;
+ConVar cvarWinLimit;
 
-int g_iVoters, g_iVotes, g_iVotesNeeded, g_iRoundsSinceLastScramble, g_iMinutesSinceLastScramble;
-bool g_bVoted[MAXPLAYERS + 1], g_bVoteCooldown, g_bScrambleTeams, g_bBonusRoundTime, g_bScrambleDuringBRT;
+int g_iVoters;
+int g_iVotes;
+int g_iVotesNeeded;
+int g_iRoundsSinceLastScramble;
+int g_iMinutesSinceLastScramble;
+bool g_bVoted[MAXPLAYERS + 1]; 
+int g_bVoteCooldown;
+int g_bScrambleTeams;
+int g_bBonusRoundTime;
+int g_bScrambleDuringBRT;
 
 public void Event_RoundWin(Event event, const char[] name, bool dontBroadcast)
 {
@@ -123,11 +141,11 @@ public Action Cmd_VoteScramble(int client, int args)
 	return Plugin_Handled;
 }
 
-public OnClientSayCommand_Post(int client, const char[] command, const char[] sArgs)
+public void OnClientSayCommand_Post(int client, const char[] command, const char[] sArgs)
 {
 	if (strcmp(sArgs, "votescramble", false) == 0 || strcmp(sArgs, "vscramble", false) == 0 || strcmp(sArgs, "scramble", false) == 0 || strcmp(sArgs, "scrimblo", false) == 0 )
 	{
-		new ReplySource:old = SetCmdReplySource(SM_REPLY_TO_CHAT);
+		ReplySource old = SetCmdReplySource(SM_REPLY_TO_CHAT);
 
 		AttemptVoteScramble(client);
 
@@ -284,8 +302,7 @@ public Action Timer_DelayLimitsUpdate(Handle timer) {
 	}
 
 	if (cvarTimeLimit.IntValue != 0) {
-		int time;
-		time = cvarTimeLimit.IntValue - g_iMinutesSinceLastScramble;
+		int time = cvarTimeLimit.IntValue - g_iMinutesSinceLastScramble;
 		time = time > 5 ? time : 5;
 		SetConVarInt(cvarTimeLimit, time, false, true);
 	}

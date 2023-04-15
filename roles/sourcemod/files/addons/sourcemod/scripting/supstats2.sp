@@ -88,6 +88,7 @@ TODO:
 
 #pragma semicolon 1 // Force strict semicolon mode.
 #pragma newdecls required
+#pragma tabsize 4
 
 #include <sourcemod>
 #include <tf2_stocks>

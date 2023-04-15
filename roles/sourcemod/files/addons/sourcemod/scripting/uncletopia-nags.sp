@@ -1,9 +1,8 @@
 #pragma semicolon 1
+#pragma newdecls required
 
 #include <sourcemod>
 #include <morecolors>
-
-#pragma newdecls required
 
 // TODO: cvars?
 #define SCRAMBLE_TIMER g_cvarScrambleTimer.FloatValue

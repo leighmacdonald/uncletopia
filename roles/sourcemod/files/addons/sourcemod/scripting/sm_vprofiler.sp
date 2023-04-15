@@ -1,6 +1,7 @@
 #define PLUGIN_VERSION "1.1"
 
 #pragma semicolon 1
+#pragma tabsize 4
 #pragma newdecls required
 
 #include <sourcemod>

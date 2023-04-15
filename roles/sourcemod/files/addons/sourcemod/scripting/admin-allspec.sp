@@ -1,13 +1,17 @@
+#pragma semicolon 1
+#pragma tabsize 4
+#pragma newdecls required
+
 #include <sourcemod>
 #include <dhooks>
 
 #define PLUGIN_VERSION "1.0.2"
 
-new Handle:hIsValidTarget;
-new Handle:mp_forcecamera;
-new bool:g_bCheckNullPtr = false;
+Handle hIsValidTarget;
+Handle mp_forcecamera;
+bool g_bCheckNullPtr = false;
 
-public Plugin:myinfo = 
+public Plugin myinfo = 
 {
 	name = "Admin all spec",
 	author = "Dr!fter",
@@ -16,14 +20,14 @@ public Plugin:myinfo =
 	url = "http://www.sourcemod.net"
 }
 
-public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
+public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
 	MarkNativeAsOptional("DHookIsNullParam");
 	
 	return APLRes_Success;
 }
 
-public OnPluginStart()
+public void OnPluginStart()
 {
 	mp_forcecamera = FindConVar("mp_forcecamera");
 	
@@ -32,14 +36,14 @@ public OnPluginStart()
 		SetFailState("Failed to locate mp_forcecamera");
 	}
 	
-	new Handle:temp = LoadGameConfigFile("allow-spec.games");
+	Handle temp = LoadGameConfigFile("allow-spec.games");
 	
 	if(!temp)
 	{
 		SetFailState("Failed to load allow-spec.games.txt");
 	}
 	
-	new offset = GameConfGetOffset(temp, "IsValidObserverTarget");
+	int offset = GameConfGetOffset(temp, "IsValidObserverTarget");
 	
 	hIsValidTarget = DHookCreate(offset, HookType_Entity, ReturnType_Bool, ThisPointer_CBaseEntity, IsValidTarget);
 	
@@ -51,24 +55,25 @@ public OnPluginStart()
 	
 	CreateConVar("admin_allspec_version", PLUGIN_VERSION, "Plugin version", FCVAR_SPONLY|FCVAR_REPLICATED|FCVAR_NOTIFY|FCVAR_DONTRECORD);
 }
-public OnClientPostAdminCheck(client)
+
+public void OnClientPostAdminCheck(int client)
 {
-	if(IsFakeClient(client))
+	if(IsFakeClient(client)) {
 		return;
-	
-	if(CheckCommandAccess(client, "admin_allspec_flag", ADMFLAG_CHEATS))
-	{
+	}
+	if(CheckCommandAccess(client, "admin_allspec_flag", ADMFLAG_CHEATS)) {
 		SendConVarValue(client, mp_forcecamera, "0");
 		DHookEntity(hIsValidTarget, true, client);
 	}
 }
-public MRESReturn:IsValidTarget(pThis, Handle:hReturn, Handle:hParams)
+
+public MRESReturn IsValidTarget(int pThis, Handle hReturn, Handle hParams)
 {
 	// As of DHooks 1.0.12 we must check for a null param.
 	if (g_bCheckNullPtr && DHookIsNullParam(hParams, 1))
 		return MRES_Ignored;
 	
-	new target = DHookGetParam(hParams, 1);
+	int target = DHookGetParam(hParams, 1);
 	if(target <= 0 || target > MaxClients || !IsClientInGame(pThis) || !IsClientInGame(target) || !IsPlayerAlive(target) || IsPlayerAlive(pThis) || GetClientTeam(pThis) <= 1 || GetClientTeam(target) <= 1)
 	{
 		return MRES_Ignored;

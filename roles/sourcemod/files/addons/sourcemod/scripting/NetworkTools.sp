@@ -1,4 +1,6 @@
 #pragma semicolon 1
+#pragma tabsize 4
+#pragma newdecls required
 
 /* Includes */
 #include <sourcemod>
@@ -10,39 +12,41 @@
 #define defPluginPrefix 		"\x04[Network Tools]\x03"
 
 /* Globals */
-new g_iLimit[3];
+int g_iLimit[3];
 
-new Handle:g_hTimerHandle = INVALID_HANDLE;
+Handle g_hTimerHandle = INVALID_HANDLE;
 
-new bool:g_bValidClient[MAXPLAYERS+1][2]; // 10 times faster (ICIG) to use Global bools instead of calling their native counterparts.
-new g_iClientChoke[MAXPLAYERS+1][2], g_iClientLatency[MAXPLAYERS+1][2], g_iClientLoss[MAXPLAYERS+1][2];
+bool g_bValidClient[MAXPLAYERS+1][2]; // 10 times faster (ICIG) to use Global bools instead of calling their native counterparts.
+int g_iClientChoke[MAXPLAYERS+1][2];
+int g_iClientLatency[MAXPLAYERS+1][2];
+int g_iClientLoss[MAXPLAYERS+1][2];
 
 /* Global CVars */
-new bool:g_bEnabled = true;
-new bool:g_bChokeEnabled = true;
-new bool:g_bLatencyEnabled = true;
-new bool:g_bLossEnabled = true;
-new bool:g_bKickVocalize = true;
-new bool:g_bWarningVocalize = true;
-new bool:g_bLiamMethod = false;
-new bool:g_bLoggingEnabled = false;
+bool g_bEnabled = true;
+bool g_bChokeEnabled = true;
+bool g_bLatencyEnabled = true;
+bool g_bLossEnabled = true;
+bool g_bKickVocalize = true;
+bool g_bWarningVocalize = true;
+bool g_bLiamMethod = false;
+bool g_bLoggingEnabled = false;
 
-new String:g_sBasePath[PLATFORM_MAX_PATH];
-new String:g_sLogTimeString[2][64];
+char g_sBasePath[PLATFORM_MAX_PATH];
+char g_sLogTimeString[2][64];
 
-new g_iCmdRate[2];
+int g_iCmdRate[2];
 
-new g_iChokeAddition = 30;
-new g_iLatencyAddition = 250;
-new g_iLossAddition = 15;
-new g_iChokeThreashold = 6;
-new g_iLatencyThreashold = 6;
-new g_iLossThreashold = 6;
-new g_iMinPCount = 12;
-new g_iCheckRate = 30;
+int g_iChokeAddition = 30;
+int g_iLatencyAddition = 250;
+int g_iLossAddition = 15;
+int g_iChokeThreashold = 6;
+int g_iLatencyThreashold = 6;
+int g_iLossThreashold = 6;
+int g_iMinPCount = 12;
+int g_iCheckRate = 30;
 
 /* My Info */
-public Plugin:myinfo =
+public Plugin myinfo =
 {
     name 		=		"Network Tools",			// http://www.thesixtyone.com/s/7U7ePI1GYPh/
     author		=		"Kyle Sanderson",
@@ -52,11 +56,11 @@ public Plugin:myinfo =
 };
 
 /* Plugin Start */
-public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
+public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
 	if(late)
 	{
-		for(new i = 1; i <= MaxClients; i++)
+		for(int i = 1; i <= MaxClients; i++)
 		{
 			if(IsClientInGame(i))
 			{
@@ -67,10 +71,10 @@ public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 	return APLRes_Success;
 }
 
-public OnPluginStart()
+public void OnPluginStart()
 {
 	CreateConVar("sm_nt_verison", PLUGIN_VERSION, PLUGIN_DESCRIPTION, FCVAR_SPONLY|FCVAR_UNLOGGED|FCVAR_DONTRECORD|FCVAR_REPLICATED|FCVAR_NOTIFY);
-	new Handle:hRandom; // I HATE Handles.
+	Handle hRandom; // I HATE Handles.
 	
 	HookConVarChange((hRandom = CreateConVar("nt_enabled",				"1",	"Should I even be running?", _, true, 0.0, true, 1.0)),												OnEnabledChange);
 	g_bEnabled = GetConVarBool(hRandom);
@@ -144,7 +148,7 @@ public OnPluginStart()
 	BuildPath(Path_SM, g_sBasePath, sizeof(g_sBasePath), "");
 }
 
-public OnConfigsExecuted()
+public void OnConfigsExecuted()
 {
 	if(g_bEnabled)
 	{
@@ -152,7 +156,7 @@ public OnConfigsExecuted()
 	}
 }
 
-public OnClientPostAdminCheck(client)
+public void OnClientPostAdminCheck(int client)
 {
 	if((g_bValidClient[client][0] = !IsFakeClient(client)))
 	{
@@ -160,7 +164,7 @@ public OnClientPostAdminCheck(client)
 	}
 }
 
-public OnClientDisconnect(client)
+public void OnClientDisconnect(int client)
 {
 	if(g_bValidClient[client][0])
 	{
@@ -171,32 +175,33 @@ public OnClientDisconnect(client)
 	}
 }
 
-public OnMapEnd()
+public void OnMapEnd()
 {
 	g_hTimerHandle = INVALID_HANDLE;
 }
 
 /* Commands */
-public Action:DisplayInformation(client, args)
+public Action DisplayInformation(int client, int args)
 {
-	if(args < 1)
-	{
+	if(args < 1) { 
 		ReplyToCommand(client, "%s\nPlugin Enabled: \x04%i\x03\nPlugin Kicking: \x04%i\x03\nMin Player Count: \x04%i\x03\nKick Vocalization: \x04%i\x03\nLogging Enabled: \x04%i\x03\nFile Logging Format: \x04%s\x03\nInternal File Logging Format: \x04%s\x03", defPluginPrefix, g_bEnabled, PlayerCountIsCorrect(), g_iMinPCount, g_bKickVocalize, g_bLoggingEnabled, g_sLogTimeString[0], g_sLogTimeString[1]);
 		ReplyToCommand(client, "\x03Choke Enabled: \x04%i\x03\nChoke Limit: \x04%i\x03\nChoke Slide: \x04%i\x03\nLatency Enabled: \x04%i\x03\nLatency Limit: \x04%i\x03\nLatency Slide: \x04%i\x03\nLoss Enabled: \x04%i\x03\nLoss Limit: \x04%i\x03\nLoss Slide: \x04%i\x03", g_bChokeEnabled, g_iLimit[0], g_iChokeAddition, g_bLatencyEnabled, g_iLimit[1], g_iLatencyAddition, g_bLossEnabled, g_iLimit[2], g_iLossAddition);
 		return Plugin_Handled;
 	}
 	
-	decl String:Arg[128];
-	new String:sClientChecking[4];
+	char Arg[128];
+	char sClientChecking[4];
 	GetCmdArgString(Arg, sizeof(Arg));
 	
-	decl iTarget_list[MAXPLAYERS+1], String:iTarget_name[MAXPLAYERS+1], bool:iTarget_ml;
-	new ListSize = ProcessTargetString(Arg, client, iTarget_list, MAXPLAYERS, COMMAND_FILTER_NO_BOTS, iTarget_name, sizeof(iTarget_name), iTarget_ml);
+	int iTarget_list[MAXPLAYERS+1];
+	char iTarget_name[MAXPLAYERS+1];
+	bool iTarget_ml;
+	int ListSize = ProcessTargetString(Arg, client, iTarget_list, MAXPLAYERS, COMMAND_FILTER_NO_BOTS, iTarget_name, sizeof(iTarget_name), iTarget_ml);
 	if (ListSize > 0)
 	{
-		new iTarget;
+		int iTarget;
 		ReplyToCommand(client, "%s", defPluginPrefix);
-		for (new i = 0; i < ListSize; i++)
+		for (int i = 0; i < ListSize; i++)
 		{
 			iTarget = iTarget_list[i];
 			switch(g_bValidClient[iTarget][1])
@@ -225,7 +230,7 @@ public Action:DisplayInformation(client, args)
 	return Plugin_Handled;
 }
 
-public Action:ToggleImmune(client, args)
+public Action ToggleImmune(int client, int args)
 {
 	if(args < 1)
 	{
@@ -233,16 +238,18 @@ public Action:ToggleImmune(client, args)
 		return Plugin_Handled;
 	}
 
-	decl String:ArgString[128];
+	char ArgString[128];
 	GetCmdArgString(ArgString, sizeof(ArgString));
 
-	decl iTarget_list[MAXPLAYERS+1], String:iTarget_name[MAXPLAYERS+1], bool:iTarget_ml;
-	new ListSize = ProcessTargetString(ArgString, client, iTarget_list, MAXPLAYERS, COMMAND_FILTER_NO_BOTS, iTarget_name, sizeof(iTarget_name), iTarget_ml);
+	int  iTarget_list[MAXPLAYERS+1]; 
+	char iTarget_name[MAXPLAYERS+1];
+	bool iTarget_ml;
+	int ListSize = ProcessTargetString(ArgString, client, iTarget_list, MAXPLAYERS, COMMAND_FILTER_NO_BOTS, iTarget_name, sizeof(iTarget_name), iTarget_ml);
 	if (ListSize > 0)
 	{
-		new iTarget;
+		int iTarget;
 		ReplyToCommand(client, "%s", defPluginPrefix);
-		for (new i = 0; i < ListSize; i++)
+		for (int i = 0; i < ListSize; i++)
 		{
 			iTarget = iTarget_list[i];
 			switch(g_bValidClient[iTarget][1])
@@ -265,7 +272,7 @@ public Action:ToggleImmune(client, args)
 }
 
 /* Main Work Horse */
-public Action:RefreshData(Handle:Timer)
+public Action RefreshData(Handle Timer)
 {
 	if(g_bEnabled && PlayerCountIsCorrect())
 	{
@@ -275,14 +282,14 @@ public Action:RefreshData(Handle:Timer)
 	return Plugin_Handled;
 }
 
-public ProcessData()
+public void ProcessData()
 {
-	new iMaxChoke = g_iLimit[0];
-	new iMaxLatency = g_iLimit[1];
-	new iMaxLoss = g_iLimit[2];
-	new bool:bWarned;
+	int iMaxChoke = g_iLimit[0];
+	int iMaxLatency = g_iLimit[1];
+	int iMaxLoss = g_iLimit[2];
+	bool bWarned;
 
-	for(new i = 1; i <= MaxClients; i++)
+	for(int i = 1; i <= MaxClients; i++)
 	{
 		if(g_bValidClient[i][0] && g_bValidClient[i][1])
 		{
@@ -380,25 +387,27 @@ public ProcessData()
 	}
 }
 
-public GetData()
+public void GetData()
 {
-	decl CmdRate, RandomVariable;
-	new MinCmdRate = g_iCmdRate[0], MaxCmdRate = g_iCmdRate[1];
-	new iTickRate;
+	int CmdRate;
+	int RandomVariable;
+	int MinCmdRate = g_iCmdRate[0];
+	int MaxCmdRate = g_iCmdRate[1];
+	int iTickRate;
 
-	for(new i; i < 3; i++)
+	for(int i; i < 3; i++)
 	{
 		g_iLimit[i] = 999;
 	}
 
 
-	decl String:sCmdClientInfo[4];
+	char sCmdClientInfo[4];
 	if(g_bLiamMethod)
 	{
 		iTickRate = RoundToNearest(GetTickInterval());
 	}
 
-	for(new i = 1; i <= MaxClients; i++)
+	for(int i = 1; i <= MaxClients; i++)
 	{
 		if(g_bValidClient[i][0])
 		{
@@ -463,10 +472,10 @@ public GetData()
 }
 
 /* Fun Stocks that shouldn't be messed with */
-stock PlayerCountIsCorrect()
+stock bool PlayerCountIsCorrect()
 {
-	new k;
-	for(new i = 1; i <= MaxClients; i++)
+	int k;
+	for(int i = 1; i <= MaxClients; i++)
 	{
 		if(g_bValidClient[i][0])
 		{
@@ -480,7 +489,7 @@ stock PlayerCountIsCorrect()
 	return false;
 }
 
-stock LogKick(client, KickVal)
+stock void LogKick(int client, int KickVal)
 {
 	if(!g_bLoggingEnabled)
 	{
@@ -499,7 +508,7 @@ stock LogKick(client, KickVal)
 		strcopy(g_sLogTimeString[1][0], sizeof(g_sLogTimeString[]), "%x");
 	}
 
-	decl String:sFormattedTime[2][512];
+	char sFormattedTime[2][512];
 	FormatTime(sFormattedTime[0], sizeof(sFormattedTime[]), g_sLogTimeString[0]);
 	FormatTime(sFormattedTime[1], sizeof(sFormattedTime[]), g_sLogTimeString[1]);
 	Format(sFormattedTime[0], sizeof(sFormattedTime[]), "%slogs/NetworkTools.%s.log", g_sBasePath, sFormattedTime[0]);
@@ -523,7 +532,7 @@ stock LogKick(client, KickVal)
 }
 
 /* ConVar Changes */
-public OnEnabledChange(Handle:convar, const String:oldValue[], const String:newValue[])
+public void OnEnabledChange(Handle convar, const char[] oldValue, const char[] newValue)
 {
 	switch(GetConVarBool(convar))
 	{
@@ -549,57 +558,57 @@ public OnEnabledChange(Handle:convar, const String:oldValue[], const String:newV
 	}
 }
 
-public OnChokeAdditionChange(Handle:convar, const String:oldValue[], const String:newValue[])
+public void OnChokeAdditionChange(Handle convar, const char []oldValue, const char[] newValue)
 {
 	g_iChokeAddition = GetConVarInt(convar);
 }
 
-public OnLatencyAdditionChange(Handle:convar, const String:oldValue[], const String:newValue[])
+public void OnLatencyAdditionChange(Handle convar, const char []oldValue, const char[] newValue)
 {
 	g_iLatencyAddition = GetConVarInt(convar);
 }
 
-public OnLossAdditionChange(Handle:convar, const String:oldValue[], const String:newValue[])
+public void OnLossAdditionChange(Handle convar, const char []oldValue, const char[] newValue)
 {
 	g_iLossAddition = GetConVarInt(convar);
 }
 
-public OnChokeThreasholdChange(Handle:convar, const String:oldValue[], const String:newValue[])
+public void OnChokeThreasholdChange(Handle convar, const char []oldValue, const char[] newValue)
 {
 	g_iChokeThreashold = GetConVarInt(convar);
 }
 
-public OnLatencyThreasholdChange(Handle:convar, const String:oldValue[], const String:newValue[])
+public void OnLatencyThreasholdChange(Handle convar, const char []oldValue, const char[] newValue)
 {
 	g_iLatencyThreashold = GetConVarInt(convar);
 }
 
-public OnLossThreasholdChange(Handle:convar, const String:oldValue[], const String:newValue[])
+public void OnLossThreasholdChange(Handle convar, const char []oldValue, const char[] newValue)
 {
 	g_iLossThreashold = GetConVarInt(convar);
 }
 
-public OnMinPlayChange(Handle:convar, const String:oldValue[], const String:newValue[])
+public void OnMinPlayChange(Handle convar, const char []oldValue, const char[] newValue)
 {
 	g_iMinPCount = GetConVarInt(convar);
 }
 
-public OnLoggingChange(Handle:convar, const String:oldValue[], const String:newValue[])
+public void OnLoggingChange(Handle convar, const char []oldValue, const char[] newValue)
 {
 	g_bLoggingEnabled = GetConVarBool(convar);
 }
 
-public OnExtLogFormatChange(Handle:convar, const String:oldValue[], const String:newValue[])
+public void OnExtLogFormatChange(Handle convar, const char []oldValue, const char[] newValue)
 {
 	GetConVarString(convar, g_sLogTimeString[0], sizeof(g_sLogTimeString[]));
 }
 
-public OnIntLogFormatChange(Handle:convar, const String:oldValue[], const String:newValue[])
+public void OnIntLogFormatChange(Handle convar, const char []oldValue, const char[] newValue)
 {
 	GetConVarString(convar, g_sLogTimeString[1], sizeof(g_sLogTimeString[]));
 }
 
-public OnCheckRateChange(Handle:convar, const String:oldValue[], const String:newValue[])
+public void OnCheckRateChange(Handle convar, const char []oldValue, const char[] newValue)
 {
 	g_iCheckRate = GetConVarInt(convar);
 	switch(g_bEnabled)
@@ -624,44 +633,44 @@ public OnCheckRateChange(Handle:convar, const String:oldValue[], const String:ne
 	}
 }
 
-public OnKickMessageChange(Handle:convar, const String:oldValue[], const String:newValue[])
+public void OnKickMessageChange(Handle convar, const char []oldValue, const char[] newValue)
 {
 	g_bKickVocalize = GetConVarBool(convar);
 }
 
-public OnWarningMessageChange(Handle:convar, const String:oldValue[], const String:newValue[])
+public void OnWarningMessageChange(Handle convar, const char []oldValue, const char[] newValue)
 {
 	g_bWarningVocalize = GetConVarBool(convar);
 }
 
-public OnChokeEnableChange(Handle:convar, const String:oldValue[], const String:newValue[])
+public void OnChokeEnableChange(Handle convar, const char []oldValue, const char[] newValue)
 {
 	g_bChokeEnabled = GetConVarBool(convar);
 }
 
-public OnLatencyEnableChange(Handle:convar, const String:oldValue[], const String:newValue[])
+public void OnLatencyEnableChange(Handle convar, const char []oldValue, const char[] newValue)
 {
 	g_bLatencyEnabled = GetConVarBool(convar);
 }
 
-public OnLossEnableChange(Handle:convar, const String:oldValue[], const String:newValue[])
+public void OnLossEnableChange(Handle convar, const char []oldValue, const char[] newValue)
 {
 	g_bLossEnabled = GetConVarBool(convar);
 }
 
-public OnLiamMethodChange(Handle:convar, const String:oldValue[], const String:newValue[])
+public void OnLiamMethodChange(Handle convar, const char []oldValue, const char[] newValue)
 {
 	g_bLiamMethod = GetConVarBool(convar);
 }
 
 /* Valve ConVar Changes */
 
-public OnMinCmdRateChange(Handle:convar, const String:oldValue[], const String:newValue[])
+public void OnMinCmdRateChange(Handle convar, const char []oldValue, const char[] newValue)
 {
 	g_iCmdRate[0] = GetConVarInt(convar);
 }
 
-public OnMaxCmdRateChange(Handle:convar, const String:oldValue[], const String:newValue[])
+public void OnMaxCmdRateChange(Handle convar, const char []oldValue, const char[] newValue)
 {
 	g_iCmdRate[1] = GetConVarInt(convar);
 }

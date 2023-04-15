@@ -1,6 +1,10 @@
+#pragma semicolon 1
+#pragma tabsize 4
+#pragma newdecls required
+
 #include <sourcemod>
 
-public Plugin:myinfo =
+public Plugin myinfo =
 {
     name = "Send player to spec",
     author = "Arkarr",
@@ -9,7 +13,7 @@ public Plugin:myinfo =
     url = "http://www.sourcemod.net"
 };
 
-public OnPluginStart()
+public void OnPluginStart()
 {
 	RegAdminCmd("sm_spec", SendPlayerAFK, ADMFLAG_GENERIC, "Send player to spec team.");
 	//RegConsoleCmd("sm_afk", SendPlayerAFK, "Send player to spec team.");
@@ -18,13 +22,13 @@ public OnPluginStart()
 	LoadTranslations("common.phrases");
 }
 
-public Action:SendPlayerAFK(client, args)
+public Action SendPlayerAFK(int client, int args)
 {
 	SendToSpec(client, true);
 	return Plugin_Handled;
 }
 
-public Action:ForceSendPlayerAFK(client, args)
+public Action ForceSendPlayerAFK(int client, int args)
 {
 	if(args > 2 || args  == 0)
 	{
@@ -32,9 +36,12 @@ public Action:ForceSendPlayerAFK(client, args)
 		return Plugin_Handled;
 	}
 
-	new String:target_name[MAX_TARGET_LENGTH], String:arg1[MAX_TARGET_LENGTH], String:arg2[MAX_TARGET_LENGTH];
-	new target_list[MAXPLAYERS], target_count;
-	new bool:tn_is_ml;
+	char target_name[MAX_TARGET_LENGTH];
+	char arg1[MAX_TARGET_LENGTH];
+	char arg2[MAX_TARGET_LENGTH];
+	int target_list[MAXPLAYERS];
+	int target_count;
+	bool tn_is_ml;
 
 	GetCmdArg(1, arg1, sizeof(arg1));
 	GetCmdArg(2, arg2, sizeof(arg2));
@@ -66,7 +73,7 @@ public Action:ForceSendPlayerAFK(client, args)
 	}
 	else
 	{
-		for (new i = 0; i < target_count; i++)
+		for (int i = 0; i < target_count; i++)
 		{
 			SendToSpec(target_list[i], false);
 		}
@@ -78,14 +85,11 @@ public Action:ForceSendPlayerAFK(client, args)
 	return Plugin_Handled;
 }
 
-stock SendToSpec(client, bool:user_choice)
+stock void SendToSpec(int client, bool user_choice)
 {
-	if(GetClientTeam(client) != 1)
-	{
+	if (GetClientTeam(client) != 1) {
 		ChangeClientTeam(client, 1);
-	}
-	else if(user_choice == true)
-	{
+	} else if(user_choice == true) {
 		PrintToChat(client, "[SPEC] You are already a spectator !");
 	}
 }

@@ -1,11 +1,11 @@
 #pragma semicolon 1
+#pragma tabsize 4
+#pragma newdecls required
 
 #include <sourcemod>
 #include <sdktools>
 #include <tf2_stocks>
 #include <gamemode>
-
-#pragma newdecls required
 
 public Plugin myinfo =
 {

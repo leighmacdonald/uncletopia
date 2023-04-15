@@ -1,8 +1,9 @@
 #include <sourcemod>
 #include <tf2_stocks>
 
-#pragma newdecls required
 #pragma semicolon 1
+#pragma tabsize 4
+#pragma newdecls required
 
 #define PL_VERSION "0.6.1"
 

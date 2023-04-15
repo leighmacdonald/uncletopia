@@ -1,3 +1,7 @@
+#pragma semicolon 1
+#pragma tabsize 4
+#pragma newdecls required
+
 #include <sourcemod>
 #include <SteamWorks>
 
@@ -85,7 +89,7 @@ public Action Command_Test(int client, int args)
 
 public int Native_SendMessage(Handle plugin, int numParams)
 {
-	char sWebhook[64]
+	char sWebhook[64];
 	GetNativeString(1, sWebhook, sizeof(sWebhook));
 	
 	char sMessage[4096];
@@ -140,14 +144,14 @@ public Action Timer_SendNextMessage(Handle timer, any data)
 void SendNextMsg()
 {
 	// We are still waiting for a reply from our last msg
-	if(g_bSending)
+	if(g_bSending) {
 		return;
-	
+	}
 	// Nothing to send
 	if(g_aWebhook == null || g_aWebhook.Length < 1)
 		return;
 	
-	char sWebhook[64]
+	char sWebhook[64];
 	g_aWebhook.GetString(0, sWebhook, sizeof(sWebhook));
 	
 	char sMessage[4096];

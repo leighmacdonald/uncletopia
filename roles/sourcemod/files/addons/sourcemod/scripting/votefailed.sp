@@ -31,9 +31,11 @@
  *
  * Version: $Id$
  */
-#include <sourcemod>
 #pragma semicolon 1
+#pragma tabsize 4
 #pragma newdecls required
+
+#include <sourcemod>
 
 #define VERSION "1.0.0"
 

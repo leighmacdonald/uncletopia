@@ -32,6 +32,7 @@
 #include <updater>
 
 #pragma semicolon 1
+#pragma tabsize 4
 #pragma newdecls required
 
 #define UPDATE_URL_PLUGIN "https://dordnung.de/sourcemod/cronjobs/update.txt"
@@ -160,13 +161,11 @@ void LoadCronjobs()
 	// First delete all old cronjobs
 	if (g_hCronjobs.Length > 0)
 	{
-		if (g_bDebugEnabled)
-		{
+		if (g_bDebugEnabled) {
 			LogMessage("Deleting %d already loaded cronjobs", g_hCronjobs.Length);
 		}
 
-		for (int i=0; i < g_hCronjobs.Length; i++)
-		{
+		for (int i=0; i < g_hCronjobs.Length; i++) {
 			DeleteCronjob(view_as<StringMap>(g_hCronjobs.Get(i)));
 		}
 
@@ -218,12 +217,9 @@ void LoadCronjobs()
 		int currentPos = 0;
 		bool lastCharWhitespace = false;
 
-		for (int i=0; i < strlen(fileLine) && currentPart < sizeof(parts) && currentPos < sizeof(parts[]); i++)
-		{
-			if (IsCharSpace(fileLine[i]))
-			{
-				if (!lastCharWhitespace)
-				{
+		for (int i=0; i < strlen(fileLine) && currentPart < sizeof(parts) && currentPos < sizeof(parts[]); i++) {
+			if (IsCharSpace(fileLine[i])) {
+				if (!lastCharWhitespace) {
 					parts[currentPart][currentPos] = '\0';
 					
 					// Stop if we found a valid type
@@ -238,9 +234,7 @@ void LoadCronjobs()
 				}
 
 				lastCharWhitespace = true;
-			}
-			else
-			{
+			} else {
 				// Just append char to current part
 				lastCharWhitespace = false;
 				parts[currentPart][currentPos++] = fileLine[i];
@@ -249,14 +243,12 @@ void LoadCronjobs()
 
 		// Check if it is a valid cronjob line
 		int numParts = currentPart;
-		if (numParts != 1 && numParts != 5 && numParts != 6)
-		{
+		if (numParts != 1 && numParts != 5 && numParts != 6) {
 			LogError("Couldn't add cronjob '%s': wrong number of parts detected (%d)", fileLineOriginal, numParts);
 			continue;
 		}
 
-		if (g_bDebugEnabled)
-		{
+		if (g_bDebugEnabled) {
 			LogMessage("Found %d parts in cronjob line", numParts);
 		}
 
@@ -266,8 +258,7 @@ void LoadCronjobs()
 
 		// Calculate where the type argument starts
 		int typeStart = StrContains(fileLine, type);
-		if (typeStart == -1)
-		{
+		if (typeStart == -1) {
 			LogError("Couldn't add cronjob '%s': Couldn't find type in the line (%d parts detected)", fileLineOriginal, numParts);
 			continue;
 		}
@@ -279,8 +270,7 @@ void LoadCronjobs()
 
 		// Finally parse the cronjob
 		StringMap cronjob = new StringMap();
-		if (numParts == 1)
-		{
+		if (numParts == 1) {
 			// Parse a line with special time
 			if (!ParseSpecial(cronjob, parts[0]) || !ParseType(cronjob, type) || !ParseCommand(cronjob, command))
 			{
@@ -289,9 +279,7 @@ void LoadCronjobs()
 
 				continue;
 			}
-		}
-		else
-		{
+		} else {
 			// Set all seconds to false (expect zero) if no seconds part is given
 			if (numParts == 5)
 			{

@@ -17,6 +17,9 @@
  */
 
 #pragma semicolon 1
+#pragma tabsize 4
+#pragma newdecls required
+
 #include <sourcemod>
 
 #define VERSION                      "1.1.1"
@@ -31,7 +34,7 @@
 #define TYPE_MAP                     1
 #define TYPE_GAMETYPE                2
 
-public Plugin:myinfo = {
+public Plugin myinfo = {
 	name        = "Extended mapconfig package",
 	author      = "Milo",
 	description = "Allows you to use seperate config files for each gametype and map.",
@@ -39,14 +42,14 @@ public Plugin:myinfo = {
 	url         = "http://sourcemod.corks.nl/"
 };
 
-public OnPluginStart() {
+public void OnPluginStart() {
 	CreateConVar("extendedmapconfig_version", VERSION, "Current version of the extended mapconfig plugin", FCVAR_REPLICATED|FCVAR_NOTIFY|FCVAR_DONTRECORD);
 	createConfigFiles();
 }
 
-public OnConfigsExecuted() {
-	new String:configFilename[PLATFORM_MAX_PATH];
-	new String:name[PLATFORM_MAX_PATH];
+public void OnConfigsExecuted() {
+	char configFilename[PLATFORM_MAX_PATH];
+	char name[PLATFORM_MAX_PATH];
 	// Execute general config
 	name = "all";
 	getConfigFilename(configFilename, sizeof(configFilename), name, TYPE_GENERAL);
@@ -66,9 +69,9 @@ public OnConfigsExecuted() {
 	ServerCommand("exec \"%s\"", configFilename);
 }
 
-createConfigFiles() {
-	new String:game[64];
-	new String:name[PLATFORM_MAX_PATH];
+void createConfigFiles() {
+	char game[64];
+	char name[PLATFORM_MAX_PATH];
 	// Fetch the current game/mod
 	GetGameFolderName(game, sizeof(game));
 	// Create the directory structure (if it doesnt exist already)
@@ -95,20 +98,22 @@ createConfigFiles() {
 		createConfigFile("as",    TYPE_GAMETYPE, "Assasination maps");
 		createConfigFile("es",    TYPE_GAMETYPE, "Escape maps");
 	}
-	new Handle:adtMaps = CreateArray(16, 0);
-	new serial = -1;
+	Handle adtMaps = CreateArray(16, 0);
+	int serial = -1;
 	// Fetch dynamic array of all existing maps on the server
 	ReadMapList(adtMaps, serial, "allexistingmaps__", MAPLIST_FLAG_MAPSFOLDER|MAPLIST_FLAG_NO_DEFAULT);
-	new mapcount = GetArraySize(adtMaps);
+	int mapcount = GetArraySize(adtMaps);
 	// Create a cfgfile for each one
-	if (mapcount > 0) for (new i = 0; i < mapcount; i++) {
-		GetArrayString(adtMaps, i, name, sizeof(name));
-		createConfigFile(name, TYPE_MAP, name);
+	if (mapcount > 0) {
+		for (int i = 0; i < mapcount; i++) {
+			GetArrayString(adtMaps, i, name, sizeof(name));
+			createConfigFile(name, TYPE_MAP, name);
+		}
 	}
 }
 
 // Determine the full path to a config file.
-getConfigFilename(String:buffer[], const maxlen, const String:filename[], const type=TYPE_MAP, const bool:actualPath=false) {
+void getConfigFilename(char[] buffer, const int maxlen, const char[] filename, const int type=TYPE_MAP, const bool actualPath=false) {
 	Format(
 		buffer, maxlen, "%s%s%s.cfg", (actualPath ? PATH_PREFIX_ACTUAL : ""), (
 		type == TYPE_GENERAL ? PATH_PREFIX_VISIBLE_GENERAL : (type == TYPE_GAMETYPE ? PATH_PREFIX_VISIBLE_GAMETYPE : PATH_PREFIX_VISIBLE_MAP)
@@ -116,8 +121,8 @@ getConfigFilename(String:buffer[], const maxlen, const String:filename[], const 
 	);
 }
 
-createConfigDir(const String:filename[], const String:prefix[]="") {
-	new String:dirname[PLATFORM_MAX_PATH];
+void createConfigDir(const char[] filename, const char[] prefix="") {
+	char dirname[PLATFORM_MAX_PATH];
 	Format(dirname, sizeof(dirname), "%s%s", prefix, filename);
 	CreateDirectory(
 		dirname,  
@@ -127,18 +132,21 @@ createConfigDir(const String:filename[], const String:prefix[]="") {
 	);
 }
 
-createConfigFile(const String:filename[], type=TYPE_MAP, const String:label[]="") {
-	new String:configFilename[PLATFORM_MAX_PATH];
-	new String:configLabel[128];
-	new Handle:fileHandle = INVALID_HANDLE;
+void createConfigFile(const char[] filename, int type=TYPE_MAP, const char[] label="") {
+	char configFilename[PLATFORM_MAX_PATH];
+	char configLabel[128];
+	Handle fileHandle = INVALID_HANDLE;
 	getConfigFilename(configFilename, sizeof(configFilename), filename, type, true);
 	// Check if config exists
 	if (FileExists(configFilename)) return;
 	// If it doesnt, create it
 	fileHandle = OpenFile(configFilename, "w+");
 	// Determine content
-	if (strlen(label) > 0) strcopy(configLabel, sizeof(configLabel), label);
-	else                   strcopy(configLabel, sizeof(configLabel), configFilename);
+	if (strlen(label) > 0) {
+		strcopy(configLabel, sizeof(configLabel), label);
+	} else {
+		strcopy(configLabel, sizeof(configLabel), configFilename);
+	}                   
 	if (fileHandle != INVALID_HANDLE) {
 		WriteFileLine(fileHandle, "// Configfile for: %s", configLabel);
 		CloseHandle(fileHandle);
