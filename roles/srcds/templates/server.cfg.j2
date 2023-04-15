@@ -13,14 +13,12 @@ net_splitpacket_maxrate	"100000"
 
 // Force client values to be in range
 sv_competitive_minspec 1
-// Community servers can enable use of the older steam voice codec with sv_use_steam_voice 1
-// sv_use_steam_voice 0
 
 sv_client_min_interp_ratio 1
 sv_client_max_interp_ratio 2
 sv_client_predict "1"
 
-{% if stv_enable %}
+{% if item.stv_enable|default(stv_enable) %}
 tv_enable 1
 tv_autorecord 0
 tv_maxclients 5
@@ -66,7 +64,7 @@ sv_pausable 0
 tf_ctf_bonus_time 0
 
 // Remove random crits
-tf_weapon_criticals 0
+tf_weapon_criticals {% if item.tf_weapon_criticals|default(false) %}1{% else %}0{% endif %}
 tf_use_fixed_weaponspreads 1
 
 // Dont spectate other team
