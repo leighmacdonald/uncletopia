@@ -13,7 +13,7 @@ tf_autobalance_dead_candidates_maxtime 0
 tf_autobalance_force_candidates_maxtime 0
 tf_autobalance_xp_bonus 0
 
-sv_tags "{{ sv_tags }}"
+sv_tags "{{ item.sv_tags|default(sv_tags) }}"
 
 sv_rcon_banpenalty 1440
 sv_rcon_minfailures 5
@@ -43,14 +43,6 @@ sv_voicecodec steam
 
 // AFK Kick after 3 mins
 mp_idlemaxtime 3
-
-// Network stuff
-{#sv_minrate 3500#}
-{#net_splitpacket_maxrate 131072#}
-{#sv_maxrate 0#}
-{#sv_maxupdaterate 66#}
-{#sv_mincmdrate 10#}
-{#sv_maxcmdrate 66#}
 
 sv_visiblemaxplayers {{ item.sv_visiblemaxplayers|default(24) }}
 
