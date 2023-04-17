@@ -6,7 +6,7 @@ UncleDanePVE
 		"{{ loop.index }}"  "{{ name }}"
 {% endfor %}
 	}
-
+    Count 16
 	Difficulty 3
 	Class "engineer"
 
@@ -21,30 +21,25 @@ UncleDanePVE
 	// Customize what weapons bots are going to use
 	Weapons
 	{
-		// List of weapons, that bots can use
-		// in their primary slots. The final weapon
-		// is chosen randomly between all of these.
 		Primary
 		{
-			// They can use a regular shotgun
-			Weapon 199
-
-			// Or they can use The WidowMaker
-			Weapon 527
-
-			// Or Frontier Justice
-			Weapon 141
+			Weapon 199	// Shotgun
+			Weapon 527	// Widowmaker
+			Weapon 141	// Frontier Justice
 		}
 
 		Melee
 		{
-			// All bots carry Frying Pan in their melee
-			// slot.
-			Weapon 264
-		}
+			Weapon
+			{
+				Index 7	// Wrench
 
-		// Secondary slot entry is missing. This means bot will
-		// use the stock option for their Secondary slot (Pistol).
+				Attributes
+				{
+					"fire rate bonus" 0.6
+				}
+			}
+		}
 	}
 
 	Cosmetics
@@ -68,6 +63,7 @@ UncleDanePVE
 			{
 				"set item tint RGB" 	15132390
 				"set item tint RGB 2" 	15132390
+				"attach particle effect" 62
 			}
 		}
 

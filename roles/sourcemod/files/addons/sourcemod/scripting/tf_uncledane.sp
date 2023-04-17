@@ -15,8 +15,8 @@
 /** Maximum amount of players that can be on the server in TF2 */
 #define TF_MAXPLAYERS 			32
 
-#define GOLDEN_PAN_DEFID 1071 
-#define GOLDEN_PAN_CHANCE 1
+#define GOLDEN_PAN_DEFID 		1071 
+#define GOLDEN_PAN_CHANCE 		1
 
 const TFTeam TFTeam_Humans = TFTeam_Blue;
 const TFTeam TFTeam_Bots = TFTeam_Red;
@@ -48,19 +48,21 @@ ArrayList g_hMeleeWeapons;
 
 #include <danepve/config.sp>
 
-#define PLUGIN_VERSION "0.1.0"
+#define PLUGIN_VERSION "0.3.0"
 
 public Plugin myinfo = 
 {
 	name = "[TF2] Uncle Dane PVE",
 	author = "Moonly Days",
 	description = "Uncle Dane PVE",
-	version = "1.0.0",
+	version = PLUGIN_VERSION,
 	url = "https://github.com/MoonlyDays"
 };
 
 // Plugin ConVars
+ConVar sm_danepve_bot_sapper_insta_remove;
 ConVar sm_danepve_allow_respawnroom_build;
+ConVar sm_danepve_max_humans;
 
 // SDK Call Handles
 Handle g_hSdkEquipWearable;
@@ -71,26 +73,27 @@ Handle gHook_HandleSwitchTeams;
 // Offset cache
 int g_nOffset_CBaseEntity_m_iTeamNum;
 
-
 public OnPluginStart()
 {
-	//
+	//-----------------------------------------------------//
 	// Create plugin ConVars
-	//
-
 	CreateConVar("danepve_version", PLUGIN_VERSION, "[TF2] Uncle Dane PVE Version", FCVAR_DONTRECORD);
 	sm_danepve_allow_respawnroom_build = CreateConVar("sm_danepve_allow_respawnroom_build", "1", "Can humans build in respawn rooms?");
+	sm_danepve_max_humans = CreateConVar("sm_danepve_max_humans", "12");
+	sm_danepve_bot_sapper_insta_remove = CreateConVar("sm_danepve_bot_sapper_insta_remove", "1");
 	RegAdminCmd("sm_danepve_reload", cReload, ADMFLAG_CHANGEMAP, "Reloads Uncle Dane PVE config.");
 
-	//
+	//-----------------------------------------------------//
 	// Hook Events
 	HookEvent("post_inventory_application", post_inventory_application);
+	HookEvent("teamplay_setup_finished", 	teamplay_setup_finished);
+	HookEvent("player_death",				player_death);
 	
-	//
+	//-----------------------------------------------------//
 	// Offsets Cache
 	g_nOffset_CBaseEntity_m_iTeamNum = FindSendPropInfo("CBaseEntity", "m_iTeamNum");
 
-	//
+	//-----------------------------------------------------//
 	// Prepare SDK calls from Game Data
 	Handle hConf = LoadGameConfigFile("tf2.danepve");
 	StartPrepSDKCall(SDKCall_Player);
@@ -98,10 +101,8 @@ public OnPluginStart()
 	PrepSDKCall_AddParameter(SDKType_CBaseEntity, SDKPass_Pointer);
 	g_hSdkEquipWearable = EndPrepSDKCall();
 
-	//
+	//-----------------------------------------------------//
 	// Setup DHook Detours
-	//
-
 	gHook_PointIsWithin = DHookCreateDetour(Address_Null, CallConv_THISCALL, ReturnType_Bool, ThisPointer_Address);
 	DHookSetFromConf(gHook_PointIsWithin, hConf, SDKConf_Signature, "PointIsWithin");
 	DHookAddParam(gHook_PointIsWithin, HookParamType_VectorPtr);
@@ -115,10 +116,8 @@ public OnPluginStart()
 	int offset = GameConfGetOffset(hConf, "CTFGameRules::HandleSwitchTeams");
 	gHook_HandleSwitchTeams = DHookCreate(offset, HookType_GameRules, ReturnType_Void, ThisPointer_Ignore, CTFGameRules_HandleSwitchTeams);
 
-	//
+	//-----------------------------------------------------//
 	// Load config and setup the game
-	//
-
 	Config_Load();
 }
 
@@ -127,29 +126,52 @@ public OnMapStart()
 	DHookGamerules(gHook_HandleSwitchTeams, false);
 }
 
+public OnClientPutInServer(int client)
+{
+	if(IsClientSourceTV(client))
+		return;
+
+	CreateTimer(0.5, Timer_OnClientConnect, client);
+}
+
 public bool OnClientConnect(int client, char[] rejectMsg, int maxlen)
 {
-	if(IsFakeClient(client))
+	if(PVE_GetHumanCount() >= sm_danepve_max_humans.IntValue)
 	{
-		CreateTimer(0.1, Timer_OnBotConnect, client);
+		Format(rejectMsg, maxlen, "[PVE] Server is full.");
+		return false;
 	}
 
 	return true;
 }
 
-public Action Timer_OnBotConnect(Handle timer, any client)
+public OnEntityCreated(int entity, const char[] szClassname)
 {
-	PVE_RenameBotClient(client);
-	TF2_ChangeClientTeam(client, TFTeam_Bots);
-
-	return Plugin_Handled;
+	if(StrEqual(szClassname, "obj_attachment_sapper"))
+	{
+		SDKHook(entity, SDKHook_OnTakeDamage, OnSapperTakeDamage);
+	}
 }
 
 //-------------------------------------------------------//
 // GAMEMODE STOCKS
 //-------------------------------------------------------//
 
-public PVE_RenameBotClient(int client)
+// Return the amount of connected(-ing) human players.
+public int PVE_GetHumanCount()
+{
+	int count = 0;
+	for(int i = 1; i < MaxClients; i++)
+	{
+        if (IsClientConnected(i) && !IsFakeClient(i))
+            count++;
+	}
+	
+	return count;
+}
+
+// Give bot a name from the config
+public void PVE_RenameBotClient(int client)
 {
 	// Figure out the name of the bot.
 	// Make a static variable to store current local name index.
@@ -164,7 +186,8 @@ public PVE_RenameBotClient(int client)
 	SetClientName(client, szName);
 }
 
-public PVE_EquipBotItems(int client)
+// Equip bots with appropriate weapons
+public void PVE_EquipBotItems(int client)
 {
 	for(int i = 0; i < g_hBotCosmetics.Length; i++)
 	{
@@ -181,9 +204,24 @@ public PVE_EquipBotItems(int client)
 	PVE_GiveBotRandomSlotWeaponFromArrayList(client, TFWeaponSlot_Primary, 		g_hPrimaryWeapons);
 	PVE_GiveBotRandomSlotWeaponFromArrayList(client, TFWeaponSlot_Secondary, 	g_hSecondaryWeapons);
 	PVE_GiveBotRandomSlotWeaponFromArrayList(client, TFWeaponSlot_Melee, 		g_hMeleeWeapons);
+
+	for(int i = TFWeaponSlot_Primary; i <= TFWeaponSlot_Melee; i++)
+	{
+		int weapon = GetPlayerWeaponSlot(client, i);
+		if(!IsValidEntity(weapon))
+			continue;
+
+		int specKs = GetRandomInt(2002, 2008);
+		int profKs = GetRandomInt(1, 7);
+
+		TF2Attrib_SetByName(weapon, "killstreak tier", 3.0);
+		TF2Attrib_SetByName(weapon, "killstreak effect", 		float(specKs));
+		TF2Attrib_SetByName(weapon, "killstreak idleeffect", 	float(profKs));
+	}
 }
 
-public PVE_GiveBotRandomSlotWeaponFromArrayList(int client, int slot, ArrayList array)
+// Give a bot a random weapon in slot from an array defined in ArrayList 
+public void PVE_GiveBotRandomSlotWeaponFromArrayList(int client, int slot, ArrayList array)
 {
 	if(array == INVALID_HANDLE)
 		return;
@@ -222,7 +260,8 @@ public PVE_GiveBotRandomSlotWeaponFromArrayList(int client, int slot, ArrayList 
 	PVE_ApplyBotItemAttributesOnEntity(iWeapon, item);
 }
 
-public PVE_ApplyBotItemAttributesOnEntity(int entity, BotItem item)
+// Apply attributes from config item defintion on entity.
+public void PVE_ApplyBotItemAttributesOnEntity(int entity, BotItem item)
 {
 	if(item.m_Attributes)
 	{
@@ -235,7 +274,8 @@ public PVE_ApplyBotItemAttributesOnEntity(int entity, BotItem item)
 	}
 }
 
-public PVE_ApplyPlayerAttributes(int client)
+// Apply player attributes from config on a given client 
+public void PVE_ApplyPlayerAttributes(int client)
 {
 	for(int i = 0; i < g_hPlayerAttributes.Length; i++)
 	{
@@ -245,7 +285,8 @@ public PVE_ApplyPlayerAttributes(int client)
 	}
 }
 
-int PVE_GiveWearableToClient(int client, int itemDef)
+// Create and give wearable to client with a given item definition
+public int PVE_GiveWearableToClient(int client, int itemDef)
 {
 	int hat = CreateEntityByName("tf_wearable");
 	if(!IsValidEntity(hat))
@@ -254,20 +295,30 @@ int PVE_GiveWearableToClient(int client, int itemDef)
 	SetEntProp(hat, Prop_Send, "m_iItemDefinitionIndex", itemDef);
 	SetEntProp(hat, Prop_Send, "m_bInitialized", 1);
 	SetEntProp(hat, Prop_Send, "m_iEntityLevel", 50);
-	SetEntProp(hat, Prop_Send, "m_iEntityQuality", 6);
 	SetEntProp(hat, Prop_Send, "m_bValidatedAttachedEntity", 1);
 	SetEntProp(hat, Prop_Send, "m_iAccountID", GetSteamAccountID(client));
 	SetEntPropEnt(hat, Prop_Send, "m_hOwnerEntity", client);
-
 	DispatchSpawn(hat);
+	
 	SDKCall(g_hSdkEquipWearable, client, hat);
 	return hat;
 } 
 
+public PVE_FreezeTimer(int timer)
+{
+	int time = 999 * 60;
+	SetVariantInt(time);
+	AcceptEntityInput(timer, "SetMaxTime");
+	SetVariantInt(time);
+	AcceptEntityInput(timer, "SetTime");
+	AcceptEntityInput(timer, "Pause");
+}
+
 //-------------------------------------------------------//
-// ConVars
+// Commands
 //-------------------------------------------------------//
 
+// sv_danepve_reload
 public Action cReload(int client, int args)
 {
 	Config_Load();
@@ -276,7 +327,7 @@ public Action cReload(int client, int args)
 }
 
 //-------------------------------------------------------//
-// GAME EVENTS
+// Game Events
 //-------------------------------------------------------//
 
 public Action post_inventory_application(Event event, const char[] name, bool dontBroadcast)
@@ -292,12 +343,89 @@ public Action post_inventory_application(Event event, const char[] name, bool do
 	return Plugin_Continue;
 }
 
-//
-// DHOOK Detours
-//
+public Action player_death(Event event, const char[] name, bool dontBroadcast)
+{
+	int client = GetClientOfUserId(event.GetInt("userid"));
+	if(IsFakeClient(client))
+	{
+		CreateTimer(0.1, Timer_RespawnBot, client);
+	}
+
+	return Plugin_Continue;
+}
+
+public Action teamplay_setup_finished(Event event, const char[] name, bool dontBroadcast)
+{
+	int ent = FindEntityByClassname(-1, "team_round_timer");
+	if(IsValidEntity(ent))
+	{
+		CreateTimer(0.5, Timer_OnSetupFinished, ent);
+	}
+
+	return Plugin_Continue;
+}
+
+//-------------------------------------------------------//
+// TIMERS
+//-------------------------------------------------------//
+
+public Action Timer_OnClientConnect(Handle timer, any client)
+{
+	if(IsFakeClient(client))
+	{
+		// Bots need to be renamed, and force their team to RED.
+		PVE_RenameBotClient(client);
+		TF2_ChangeClientTeam(client, TFTeam_Bots);
+	}
+	else 
+	{
+		// Force human team to blue and show them class limit.
+		TF2_ChangeClientTeam(client, TFTeam_Humans);
+		ShowVGUIPanel(client, "class_blue");
+	}
+
+	return Plugin_Handled;
+}
+
+public Action Timer_RespawnBot(Handle timer, any client)
+{
+	TF2_RespawnPlayer(client);
+	return Plugin_Handled;
+}
+
+public Action Timer_OnSetupFinished(Handle timer, any ent)
+{
+	PVE_FreezeTimer(ent);
+	return Plugin_Handled;
+}
+
+//-------------------------------------------------------//
+// SDK Hooks
+//-------------------------------------------------------//
+public Action OnSapperTakeDamage(int victim, int& attacker, int& inflictor, float& damage, int& damagetype)
+{
+	if(!sm_danepve_bot_sapper_insta_remove.BoolValue)
+		return Plugin_Handled;
+
+	if(IsClientInGame(attacker))
+	{
+		if(TF2_GetClientTeam(attacker) == TFTeam_Bots)
+		{
+			damage = 9999.0;
+			return Plugin_Changed;
+		}
+	}
+
+	return Plugin_Handled;
+}
+
+//-------------------------------------------------------//
+// DHook Sapper
+//-------------------------------------------------------//
 
 int g_bAllowNextHumanTeamPointCheck = false;
 
+// CBaseObject::EstimateValidBuildPos
 MRESReturn Detour_EstimateValidBuildPos(Address pThis, Handle hReturn, Handle hParams)
 {
 	if(!sm_danepve_allow_respawnroom_build.BoolValue)
@@ -307,12 +435,14 @@ MRESReturn Detour_EstimateValidBuildPos(Address pThis, Handle hReturn, Handle hP
 	return MRES_Ignored;
 }
 
+// CBaseObject::EstimateValidBuildPos
 MRESReturn Detour_EstimateValidBuildPos_Post(Address pThis, Handle hReturn, Handle hParams)
 {
 	g_bAllowNextHumanTeamPointCheck = false;
 	return MRES_Ignored;
 }
 
+// CBaseTrigger::PointIsWithin
 MRESReturn Detour_OnPointIsWithin(Address pThis, Handle hReturn, Handle hParams)
 {
 	if(g_bAllowNextHumanTeamPointCheck)

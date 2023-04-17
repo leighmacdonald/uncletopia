@@ -49,6 +49,7 @@ public Config_Load()
 	kv.GetString("Class", szClassName, sizeof(szClassName));
 	FindConVar("tf_bot_force_class")		.SetString(szClassName);
 	FindConVar("tf_bot_difficulty")			.SetInt(kv.GetNum("Difficulty"));
+	FindConVar("tf_bot_quota")				.SetInt(kv.GetNum("Count"));
 	FindConVar("mp_forceautoteam")			.SetBool(true);
 	FindConVar("mp_humans_must_join_team")	.SetString(PVE_TEAM_HUMANS_NAME);
 	FindConVar("mp_disable_respawn_times")	.SetBool(true);
@@ -96,37 +97,37 @@ public Config_LoadAttributesFromKV(KeyValues kv)
 
 public Config_LoadItemFromKV(KeyValues kv, BotItem buffer)
 {
-    // First check inlined definition.
-    int inlineDefId = kv.GetNum(NULL_STRING, 0);
-    if(inlineDefId > 0)
-    {
-        buffer.m_iItemDefinitionIndex = inlineDefId;
-        return;
-    }
+	// First check inlined definition.
+	int inlineDefId = kv.GetNum(NULL_STRING, 0);
+	if(inlineDefId > 0)
+	{
+		buffer.m_iItemDefinitionIndex = inlineDefId;
+		return;
+	}
 
-    // Definition is not inlined
-    buffer.m_iItemDefinitionIndex = kv.GetNum("Index");
-    
-    // Check if cosmetic definition contains attributes.
-    if(kv.JumpToKey("Attributes"))
-    {
-        // If so, create an array list.
-        buffer.m_Attributes = new ArrayList(sizeof(TFAttribute));
+	// Definition is not inlined
+	buffer.m_iItemDefinitionIndex = kv.GetNum("Index");
 
-        // Try going to the first attribute scope.
-        if(kv.GotoFirstSubKey(false))
-        {
-            do {
-                // Read name and float value, add the pair to the attributes array.
-                TFAttribute attrib;
-                kv.GetSectionName(attrib.m_szName, sizeof(attrib.m_szName));
-                attrib.m_flValue = kv.GetFloat(NULL_STRING);
-                buffer.m_Attributes.PushArray(attrib);
-            } while (kv.GotoNextKey(false))
-            kv.GoBack();
-        }
-        kv.GoBack();
-    }
+	// Check if cosmetic definition contains attributes.
+	if(kv.JumpToKey("Attributes"))
+	{
+		// If so, create an array list.
+		buffer.m_Attributes = new ArrayList(sizeof(TFAttribute));
+
+		// Try going to the first attribute scope.
+		if(kv.GotoFirstSubKey(false))
+		{
+			do {
+				// Read name and float value, add the pair to the attributes array.
+				TFAttribute attrib;
+				kv.GetSectionName(attrib.m_szName, sizeof(attrib.m_szName));
+				attrib.m_flValue = kv.GetFloat(NULL_STRING);
+				buffer.m_Attributes.PushArray(attrib);
+			} while (kv.GotoNextKey(false))
+			kv.GoBack();
+		}
+		kv.GoBack();
+	}
 }
 
 /**
