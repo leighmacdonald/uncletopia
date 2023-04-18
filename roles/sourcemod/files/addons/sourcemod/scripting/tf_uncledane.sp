@@ -17,7 +17,7 @@
 /** Maximum amount of players that can be on the server in TF2 */
 #define TF_MAXPLAYERS 			32
 
-#define GOLDEN_PAN_DEFID 		1071
+#define GOLDEN_PAN_DEFID 		1071 
 #define GOLDEN_PAN_CHANCE 		1
 
 const TFTeam TFTeam_Humans = TFTeam_Blue;
@@ -37,7 +37,7 @@ enum struct BotItem
 	int m_iItemDefinitionIndex;
 	char m_szClassName[32];
 	ArrayList m_Attributes;
-}
+} 
 
 ArrayList g_hBotCosmetics;
 ArrayList g_hPlayerAttributes;
@@ -50,7 +50,7 @@ ArrayList g_hMeleeWeapons;
 
 #include <danepve/config.sp>
 
-public Plugin myinfo =
+public Plugin myinfo = 
 {
 	name = "[TF2] Uncle Dane PVE",
 	author = "Moonly Days",
@@ -84,7 +84,6 @@ public OnPluginStart()
 	sm_danepve_allow_respawnroom_build = CreateConVar("sm_danepve_allow_respawnroom_build", "1", "Can humans build in respawn rooms?");
 	sm_danepve_max_playing_humans = CreateConVar("sm_danepve_max_playing_humans", "12");
 	sm_danepve_max_connected_humans = CreateConVar("sm_danepve_max_connected_humans", "16");
-	sm_danepve_max_connected_humans.AddChangeHook(sm_danepve_max_connected_humans__CHANGED);
 	sm_danepve_bot_sapper_insta_remove = CreateConVar("sm_danepve_bot_sapper_insta_remove", "1");
 	sm_danepve_respawn_bots_on_round_end = CreateConVar("sm_danepve_respawn_bots_on_round_end", "0");
 	RegAdminCmd("sm_danepve_reload", cReload, ADMFLAG_CHANGEMAP, "Reloads Uncle Dane PVE config.");
@@ -97,7 +96,7 @@ public OnPluginStart()
 	HookEvent("teamplay_setup_finished", 	teamplay_setup_finished);
 	HookEvent("player_death",				player_death);
 	HookEvent("player_spawn",				player_spawn);
-
+	
 	//-----------------------------------------------------//
 	// Offsets Cache
 	g_nOffset_CBaseEntity_m_iTeamNum = FindSendPropInfo("CBaseEntity", "m_iTeamNum");
@@ -145,9 +144,9 @@ public OnClientPutInServer(int client)
 
 public bool OnClientConnect(int client, char[] rejectMsg, int maxlen)
 {
-	if(PVE_GetHumanCount() >= sm_danepve_max_connected_humans.IntValue)
+	if(PVE_GetHumanCount() > sm_danepve_max_connected_humans.IntValue)
 	{
-		Format(rejectMsg, maxlen, "[PVE] Server is full.");
+		Format(rejectMsg, maxlen, "[PVE] Server is full");
 		return false;
 	}
 
@@ -170,12 +169,12 @@ public OnEntityCreated(int entity, const char[] szClassname)
 public int PVE_GetHumanCount()
 {
 	int count = 0;
-	for(int i = 1; i < MaxClients; i++)
+	for(int i = 1; i <= MaxClients; i++)
 	{
         if (IsClientConnected(i) && !IsFakeClient(i))
             count++;
 	}
-
+	
 	return count;
 }
 
@@ -183,7 +182,7 @@ public int PVE_GetHumanCount()
 public int PVE_GetClientCountOnTeam(TFTeam team)
 {
 	int count = 0;
-	for(int i = 1; i < MaxClients; i++)
+	for(int i = 1; i <= MaxClients; i++)
 	{
 		if(!IsClientInGame(i))
 			continue;
@@ -191,7 +190,7 @@ public int PVE_GetClientCountOnTeam(TFTeam team)
 		if (TF2_GetClientTeam(i) == team)
 			count++;
 	}
-
+	
 	return count;
 }
 
@@ -222,7 +221,7 @@ public void PVE_EquipBotItems(int client)
 		int hat = PVE_GiveWearableToClient(client, cosmetic.m_iItemDefinitionIndex);
 		if(hat <= 0)
 			continue;
-
+			
 		PVE_ApplyBotItemAttributesOnEntity(hat, cosmetic);
 	}
 
@@ -245,7 +244,7 @@ public void PVE_EquipBotItems(int client)
 	}
 }
 
-// Give a bot a random weapon in slot from an array defined in ArrayList
+// Give a bot a random weapon in slot from an array defined in ArrayList 
 public void PVE_GiveBotRandomSlotWeaponFromArrayList(int client, int slot, ArrayList array)
 {
 	if(array == INVALID_HANDLE)
@@ -256,6 +255,7 @@ public void PVE_GiveBotRandomSlotWeaponFromArrayList(int client, int slot, Array
 	array.GetArray(rndInt, item);
 
 	int wepDefId = item.m_iItemDefinitionIndex;
+	bool isGoldenPan = false;
 
 	// Golden Pan Easter Egg!!!
 	if(slot == TFWeaponSlot_Melee)
@@ -265,6 +265,7 @@ public void PVE_GiveBotRandomSlotWeaponFromArrayList(int client, int slot, Array
 			// Bot has 1% chance to have Golden Pan
 			// as their melee.
 			wepDefId = GOLDEN_PAN_DEFID;
+			isGoldenPan = true;
 		}
 	}
 
@@ -278,6 +279,11 @@ public void PVE_GiveBotRandomSlotWeaponFromArrayList(int client, int slot, Array
 
 	int iWeapon = TF2Items_GiveNamedItem(client, hWeapon);
 	delete hWeapon;
+
+	if(isGoldenPan)
+	{
+		TF2Attrib_SetByName(iWeapon, "item style override", 0.0);
+	}
 
 	TF2_RemoveWeaponSlot(client, slot);
 	EquipPlayerWeapon(client, iWeapon);
@@ -299,7 +305,7 @@ public void PVE_ApplyBotItemAttributesOnEntity(int entity, BotItem item)
 	}
 }
 
-// Apply player attributes from config on a given client
+// Apply player attributes from config on a given client 
 public void PVE_ApplyPlayerAttributes(int client)
 {
 	for(int i = 0; i < g_hPlayerAttributes.Length; i++)
@@ -316,7 +322,7 @@ public int PVE_GiveWearableToClient(int client, int itemDef)
 	int hat = CreateEntityByName("tf_wearable");
 	if(!IsValidEntity(hat))
 		return -1;
-
+	
 	SetEntProp(hat, Prop_Send, "m_iItemDefinitionIndex", itemDef);
 	SetEntProp(hat, Prop_Send, "m_bInitialized", 1);
 	SetEntProp(hat, Prop_Send, "m_iEntityLevel", 50);
@@ -324,14 +330,14 @@ public int PVE_GiveWearableToClient(int client, int itemDef)
 	SetEntProp(hat, Prop_Send, "m_iAccountID", GetSteamAccountID(client));
 	SetEntPropEnt(hat, Prop_Send, "m_hOwnerEntity", client);
 	DispatchSpawn(hat);
-
+	
 	SDKCall(g_hSdkEquipWearable, client, hat);
 	return hat;
-}
+} 
 
 public PVE_FreezeTimer(int timer)
 {
-	int time = 999 * 60;
+	int time = 999 * 60 + 59;
 	SetVariantInt(time);
 	AcceptEntityInput(timer, "SetMaxTime");
 	SetVariantInt(time);
@@ -397,11 +403,11 @@ public Action player_spawn(Event event, const char[] name, bool dontBroadcast)
 	// Don't do any check for BOTS.
 	if(IsFakeClient(client))
 		return Plugin_Handled;
-
+		
 	if(PVE_GetClientCountOnTeam(TFTeam_Humans) > sm_danepve_max_playing_humans.IntValue)
 	{
 		TF2_ChangeClientTeam(client, TFTeam_Spectator);
-	}
+	} 
 
 	return Plugin_Continue;
 }
@@ -441,12 +447,6 @@ public Action Timer_OnClientConnect(Handle timer, any client)
 		PVE_RenameBotClient(client);
 		TF2_ChangeClientTeam(client, TFTeam_Bots);
 	}
-	else
-	{
-		// Force human team to blue and show them class limit.
-		TF2_ChangeClientTeam(client, TFTeam_Humans);
-		ShowVGUIPanel(client, "class_blue");
-	}
 
 	return Plugin_Handled;
 }
@@ -481,15 +481,6 @@ public Action OnSapperTakeDamage(int victim, int& attacker, int& inflictor, floa
 	}
 
 	return Plugin_Handled;
-}
-
-//-------------------------------------------------------//
-// ConVar Change
-//-------------------------------------------------------//
-
-public void sm_danepve_max_connected_humans__CHANGED(ConVar convar, char[] oldVal, char[] newVal)
-{
-	FindConVar("sv_visiblemaxplayers").SetInt(convar.IntValue);
 }
 
 //-------------------------------------------------------//
