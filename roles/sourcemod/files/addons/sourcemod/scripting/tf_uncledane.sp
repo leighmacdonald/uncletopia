@@ -8,6 +8,8 @@
 #include <tf_econ_data>
 #include <dhooks>
 
+#define PLUGIN_VERSION "0.4.0"
+
 /** Display name of the humans team */
 #define PVE_TEAM_HUMANS_NAME 	"blue"
 /** Internal game index of the bots team */
@@ -15,7 +17,7 @@
 /** Maximum amount of players that can be on the server in TF2 */
 #define TF_MAXPLAYERS 			32
 
-#define GOLDEN_PAN_DEFID 		1071 
+#define GOLDEN_PAN_DEFID 		1071
 #define GOLDEN_PAN_CHANCE 		1
 
 const TFTeam TFTeam_Humans = TFTeam_Blue;
@@ -35,7 +37,7 @@ enum struct BotItem
 	int m_iItemDefinitionIndex;
 	char m_szClassName[32];
 	ArrayList m_Attributes;
-} 
+}
 
 ArrayList g_hBotCosmetics;
 ArrayList g_hPlayerAttributes;
@@ -48,9 +50,7 @@ ArrayList g_hMeleeWeapons;
 
 #include <danepve/config.sp>
 
-#define PLUGIN_VERSION "0.3.0"
-
-public Plugin myinfo = 
+public Plugin myinfo =
 {
 	name = "[TF2] Uncle Dane PVE",
 	author = "Moonly Days",
@@ -61,8 +61,10 @@ public Plugin myinfo =
 
 // Plugin ConVars
 ConVar sm_danepve_bot_sapper_insta_remove;
+ConVar sm_danepve_respawn_bots_on_round_end;
 ConVar sm_danepve_allow_respawnroom_build;
-ConVar sm_danepve_max_humans;
+ConVar sm_danepve_max_playing_humans;
+ConVar sm_danepve_max_connected_humans;
 
 // SDK Call Handles
 Handle g_hSdkEquipWearable;
@@ -72,6 +74,7 @@ Handle gHook_HandleSwitchTeams;
 
 // Offset cache
 int g_nOffset_CBaseEntity_m_iTeamNum;
+bool g_bIsRoundEnd = false;
 
 public OnPluginStart()
 {
@@ -79,16 +82,22 @@ public OnPluginStart()
 	// Create plugin ConVars
 	CreateConVar("danepve_version", PLUGIN_VERSION, "[TF2] Uncle Dane PVE Version", FCVAR_DONTRECORD);
 	sm_danepve_allow_respawnroom_build = CreateConVar("sm_danepve_allow_respawnroom_build", "1", "Can humans build in respawn rooms?");
-	sm_danepve_max_humans = CreateConVar("sm_danepve_max_humans", "12");
+	sm_danepve_max_playing_humans = CreateConVar("sm_danepve_max_playing_humans", "12");
+	sm_danepve_max_connected_humans = CreateConVar("sm_danepve_max_connected_humans", "16");
+	sm_danepve_max_connected_humans.AddChangeHook(sm_danepve_max_connected_humans__CHANGED);
 	sm_danepve_bot_sapper_insta_remove = CreateConVar("sm_danepve_bot_sapper_insta_remove", "1");
+	sm_danepve_respawn_bots_on_round_end = CreateConVar("sm_danepve_respawn_bots_on_round_end", "0");
 	RegAdminCmd("sm_danepve_reload", cReload, ADMFLAG_CHANGEMAP, "Reloads Uncle Dane PVE config.");
 
 	//-----------------------------------------------------//
 	// Hook Events
 	HookEvent("post_inventory_application", post_inventory_application);
+	HookEvent("teamplay_round_start", 		teamplay_round_start);
+	HookEvent("teamplay_round_win", 		teamplay_round_win);
 	HookEvent("teamplay_setup_finished", 	teamplay_setup_finished);
 	HookEvent("player_death",				player_death);
-	
+	HookEvent("player_spawn",				player_spawn);
+
 	//-----------------------------------------------------//
 	// Offsets Cache
 	g_nOffset_CBaseEntity_m_iTeamNum = FindSendPropInfo("CBaseEntity", "m_iTeamNum");
@@ -115,15 +124,15 @@ public OnPluginStart()
 
 	int offset = GameConfGetOffset(hConf, "CTFGameRules::HandleSwitchTeams");
 	gHook_HandleSwitchTeams = DHookCreate(offset, HookType_GameRules, ReturnType_Void, ThisPointer_Ignore, CTFGameRules_HandleSwitchTeams);
-
-	//-----------------------------------------------------//
-	// Load config and setup the game
-	Config_Load();
 }
 
 public OnMapStart()
 {
 	DHookGamerules(gHook_HandleSwitchTeams, false);
+
+	//-----------------------------------------------------//
+	// Load config and setup the game
+	Config_Load();
 }
 
 public OnClientPutInServer(int client)
@@ -136,7 +145,7 @@ public OnClientPutInServer(int client)
 
 public bool OnClientConnect(int client, char[] rejectMsg, int maxlen)
 {
-	if(PVE_GetHumanCount() >= sm_danepve_max_humans.IntValue)
+	if(PVE_GetHumanCount() >= sm_danepve_max_connected_humans.IntValue)
 	{
 		Format(rejectMsg, maxlen, "[PVE] Server is full.");
 		return false;
@@ -166,7 +175,23 @@ public int PVE_GetHumanCount()
         if (IsClientConnected(i) && !IsFakeClient(i))
             count++;
 	}
-	
+
+	return count;
+}
+
+// Return the amount of clients on a given team.
+public int PVE_GetClientCountOnTeam(TFTeam team)
+{
+	int count = 0;
+	for(int i = 1; i < MaxClients; i++)
+	{
+		if(!IsClientInGame(i))
+			continue;
+
+		if (TF2_GetClientTeam(i) == team)
+			count++;
+	}
+
 	return count;
 }
 
@@ -197,7 +222,7 @@ public void PVE_EquipBotItems(int client)
 		int hat = PVE_GiveWearableToClient(client, cosmetic.m_iItemDefinitionIndex);
 		if(hat <= 0)
 			continue;
-			
+
 		PVE_ApplyBotItemAttributesOnEntity(hat, cosmetic);
 	}
 
@@ -220,7 +245,7 @@ public void PVE_EquipBotItems(int client)
 	}
 }
 
-// Give a bot a random weapon in slot from an array defined in ArrayList 
+// Give a bot a random weapon in slot from an array defined in ArrayList
 public void PVE_GiveBotRandomSlotWeaponFromArrayList(int client, int slot, ArrayList array)
 {
 	if(array == INVALID_HANDLE)
@@ -274,7 +299,7 @@ public void PVE_ApplyBotItemAttributesOnEntity(int entity, BotItem item)
 	}
 }
 
-// Apply player attributes from config on a given client 
+// Apply player attributes from config on a given client
 public void PVE_ApplyPlayerAttributes(int client)
 {
 	for(int i = 0; i < g_hPlayerAttributes.Length; i++)
@@ -291,7 +316,7 @@ public int PVE_GiveWearableToClient(int client, int itemDef)
 	int hat = CreateEntityByName("tf_wearable");
 	if(!IsValidEntity(hat))
 		return -1;
-	
+
 	SetEntProp(hat, Prop_Send, "m_iItemDefinitionIndex", itemDef);
 	SetEntProp(hat, Prop_Send, "m_bInitialized", 1);
 	SetEntProp(hat, Prop_Send, "m_iEntityLevel", 50);
@@ -299,10 +324,10 @@ public int PVE_GiveWearableToClient(int client, int itemDef)
 	SetEntProp(hat, Prop_Send, "m_iAccountID", GetSteamAccountID(client));
 	SetEntPropEnt(hat, Prop_Send, "m_hOwnerEntity", client);
 	DispatchSpawn(hat);
-	
+
 	SDKCall(g_hSdkEquipWearable, client, hat);
 	return hat;
-} 
+}
 
 public PVE_FreezeTimer(int timer)
 {
@@ -345,10 +370,37 @@ public Action post_inventory_application(Event event, const char[] name, bool do
 
 public Action player_death(Event event, const char[] name, bool dontBroadcast)
 {
+	// If we're on round end
+	if(g_bIsRoundEnd)
+	{
+		// And we don't want to respawnw bots during round end.
+		if(!sm_danepve_respawn_bots_on_round_end.BoolValue)
+		{
+			// Bail out.
+			return Plugin_Handled;
+		}
+	}
+
 	int client = GetClientOfUserId(event.GetInt("userid"));
 	if(IsFakeClient(client))
 	{
 		CreateTimer(0.1, Timer_RespawnBot, client);
+	}
+
+	return Plugin_Continue;
+}
+
+public Action player_spawn(Event event, const char[] name, bool dontBroadcast)
+{
+	int client = GetClientOfUserId(event.GetInt("userid"));
+
+	// Don't do any check for BOTS.
+	if(IsFakeClient(client))
+		return Plugin_Handled;
+
+	if(PVE_GetClientCountOnTeam(TFTeam_Humans) > sm_danepve_max_playing_humans.IntValue)
+	{
+		TF2_ChangeClientTeam(client, TFTeam_Spectator);
 	}
 
 	return Plugin_Continue;
@@ -365,6 +417,18 @@ public Action teamplay_setup_finished(Event event, const char[] name, bool dontB
 	return Plugin_Continue;
 }
 
+public Action teamplay_round_win(Event event, const char[] name, bool dontBroadcast)
+{
+	g_bIsRoundEnd = true;
+	return Plugin_Continue;
+}
+
+public Action teamplay_round_start(Event event, const char[] name, bool dontBroadcast)
+{
+	g_bIsRoundEnd = false;
+	return Plugin_Continue;
+}
+
 //-------------------------------------------------------//
 // TIMERS
 //-------------------------------------------------------//
@@ -377,7 +441,7 @@ public Action Timer_OnClientConnect(Handle timer, any client)
 		PVE_RenameBotClient(client);
 		TF2_ChangeClientTeam(client, TFTeam_Bots);
 	}
-	else 
+	else
 	{
 		// Force human team to blue and show them class limit.
 		TF2_ChangeClientTeam(client, TFTeam_Humans);
@@ -417,6 +481,15 @@ public Action OnSapperTakeDamage(int victim, int& attacker, int& inflictor, floa
 	}
 
 	return Plugin_Handled;
+}
+
+//-------------------------------------------------------//
+// ConVar Change
+//-------------------------------------------------------//
+
+public void sm_danepve_max_connected_humans__CHANGED(ConVar convar, char[] oldVal, char[] newVal)
+{
+	FindConVar("sv_visiblemaxplayers").SetInt(convar.IntValue);
 }
 
 //-------------------------------------------------------//
