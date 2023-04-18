@@ -56,7 +56,9 @@ tf_medieval 0
 tf_medieval_autorp 0
 
 tf_gravetalk 1
-sv_alltalk 0
+sv_alltalk {% if item.sv_alltalk|default(false) %}1{% else %}0{% endif %}
+
+tf_forced_holiday {% if item.tf_forced_holiday|default(false) %}2{% else %}0{% endif %}
 
 sv_cheats 0
 sv_pausable 0
