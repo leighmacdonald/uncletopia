@@ -8,7 +8,7 @@
 #include <tf_econ_data>
 #include <dhooks>
 
-#define PLUGIN_VERSION "0.4.0"
+#define PLUGIN_VERSION "0.6.0"
 
 /** Display name of the humans team */
 #define PVE_TEAM_HUMANS_NAME 	"blue"
@@ -17,7 +17,7 @@
 /** Maximum amount of players that can be on the server in TF2 */
 #define TF_MAXPLAYERS 			32
 
-#define GOLDEN_PAN_DEFID 		1071 
+#define GOLDEN_PAN_DEFID 		1071
 #define GOLDEN_PAN_CHANCE 		1
 
 const TFTeam TFTeam_Humans = TFTeam_Blue;
@@ -37,7 +37,7 @@ enum struct BotItem
 	int m_iItemDefinitionIndex;
 	char m_szClassName[32];
 	ArrayList m_Attributes;
-} 
+}
 
 ArrayList g_hBotCosmetics;
 ArrayList g_hPlayerAttributes;
@@ -50,7 +50,7 @@ ArrayList g_hMeleeWeapons;
 
 #include <danepve/config.sp>
 
-public Plugin myinfo = 
+public Plugin myinfo =
 {
 	name = "[TF2] Uncle Dane PVE",
 	author = "Moonly Days",
@@ -74,7 +74,12 @@ Handle gHook_HandleSwitchTeams;
 
 // Offset cache
 int g_nOffset_CBaseEntity_m_iTeamNum;
+
+int g_iTeamRoundTimer;
 bool g_bIsRoundEnd = false;
+bool g_bIsRoundActive = false;
+float g_flRoundStartTime = 0.0;
+bool g_bLastDeathWasBot = false;
 
 public OnPluginStart()
 {
@@ -85,7 +90,7 @@ public OnPluginStart()
 	sm_danepve_max_playing_humans = CreateConVar("sm_danepve_max_playing_humans", "12");
 	sm_danepve_max_connected_humans = CreateConVar("sm_danepve_max_connected_humans", "16");
 	sm_danepve_bot_sapper_insta_remove = CreateConVar("sm_danepve_bot_sapper_insta_remove", "1");
-	sm_danepve_respawn_bots_on_round_end = CreateConVar("sm_danepve_respawn_bots_on_round_end", "1");
+	sm_danepve_respawn_bots_on_round_end = CreateConVar("sm_danepve_respawn_bots_on_round_end", "0");
 	RegAdminCmd("sm_danepve_reload", cReload, ADMFLAG_CHANGEMAP, "Reloads Uncle Dane PVE config.");
 
 	//-----------------------------------------------------//
@@ -96,7 +101,7 @@ public OnPluginStart()
 	HookEvent("teamplay_setup_finished", 	teamplay_setup_finished);
 	HookEvent("player_death",				player_death);
 	HookEvent("player_spawn",				player_spawn);
-	
+
 	//-----------------------------------------------------//
 	// Offsets Cache
 	g_nOffset_CBaseEntity_m_iTeamNum = FindSendPropInfo("CBaseEntity", "m_iTeamNum");
@@ -123,11 +128,17 @@ public OnPluginStart()
 
 	int offset = GameConfGetOffset(hConf, "CTFGameRules::HandleSwitchTeams");
 	gHook_HandleSwitchTeams = DHookCreate(offset, HookType_GameRules, ReturnType_Void, ThisPointer_Ignore, CTFGameRules_HandleSwitchTeams);
+
+	//-----------------------------------------------------//
+	// Setup DHook Detours
+	CreateTimer(0.5, Timer_UpdateRoundTime, _, TIMER_REPEAT);
+
 }
 
 public OnMapStart()
 {
 	DHookGamerules(gHook_HandleSwitchTeams, false);
+	g_iTeamRoundTimer = FindEntityByClassname(-1, "team_round_timer");
 
 	//-----------------------------------------------------//
 	// Load config and setup the game
@@ -155,6 +166,17 @@ public bool OnClientConnect(int client, char[] rejectMsg, int maxlen)
 
 public OnEntityCreated(int entity, const char[] szClassname)
 {
+	if(g_bIsRoundEnd && g_bLastDeathWasBot)
+	{
+		// Remove these entities on round end / humiliation.
+		if(	StrEqual(szClassname, "tf_ammo_pack") ||
+			StrEqual(szClassname, "tf_dropped_weapon") ||
+			StrEqual(szClassname, "tf_ragdoll"))
+		{
+			AcceptEntityInput(entity, "Kill");
+		}
+	}
+
 	if(StrEqual(szClassname, "obj_attachment_sapper"))
 	{
 		SDKHook(entity, SDKHook_OnTakeDamage, OnSapperTakeDamage);
@@ -174,7 +196,7 @@ public int PVE_GetHumanCount()
         if (IsClientConnected(i) && !IsFakeClient(i))
             count++;
 	}
-	
+
 	return count;
 }
 
@@ -190,7 +212,7 @@ public int PVE_GetClientCountOnTeam(TFTeam team)
 		if (TF2_GetClientTeam(i) == team)
 			count++;
 	}
-	
+
 	return count;
 }
 
@@ -221,7 +243,7 @@ public void PVE_EquipBotItems(int client)
 		int hat = PVE_GiveWearableToClient(client, cosmetic.m_iItemDefinitionIndex);
 		if(hat <= 0)
 			continue;
-			
+
 		PVE_ApplyBotItemAttributesOnEntity(hat, cosmetic);
 	}
 
@@ -244,7 +266,7 @@ public void PVE_EquipBotItems(int client)
 	}
 }
 
-// Give a bot a random weapon in slot from an array defined in ArrayList 
+// Give a bot a random weapon in slot from an array defined in ArrayList
 public void PVE_GiveBotRandomSlotWeaponFromArrayList(int client, int slot, ArrayList array)
 {
 	if(array == INVALID_HANDLE)
@@ -305,7 +327,7 @@ public void PVE_ApplyBotItemAttributesOnEntity(int entity, BotItem item)
 	}
 }
 
-// Apply player attributes from config on a given client 
+// Apply player attributes from config on a given client
 public void PVE_ApplyPlayerAttributes(int client)
 {
 	for(int i = 0; i < g_hPlayerAttributes.Length; i++)
@@ -322,7 +344,7 @@ public int PVE_GiveWearableToClient(int client, int itemDef)
 	int hat = CreateEntityByName("tf_wearable");
 	if(!IsValidEntity(hat))
 		return -1;
-	
+
 	SetEntProp(hat, Prop_Send, "m_iItemDefinitionIndex", itemDef);
 	SetEntProp(hat, Prop_Send, "m_bInitialized", 1);
 	SetEntProp(hat, Prop_Send, "m_iEntityLevel", 50);
@@ -330,19 +352,9 @@ public int PVE_GiveWearableToClient(int client, int itemDef)
 	SetEntProp(hat, Prop_Send, "m_iAccountID", GetSteamAccountID(client));
 	SetEntPropEnt(hat, Prop_Send, "m_hOwnerEntity", client);
 	DispatchSpawn(hat);
-	
+
 	SDKCall(g_hSdkEquipWearable, client, hat);
 	return hat;
-} 
-
-public PVE_FreezeTimer(int timer)
-{
-	int time = 999 * 60 + 59;
-	SetVariantInt(time);
-	AcceptEntityInput(timer, "SetMaxTime");
-	SetVariantInt(time);
-	AcceptEntityInput(timer, "SetTime");
-	AcceptEntityInput(timer, "Pause");
 }
 
 //-------------------------------------------------------//
@@ -376,10 +388,14 @@ public Action post_inventory_application(Event event, const char[] name, bool do
 
 public Action player_death(Event event, const char[] name, bool dontBroadcast)
 {
+	int client = GetClientOfUserId(event.GetInt("userid"));
+	bool isBot = IsFakeClient(client);
+	g_bLastDeathWasBot = isBot;
+
 	// If we're on round end
 	if(g_bIsRoundEnd)
 	{
-		// And we don't want to respawnw bots during round end.
+		// And we don't want to respawn bots during round end.
 		if(!sm_danepve_respawn_bots_on_round_end.BoolValue)
 		{
 			// Bail out.
@@ -387,8 +403,7 @@ public Action player_death(Event event, const char[] name, bool dontBroadcast)
 		}
 	}
 
-	int client = GetClientOfUserId(event.GetInt("userid"));
-	if(IsFakeClient(client))
+	if(isBot)
 	{
 		CreateTimer(0.1, Timer_RespawnBot, client);
 	}
@@ -399,32 +414,57 @@ public Action player_death(Event event, const char[] name, bool dontBroadcast)
 public Action player_spawn(Event event, const char[] name, bool dontBroadcast)
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
+	TFTeam curTeam = TF2_GetClientTeam(client);
 
-	// Don't do any check for BOTS.
+	// This client is a bot.
 	if(IsFakeClient(client))
-		return Plugin_Handled;
-		
-	if(PVE_GetClientCountOnTeam(TFTeam_Humans) > sm_danepve_max_playing_humans.IntValue)
 	{
-		TF2_ChangeClientTeam(client, TFTeam_Spectator);
-	} 
+		// Make sure bots are on BOT team.
+		if(curTeam != TFTeam_Bots)
+		{
+			TF2_ChangeClientTeam(client, TFTeam_Bots);
+			return Plugin_Handled;
+		}
+	}
+	else
+	{
+		// Clients are not allowed on bots team.
+		if(curTeam == TFTeam_Bots)
+		{
+			// Move them to humans.
+			PrintCenterText(client, "Human players are not allowed to the RED team.");
+			TF2_ChangeClientTeam(client, TFTeam_Humans);
+			return Plugin_Handled;
+		}
+
+		// If the client is on the human team already.
+		if(curTeam == TFTeam_Humans)
+		{
+			// Check if there is enough humans.
+			if(PVE_GetClientCountOnTeam(TFTeam_Humans) > sm_danepve_max_playing_humans.IntValue)
+			{
+				// If there isn't, show the message and change their team.
+				PrintCenterText(client, "This gamemode supports %d active players on the BLU team. Please wait for an open slot.", sm_danepve_max_playing_humans.IntValue);
+				TF2_ChangeClientTeam(client, TFTeam_Spectator);
+				return Plugin_Handled;
+			}
+		}
+	}
 
 	return Plugin_Continue;
 }
 
 public Action teamplay_setup_finished(Event event, const char[] name, bool dontBroadcast)
 {
-	int ent = FindEntityByClassname(-1, "team_round_timer");
-	if(IsValidEntity(ent))
-	{
-		CreateTimer(0.5, Timer_OnSetupFinished, ent);
-	}
+	g_bIsRoundActive = true;
+	g_flRoundStartTime = GetGameTime();
 
 	return Plugin_Continue;
 }
 
 public Action teamplay_round_win(Event event, const char[] name, bool dontBroadcast)
 {
+	g_bIsRoundActive = false;
 	g_bIsRoundEnd = true;
 	return Plugin_Continue;
 }
@@ -432,6 +472,7 @@ public Action teamplay_round_win(Event event, const char[] name, bool dontBroadc
 public Action teamplay_round_start(Event event, const char[] name, bool dontBroadcast)
 {
 	g_bIsRoundEnd = false;
+	g_bIsRoundActive = false;
 	return Plugin_Continue;
 }
 
@@ -457,9 +498,26 @@ public Action Timer_RespawnBot(Handle timer, any client)
 	return Plugin_Handled;
 }
 
-public Action Timer_OnSetupFinished(Handle timer, any ent)
+public Action Timer_UpdateRoundTime(Handle timer, any ent)
 {
-	PVE_FreezeTimer(ent);
+	// Round is not active - do nothing.
+	if(!g_bIsRoundActive)
+		return Plugin_Handled;
+
+	if(!g_iTeamRoundTimer)
+		return Plugin_Handled;
+
+	float curTime = GetGameTime();
+	float startTime = g_flRoundStartTime;
+	float elapsTime = curTime - startTime;
+	int iElapsTime = RoundToFloor(elapsTime);
+
+	SetVariantInt(iElapsTime);
+	AcceptEntityInput(g_iTeamRoundTimer, "SetMaxTime");
+	SetVariantInt(iElapsTime);
+	AcceptEntityInput(g_iTeamRoundTimer, "SetTime");
+	AcceptEntityInput(g_iTeamRoundTimer, "Pause");
+
 	return Plugin_Handled;
 }
 
@@ -513,19 +571,19 @@ MRESReturn Detour_OnPointIsWithin(Address pThis, Handle hReturn, Handle hParams)
 	{
 		Address addrTeam = pThis + view_as<Address>(g_nOffset_CBaseEntity_m_iTeamNum);
 		TFTeam iTeam = view_as<TFTeam>(LoadFromAddress(addrTeam, NumberType_Int8));
-		
+
 		if(iTeam == TFTeam_Humans)
 		{
 			DHookSetReturn(hReturn, false);
 			return MRES_Supercede;
 		}
 	}
-	
+
 	return MRES_Ignored;
 }
 
 // void CTFGameRules::HandleSwitchTeams( void );
-public MRESReturn CTFGameRules_HandleSwitchTeams( int pThis, Handle hParams ) 
+public MRESReturn CTFGameRules_HandleSwitchTeams( int pThis, Handle hParams )
 {
 	PrintToChatAll("Team switching is disabled.");
 	return MRES_Supercede;
