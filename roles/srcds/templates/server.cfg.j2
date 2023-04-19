@@ -149,7 +149,10 @@ mp_chattime 20
 // No spectators team
 mp_allowspectators {% if item.pve_mode|default(false) %}1{% else %}0{% endif %}
 mp_forceautoteam {% if item.pve_mode|default(false) %}1{% else %}1{% endif %}
-
+{% if item.pve_mode %}
+mp_defaultteam 3
+mp_humans_must_join_team blue
+{% endif %}
 
 // Dont push same team
 tf_avoidteammates_pushaway 0
