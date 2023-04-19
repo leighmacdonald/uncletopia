@@ -81,6 +81,8 @@ bool g_bIsRoundActive = false;
 float g_flRoundStartTime = 0.0;
 bool g_bLastDeathWasBot = false;
 
+bool g_bIsDaneBot[MAXPLAYERS + 1];
+
 public OnPluginStart()
 {
 	//-----------------------------------------------------//
@@ -92,6 +94,7 @@ public OnPluginStart()
 	sm_danepve_bot_sapper_insta_remove = CreateConVar("sm_danepve_bot_sapper_insta_remove", "1");
 	sm_danepve_respawn_bots_on_round_end = CreateConVar("sm_danepve_respawn_bots_on_round_end", "0");
 	RegAdminCmd("sm_danepve_reload", cReload, ADMFLAG_CHANGEMAP, "Reloads Uncle Dane PVE config.");
+	RegConsoleCmd("sm_becomedanebot", cBecomeUncleDane);
 
 	//-----------------------------------------------------//
 	// Hook Events
@@ -147,6 +150,7 @@ public OnMapStart()
 
 public OnClientPutInServer(int client)
 {
+	g_bIsDaneBot[client] = false;
 	if(IsClientSourceTV(client))
 		return;
 
@@ -357,6 +361,14 @@ public int PVE_GiveWearableToClient(int client, int itemDef)
 	return hat;
 }
 
+public bool PVE_IsBot(int client)
+{
+	if(IsFakeClient(client))
+		return true;
+
+	return g_bIsDaneBot[client];
+}
+
 //-------------------------------------------------------//
 // Commands
 //-------------------------------------------------------//
@@ -366,6 +378,31 @@ public Action cReload(int client, int args)
 {
 	Config_Load();
 	ReplyToCommand(client, "[SM] Uncle Dane PVE config was reloaded!");
+	return Plugin_Handled;
+}
+
+#define UNCLE_DANE_STEAMID "STEAM_0:0:48866904"
+
+// sm_becomedanebot
+public Action cBecomeUncleDane(int client, int args)
+{
+	char szSteamId[PLATFORM_MAX_PATH];
+	GetClientAuthId(client, AuthId_Steam2, szSteamId, sizeof(szSteamId));
+	if(!StrEqual(szSteamId, UNCLE_DANE_STEAMID))
+	{
+		ReplyToCommand(client, "[SM] Sorry, you are not Uncle Dane. You can't do that. :C");
+		return Plugin_Handled;
+	}
+
+	bool isDane = !g_bIsDaneBot[client];
+	g_bIsDaneBot[client] = isDane;
+	TF2_RespawnPlayer(client);
+
+	char szMessage[PLATFORM_MAX_PATH];
+	Format(szMessage, sizeof(szMessage), "You are %s an Uncle Dane bot!", isDane ? "now" : "no longer");
+
+	ReplyToCommand(client, "[SM] %s", szMessage);
+	PrintCenterText(client, szMessage);
 	return Plugin_Handled;
 }
 
@@ -417,7 +454,7 @@ public Action player_spawn(Event event, const char[] name, bool dontBroadcast)
 	TFTeam curTeam = TF2_GetClientTeam(client);
 
 	// This client is a bot.
-	if(IsFakeClient(client))
+	if(PVE_IsBot(client))
 	{
 		// Make sure bots are on BOT team.
 		if(curTeam != TFTeam_Bots)
