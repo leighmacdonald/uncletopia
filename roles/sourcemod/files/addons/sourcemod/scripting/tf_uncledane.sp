@@ -141,7 +141,6 @@ public OnPluginStart()
 public OnMapStart()
 {
 	DHookGamerules(gHook_HandleSwitchTeams, false);
-	g_iTeamRoundTimer = FindEntityByClassname(-1, "team_round_timer");
 
 	//-----------------------------------------------------//
 	// Load config and setup the game
@@ -495,6 +494,7 @@ public Action teamplay_setup_finished(Event event, const char[] name, bool dontB
 {
 	g_bIsRoundActive = true;
 	g_flRoundStartTime = GetGameTime();
+	g_iTeamRoundTimer = FindEntityByClassname(-1, "team_round_timer");
 
 	return Plugin_Continue;
 }
@@ -541,7 +541,7 @@ public Action Timer_UpdateRoundTime(Handle timer, any ent)
 	if(!g_bIsRoundActive)
 		return Plugin_Handled;
 
-	if(!g_iTeamRoundTimer)
+	if(g_iTeamRoundTimer <= 0)
 		return Plugin_Handled;
 
 	float curTime = GetGameTime();
