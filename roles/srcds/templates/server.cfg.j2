@@ -48,9 +48,6 @@ logaddress_add {{ host }}
 {% endfor %}
 {% endif %}
 
-// No spectators team
-mp_allowspectators 0
-mp_forceautoteam 1
 
 tf_medieval 0
 tf_medieval_autorp 0
@@ -150,8 +147,9 @@ mp_restartround 0
 mp_chattime 20
 
 // No spectators team
-mp_allowspectators 0
-mp_forceautoteam 1
+mp_allowspectators {% if item.pve_mode|default(false) %}1{% else %}0{% endif %}
+mp_forceautoteam {% if item.pve_mode|default(false) %}1{% else %}1{% endif %}
+
 
 // Dont push same team
 tf_avoidteammates_pushaway 0

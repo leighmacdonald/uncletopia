@@ -85,7 +85,7 @@ public OnPluginStart()
 	sm_danepve_max_playing_humans = CreateConVar("sm_danepve_max_playing_humans", "12");
 	sm_danepve_max_connected_humans = CreateConVar("sm_danepve_max_connected_humans", "16");
 	sm_danepve_bot_sapper_insta_remove = CreateConVar("sm_danepve_bot_sapper_insta_remove", "1");
-	sm_danepve_respawn_bots_on_round_end = CreateConVar("sm_danepve_respawn_bots_on_round_end", "0");
+	sm_danepve_respawn_bots_on_round_end = CreateConVar("sm_danepve_respawn_bots_on_round_end", "1");
 	RegAdminCmd("sm_danepve_reload", cReload, ADMFLAG_CHANGEMAP, "Reloads Uncle Dane PVE config.");
 
 	//-----------------------------------------------------//
