@@ -64,6 +64,7 @@ tf_ctf_bonus_time 0
 
 // Remove random crits
 tf_weapon_criticals {% if item.tf_weapon_criticals|default(false) %}1{% else %}0{% endif %}
+
 tf_use_fixed_weaponspreads 1
 
 // Dont spectate other team
@@ -149,7 +150,7 @@ mp_chattime 20
 // No spectators team
 mp_allowspectators {% if item.pve_mode|default(false) %}1{% else %}0{% endif %}
 mp_forceautoteam {% if item.pve_mode|default(false) %}1{% else %}1{% endif %}
-{% if item.pve_mode %}
+{% if item.pve_mode|default(false) %}
 mp_defaultteam 3
 mp_humans_must_join_team blue
 {% endif %}
