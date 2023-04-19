@@ -242,6 +242,10 @@ motd: |
   motd
   text message
 
+motd_pve: |
+  asdf
+
+
 map_rotation:
   default:
     - cp_altitude

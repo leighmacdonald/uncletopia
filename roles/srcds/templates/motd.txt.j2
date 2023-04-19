@@ -1,1 +1,1 @@
-{{ motd }}
+{% if pve_mode %}{{ motd_pve }}{% else %}{{ motd }}{% endif %}
