@@ -51,8 +51,6 @@ public Config_Load()
 	FindConVar("tf_bot_difficulty")			.SetInt(kv.GetNum("Difficulty"));
 	FindConVar("tf_bot_auto_vacate")		.SetBool(false);
 	FindConVar("tf_bot_quota")				.SetInt(kv.GetNum("Count"));
-	FindConVar("mp_forceautoteam")			.SetBool(true);
-	FindConVar("mp_humans_must_join_team")	.SetString(PVE_TEAM_HUMANS_NAME);
 	FindConVar("mp_disable_respawn_times")	.SetBool(true);
 	FindConVar("mp_teams_unbalance_limit")	.SetInt(0);
 }

@@ -8,7 +8,7 @@
 #include <tf_econ_data>
 #include <dhooks>
 
-#define PLUGIN_VERSION "0.6.0"
+#define PLUGIN_VERSION "0.6.1"
 
 /** Display name of the humans team */
 #define PVE_TEAM_HUMANS_NAME 	"blue"
@@ -81,8 +81,6 @@ bool g_bIsRoundActive = false;
 float g_flRoundStartTime = 0.0;
 bool g_bLastDeathWasBot = false;
 
-bool g_bIsDaneBot[MAXPLAYERS + 1];
-
 public OnPluginStart()
 {
 	//-----------------------------------------------------//
@@ -96,6 +94,10 @@ public OnPluginStart()
 	RegAdminCmd("sm_danepve_reload", cReload, ADMFLAG_CHANGEMAP, "Reloads Uncle Dane PVE config.");
 	RegConsoleCmd("sm_becomedanebot", cBecomeUncleDane);
 
+	// Since 'jointeam' command is exists in most games, use AddCommandListener instead of Reg*Cmd
+	AddCommandListener(cJoinTeam, "jointeam");
+	AddCommandListener(cAutoTeam, "autoteam");
+
 	//-----------------------------------------------------//
 	// Hook Events
 	HookEvent("post_inventory_application", post_inventory_application);
@@ -103,7 +105,6 @@ public OnPluginStart()
 	HookEvent("teamplay_round_win", 		teamplay_round_win);
 	HookEvent("teamplay_setup_finished", 	teamplay_setup_finished);
 	HookEvent("player_death",				player_death);
-	HookEvent("player_spawn",				player_spawn);
 
 	//-----------------------------------------------------//
 	// Offsets Cache
@@ -149,11 +150,10 @@ public OnMapStart()
 
 public OnClientPutInServer(int client)
 {
-	g_bIsDaneBot[client] = false;
 	if(IsClientSourceTV(client))
 		return;
 
-	CreateTimer(0.5, Timer_OnClientConnect, client);
+	CreateTimer(0.1, Timer_OnClientConnect, client);
 }
 
 public bool OnClientConnect(int client, char[] rejectMsg, int maxlen)
@@ -330,6 +330,11 @@ public void PVE_ApplyBotItemAttributesOnEntity(int entity, BotItem item)
 	}
 }
 
+public bool PVE_CanMoreHumansJoin()
+{
+	return PVE_GetClientCountOnTeam(TFTeam_Humans) < sm_danepve_max_playing_humans.IntValue;
+}
+
 // Apply player attributes from config on a given client
 public void PVE_ApplyPlayerAttributes(int client)
 {
@@ -360,14 +365,6 @@ public int PVE_GiveWearableToClient(int client, int itemDef)
 	return hat;
 }
 
-public bool PVE_IsBot(int client)
-{
-	if(IsFakeClient(client))
-		return true;
-
-	return g_bIsDaneBot[client];
-}
-
 //-------------------------------------------------------//
 // Commands
 //-------------------------------------------------------//
@@ -377,6 +374,57 @@ public Action cReload(int client, int args)
 {
 	Config_Load();
 	ReplyToCommand(client, "[SM] Uncle Dane PVE config was reloaded!");
+	return Plugin_Handled;
+}
+
+public Action cJoinTeam(int client, const char[] command, int argc)
+{
+	// A human wishes to change their team.
+	char szTeamArg[11];
+	GetCmdArg(1, szTeamArg, sizeof(szTeamArg));
+
+	// Selecting red team automatically redirect to selecting blue team.
+	if(StrEqual(szTeamArg, "red", false))
+	{
+		ClientCommand(client, "jointeam blue");
+		return Plugin_Handled;
+	}
+
+	if(StrEqual(szTeamArg, "blue", false))
+	{
+		// Client is already on the blue team, do nothing.
+		if(TF2_GetClientTeam(client) == TFTeam_Humans)
+			return Plugin_Handled;
+
+		// Check if there is enough humans.
+		if(!PVE_CanMoreHumansJoin())
+		{
+			// If there isn't, show the message and change their team.
+			int humanCount = PVE_GetClientCountOnTeam(TFTeam_Humans);
+			PrintCenterText(client, "There are no open slots on the HUMAN team (%d/%d). Please try again later.", humanCount, humanCount);
+			ClientCommand(client, "jointeam spectator");
+			return Plugin_Handled;
+		}
+
+		return Plugin_Continue;
+	}
+
+
+	// Whitelist spectator commands.
+	if(	StrEqual(szTeamArg, "spec", false) ||
+		StrEqual(szTeamArg, "spectate", false) ||
+		StrEqual(szTeamArg, "spectator", false))
+	{
+		return Plugin_Continue;
+	}
+
+	// Block eveything else.
+	return Plugin_Handled;
+}
+
+public Action cAutoTeam(int client, const char[] command, int argc)
+{
+	ReplyToCommand(client, "[SM] \"autoteam\" command is disabled.");
 	return Plugin_Handled;
 }
 
@@ -393,15 +441,8 @@ public Action cBecomeUncleDane(int client, int args)
 		return Plugin_Handled;
 	}
 
-	bool isDane = !g_bIsDaneBot[client];
-	g_bIsDaneBot[client] = isDane;
-	TF2_RespawnPlayer(client);
-
-	char szMessage[PLATFORM_MAX_PATH];
-	Format(szMessage, sizeof(szMessage), "You are %s an Uncle Dane bot!", isDane ? "now" : "no longer");
-
-	ReplyToCommand(client, "[SM] %s", szMessage);
-	PrintCenterText(client, szMessage);
+	TF2_ChangeClientTeam(client, TFTeam_Bots);
+	PrintCenterText(client, "You are now an Uncle Dane bot!");
 	return Plugin_Handled;
 }
 
@@ -442,49 +483,6 @@ public Action player_death(Event event, const char[] name, bool dontBroadcast)
 	if(isBot)
 	{
 		CreateTimer(0.1, Timer_RespawnBot, client);
-	}
-
-	return Plugin_Continue;
-}
-
-public Action player_spawn(Event event, const char[] name, bool dontBroadcast)
-{
-	int client = GetClientOfUserId(event.GetInt("userid"));
-	TFTeam curTeam = TF2_GetClientTeam(client);
-
-	// This client is a bot.
-	if(PVE_IsBot(client))
-	{
-		// Make sure bots are on BOT team.
-		if(curTeam != TFTeam_Bots)
-		{
-			TF2_ChangeClientTeam(client, TFTeam_Bots);
-			return Plugin_Handled;
-		}
-	}
-	else
-	{
-		// Clients are not allowed on bots team.
-		if(curTeam == TFTeam_Bots)
-		{
-			// Move them to humans.
-			PrintCenterText(client, "Human players are not allowed to the RED team.");
-			TF2_ChangeClientTeam(client, TFTeam_Humans);
-			return Plugin_Handled;
-		}
-
-		// If the client is on the human team already.
-		if(curTeam == TFTeam_Humans)
-		{
-			// Check if there is enough humans.
-			if(PVE_GetClientCountOnTeam(TFTeam_Humans) > sm_danepve_max_playing_humans.IntValue)
-			{
-				// If there isn't, show the message and change their team.
-				PrintCenterText(client, "This gamemode supports %d active players on the BLU team. Please wait for an open slot.", sm_danepve_max_playing_humans.IntValue);
-				TF2_ChangeClientTeam(client, TFTeam_Spectator);
-				return Plugin_Handled;
-			}
-		}
 	}
 
 	return Plugin_Continue;
