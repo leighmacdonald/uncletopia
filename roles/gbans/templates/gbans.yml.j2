@@ -6,6 +6,7 @@ general:
   # Should normally be "release"
   mode: "release" # release, debug, test
   server_status_update_freq: {{ gbans_web.update_freq }}
+  master_server_status_update_freq: 15s
   banned_steam_group_ids: [ {{ gbans_web.banned_steam_group_ids|join(" , ") }} ]
   external_url: {{ gbans_host }}
   warning_limit: 2
@@ -16,7 +17,6 @@ http:
   host: 0.0.0.0
   # Listen on this port
   port: {{ gbans_web.port }}
-  domain: {{ gbans_web.address }}
   static_path: ./dist/
   client_timeout: 20s
   # Encryption key for cookies
@@ -61,7 +61,7 @@ logging:
   # Set the debug log level
   level: debug
   # Force console colours when it cant guess. This is mostly useful on windows
-  force_colours: true
+  force_colours: false
   # Force disable any colouring
   disable_colours: false
   # Show the function + line number where the log message was created
