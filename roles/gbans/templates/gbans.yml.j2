@@ -6,10 +6,9 @@ general:
   # Should normally be "release"
   mode: "release" # release, debug, test
   server_status_update_freq: {{ gbans_web.update_freq }}
-  map_changer_enabled: false
   banned_steam_group_ids: [ {{ gbans_web.banned_steam_group_ids|join(" , ") }} ]
   external_url: {{ gbans_host }}
-  warning_limit: 3
+  warning_limit: 2
 
 http:
   # Listen on this ip address
@@ -32,16 +31,11 @@ database:
 
 word_filter:
   enabled: true
-  warnings: 2
   ping_discord: true
-  external_enabled: false
-  external_sources:
-{% for src in gbans_web.word_filter.sources %}
-    - {{ src }}
-{% endfor %}
 
 discord:
   # Enable optional discord integration
+  # https://discord.com/api/oauth2/authorize?client_id={{ gbans_web.discord.app_id }}&permissions=0&scope=bot%20applications.commands
   enabled: true
   app_id: {{ gbans_web.discord.app_id }}
   guild_id: {{ gbans_web.discord.guild_id }}
