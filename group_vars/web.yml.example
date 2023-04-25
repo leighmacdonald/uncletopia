@@ -50,6 +50,7 @@ gbans_web:
     app_id: 000000000000000000
     guild_id: 000000000000000000
     mod_channel_id: 00000000000000000
+    link_id:
     public_log_enabled: true
     public_log_channel_id: 00000000000000000
     token: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
