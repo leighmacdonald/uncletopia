@@ -30,6 +30,6 @@ bash "{{srcds_steam_app_dir}}/srcds_run" -game "{{srcds_steam_app}}" -console \
   +rcon_password "{{ item.srcds_rcon_password | default(srcds_rcon_password) }}" \
   +sv_password "{{ item.srcds_server_password | default(srcds_server_password) }}" \
   +sv_region "{{ srcds_region | quote }}" \
-  +ip 0.0.0.0 \
+  {% if ip != "" %}+ip {{ ip }} {% endif %} \
   {% if srcds_use_sdr %}-enablefakeip {% endif %} \
   -authkey "{{ srcds_workshop_auth_key }}"
