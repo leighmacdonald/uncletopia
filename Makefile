@@ -74,3 +74,7 @@ ping:
 
 restart:
 	@ansible all -m reboot -a reboot_timeout=3600 -u tf2server -i hosts.yml -b
+
+local:
+	ansible-playbook playbooks/srcds.yml --limit localhost
+	ansible-playbook playbooks/deploy.yml --limit localhost

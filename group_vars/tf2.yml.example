@@ -548,7 +548,7 @@ mapchooser:
   # -
   # Default: "5"
   # Minimum: "0.000000"
-  sm_mapvote_exclude: "5"
+  sm_mapvote_exclude: "{% if item.pve_mode %}0{% else %}6{% endif %}"
 
   # Number of extensions allowed each map.
   # -
