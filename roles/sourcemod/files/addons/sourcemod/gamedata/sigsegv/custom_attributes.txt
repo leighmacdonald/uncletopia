@@ -2873,4 +2873,192 @@
         "hidden"	"1"
         "effect_type"	"positive"
     }
+    "4607"
+    {
+        "name"	"weapon always gib"
+        "attribute_class"	"weapon_always_gib"
+        "description_string"	"Always gibs enemies"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+    }
+    "4608"
+    {
+        "name"	"weapon never gib"
+        "attribute_class"	"weapon_never_gib"
+        "description_string"	"Never gibs enemies"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+    }
+    "4609"
+    {
+        "name"	"always gib"
+        "attribute_class"	"always_gib"
+        "description_string"	"Always gib"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    "4610"
+    {
+        "name"	"never gib"
+        "attribute_class"	"never_gib"
+        "description_string"	"Never gib"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    "4611"
+    {
+        "name"	"sapper sap allies"
+        "attribute_class"	"sapper_sap_allies"
+        "description_string"	"Place on ally players instead of enemies"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+    }
+    "4612"
+    {
+        "name"	"custom sapper model"
+        "attribute_class"	"custom_sapper_model"
+		"attribute_type"	"string"
+        "description_string"	""
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    "4613"
+    {
+        "name"	"custom sapper sound"
+        "attribute_class"	"custom_sapper_sound"
+		"attribute_type"	"string"
+        "description_string"	""
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    "4614"
+    {
+        "name"	"no clip"
+        "attribute_class"	"no_clip"
+        "description_string"	"Place on allies"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    "4615"
+    {
+        "name"	"arrow ignite"
+        "attribute_class"	"arrow_ignite"
+        "description_string"	"Arrows are always lit"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+    }
+    "4616"
+    {
+        "name"	"use original class weapon animations"
+        "attribute_class"	"use_original_class_weapon_animations"
+        "description_string"	"Arrows are always lit"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    "4617"
+    {
+        "name"	"mult dmg before distance"
+        "attribute_class"	"mult_dmg_before_distance"
+        "description_string"	"Deals up to (+-)%p% damage, the closer to the target"
+        "description_format"	"value_is_percentage"
+        "hidden"	"0"
+        "effect_type"	"positive"
+    }
+    "4618"
+    {
+        "name"	"mult dmg before distance specify"
+        "attribute_class"	"mult_dmg_before_distance_specify"
+        "description_string"	""
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    "4619"
+    {
+        "name"	"mult_item_meter_charge_rate 2"
+        "attribute_class"	"mult_item_meter_charge_rate"
+        "description_string"	"(+-)%p% recharge rate"
+        "description_format"	"value_is_inverted_percentage"
+        "hidden"	"0"
+        "effect_type"	"positive"
+    }
+    "4620"
+    {
+        "name"	"clip size upgrade atomic 2"
+        "attribute_class"	"mult_clipsize_upgrade_atomic"
+        "description_string"	"(+-)%d clip size"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+    }
+    "4621"
+    {
+        "name"	"charge recharge rate increased 2"
+        "attribute_class"	"charge_recharge_rate"
+        "description_string"	"(+-)%p% recharge rate"
+        "description_format"	"value_is_percentage"
+        "hidden"	"0"
+        "effect_type"	"positive"
+    }
+    "4622"
+    {
+        "name"	"mult sentry rocket projectile speed"
+        "attribute_class"	"mult_sentry_rocket_projectile_speed"
+        "description_string"	"(+-)%p% sentry rocket projectile speed"
+        "description_format"	"value_is_percentage"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    "4623"
+    {
+        "name"	"max ammo primary mult"
+        "attribute_class"	"mult_maxammo_primary"
+        "description_string"	"(+-)%p% sentry rocket projectile speed"
+        "description_format"	"value_is_percentage"
+        "hidden"	"1"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    "4624"
+    {
+        "name"	"max ammo secondary mult"
+        "attribute_class"	"mult_maxammo_secondary"
+        "description_string"	"(+-)%p% sentry rocket projectile speed"
+        "description_format"	"value_is_percentage"
+        "hidden"	"1"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    "4625"
+    {
+        "name"	"minigun full movement"
+        "attribute_class"	"minigun_full_movement"
+        "description_string"	"Can move while ducking when shooting"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    "4626"
+    {
+        "name"	"use original class player animations"
+        "attribute_class"	"use_original_class_player_animations"
+        "description_string"	"Arrows are always lit"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
 }

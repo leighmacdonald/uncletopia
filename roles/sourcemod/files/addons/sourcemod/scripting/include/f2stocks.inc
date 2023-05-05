@@ -2,7 +2,6 @@
  #endinput
 #endif
 #define _f2stocks_included
-#pragma newdecls required
 
 /*
 
@@ -47,6 +46,17 @@ stock void PrintToSTV(const char []format, any ...) {
 	char buffer[512];
 	VFormat(buffer, sizeof(buffer), format, 2);
 	PrintToChat(stv, "%s", buffer);
+}
+
+stock void CPrintToSTV(const char[] format, any ...)
+{
+    int stv = FindSTV();
+    if (stv < 1)
+        return;
+
+    char buffer[512];
+    VFormat(buffer, sizeof(buffer), format, 2);
+    MC_PrintToChat(stv, "%s", buffer);
 }
 
 stock int FindSTV() {
@@ -104,16 +114,18 @@ stock void F2_GetMedigunName(int client, char[] medigun, int medigunLen) {
 	int weaponid = GetPlayerWeaponSlot(client, 1);
 	if (weaponid >= 0) {
 		int defid = GetEntProp(weaponid, Prop_Send, "m_iItemDefinitionIndex");
-		if (defid == 29 || defid == 211 || defid == 663 || defid == 796 || defid == 805 || defid == 885 || defid == 894 || defid == 903 || defid == 912 || defid == 961 || defid == 970)
-			strcopy(medigun, medigunLen, "medigun");
-		else if (defid == 35)
-			strcopy(medigun, medigunLen, "kritzkrieg");
-		else if (defid == 411)
-			strcopy(medigun, medigunLen, "quickfix");
-		else if (defid == 998)
-			strcopy(medigun, medigunLen, "vaccinator");
-		else
-			strcopy(medigun, medigunLen, "unknown"); // TODO: Doesn't work for skins.
+		switch (defid) {
+			case 29, 211, 663, 796, 805, 885, 894, 903, 912, 961, 970, 15008, 15010, 15025, 15039, 15050, 15078, 15097, 15120, 15121, 15122, 15145, 15146, 16001, 16013, 16024:
+				strcopy(medigun, medigunLen, "medigun");
+			case 35:
+				strcopy(medigun, medigunLen, "kritzkrieg");
+			case 411:
+				strcopy(medigun, medigunLen, "quickfix");
+			case 998:
+				strcopy(medigun, medigunLen, "vaccinator");
+			default:
+				strcopy(medigun, medigunLen, "unknown");
+		}
 	} else {
 		strcopy(medigun, medigunLen, "");
 	}
@@ -300,26 +312,26 @@ stock int TF2_GetPlayerScore(int client) {
 
 // Based on smlib's implementation File_Copy
 stock bool CopyFile(const char[] source, const char[] destination) {
-	Handle file_source = OpenFile(source, "rb");
-	if (file_source == INVALID_HANDLE)
+	File file_source = OpenFile(source, "rb");
+	if (file_source == null)
 		return false;
 
-	Handle file_destination = OpenFile(destination, "wb");
-	if (file_destination == INVALID_HANDLE) {
-		CloseHandle(file_source);
+	File file_destination = OpenFile(destination, "wb");
+	if (file_destination == null) {
+		file_source.Close();
 		return false;
 	}
 
 	int buffer[4096];
 	int cache;
 
-	while (!IsEndOfFile(file_source)) {
-		cache = ReadFile(file_source, buffer, sizeof(buffer), 1);
-		WriteFile(file_destination, buffer, cache, 1);
+	while (!file_source.EndOfFile()) {
+		cache = file_source.Read(buffer, sizeof(buffer), 1);
+		file_destination.Write(buffer, cache, 1);
 	}
 
-	CloseHandle(file_source);
-	CloseHandle(file_destination);
+	file_source.Close();
+	file_destination.Close();
 
 	return true;
 }
@@ -336,11 +348,11 @@ stock bool GetPlayerOutline(int client) {
 
 
 // Based on psychonic's post https://forums.alliedmods.net/showpost.php?p=1865459&postcount=3
-Handle fnGetMaxHealth = INVALID_HANDLE;
-stock any GetMaxHealth(int client) {
-	if (fnGetMaxHealth == INVALID_HANDLE) {
+Handle fnGetMaxHealth = null;
+stock int GetMaxHealth(int client) {
+	if (fnGetMaxHealth == null) {
 		Handle hConf = LoadGameConfigFile("sdkhooks.games");
-		if (hConf == INVALID_HANDLE)
+		if (hConf == null)
 			SetFailState("Cannot find sdkhooks.games gamedata");
 		
 		StartPrepSDKCall(SDKCall_Entity);
@@ -348,7 +360,7 @@ stock any GetMaxHealth(int client) {
 		PrepSDKCall_SetReturnInfo(SDKType_PlainOldData, SDKPass_Plain);
 		fnGetMaxHealth = EndPrepSDKCall();
 		
-		if (fnGetMaxHealth == INVALID_HANDLE)
+		if (fnGetMaxHealth == null)
 			SetFailState("Failed to set up GetMaxHealth sdkcall");
 		
 		CloseHandle(hConf);

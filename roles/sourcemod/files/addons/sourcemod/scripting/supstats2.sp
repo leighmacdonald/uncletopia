@@ -78,6 +78,11 @@ Release notes:
 - Switched to using HullRayTracing to eliminate edge-cases - by Bv
 
 
+---- 2.5.2 (23/04/2023) ----
+- Removed 'spawned as unknown' log
+- Internal updates - by Leigh MacDonald
+
+
 TODO:
 - Use GetGameTime() instead of GetEngineTime()?
 - Write comments in code :D
@@ -88,18 +93,17 @@ TODO:
 
 #pragma semicolon 1 // Force strict semicolon mode.
 #pragma newdecls required
-#pragma tabsize 4
 
 #include <sourcemod>
 #include <tf2_stocks>
 #include <f2stocks>
 #include <sdkhooks>
 #include <smlib>
-#include <kvizzle>
+#include <kvizzle_newdecls>
 #undef REQUIRE_PLUGIN
 #include <updater>
 
-#define PLUGIN_VERSION "2.5.1"
+#define PLUGIN_VERSION "2.5.2"
 #define UPDATE_URL		"https://sourcemod.krus.dk/supstats2/update.txt"
 
 #define NAMELEN 64
@@ -137,7 +141,7 @@ char g_sTauntNames[][] = { "", "taunt_scout", "taunt_sniper", "taunt_soldier", "
 
 
 // ---- ACCURACY ----
-Handle g_hCvarEnableAccuracy = INVALID_HANDLE;
+ConVar g_hCvarEnableAccuracy = null;
 bool g_bEnableAccuracy;
 
 int g_iIgnoreDamageEnt[5];
@@ -172,7 +176,7 @@ const SHOT_PROJECTILE_MAX = 8; // exclusive
 const SHOT_HITSCAN_MIN = 16; // inclusive
 const SHOT_HITSCAN = 16;
 const SHOT_HITSCAN_MAX = 32; // exclusive
-Handle g_tShotTypes = INVALID_HANDLE; // Using a Trie seems to be over twice as fast as StrEqual()
+StringMap g_tShotTypes = null; // Using a Trie seems to be over twice as fast as StrEqual()
 // ---- ACCURACY ----
 
 
@@ -182,31 +186,31 @@ public void OnPluginStart() {
 	
 	
 	g_tShotTypes = CreateTrie();
-	SetTrieValue(g_tShotTypes, "tf_weapon_rocketlauncher", SHOT_ROCKET);
-	SetTrieValue(g_tShotTypes, "tf_weapon_particle_cannon", SHOT_ROCKET);
-	SetTrieValue(g_tShotTypes, "tf_weapon_rocketlauncher_directhit", SHOT_ROCKET);
-	SetTrieValue(g_tShotTypes, "tf_projectile_rocket", SHOT_ROCKET);
-	SetTrieValue(g_tShotTypes, "tf_projectile_energy_ball", SHOT_ROCKET);
+	g_tShotTypes.SetValue("tf_weapon_rocketlauncher", SHOT_ROCKET);
+	g_tShotTypes.SetValue("tf_weapon_particle_cannon", SHOT_ROCKET);
+	g_tShotTypes.SetValue("tf_weapon_rocketlauncher_directhit", SHOT_ROCKET);
+	g_tShotTypes.SetValue("tf_projectile_rocket", SHOT_ROCKET);
+	g_tShotTypes.SetValue("tf_projectile_energy_ball", SHOT_ROCKET);
 	
-	SetTrieValue(g_tShotTypes, "tf_weapon_grenadelauncher", SHOT_PIPE);
-	SetTrieValue(g_tShotTypes, "tf_projectile_pipe", SHOT_PIPE);
-	//SetTrieValue(g_tShotTypes, "tf_weapon_pipebomblauncher", SHOT_STICKY); // Should NOT be added.. causes a bug in OnEntityDestroyed
-	SetTrieValue(g_tShotTypes, "tf_projectile_pipe_remote", SHOT_STICKY);
+	g_tShotTypes.SetValue("tf_weapon_grenadelauncher", SHOT_PIPE);
+	g_tShotTypes.SetValue("tf_projectile_pipe", SHOT_PIPE);
+	//g_tShotTypes.SetValue("tf_weapon_pipebomblauncher", SHOT_STICKY); // Should NOT be added.. causes a bug in OnEntityDestroyed
+	g_tShotTypes.SetValue("tf_projectile_pipe_remote", SHOT_STICKY);
 	
-	SetTrieValue(g_tShotTypes, "tf_weapon_syringegun_medic", SHOT_NEEDLE);
-	SetTrieValue(g_tShotTypes, "tf_weapon_crossbow", SHOT_HEALINGBOLT);
-	SetTrieValue(g_tShotTypes, "tf_projectile_healing_bolt", SHOT_HEALINGBOLT);
+	g_tShotTypes.SetValue("tf_weapon_syringegun_medic", SHOT_NEEDLE);
+	g_tShotTypes.SetValue("tf_weapon_crossbow", SHOT_HEALINGBOLT);
+	g_tShotTypes.SetValue("tf_projectile_healing_bolt", SHOT_HEALINGBOLT);
 	
-	SetTrieValue(g_tShotTypes, "tf_weapon_scattergun", SHOT_HITSCAN);
-	SetTrieValue(g_tShotTypes, "tf_weapon_shotgun_soldier", SHOT_HITSCAN);
-	SetTrieValue(g_tShotTypes, "tf_weapon_shotgun_primary", SHOT_HITSCAN);
-	SetTrieValue(g_tShotTypes, "tf_weapon_shotgun_hwg", SHOT_HITSCAN);
-	SetTrieValue(g_tShotTypes, "tf_weapon_shotgun_pyro", SHOT_HITSCAN);
-	SetTrieValue(g_tShotTypes, "tf_weapon_pistol_scout", SHOT_HITSCAN);
-	SetTrieValue(g_tShotTypes, "tf_weapon_pistol", SHOT_HITSCAN);
-	SetTrieValue(g_tShotTypes, "tf_weapon_smg", SHOT_HITSCAN);
-	SetTrieValue(g_tShotTypes, "tf_weapon_sniperrifle", SHOT_HITSCAN);
-	SetTrieValue(g_tShotTypes, "tf_weapon_revolver", SHOT_HITSCAN);
+	g_tShotTypes.SetValue("tf_weapon_scattergun", SHOT_HITSCAN);
+	g_tShotTypes.SetValue("tf_weapon_shotgun_soldier", SHOT_HITSCAN);
+	g_tShotTypes.SetValue("tf_weapon_shotgun_primary", SHOT_HITSCAN);
+	g_tShotTypes.SetValue("tf_weapon_shotgun_hwg", SHOT_HITSCAN);
+	g_tShotTypes.SetValue("tf_weapon_shotgun_pyro", SHOT_HITSCAN);
+	g_tShotTypes.SetValue("tf_weapon_pistol_scout", SHOT_HITSCAN);
+	g_tShotTypes.SetValue("tf_weapon_pistol", SHOT_HITSCAN);
+	g_tShotTypes.SetValue("tf_weapon_smg", SHOT_HITSCAN);
+	g_tShotTypes.SetValue("tf_weapon_sniperrifle", SHOT_HITSCAN);
+	g_tShotTypes.SetValue("tf_weapon_revolver", SHOT_HITSCAN);
 	
 	
 	
@@ -416,7 +420,7 @@ char classNames[][] = {
 };
 
 
-//public Event_PlayerHealOnHit(Handle event, const string name[], bool dontBroadcast) {
+//public void Event_PlayerHealOnHit(Handle event, const string name[], bool dontBroadcast) {
 //	PrintToChatAll("heal on hit - amount(%i) client(%i)", GetEventInt(event, "amount"), GetEventInt(event, "entindex"));
 //}
 
@@ -428,9 +432,12 @@ public void Event_PlayerSpawned(Handle event, const char[] name, bool dontBroadc
 	int userid = GetEventInt(event, "userid");
 	int client = GetClientOfUserId(userid);
 	int clss = GetEventInt(event, "class");
-	
+
 	if (!IsRealPlayer(client))
 		return; // eg. SourceTV
+	
+	if (clss <= 0 || clss >= 10)
+		return; // It has been observed that clss can be 0 and triggered BEFORE "user entered game"
 	
 	for (int i = 0; i < MAXSTICKIES; i++)
 		g_iStickyId[client][i] = 0;
@@ -575,7 +582,7 @@ public Action OnTakeDamage(int victim, int &attacker, int &inflictor, float &dam
 					char entityName[32];
 					GetEntityClassname(inflictor, entityName, sizeof(entityName));
 					int shotType;
-					if (GetTrieValue(g_tShotTypes, entityName, shotType) && shotType == SHOT_STICKY) {
+					if (g_tShotTypes.GetValue(entityName, shotType) && shotType == SHOT_STICKY) {
 						int stickyPos = FindStickySpot(attacker, inflictor, true);
 						
 						if (stickyPos != -1) {
@@ -606,7 +613,7 @@ public Action OnTakeDamage(int victim, int &attacker, int &inflictor, float &dam
 	lastWeaponDamage[attacker][0] = '\0';
 	
 	
-	//string strDamagetype[33], String:strDamagecustom[33];
+	//char strDamagetype[33], strDamagecustom[33];
 	//IntToBits(damagetype, strDamagetype);
 	//IntToBits(damagecustom, strDamagecustom);
 	//PrintToChatAll("vic(%i) att(%i) infl(%i) weap(%i) dmg(%.0f) dmgtype(%s) dmgcus(%s)", victim, attacker, inflictor, weapon, damage, strDamagetype, strDamagecustom);
@@ -685,7 +692,7 @@ public Action OnTakeDamage(int victim, int &attacker, int &inflictor, float &dam
 				GetEntityClassname(inflictor, classname, sizeof(classname));
 				
 				int shotType;
-				if (GetTrieValue(g_tShotTypes, classname, shotType)) {
+				if (g_tShotTypes.GetValue(classname, shotType)) {
 					// The class checks are required to avoid pyros getting a shot_hit on a reflect rocket, without any shot_fired.
 					bool isRocket = shotType == SHOT_ROCKET && attackerClass == TFClass_Soldier;
 					bool isGrenade = shotType == SHOT_PIPE && attackerClass == TFClass_DemoMan;
@@ -737,7 +744,7 @@ public Action OnTakeDamage(int victim, int &attacker, int &inflictor, float &dam
 				GetEntityClassname(weapon, classname, sizeof(classname));
 				
 				int shotType;
-				if (GetTrieValue(g_tShotTypes, classname, shotType) && shotType >= SHOT_HITSCAN_MIN && shotType < SHOT_HITSCAN_MAX) {
+				if (g_tShotTypes.GetValue(classname, shotType) && shotType >= SHOT_HITSCAN_MIN && shotType < SHOT_HITSCAN_MAX) {
 					float now = GetEngineTime();
 					if ((now - g_fLastHitscanHit[attacker]) > 0.05) {
 						LogHit(attacker, lastWeaponDamage[attacker]);
@@ -845,10 +852,11 @@ public void OnProjectileTouch(int entity, int other) {
 	}
 }
 
+
 // ---- ACCURACY ----
 public void OnEntityCreated(int entity, const char[] classname) {
 	int shotType;
-	if (!GetTrieValue(g_tShotTypes, classname, shotType))
+	if (!g_tShotTypes.GetValue(classname, shotType))
 		return;
 	
 	if (shotType == SHOT_ROCKET || shotType == SHOT_PIPE) {
@@ -895,7 +903,7 @@ public void OnEntityCreated(int entity, const char[] classname) {
 
 public void OnHealArrowTouch(int entity, int other) {
 	if (other > 0 && other <= MaxClients) {
-		TFTeam team = view_as<TFTeam>(GetClientTeam(other));
+		TFTeam team = TF2_GetClientTeam(other);
 		if (team == TFTeam_Red || team == TFTeam_Blue) { // Ignore if we hit a spectator. (This check might not be necessary.)
 			int owner = GetEntPropEnt(entity, Prop_Send, "m_hOwnerEntity");
 			if (IsClientValid(owner) && TF2_GetPlayerClass(owner) == TFClass_Medic) {
@@ -943,7 +951,7 @@ public void OnEntityDestroyed(int entity) {
 		char clsname[32];
 		GetEntityClassname(entity, clsname, sizeof(clsname));
 		int shotType;
-		if (GetTrieValue(g_tShotTypes, clsname, shotType) && shotType == SHOT_STICKY) {
+		if (g_tShotTypes.GetValue(clsname, shotType) && shotType == SHOT_STICKY) {
 			int owner = GetEntPropEnt(entity, Prop_Send, "m_hThrower");
 			if (IsRealPlayer(owner)) { // Check that the owner didn't disconnect
 				int stickyPos = FindStickySpot(owner, entity);
@@ -979,22 +987,22 @@ public void OnEntityDestroyed(int entity) {
 
 public Action LogRocketShot(Handle timer, any client) {
 	if (!IsRealPlayer(client))
-		return Plugin_Continue;
+		return Plugin_Stop;
 	
 	if (!g_bRocketHurtMe[client] || g_bRocketHurtEnemy[client]) {
 		LogToGame("%s", g_sRocketFiredLogLine[client]);
 	}
-	return Plugin_Continue;
+	return Plugin_Stop;
 }
 
 public Action LogHitscanShot(Handle timer, any client) {
 	if (!IsRealPlayer(client))
-		return Plugin_Continue;
+		return Plugin_Stop;
 	
 	if (g_bHitscanHurtEnemy[client]) {
 		LogToGame("%s", g_sHitscanFiredLogLine[client]);
 	}
-	return Plugin_Continue;
+	return Plugin_Stop;
 }
 
 public Action TF2_CalcIsAttackCritical(int attacker, int weapon, char[] weaponname, bool &result) {
@@ -1006,7 +1014,7 @@ public Action TF2_CalcIsAttackCritical(int attacker, int weapon, char[] weaponna
 		int defid;
 		bool postHumousDamage;
 		int shotType;
-		if (GetTrieValue(g_tShotTypes, weaponname, shotType)) {
+		if (g_tShotTypes.GetValue(weaponname, shotType)) {
 			char weap[64];
 			weap[0] = '\0';
 			GetWeaponLogName(weap, sizeof(weap), attacker, weapon, healing, defid, postHumousDamage, attacker); // We are setting inflictor = attacker
@@ -1042,6 +1050,10 @@ public Action TF2_CalcIsAttackCritical(int attacker, int weapon, char[] weaponna
 	
 	return Plugin_Continue;
 }
+
+
+
+
 
 void LogShot(int attacker, const char[] weapon) {
 	// For performance, don't use FormatShot.
@@ -1240,7 +1252,7 @@ bool GetWeaponLogName(char[] logname, int lognameLen, int attacker, int weapon, 
 }
 
 // F2's Weapon Info Importer
-Handle g_hAllWeaponsName = INVALID_HANDLE; // names of all weapons saved in an Array
+ArrayList g_hAllWeaponsName = null; // names of all weapons saved in an Array
 int g_iAllWeaponsDefid[MAXWEAPONS]; // defids of all weapons
 int g_iAllWeaponsHealingOnHit[MAXWEAPONS];
 bool g_bAllWeaponsPostHumousDamage[MAXWEAPONS];
@@ -1251,13 +1263,13 @@ int g_iSlotWeaponSlot[MAXWEAPONS]; // translates defid -> weapon slot
 int g_iSlotWeaponCount = 0;
 
 int WeaponIndexFromName(const char[] weaponname) {
-	int size = GetArraySize(g_hAllWeaponsName);
+	int size = g_hAllWeaponsName.Length;
 	
 	int partialmatch = -1;
 	
 	for (int i = 0; i < size; i++) {
 		char cname[MAXWEPNAMELEN];
-		GetArrayString(g_hAllWeaponsName, i, cname, sizeof(cname));
+		g_hAllWeaponsName.GetString(i, cname, sizeof(cname));
 		
 		if (StrEqual(cname, weaponname, false)) {
 			return g_iAllWeaponsDefid[i];
@@ -1313,7 +1325,7 @@ bool WeaponFromDefid(int defid, char[] name, int maxlen, int &healing, bool &pos
 	
 	for (int i = 0; i < g_iAllWeaponsCount; i++) {
 		if (g_iAllWeaponsDefid[i] == defid) {
-			GetArrayString(g_hAllWeaponsName, i, name, maxlen);
+			g_hAllWeaponsName.GetString(i, name, maxlen);
 			healing = g_iAllWeaponsHealingOnHit[i];
 			postHumousDamage = g_bAllWeaponsPostHumousDamage[i];
 			
@@ -1360,8 +1372,8 @@ void ImportWeaponDefinitions() {
 		SetFailState("Could not find items_game.txt: %s", path);
 	
 	// Load items_game.txt for prefabs
-	Handle kvPrefabs = KvizCreateFromFile("items_game", path);
-	if (kvPrefabs == INVALID_HANDLE)
+	KeyValues kvPrefabs = KvizCreateFromFile("items_game", path);
+	if (kvPrefabs == null)
 		SetFailState("Could not load items_game.txt");
 	
 	// Go to prefabs section
@@ -1369,8 +1381,8 @@ void ImportWeaponDefinitions() {
 		SetFailState("items_game.txt: '%s' key not found", "prefabs");
 	
 	// Load items_game.txt for items traversal
-	Handle kv = KvizCreateFromFile("items_game", path);
-	if (kvPrefabs == INVALID_HANDLE)
+	KeyValues kv = KvizCreateFromFile("items_game", path);
+	if (kv == null)
 		SetFailState("Could not load items_game.txt");
 	
 	// Go to items section
@@ -1503,7 +1515,7 @@ void ImportWeaponDefinitions() {
 				Format(itemname, sizeof(itemname), "unknown(%i)", defid);
 			
 			String_ToLower(itemname, itemname, sizeof(itemname));
-			
+
 			PushArrayString(g_hAllWeaponsName, itemname);
 			g_iAllWeaponsDefid[g_iAllWeaponsCount] = defid;
 			g_iAllWeaponsHealingOnHit[g_iAllWeaponsCount] = 0;
@@ -1528,7 +1540,7 @@ void ImportWeaponDefinitions() {
 	InitWeaponCache();
 }
 
-void GetItemString(Handle kv, Handle kvPrefabs, const char[] key, char[] value, int valueLen, const char[] def = "") {
+void GetItemString(KeyValues kv, KeyValues kvPrefabs, const char[] key, char[] value, int valueLen, const char[] def = "") {
 	if (KvizGetString(kv, value, valueLen, "", key))
 		return;
 	
@@ -1557,7 +1569,7 @@ void GetItemString(Handle kv, Handle kvPrefabs, const char[] key, char[] value, 
 	strcopy(value, valueLen, def);
 }
 
-bool GetItemStringFromPrefab(Handle kvPrefabs, const char[] prefab, const char[] key, char[] value, int valueLen) {
+bool GetItemStringFromPrefab(KeyValues kvPrefabs, const char[] prefab, const char[] key, char[] value, int valueLen) {
 	if (KvizGetStringExact(kvPrefabs, value, valueLen, "%s.%s", prefab, key))
 		return true;
 	
@@ -1587,7 +1599,7 @@ bool GetItemStringFromPrefab(Handle kvPrefabs, const char[] prefab, const char[]
 }
 
 
-bool GetItemTag(Handle kv, Handle kvPrefabs, const char[] key, bool def = false) {
+bool GetItemTag(KeyValues kv, KeyValues kvPrefabs, const char[] key, bool def = false) {
 	int ret;
 	if (KvizGetNumExact(kv, ret, "tags.%s", key))
 		return ret != 0;
@@ -1615,7 +1627,7 @@ bool GetItemTag(Handle kv, Handle kvPrefabs, const char[] key, bool def = false)
 	return def;
 }
 
-bool GetItemAttribute(Handle kv, Handle kvPrefabs, const char[] attr, char[] value, int valueLen) {
+bool GetItemAttribute(KeyValues kv, KeyValues kvPrefabs, const char[] attr, char[] value, int valueLen) {
 	if (KvizGetStringExact(kv, value, valueLen, "attributes:any-child.attribute_class:has-value(%s):parent.value", attr))
 		return true;
 	

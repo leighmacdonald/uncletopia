@@ -5629,7 +5629,6 @@
 					type "sym"
 					sym  "_ZN22CBaseMultiplayerPlayer21SpeakConceptIfAllowedEiPKcPcjP16IRecipientFilter"
 				}
-				
 			}
 			"addrs_group"
 			{
@@ -5804,6 +5803,8 @@
 				"CTeamplayRules::SetWinningTeam" "_ZN14CTeamplayRules14SetWinningTeamEiibbbb"
 				
 				"CTFGameRules::CTFGameRules [C1]" "_ZN12CTFGameRulesC1Ev"
+				"CTFGameRules::GetAssister" "_ZN12CTFGameRules11GetAssisterEP11CBasePlayerS1_P11CBaseEntity"
+				
 
 				"CBasePlayer::IsBot" "_ZNK11CBasePlayer5IsBotEv" 
 				"CBasePlayer::CommitSuicide" "_ZN11CBasePlayer13CommitSuicideEbb" 
@@ -5884,9 +5885,7 @@
 				"TFInventoryManager" "_Z18TFInventoryManagerv"
 				
 				"CBaseCombatWeapon::IsMeleeWeapon" "_ZNK17CBaseCombatWeapon13IsMeleeWeaponEv"
-				
 				"CBaseCombatWeapon::GetMaxClip1" "_ZNK17CBaseCombatWeapon11GetMaxClip1Ev"
-				
 				"CBaseCombatWeapon::GetMaxClip2" "_ZNK17CBaseCombatWeapon11GetMaxClip2Ev"
 				"CBaseCombatWeapon::PrimaryAttack" "_ZN17CBaseCombatWeapon13PrimaryAttackEv"
 				"CBaseCombatWeapon::SecondaryAttack" "_ZN17CBaseCombatWeapon15SecondaryAttackEv"
@@ -5951,6 +5950,9 @@
 				"CTFWeaponBase::AutoFiresFullClip" "_ZNK13CTFWeaponBase17AutoFiresFullClipEv"
 				"CTFWeaponBase::SendWeaponAnim" "_ZN13CTFWeaponBase14SendWeaponAnimEi"
 				"CTFWeaponBase::GetMaxHealthMod" "_ZN13CTFWeaponBase15GetMaxHealthModEv"
+				"CTFWeaponBase::InternalGetEffectBarRechargeTime" "_ZN13CTFWeaponBase32InternalGetEffectBarRechargeTimeEv"
+				"CTFWeaponBase::GetEffectBarProgress" "_ZN13CTFWeaponBase20GetEffectBarProgressEv"
+				"CTFWeaponBase::GetActivityWeaponRole" "_ZNK13CTFWeaponBase21GetActivityWeaponRoleEv"
 
 				"CTFWeaponBaseGun::DoFireEffects"        "_ZN16CTFWeaponBaseGun13DoFireEffectsEv"
 				"CTFWeaponBaseGun::FireProjectile"       "_ZN16CTFWeaponBaseGun14FireProjectileEP9CTFPlayer"
@@ -5977,7 +5979,37 @@
 				"CFlagDetectionZone::EntityIsFlagCarrier" "_ZN18CFlagDetectionZone19EntityIsFlagCarrierEP11CBaseEntity"
 				
 				"CBaseProjectile::CanCollideWithTeammates" "_ZNK15CBaseProjectile23CanCollideWithTeammatesEv"
-			
+
+				"CBaseObject::FindBuildPointOnPlayer" "_ZN11CBaseObject22FindBuildPointOnPlayerEP9CTFPlayerP11CBasePlayerRfR6Vector"
+				"CBaseObject::AttachObjectToObject" "_ZN11CBaseObject20AttachObjectToObjectEP11CBaseEntityiR6Vector"
+
+				"CObjectSapper::GetSapperModelName" "_ZN13CObjectSapper18GetSapperModelNameE13SapperModel_tPKc"
+				"CObjectSapper::GetSapperSoundName" "_ZN13CObjectSapper18GetSapperSoundNameEv"
+				"CObjectSapper::UpdateOnRemove" "_ZN13CObjectSapper14UpdateOnRemoveEv"
+
+				"CTFBaseRocket::GetWeaponID" "_ZNK13CTFBaseRocket11GetWeaponIDEv"
+
+				"CTFProjectile_Arrow::GetWeaponID" "_ZNK19CTFProjectile_Arrow11GetWeaponIDEv"
+
+				"CTFProjectile_Cleaver::GetDamage" "_ZN21CTFProjectile_Cleaver9GetDamageEv"
+
+				"CTFProjectile_ThrowableBreadMonster::GetDamage" "_ZN35CTFProjectile_ThrowableBreadMonster9GetDamageEv"
+
+				"CTFProjectile_ThrowableRepel::GetDamage" "_ZN28CTFProjectile_ThrowableRepel9GetDamageEv"
+
+				"CTFProjectile_ThrowableBrick::GetDamage" "_ZN28CTFProjectile_ThrowableBrick9GetDamageEv"
+
+				"CTFStunBall::GetDamage" "_ZN11CTFStunBall9GetDamageEv"
+
+				"CGameMovement::FullNoClipMove" "_ZN13CGameMovement14FullNoClipMoveEff"
+
+				"CTFCompoundBow::Reload" "_ZN14CTFCompoundBow6ReloadEv"
+
+				"CTFPipebombLauncher::Deploy" "_ZN19CTFPipebombLauncher6DeployEv"
+				"CTFPipebombLauncher::FireProjectile" "_ZN19CTFPipebombLauncher14FireProjectileEP9CTFPlayer"
+
+				"CLagCompensationManager::BacktrackPlayer" "_ZN23CLagCompensationManager15BacktrackPlayerEP11CBasePlayerf"
+				
 			}
 			"addrs_group"
 			{
@@ -5994,6 +6026,9 @@
 				"Vector_CompareDeltas"	"_Z20Vector_CompareDeltasPK8SendPropP7bf_readS3_"
 				"String_CompareDeltas"	"_Z20String_CompareDeltasPK8SendPropP7bf_readS3_"
 				"Int64_CompareDeltas"	"_Z19Int64_CompareDeltasPK8SendPropP7bf_readS3_"
+
+				"CBaseClient::SetName"	"_ZN11CBaseClient7SetNameEPKc"
+				
 			}
 		}
 	}
