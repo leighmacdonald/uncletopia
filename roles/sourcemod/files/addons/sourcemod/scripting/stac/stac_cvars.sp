@@ -23,6 +23,7 @@ void initCvars()
         true,
         1.0
     );
+    //SetConVarFlags(stac_enabled, FCVAR_NONE);
     HookConVarChange(stac_enabled, setStacVars);
 
     // verbose mode
@@ -244,6 +245,24 @@ void initCvars()
     );
     HookConVarChange(stac_max_tbot_detections, setStacVars);
 
+    // invalid usercmds
+    IntToString(maxInvalidUsercmdDetections, buffer, sizeof(buffer));
+    stac_max_invalid_usercmd_detections =
+    AutoExecConfig_CreateConVar
+    (
+        "stac_max_invalid_usercmd_detections",
+        buffer,
+        "[StAC] maximum invalid usercmds a client can send before getting banned. This detects poorly coded cheats sending invalid data in their inputs to the server.\n\
+        -1 to disable even checking for invalid usercmds (saves cpu), 0 to print to admins/stv but never ban.\n\
+        (recommended 5)",
+        FCVAR_NONE,
+        true,
+        -1.0,
+        false,
+        _
+    );
+    HookConVarChange(stac_max_invalid_usercmd_detections, setStacVars);
+
     // min interp
     IntToString(min_interp_ms, buffer, sizeof(buffer));
     stac_min_interp_ms =
@@ -384,23 +403,6 @@ void initCvars()
     );
     HookConVarChange(stac_fixpingmasking_enabled, setStacVars);
 
-    // pingreduce
-    IntToString(maxuserinfoSpamDetections, buffer, sizeof(buffer));
-    stac_max_cmdrate_spam_detections =
-    AutoExecConfig_CreateConVar
-    (
-        "stac_max_userinfo_spam_detections",
-        buffer,
-        "[StAC] maximum number of times a client can spam userinfo updates (over the course of 10 seconds) before getting banned.\n\
-        (recommended 10+)",
-        FCVAR_NONE,
-        true,
-        -1.0,
-        false,
-        _
-    );
-    HookConVarChange(stac_max_cmdrate_spam_detections, setStacVars);
-
     // reconnect unauthed clients
     if (kickUnauth)
     {
@@ -479,21 +481,6 @@ void initCvars()
     );
     HookConVarChange(stac_work_with_sv_cheats, setStacVars);
 
-    IntToString(quiet, buffer, sizeof(buffer));
-    stac_quiet =
-    AutoExecConfig_CreateConVar
-    (
-        "stac_quiet",
-        buffer,
-        "[StAC] Improve SNR of log messages for users with many servers & users. Use this if you get rated limited by discord\n\
-        (recommended 0)",
-        FCVAR_NONE,
-        true,
-        0.0,
-        true,
-        1.0
-    );
-    HookConVarChange(stac_quiet, setStacVars);
 
     // actually exec the cfg after initing cvars lol
     AutoExecConfig_ExecuteFile();
@@ -509,6 +496,8 @@ void setStacVars(ConVar convar, const char[] oldValue, const char[] newValue)
     // enabled var
     if (!GetConVarBool(stac_enabled))
     {
+        //SetConVarFlags(stac_enabled, FCVAR_NOTIFY);
+        OnPluginEnd();
         SetFailState("[StAC] stac_enabled is set to 0 - aborting!");
     }
 
@@ -553,8 +542,8 @@ void setStacVars(ConVar convar, const char[] oldValue, const char[] newValue)
     // tbot var
     maxTbotDetections       = GetConVarInt(stac_max_tbot_detections);
 
-    // max ping reduce detections - clamp to -1 if 0
-    maxuserinfoSpamDetections   = GetConVarInt(stac_max_cmdrate_spam_detections);
+    // invalid usercmds var
+    maxInvalidUsercmdDetections = GetConVarInt(stac_max_invalid_usercmd_detections);
 
     // minterp var - clamp to -1 if 0
     min_interp_ms           = GetConVarInt(stac_min_interp_ms);
@@ -591,24 +580,16 @@ void setStacVars(ConVar convar, const char[] oldValue, const char[] newValue)
     // max conns from same ip
     maxip                   = GetConVarInt(stac_max_connections_from_ip);
 
-    // max conns from same ip
+    // should stac work with sv_cheats or not
     ignore_sv_cheats        = GetConVarBool(stac_work_with_sv_cheats);
-
-    quiet                   = GetConVarBool(stac_quiet);
 }
 
 public void GenericCvarChanged(ConVar convar, const char[] oldValue, const char[] newValue)
 {
-    if (!ignore_sv_cheats)
+    if (configsExecuted && !ignore_sv_cheats && convar == FindConVar("sv_cheats") && StringToInt(newValue) != 0)
     {
-        // IMMEDIATELY unload if we enable sv cheats
-        if (convar == FindConVar("sv_cheats"))
-        {
-            if (StringToInt(newValue) != 0)
-            {
-                SetFailState("[StAC] sv_cheats set to 1! Aborting!");
-            }
-        }
+        OnPluginEnd();
+        SetFailState("[StAC] sv_cheats set to 1! Aborting!");
     }
 
     // set timescale so we don't ban clients if its not default
@@ -630,37 +611,6 @@ public void GenericCvarChanged(ConVar convar, const char[] oldValue, const char[
     }
 }
 
-#define MAX_RATE        (1024*1024)
-#define MIN_RATE        1000
-// update server rate settings for cmdrate spam check - i'd rather have one func do this lol
-public void UpdateRates(ConVar convar, const char[] oldValue, const char[] newValue)
-{
-    imincmdrate    = GetConVarInt(FindConVar("sv_mincmdrate"));
-    imaxcmdrate    = GetConVarInt(FindConVar("sv_maxcmdrate"));
-    iminupdaterate = GetConVarInt(FindConVar("sv_minupdaterate"));
-    imaxupdaterate = GetConVarInt(FindConVar("sv_maxupdaterate"));
-    iminrate       = GetConVarInt(FindConVar("sv_minrate"));
-    imaxrate       = GetConVarInt(FindConVar("sv_maxrate"));
-
-    if (iminrate <= 0)
-    {
-        iminrate = MIN_RATE;
-    }
-
-    if (imaxrate <= 0)
-    {
-        imaxrate = MAX_RATE;
-    }
-
-    // update clients
-    for (int Cl = 1; Cl <= MaxClients; Cl++)
-    {
-        if (IsValidClient(Cl))
-        {
-            OnClientSettingsChanged(Cl);
-        }
-    }
-}
 
 void RunOptimizeCvars()
 {
@@ -671,7 +621,8 @@ void RunOptimizeCvars()
     SetConVarInt(FindConVar("sv_maxusrcmdprocessticks_holdaim"), 1);
 
     // limit fakelag abuse / backtracking (CS:GO default value!)
-    SetConVarFloat(FindConVar("sv_maxunlag"), 0.2);
+    // Note from the future: we DON'T need to do this with our backtrack patch.
+    // SetConVarFloat(FindConVar("sv_maxunlag"), 0.2);
 
     // print dc reasons to clients
     SetConVarBool(FindConVar("net_disconnect_reason"), true);
@@ -679,16 +630,38 @@ void RunOptimizeCvars()
     // prevent all sorts of exploits involving CNetChan fuzzing etc.
     ConVar net_chan_limit_msec = FindConVar("net_chan_limit_msec");
     // don't override server set settings if they have set it to a value other than 0
-    if (GetConVarInt(net_chan_limit_msec) == 0)
+    if (GetConVarInt(net_chan_limit_msec) <= 0)
     {
-        SetConVarInt(net_chan_limit_msec, 75);
+        SetConVarInt(net_chan_limit_msec, 128);
     }
+
+    if (isDefaultTickrate())
+    {
+        if (GetConVarInt(FindConVar("sv_mincmdrate")) < 30)
+        {
+            SetConVarInt(FindConVar("sv_mincmdrate"), 30);
+        }
+        if (GetConVarInt(FindConVar("sv_minupdaterate")) < 30)
+        {
+            SetConVarInt(FindConVar("sv_minupdaterate"), 30);
+        }
+        // 65536 = 0.5 mebibits per second
+        if (GetConVarInt(FindConVar("sv_minrate")) < 65536)
+        {
+            SetConVarInt(FindConVar("sv_minrate"), 65536);
+        }
+    }
+
+    // OVERRIDE this setting
+    // There is basically NO situation where you want the client updating FROM the server at a different rate
+    // than they are updating the server itself by sending usercmds
+    SetConVarInt(FindConVar("sv_client_cmdrate_difference"), 0);
 
     // fix backtracking
     ConVar jay_backtrack_enable     = FindConVar("jay_backtrack_enable");
     ConVar jay_backtrack_tolerance  = FindConVar("jay_backtrack_tolerance");
     // dont error out on server start
-    if (jay_backtrack_enable != null && jay_backtrack_tolerance != null)
+    if ( jay_backtrack_enable && jay_backtrack_tolerance )
     {
         // enable jaypatch
         SetConVarInt(jay_backtrack_enable, 1);
@@ -696,7 +669,7 @@ void RunOptimizeCvars()
         SetConVarInt(jay_backtrack_tolerance, 1);
     }
 
-    // get rid of any possible exploits by using teleporters and fov
-    SetConVarInt(FindConVar("tf_teleporter_fov_start"), 90);
-    SetConVarFloat(FindConVar("tf_teleporter_fov_time"), 0.0);
+    // there have been several exploits in the past regarding non steam codec
+    // this is defensive
+    SetConVarString(FindConVar("sv_voicecodec"), "steam");
 }
