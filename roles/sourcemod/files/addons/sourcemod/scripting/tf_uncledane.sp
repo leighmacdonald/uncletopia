@@ -8,7 +8,7 @@
 #include <tf_econ_data>
 #include <dhooks>
 
-#define PLUGIN_VERSION "0.6.1"
+#define PLUGIN_VERSION "0.6.2"
 
 /** Display name of the humans team */
 #define PVE_TEAM_HUMANS_NAME 	"blue"
@@ -17,7 +17,7 @@
 /** Maximum amount of players that can be on the server in TF2 */
 #define TF_MAXPLAYERS 			32
 
-#define GOLDEN_PAN_DEFID 		1071
+#define GOLDEN_PAN_DEFID 		1071 
 #define GOLDEN_PAN_CHANCE 		1
 
 const TFTeam TFTeam_Humans = TFTeam_Blue;
@@ -37,7 +37,7 @@ enum struct BotItem
 	int m_iItemDefinitionIndex;
 	char m_szClassName[32];
 	ArrayList m_Attributes;
-}
+} 
 
 ArrayList g_hBotCosmetics;
 ArrayList g_hPlayerAttributes;
@@ -50,7 +50,7 @@ ArrayList g_hMeleeWeapons;
 
 #include <danepve/config.sp>
 
-public Plugin myinfo =
+public Plugin myinfo = 
 {
 	name = "[TF2] Uncle Dane PVE",
 	author = "Moonly Days",
@@ -93,7 +93,7 @@ public OnPluginStart()
 	sm_danepve_respawn_bots_on_round_end = CreateConVar("sm_danepve_respawn_bots_on_round_end", "0");
 	RegAdminCmd("sm_danepve_reload", cReload, ADMFLAG_CHANGEMAP, "Reloads Uncle Dane PVE config.");
 	RegConsoleCmd("sm_becomedanebot", cBecomeUncleDane);
-
+	
 	// Since 'jointeam' command is exists in most games, use AddCommandListener instead of Reg*Cmd
 	AddCommandListener(cJoinTeam, "jointeam");
 	AddCommandListener(cAutoTeam, "autoteam");
@@ -105,7 +105,7 @@ public OnPluginStart()
 	HookEvent("teamplay_round_win", 		teamplay_round_win);
 	HookEvent("teamplay_setup_finished", 	teamplay_setup_finished);
 	HookEvent("player_death",				player_death);
-
+	
 	//-----------------------------------------------------//
 	// Offsets Cache
 	g_nOffset_CBaseEntity_m_iTeamNum = FindSendPropInfo("CBaseEntity", "m_iTeamNum");
@@ -172,12 +172,18 @@ public OnEntityCreated(int entity, const char[] szClassname)
 	if(g_bIsRoundEnd && g_bLastDeathWasBot)
 	{
 		// Remove these entities on round end / humiliation.
-		if(	StrEqual(szClassname, "tf_ammo_pack") ||
+		if(	StrEqual(szClassname, "tf_ammo_pack") || 
 			StrEqual(szClassname, "tf_dropped_weapon") ||
 			StrEqual(szClassname, "tf_ragdoll"))
 		{
 			AcceptEntityInput(entity, "Kill");
 		}
+	}
+
+	// No halloween allowed >:C
+	if(StrEqual(szClassname, "halloween_souls_pack"))
+	{
+		AcceptEntityInput(entity, "Kill");
 	}
 
 	if(StrEqual(szClassname, "obj_attachment_sapper"))
@@ -199,7 +205,7 @@ public int PVE_GetHumanCount()
         if (IsClientConnected(i) && !IsFakeClient(i))
             count++;
 	}
-
+	
 	return count;
 }
 
@@ -215,7 +221,7 @@ public int PVE_GetClientCountOnTeam(TFTeam team)
 		if (TF2_GetClientTeam(i) == team)
 			count++;
 	}
-
+	
 	return count;
 }
 
@@ -246,7 +252,7 @@ public void PVE_EquipBotItems(int client)
 		int hat = PVE_GiveWearableToClient(client, cosmetic.m_iItemDefinitionIndex);
 		if(hat <= 0)
 			continue;
-
+			
 		PVE_ApplyBotItemAttributesOnEntity(hat, cosmetic);
 	}
 
@@ -269,7 +275,7 @@ public void PVE_EquipBotItems(int client)
 	}
 }
 
-// Give a bot a random weapon in slot from an array defined in ArrayList
+// Give a bot a random weapon in slot from an array defined in ArrayList 
 public void PVE_GiveBotRandomSlotWeaponFromArrayList(int client, int slot, ArrayList array)
 {
 	if(array == INVALID_HANDLE)
@@ -335,7 +341,7 @@ public bool PVE_CanMoreHumansJoin()
 	return PVE_GetClientCountOnTeam(TFTeam_Humans) < sm_danepve_max_playing_humans.IntValue;
 }
 
-// Apply player attributes from config on a given client
+// Apply player attributes from config on a given client 
 public void PVE_ApplyPlayerAttributes(int client)
 {
 	for(int i = 0; i < g_hPlayerAttributes.Length; i++)
@@ -352,7 +358,7 @@ public int PVE_GiveWearableToClient(int client, int itemDef)
 	int hat = CreateEntityByName("tf_wearable");
 	if(!IsValidEntity(hat))
 		return -1;
-
+	
 	SetEntProp(hat, Prop_Send, "m_iItemDefinitionIndex", itemDef);
 	SetEntProp(hat, Prop_Send, "m_bInitialized", 1);
 	SetEntProp(hat, Prop_Send, "m_iEntityLevel", 50);
@@ -360,7 +366,7 @@ public int PVE_GiveWearableToClient(int client, int itemDef)
 	SetEntProp(hat, Prop_Send, "m_iAccountID", GetSteamAccountID(client));
 	SetEntPropEnt(hat, Prop_Send, "m_hOwnerEntity", client);
 	DispatchSpawn(hat);
-
+	
 	SDKCall(g_hSdkEquipWearable, client, hat);
 	return hat;
 }
@@ -404,20 +410,20 @@ public Action cJoinTeam(int client, const char[] command, int argc)
 			PrintCenterText(client, "There are no open slots on the HUMAN team (%d/%d). Please try again later.", humanCount, humanCount);
 			ClientCommand(client, "jointeam spectator");
 			return Plugin_Handled;
-		}
+		} 
 
 		return Plugin_Continue;
 	}
 
 
 	// Whitelist spectator commands.
-	if(	StrEqual(szTeamArg, "spec", false) ||
-		StrEqual(szTeamArg, "spectate", false) ||
+	if(	StrEqual(szTeamArg, "spec", false) || 
+		StrEqual(szTeamArg, "spectate", false) || 
 		StrEqual(szTeamArg, "spectator", false))
 	{
 		return Plugin_Continue;
 	}
-
+	
 	// Block eveything else.
 	return Plugin_Handled;
 }
@@ -606,19 +612,19 @@ MRESReturn Detour_OnPointIsWithin(Address pThis, Handle hReturn, Handle hParams)
 	{
 		Address addrTeam = pThis + view_as<Address>(g_nOffset_CBaseEntity_m_iTeamNum);
 		TFTeam iTeam = view_as<TFTeam>(LoadFromAddress(addrTeam, NumberType_Int8));
-
+		
 		if(iTeam == TFTeam_Humans)
 		{
 			DHookSetReturn(hReturn, false);
 			return MRES_Supercede;
 		}
 	}
-
+	
 	return MRES_Ignored;
 }
 
 // void CTFGameRules::HandleSwitchTeams( void );
-public MRESReturn CTFGameRules_HandleSwitchTeams( int pThis, Handle hParams )
+public MRESReturn CTFGameRules_HandleSwitchTeams( int pThis, Handle hParams ) 
 {
 	PrintToChatAll("Team switching is disabled.");
 	return MRES_Supercede;
