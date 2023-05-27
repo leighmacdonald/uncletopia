@@ -1,5 +1,5 @@
 #if defined _updater_included
-  #endinput
+#endinput
 #endif
 #define _updater_included
 
@@ -7,7 +7,7 @@
  * Adds your plugin to the updater. The URL will be updated if
  * your plugin was previously added.
  *
- * @param url       URL to your plugin's update file.
+ * @param url        URL to your plugin's update file.
  * @noreturn
  */
 native void Updater_AddPlugin(const char[] url);
@@ -24,22 +24,22 @@ native void Updater_RemovePlugin();
  * Forces your plugin to be checked for updates. The behaviour
  * of the update is dependant on the server's configuration.
  *
- * @return      True if an update was triggered. False otherwise.
- * @error       Plugin not found in updater.
+ * @return        True if an update was triggered. False otherwise.
+ * @error        Plugin not found in updater.
  */
 native bool Updater_ForceUpdate();
 
 /**
  * Called when your plugin is about to be checked for updates.
  *
- * @return      Plugin_Handled to prevent checking, Plugin_Continue to allow it.
+ * @return        Plugin_Handled to prevent checking, Plugin_Continue to allow it.
  */
 forward Action Updater_OnPluginChecking();
 
 /**
  * Called when your plugin is about to begin downloading an available update.
  *
- * @return      Plugin_Handled to prevent downloading, Plugin_Continue to allow it.
+ * @return        Plugin_Handled to prevent downloading, Plugin_Continue to allow it.
  */
 forward Action Updater_OnPluginDownloading();
 
@@ -68,14 +68,14 @@ forward void Updater_OnPluginUpdated();
  * @param plugin    Plugin Handle (INVALID_HANDLE uses the calling plugin).
  * @noreturn
  */
-stock void ReloadPlugin(Handle plugin = INVALID_HANDLE) {
+stock void ReloadPlugin(Handle plugin = null) {
     char filename[64];
     GetPluginFilename(plugin, filename, sizeof(filename));
     ServerCommand("sm plugins reload %s", filename);
 }
 
-
-public SharedPlugin __pl_updater =  {
+public
+SharedPlugin __pl_updater = {
     name = "updater",
     file = "updater.smx",
 #if defined REQUIRE_PLUGIN
@@ -86,7 +86,8 @@ public SharedPlugin __pl_updater =  {
 };
 
 #if !defined REQUIRE_PLUGIN
-public void __pl_updater_SetNTVOptional() {
+public
+void __pl_updater_SetNTVOptional() {
     MarkNativeAsOptional("Updater_AddPlugin");
     MarkNativeAsOptional("Updater_RemovePlugin");
     MarkNativeAsOptional("Updater_ForceUpdate");

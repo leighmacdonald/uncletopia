@@ -254,8 +254,8 @@
 			}
 
 			"CTFFlameThrower::DeflectEntity" {
-				"linux" "427"
-				"windows" "420"
+				"linux" "428"
+				"windows" "421"
 			}
 
 			"CTFWeaponBase::SecondaryAttack" {
@@ -273,7 +273,7 @@
 			// is called from CCurrencyPack::Spawn (contains string "mvm_cash_embers_red")
 			"CBaseEntity::SetCollisionBounds" {
 				"linux" "@_ZN11CBaseEntity18SetCollisionBoundsERK6VectorS2_"
-				"windows" "\x55\x8B\xEC\x81\xC1\x5C\x01\x00\x00"
+				"windows" "\x55\x8B\xEC\x83\xEC\x28\x53\x8B\x5D\x08\x56"
 			}
 
 			"CEconItemSchema::GetAttributeDefinition" {

@@ -4,12 +4,6 @@ static Handle g_call_CBaseEntity_SetCollisionBounds;
 static Handle g_detour_CTFWeaponBaseGun_FirePipeBomb;
 
 void OverridePipeSize_Setup(Handle game_config) {
-    if (GetOs(game_config) == Windows) {
-        CreateConVar("sm_override_pipe_size", "0", "NOT SUPPORTED ON WINDOWS", FCVAR_NOTIFY,
-                     true, 0.0, true, 0.0);
-        return;
-    }
-
     StartPrepSDKCall(SDKCall_Entity);
 
     if (!PrepSDKCall_SetFromConf(game_config, SDKConf_Signature,
