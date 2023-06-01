@@ -19,7 +19,7 @@
 - name: gbans-service
   docker_container:
     name: gbans-service
-    image: leighmacdonald/gbans:latest
+    image: ghcr.io/leighmacdonald/gbans:latest
     restart: true
     recreate: true
     pull: true
