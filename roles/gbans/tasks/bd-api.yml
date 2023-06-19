@@ -20,7 +20,7 @@
 - name: Create bdapi-postgres container
   docker_container:
     name: bdapi-postgres
-    image: postgis/postgis:15-3.3
+    image: postgres:15-bullseye
     restart: true
     recreate: true
     pull: true
