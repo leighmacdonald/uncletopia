@@ -1,9 +1,6 @@
 {
-        cert_issuer zerossl {{ zerossl_key }}
-        servers {
-                metrics
-        }
-        admin :2019
+    acme_ca https://acme.zerossl.com/v2/DV90
+    email {{ acme_email }}
 }
 
 {% for host in caddy.hosts %}
