@@ -1,5 +1,45 @@
 ---
 
+- name: Generate /etc/bdapi.yml
+  become: true
+  ansible.builtin.template:
+    src: bdapi.yml.j2
+    dest: /etc/bdapi.yml
+    mode: 0775
+
+- name: bdapi_cache_data volume
+  docker_volume:
+    name: bdapi_cache_data
+    state: present
+
+- name: Create bdapi_postgres_data volume
+  docker_volume:
+    name: bdapi_db
+    state: present
+
+- name: Create bdapi-postgres container
+  docker_container:
+    name: bdapi-postgres
+    image: postgis/postgis:15-3.3
+    restart: true
+    recreate: true
+    pull: true
+    purge_networks: true
+    restart_policy: unless-stopped
+    volumes:
+      - bdapi_db:/var/lib/postgresql/data
+    networks:
+      - name: caddy_net
+    env:
+      POSTGRES_DB: bdapi
+      POSTGRES_PASSWORD: bdapi
+      POSTGRES_USER: bdapi
+    ports:
+      - 127.0.0.1:5445:5432
+    labels:
+      logging: "promtail"
+      logging_jobname: "containerlogs"
+
 - name: bd-api-service
   docker_container:
     name: bd-api-service
@@ -9,22 +49,14 @@
     pull: true
     restart_policy: always
     state: started
-    env:
-      STEAM_API_KEY: "{{ steam_key }}"
+    networks:
+      - name: caddy_net
+    volumes:
+      - bdapi_cache_data:/app/.cache
+      - /etc/bdapi.yml:/app/bdapi.yml
     ports:
       - 127.0.0.1:8888:8888
     labels:
       logging: "promtail"
       logging_jobname: "containerlogs"
 
-- name: Join caddy network [bd-api]
-  community.docker.docker_network:
-    name: caddy_net
-    connected:
-      - bd-api-service
-    appends: true
-
-- name: Reload networks [bd-api]
-  docker_container:
-    name: bd-api-service
-    restart: true
