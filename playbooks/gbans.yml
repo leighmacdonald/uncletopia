@@ -1,4 +1,5 @@
 ---
 - hosts: metrics
   roles:
+    - caddy
     - gbans

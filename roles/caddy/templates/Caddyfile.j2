@@ -1,7 +1,14 @@
 {
-    acme_ca https://acme.zerossl.com/v2/DV90
-    email {{ acme_email }}
+        acme_ca https://acme.zerossl.com/v2/DV90
+        email {{ acme_email }}
 }
+{% for name, value in tls_configs.items() %}
+({{ name }}) {
+        tls {
+                dns cloudflare {{ value }}
+        }
+}
+{% endfor %}
 
 {% for host in caddy.hosts %}
 {{ host }} {
@@ -9,12 +16,11 @@
         reverse_proxy /* {{ caddy.hosts[host].address }} {
                 header_up Host {host}
                 header_up X-Real-IP {remote_host}
-                header_up X-Forwarded-For {remote_host}
-                header_up X-Forwarded-Proto {scheme}
         }
 {% else %}
         reverse_proxy /* {{ caddy.hosts[host].address }}
 {% endif %}
+        import {{ caddy.hosts[host].tls_name }}
 }
 {% endfor %}
 
@@ -22,5 +28,6 @@
 {{ host }} {
         root * {{ caddy.static[host].root }}
         file_server browse
+        import {{ caddy.static[host].tls_name }}
 }
 {% endfor %}
