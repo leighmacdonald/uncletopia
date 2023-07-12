@@ -1,90 +1,82 @@
 general:
-  site_name: "{{ site_name | default("gbans") }}"
-  steam_key: {{ steam_key }}
-  owner: {{ gbans_web.owner }}
-  # Run mode for the HTTP service
-  # Should normally be "release"
-  mode: "release" # release, debug, test
-  server_status_update_freq: {{ gbans_web.update_freq }}
-  master_server_status_update_freq: 15s
-  banned_steam_group_ids: [ {{ gbans_web.banned_steam_group_ids|join(" , ") }} ]
-  external_url: {{ gbans_host }}
-  warning_limit: 2
+site_name: "{{ site_name | default("gbans") }}"
+steam_key: {{ steam_key }}
+owner: {{ gbans_web.owner }}
+# Run mode for the HTTP service
+# Should normally be "release"
+mode: "release" # release, debug, test
+server_status_update_freq: {{ gbans_web.update_freq }}
+master_server_status_update_freq: 15s
+banned_steam_group_ids: [ {{ gbans_web.banned_steam_group_ids|join(" , ") }} ]
+external_url: {{ gbans_host }}
+warning_limit: 2
 
 http:
-  # Listen on this ip address
-  # 0.0.0.0 = Any
-  host: 0.0.0.0
-  # Listen on this port
-  port: {{ gbans_web.port }}
-  static_path: ./dist/
-  client_timeout: 20s
-  # Encryption key for cookies
-  cookie_key: {{ gbans_web.cookie_key }}
-  cors_origins:
-    - "https://uncletopia.com"
-    - "https://gbans.uncletopia.com"
+# Listen on this ip address
+# 0.0.0.0 = Any
+host: 0.0.0.0
+# Listen on this port
+port: {{ gbans_web.port }}
+static_path: ./dist/
+client_timeout: 20s
+# Encryption key for cookies
+cookie_key: {{ gbans_web.cookie_key }}
+cors_origins:
+- "https://uncletopia.com"
+- "https://gbans.uncletopia.com"
 
 database:
-  #  to your database
-  dsn: {{ gbans_web.dsn }}
+#  to your database
+dsn: {{ gbans_web.dsn }}
 
 word_filter:
-  enabled: true
-  ping_discord: true
+enabled: true
+ping_discord: true
 
 discord:
-  # Enable optional discord integration
-  # https://discord.com/api/oauth2/authorize?client_id={{ gbans_web.discord.app_id }}&permissions=0&scope=bot%20applications.commands
-  enabled: true
-  app_id: {{ gbans_web.discord.app_id }}
-  guild_id: {{ gbans_web.discord.guild_id }}
-  link_id: {{ gbans_web.discord.link_id }}
-  # Your discord bot token
-  # See: https://discord.com/developers/applications
-  token: {{ gbans_web.discord.token }}
-  mod_role_ids:
-{% for rid in gbans_web.discord.roles %}
-    - {{ rid }}
-{% endfor %}
-  # People in these channels automatically have moderator privilege
-  # To find these, Right click the channel -> copy id
-  mod_channel_ids:
-{% for cid in gbans_web.discord.mod_channel_ids %}
-    - {{ cid }}
-{% endfor %}
-  log_channel_id: {{ gbans_web.discord.log_channel_id }}
-  public_log_channel_enable: {{ gbans_web.discord.public_log_enabled }}
-  public_log_channel_id: {{ gbans_web.discord.public_log_channel_id }}
+# Enable optional discord integration
+# https://discord.com/api/oauth2/authorize?client_id={{ gbans_web.discord.app_id }}&permissions=0&scope=bot%20applications.commands
+enabled: true
+app_id: {{ gbans_web.discord.app_id }}
+guild_id: {{ gbans_web.discord.guild_id }}
+link_id: {{ gbans_web.discord.link_id }}
+# Your discord bot token
+# See: https://discord.com/developers/applications
+token: {{ gbans_web.discord.token }}
+log_channel_id: {{ gbans_web.discord.log_channel_id }}
+public_log_channel_enable: {{ gbans_web.discord.public_log_enabled }}
+public_log_channel_id: {{ gbans_web.discord.public_log_channel_id }}
+mod_ping_role_id:  {{ gbans_web.discord.mod_ping_role_id }}
+unregister_on_start: false
 
 
 logging:
-  # Set the debug log level
-  level: debug
-  # Force console colours when it cant guess. This is mostly useful on windows
-  force_colours: false
-  # Force disable any colouring
-  disable_colours: false
-  # Show the function + line number where the log message was created
-  report_caller: false
-  # Show full timestamps in the logs
-  full_timestamp: false
-  srcds_log_addr: "{{ gbans_web.logging.srcds_log_addr}}"
-  srcds_log_external_host: "{{ gbans_web.logging.srcds_log_external_host}}"
+# Set the debug log level
+level: debug
+# Force console colours when it cant guess. This is mostly useful on windows
+force_colours: false
+# Force disable any colouring
+disable_colours: false
+# Show the function + line number where the log message was created
+report_caller: false
+# Show full timestamps in the logs
+full_timestamp: false
+srcds_log_addr: "{{ gbans_web.logging.srcds_log_addr}}"
+srcds_log_external_host: "{{ gbans_web.logging.srcds_log_external_host}}"
 
 network_bans:
-  enabled: {{ gbans_web.network_bans_enabled }}
-  max_age: 1d
-  cache_path: .cache
-  ip2location:
-    enabled: {{ gbans_web.ip2location.enabled }}
-    token: {{ gbans_web.ip2location.api_key }}
-    asn_enabled: true
-    ip_enabled: true
-    proxy_enabled: true
-  sources:
+enabled: {{ gbans_web.network_bans_enabled }}
+max_age: 1d
+cache_path: .cache
+ip2location:
+enabled: {{ gbans_web.ip2location.enabled }}
+token: {{ gbans_web.ip2location.api_key }}
+asn_enabled: true
+ip_enabled: true
+proxy_enabled: true
+sources:
 {% for r in gbans_web.network_bans_list %}
     - name: {{ r.name }}
-      url: {{ r.url }}
-      type: {{ r.type }}
+    url: {{ r.url }}
+    type: {{ r.type }}
 {% endfor %}
