@@ -52,17 +52,11 @@
         state: directory
         mode: '0755'
 
-    - name: dd installed
-      ansible.builtin.stat:
-        path: ~/dd/DepotDownloader.dll
-      register: dd_exists
-
     - name: get dd
       ansible.builtin.unarchive:
         remote_src: true
-        src: "https://github.com/SteamRE/DepotDownloader/releases/download/DepotDownloader_2.4.7/depotdownloader-2.4.7.zip"
+        src: "https://github.com/SteamRE/DepotDownloader/releases/download/DepotDownloader_2.5.0/depotdownloader-2.5.0.zip"
         dest: ~/dd
-      when: not dd_exists.stat.exists
 
     - name: Create rcon directory if it does not exist
       ansible.builtin.file:
