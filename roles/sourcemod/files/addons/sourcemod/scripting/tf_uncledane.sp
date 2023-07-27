@@ -15,7 +15,7 @@
 /** Internal game index of the bots team */
 #define PVE_TEAM_BOTS_NAME 		"red"
 /** Maximum amount of players that can be on the server in TF2 */
-#define TF_MAXPLAYERS 			32
+#define TF_MAXPLAYERS 			64
 
 #define GOLDEN_PAN_DEFID 		1071 
 #define GOLDEN_PAN_CHANCE 		1
