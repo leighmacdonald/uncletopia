@@ -90,7 +90,7 @@ public OnPluginStart()
 	// Create plugin ConVars
 	CreateConVar("danepve_version", PLUGIN_VERSION, "[TF2] Uncle Dane PVE Version", FCVAR_DONTRECORD);
 	sm_danepve_allow_respawnroom_build = CreateConVar("sm_danepve_allow_respawnroom_build", "1", "Can humans build in respawn rooms?");
-	sm_danepve_max_playing_humans = CreateConVar("sm_danepve_max_playing_humans", "12");
+	sm_danepve_max_playing_humans = CreateConVar("sm_danepve_max_playing_humans", "16");
 	sm_danepve_max_connected_humans = CreateConVar("sm_danepve_max_connected_humans", "16");
 	sm_danepve_bot_sapper_insta_remove = CreateConVar("sm_danepve_bot_sapper_insta_remove", "1");
 	sm_danepve_clear_bots_building_gibs = CreateConVar("sm_danepve_clear_bots_building_gibs", "1");
@@ -136,7 +136,7 @@ public OnPluginStart()
 
 	int offset = GameConfGetOffset(hConf, "CTFGameRules::HandleSwitchTeams");
 	gHook_HandleSwitchTeams = DHookCreate(offset, HookType_GameRules, ReturnType_Void, ThisPointer_Ignore, CTFGameRules_HandleSwitchTeams);
-	
+
 	gHook_CreateAmmoPack = new DynamicDetour(Address_Null, CallConv_THISCALL, ReturnType_CBaseEntity, ThisPointer_CBaseEntity);
 	gHook_CreateAmmoPack.SetFromConf(hConf, SDKConf_Signature, "CBaseObject::CreateAmmoPack");
 	gHook_CreateAmmoPack.AddParam(HookParamType_CharPtr);
