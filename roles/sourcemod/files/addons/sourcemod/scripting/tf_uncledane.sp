@@ -15,7 +15,7 @@
 /** Internal game index of the bots team */
 #define PVE_TEAM_BOTS_NAME 		"red"
 /** Maximum amount of players that can be on the server in TF2 */
-#define TF_MAXPLAYERS 			64
+#define TF_MAXPLAYERS 			101
 
 #define GOLDEN_PAN_DEFID 		1071 
 #define GOLDEN_PAN_CHANCE 		1
@@ -87,8 +87,8 @@ public OnPluginStart()
 	// Create plugin ConVars
 	CreateConVar("danepve_version", PLUGIN_VERSION, "[TF2] Uncle Dane PVE Version", FCVAR_DONTRECORD);
 	sm_danepve_allow_respawnroom_build = CreateConVar("sm_danepve_allow_respawnroom_build", "1", "Can humans build in respawn rooms?");
-	sm_danepve_max_playing_humans = CreateConVar("sm_danepve_max_playing_humans", "12");
-	sm_danepve_max_connected_humans = CreateConVar("sm_danepve_max_connected_humans", "12");
+	sm_danepve_max_playing_humans = CreateConVar("sm_danepve_max_playing_humans", "16");
+	sm_danepve_max_connected_humans = CreateConVar("sm_danepve_max_connected_humans", "16");
 	sm_danepve_bot_sapper_insta_remove = CreateConVar("sm_danepve_bot_sapper_insta_remove", "1");
 	sm_danepve_respawn_bots_on_round_end = CreateConVar("sm_danepve_respawn_bots_on_round_end", "0");
 	RegAdminCmd("sm_danepve_reload", cReload, ADMFLAG_CHANGEMAP, "Reloads Uncle Dane PVE config.");
