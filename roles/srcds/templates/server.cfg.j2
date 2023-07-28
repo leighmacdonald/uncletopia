@@ -1,12 +1,12 @@
 log on
 mp_logdetail "3"
 
-sv_minrate 80000
-sv_maxrate 0
-sv_maxupdaterate 66
-sv_minupdaterate 30
-sv_maxcmdrate 66
-sv_mincmdrate 30
+sv_minrate {{ item.sv_minrate|default(80000) }}
+sv_maxrate {{ item.sv_maxrate|default(0) }}
+sv_maxupdaterate {{ item.sv_maxupdaterate|default(66) }}
+sv_minupdaterate {{ item.sv_minupdaterate|default(30) }}
+sv_maxcmdrate {{ item.sv_maxcmdrate|default(66) }}
+sv_mincmdrate {{ item.sv_mincmdrate|default(30) }}
 
 sv_client_cmdrate_difference "0"
 net_splitpacket_maxrate	"100000"
@@ -201,7 +201,8 @@ mp_match_end_at_timelimit {% if item.rotation|default("all") == "stopwatch" %}1{
 sm_cvar gb_rules_round_time {% if item.rotation|default("all") == "stopwatch" %}300{% else %}-1{% endif %}
 
 {% if item.pve_mode|default(false) %}
-sm_cvar sm_danepve_respawn_bots_on_round_end 1
+sm_cvar sm_danepve_respawn_bots_on_round_end {% if item.srcds_max_players|default(33) > 33 %}1{% else %}1{% endif %}
+sm_cvar sm_danepve_max_playing_humans {% if item.srcds_max_players|default(33) > 33 %}24{% else %}16{% endif %}
 {% endif %}
 {% for k, v in sm_cvars.items() %}
 sm_cvar {{ k }} "{{ v }}"
