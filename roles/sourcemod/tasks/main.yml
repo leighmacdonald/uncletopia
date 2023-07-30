@@ -1,4 +1,9 @@
 ---
+- name: Create ~/build_sourcemod/ directory
+  ansible.builtin.file:
+    path: ~/build_sourcemod/
+    state: absent
+    mode: "0775"
 
 - name: Create ~/build_sourcemod/ directory
   ansible.builtin.file:
