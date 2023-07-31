@@ -1,4 +1,17 @@
 ---
+- name: Clean srcds build directory
+  ansible.builtin.file:
+    path: ~/build_srcds
+    state: absent
+
+- name: Clean srcds instance build directory
+  ansible.builtin.file:
+    path: "~/build_srcds/srcds-{{ item.server_name_short }}/"
+    state: absent
+  loop: "{{ services }}"
+  loop_control:
+    index_var: loop0
+
 - name: Create build directory
   ansible.builtin.file:
     path: ~/build_srcds
