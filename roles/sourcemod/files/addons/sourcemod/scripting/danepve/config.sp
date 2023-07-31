@@ -1,3 +1,5 @@
+#define CONFIG_GIBS_COOLDOWN 10.0
+
 //-------------------------------------------------------//
 // CONFIG
 //-------------------------------------------------------//
@@ -53,6 +55,9 @@ public Config_Load()
 	FindConVar("tf_bot_quota")				.SetInt(kv.GetNum("Count"));
 	FindConVar("mp_disable_respawn_times")	.SetBool(true);
 	FindConVar("mp_teams_unbalance_limit")	.SetInt(0);
+
+	PrintToChatAll("[OTU] Config loaded. Disabling bot gibs for %.2f seconds.", CONFIG_GIBS_COOLDOWN);
+	g_flForceClearGibsUntil = GetGameTime() + CONFIG_GIBS_COOLDOWN;
 }
 
 /** Reload the bot names that will be on the bot team. */

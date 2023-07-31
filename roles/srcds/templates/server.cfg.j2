@@ -208,6 +208,8 @@ sm_cvar sm_danepve_max_playing_humans {% if item.human_count|default(33) > 33 %}
 
 sm_cvar sm_danepve_max_connected_humans {% if item.human_count|default(33) > 33 %}24{% else %}16{% endif %}
 
+sm_cvar sm_danepve_clear_bots_building_gibs 1
+
 {% endif %}
 {% for k, v in sm_cvars.items() %}
 sm_cvar {{ k }} "{{ v }}"

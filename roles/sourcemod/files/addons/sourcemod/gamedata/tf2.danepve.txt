@@ -16,6 +16,12 @@
 				"linux"			"@_ZN11CBaseObject21EstimateValidBuildPosEv"
 				"windows"		"\x55\x8B\xEC\x83\xEC\x2A\x56\x8B\xF1\x8B\x06\xFF\x90\x2A\x2A\x2A\x2A\x89\x45\xFC\x85\xC0"
 			}
+			"CBaseObject::CreateAmmoPack"
+			{
+				"library"		"server"
+				"linux"			"@_ZN11CBaseObject14CreateAmmoPackEPKci"
+				"windows"		"\x55\x8B\xEC\x83\xEC\x24\x56\x57\x8B\xF9\x8B\x87\x3C\x01\x00\x00"
+			}
 		}
 		
 		"Offsets"

@@ -8,7 +8,7 @@
 #include <tf_econ_data>
 #include <dhooks>
 
-#define PLUGIN_VERSION "0.6.2"
+#define PLUGIN_VERSION "0.7.0"
 
 /** Display name of the humans team */
 #define PVE_TEAM_HUMANS_NAME 	"blue"
@@ -48,8 +48,6 @@ ArrayList g_hPrimaryWeapons;
 ArrayList g_hSecondaryWeapons;
 ArrayList g_hMeleeWeapons;
 
-#include <danepve/config.sp>
-
 public Plugin myinfo = 
 {
 	name = "[TF2] Uncle Dane PVE",
@@ -62,6 +60,7 @@ public Plugin myinfo =
 // Plugin ConVars
 ConVar sm_danepve_bot_sapper_insta_remove;
 ConVar sm_danepve_respawn_bots_on_round_end;
+ConVar sm_danepve_clear_bots_building_gibs;
 ConVar sm_danepve_allow_respawnroom_build;
 ConVar sm_danepve_max_playing_humans;
 ConVar sm_danepve_max_connected_humans;
@@ -71,15 +70,19 @@ Handle g_hSdkEquipWearable;
 Handle gHook_PointIsWithin;
 Handle gHook_EstimateValidBuildPos;
 Handle gHook_HandleSwitchTeams;
+DynamicDetour gHook_CreateAmmoPack;
 
 // Offset cache
 int g_nOffset_CBaseEntity_m_iTeamNum;
 
 int g_iTeamRoundTimer;
 bool g_bIsRoundEnd = false;
+float g_flForceClearGibsUntil = 0.0;
 bool g_bIsRoundActive = false;
 float g_flRoundStartTime = 0.0;
 bool g_bLastDeathWasBot = false;
+
+#include <danepve/config.sp>
 
 public OnPluginStart()
 {
@@ -87,9 +90,10 @@ public OnPluginStart()
 	// Create plugin ConVars
 	CreateConVar("danepve_version", PLUGIN_VERSION, "[TF2] Uncle Dane PVE Version", FCVAR_DONTRECORD);
 	sm_danepve_allow_respawnroom_build = CreateConVar("sm_danepve_allow_respawnroom_build", "1", "Can humans build in respawn rooms?");
-	sm_danepve_max_playing_humans = CreateConVar("sm_danepve_max_playing_humans", "16");
+	sm_danepve_max_playing_humans = CreateConVar("sm_danepve_max_playing_humans", "12");
 	sm_danepve_max_connected_humans = CreateConVar("sm_danepve_max_connected_humans", "16");
 	sm_danepve_bot_sapper_insta_remove = CreateConVar("sm_danepve_bot_sapper_insta_remove", "1");
+	sm_danepve_clear_bots_building_gibs = CreateConVar("sm_danepve_clear_bots_building_gibs", "1");
 	sm_danepve_respawn_bots_on_round_end = CreateConVar("sm_danepve_respawn_bots_on_round_end", "0");
 	RegAdminCmd("sm_danepve_reload", cReload, ADMFLAG_CHANGEMAP, "Reloads Uncle Dane PVE config.");
 	RegConsoleCmd("sm_becomedanebot", cBecomeUncleDane);
@@ -132,6 +136,12 @@ public OnPluginStart()
 
 	int offset = GameConfGetOffset(hConf, "CTFGameRules::HandleSwitchTeams");
 	gHook_HandleSwitchTeams = DHookCreate(offset, HookType_GameRules, ReturnType_Void, ThisPointer_Ignore, CTFGameRules_HandleSwitchTeams);
+	
+	gHook_CreateAmmoPack = new DynamicDetour(Address_Null, CallConv_THISCALL, ReturnType_CBaseEntity, ThisPointer_CBaseEntity);
+	gHook_CreateAmmoPack.SetFromConf(hConf, SDKConf_Signature, "CBaseObject::CreateAmmoPack");
+	gHook_CreateAmmoPack.AddParam(HookParamType_CharPtr);
+	gHook_CreateAmmoPack.AddParam(HookParamType_Int);
+	gHook_CreateAmmoPack.Enable(Hook_Pre, Detour_CreateAmmoPack);
 
 	//-----------------------------------------------------//
 	// Setup DHook Detours
@@ -169,7 +179,7 @@ public bool OnClientConnect(int client, char[] rejectMsg, int maxlen)
 
 public OnEntityCreated(int entity, const char[] szClassname)
 {
-	if(g_bIsRoundEnd && g_bLastDeathWasBot)
+	if((g_bIsRoundEnd && g_bLastDeathWasBot) || g_flForceClearGibsUntil > GetGameTime())
 	{
 		// Remove these entities on round end / humiliation.
 		if(	StrEqual(szClassname, "tf_ammo_pack") || 
@@ -587,6 +597,22 @@ public Action OnSapperTakeDamage(int victim, int& attacker, int& inflictor, floa
 //-------------------------------------------------------//
 
 int g_bAllowNextHumanTeamPointCheck = false;
+
+// CBaseObject::CreateAmmoPack
+MRESReturn Detour_CreateAmmoPack(int pThis, DHookReturn hReturn)
+{
+	if(sm_danepve_clear_bots_building_gibs.BoolValue)
+	{
+		// Clear gibs from bots buildings.
+		if(GetEntProp(pThis, Prop_Send, "m_iTeamNum") == view_as<int>(TFTeam_Bots))
+		{
+			hReturn.Value = -1;
+			return MRES_Supercede;
+		}
+	}
+
+	return MRES_Ignored;
+}
 
 // CBaseObject::EstimateValidBuildPos
 MRESReturn Detour_EstimateValidBuildPos(Address pThis, Handle hReturn, Handle hParams)
