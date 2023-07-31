@@ -47,8 +47,7 @@ discord:
   public_log_channel_enable: {{ gbans_web.discord.public_log_enabled }}
   public_log_channel_id: {{ gbans_web.discord.public_log_channel_id }}
   mod_ping_role_id:  {{ gbans_web.discord.mod_ping_role_id }}
-  unregister_on_start: true
-
+  unregister_on_start: {{ gbans_web.discord.unregister_on_start|default(false) }}
 
 logging:
   # Set the debug log level
