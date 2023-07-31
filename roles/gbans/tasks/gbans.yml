@@ -43,6 +43,7 @@
       GBANS_GENERAL_STEAM_KEY: "{{ steam_key }}"
     ports:
       - 127.0.0.1:6006:6006
+      - 27115:27115/udp
 
 - name: Join gbans network
   community.docker.docker_network:
