@@ -95,8 +95,8 @@ public OnPluginStart()
 {
 	CreateConVar("votedelay_changelevel_version", VERSION, "Vote Delay: Changelevel version", FCVAR_NOTIFY|FCVAR_DONTRECORD|FCVAR_SPONLY);
 	g_Cvar_Enabled = CreateConVar("votedelay_changelevel_enable", "1", "Enable Vote Delay: Changelevel?", FCVAR_NOTIFY|FCVAR_DONTRECORD, true, 0.0, true, 1.0);
-	g_Cvar_FullRounds = CreateConVar("votedelay_changelevel_fullrounds", "1", "Full rounds only? Only applies to TF2.", _, true, 0.0, true, 1.0);
-	g_Cvar_Rounds = CreateConVar("votedelay_changelevel_rounds", "4", "During what round should votes become available?", _, true, 0.0, true, 10.0);
+	g_Cvar_FullRounds = CreateConVar("votedelay_changelevel_fullrounds", "1", "Full rounds only? Only applies to TF2.", FCVAR_NONE, true, 0.0, true, 1.0);
+	g_Cvar_Rounds = CreateConVar("votedelay_changelevel_rounds", "4", "During what round should votes become available?", FCVAR_NONE, true, 0.0, true, 10.0);
 	
 	g_bUserBuf = (GetUserMessageType() == UM_Protobuf);
 	

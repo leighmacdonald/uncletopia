@@ -31,13 +31,13 @@
  */
 
 #pragma semicolon 1
-#pragma tabsize 4
-#pragma newdecls required
 
 #include <sourcemod>
 #include <sdktools>
 
 #define LOGFILE "vote_diagnostics.txt"
+
+#pragma newdecls required
 
 EngineVersion g_EngineVersion = Engine_Unknown;
 

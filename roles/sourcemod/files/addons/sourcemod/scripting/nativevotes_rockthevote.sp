@@ -367,7 +367,7 @@ void StartRTV()
 			
 			g_RTVAllowed = false;
 		}
-		return;
+		return;	
 	}
 	
 	if (CanMapChooserStartVote())
