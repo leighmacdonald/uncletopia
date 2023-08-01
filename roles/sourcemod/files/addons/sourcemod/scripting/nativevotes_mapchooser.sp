@@ -289,7 +289,7 @@ public void OnConfigsExecuted()
 	SetupTimeleftTimer();
 	
 	g_TotalRounds = 0;
-	
+
 	g_MapVoteCompleted = false;
 	
 	g_NominateList.Clear();
@@ -470,7 +470,7 @@ public void Event_TeamPlayWinPanel(Event event, const char[] name, bool dontBroa
 		
 		CheckMaxRounds(g_TotalRounds);
 		CheckTimeLeft();
-		
+
 		switch(event.GetInt("winning_team"))
 		{
 			case 3:
