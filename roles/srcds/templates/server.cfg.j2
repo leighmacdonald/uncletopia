@@ -189,9 +189,6 @@ net_disconnect_reason 1
 tf_fall_damage_disablespread 1
 net_chan_limit_msec 160
 
-// FIXME
-sm_cvar sm_mapvote_curate {% if item.rotation|default("all") == "all" %}1{% else %}0{% endif %}
-
 // Disable glow for the more "serious" servers running stopwatch
 tf_spawn_glows_duration {% if item.rotation|default("all") == "stopwatch" %}0{% else %}10{% endif %}
 
