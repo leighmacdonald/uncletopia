@@ -1,10 +1,10 @@
 .PHONY: all pre system deploy
-
-VAULT_PASS_PATH := ~/.vault_pass.txt
-PROD_OPTS := -l production
-DEVELOPMENT_OPTS := -l development
-STAGING_OPTS := --limit test-1.ca.uncletopia.com,test-2.ca.uncletopia.com
+HOSTS := ./hosts.yml
+USER := tf2server
 PLAYBOOK_PATH := ./playbooks
+PASSWORD_FILE := ./.vault_pw
+
+COMMON_ARGS := -i $(HOSTS) -u $(USER) $(PLAYBOOK_PATH)
 
 all: site
 
@@ -18,13 +18,13 @@ deps:
 	@ansible-galaxy collection install -r collections/requirements.yml
 
 adduser:
-	@ansible-playbook $(PROD_OPTS) $(PLAYBOOK_PATH)/adduser.yml -u root
+	@ansible-playbook $(COMMON_ARGS)/adduser.yml -u root
 
 pre:
-	@ansible-playbook $(PROD_OPTS) $(PLAYBOOK_PATH)/pre.yml
+	@ansible-playbook $(COMMON_ARGS)/pre.yml
 
 sourcemod:
-	@ansible-playbook $(PROD_OPTS) $(PLAYBOOK_PATH)/sourcemod.yml
+	@ansible-playbook $(COMMON_ARGS)/sourcemod.yml
 
 test: srcds
 	docker stop srcds-localhost-1 || true # dont bail if a container doesnt already exist
@@ -42,29 +42,29 @@ shell:
 	@docker exec -it srcds-test-1 bash
 
 web:
-	@ansible-playbook $(PROD_OPTS) $(PLAYBOOK_PATH)/web.yml --limit metrics
+	@ansible-playbook $(COMMON_ARGS)/web.yml --limit metrics
 
 srcdsup:
-	@ansible-playbook $(PROD_OPTS) $(PLAYBOOK_PATH)/srcdsup.yml
+	@ansible-playbook$(COMMON_ARGS)/srcdsup.yml
 
 vpn:
 	# This *does not work* when using --limit
-	@ansible-playbook $(PROD_OPTS) $(PLAYBOOK_PATH)/vpn.yml
+	@ansible-playbook /vpn.yml
 
 game_config:
-	@ansible-playbook $(PROD_OPTS) $(PLAYBOOK_PATH)/deploy.yml --tags game_config
+	@ansible-playbook $(COMMON_ARGS)/deploy.yml --tags game_config
 
 system:
-	@ansible-playbook $(PROD_OPTS) $(PLAYBOOK_PATH)/system.yml
+	@ansible-playbook $(COMMON_ARGS)/system.yml
 
 wg:
-	@ansible-playbook $(PROD_OPTS) $(PLAYBOOK_PATH)/wg.yml
+	@ansible-playbook $(COMMON_ARGS)/wg.yml
 
 site:
-	ansible-playbook $(PROD_OPTS) site.yml
+	ansible-playbook $(COMMON_ARGS)/site.yml
 
 ping:
 	@ansible tf2 -m ping $(ARGS)
 
 restart:
-	@ansible all -m reboot -a reboot_timeout=3600 -u tf2server -i hosts.yml -b
+	@ansible all -m reboot -a reboot_timeout=3600 -u $(USER) -i hosts.yml -b

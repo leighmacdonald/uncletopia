@@ -1,5 +1,5 @@
 ---
-- hosts: metrics
+- hosts: web
   roles:
     - caddy
     - metrics

@@ -1,34 +1,90 @@
 ---
-- name: Create ~/build_sourcemod/ directory
+- name: Create sourcemod directory
   ansible.builtin.file:
-    path: ~/build_sourcemod/
+    path: "{{ sourcemod_path }}"
     state: absent
     mode: "0775"
 
 - name: Create ~/build_sourcemod/ directory
   ansible.builtin.file:
-    path: ~/build_sourcemod/
+    path: "{{ sourcemod_path }}"
     state: directory
     mode: "0775"
 
-- name: Download latest metamod
+#  https://sm.alliedmods.net/smdrop/1.11/sourcemod-latest-linux
+
+- name: Download latest metamod version info
   ansible.builtin.unarchive:
-    src: https://mms.alliedmods.net/mmsdrop/1.11/mmsource-1.11.0-git1148-linux.tar.gz
-    dest: ~/build_sourcemod/
+    src: "https://mms.alliedmods.net/mmsdrop/1.11/mmsource-latest-linux"
+    dest: "{{ sourcemod_path }}/metamod-latest-linux"
     remote_src: true
+
+- name: Load the latest metamod version
+  ansible.builtin.slurp:
+    src: "{{ sourcemod_path }}/metamod-latest-linux"
+  register: latest_metamod_version
+
+- name: Check for metamod installed version
+  ansible.builtin.stat:
+    path: "{{ sourcemod_path }}/metamod-installed-version"
+  register: miv
+
+- name: Load the installed metamod version
+  ansible.builtin.slurp:
+    src: "{{ sourcemod_path }}/metamod-installed-version"
+  register: installed_metamod_version
+  when: miv.stat.islnk is defined
+
+- name: Compare metamod versions
+  set_fact:
+    should_install_metamod: installed_metamod_version is not defined or installed_metamod_version != latest_metamod_version
+
+- name: Download metamod
+  ansible.builtin.unarchive:
+    src: "https://mms.alliedmods.net/mmsdrop/1.11/{{ latest_sourcemod_version['content'] | b64decode }}"
+    dest: "{{ sourcemod_path }}/metamod-latest-linux"
+    remote_src: true
+  when: should_install_metamod
+
+- name: Save installed metamod version
+  ansible.builtin.copy:
+    content: "{{ latest_metamod_version['content'] | b64decode }}"
+    dest: "{{ sourcemod_path }}/metamod-installed-version"
+  when: should_install_metamod
 
 - name: Download latest sourcemod
   ansible.builtin.unarchive:
-    src: "{{ sm_download|default(\"https://sm.alliedmods.net/smdrop/1.11/sourcemod-1.11.0-git6936-linux.tar.gz\") }}"
-    dest: ~/build_sourcemod/
+    src: "https://sm.alliedmods.net/smdrop/{{ sourcemod_version }}/sourcemod-latest-linux"
+    dest: "{{ sourcemod_path }}/sourcemod-latest-linux"
     remote_src: true
 
-- name: Copy extensions & plugin sources
+- name: Load the latest sourcemod version
+  ansible.builtin.slurp:
+    src: "{{ sourcemod_path }}/sourcemod-latest-linux"
+  register: latest_sourcemod_version
+
+- name: Load the latest sourcemod version
+  ansible.builtin.slurp:
+    src: "{{ sourcemod_path }}/sourcemod-installed-version"
+  register: installed_sourcemod_version
+
+- name: Download sourcemod
+  ansible.builtin.unarchive:
+    src: "https://sm.alliedmods.net/smdrop/{{ sourcemod_version }}/{{ latest_sourcemod_version['content'] | b64decode }}"
+    dest: "{{ sourcemod_path }}/metamod-latest-linux"
+    remote_src: true
+
+- name: Save installed version
   ansible.builtin.copy:
+    content: "{{ latest_sourcemod_version['content'] | b64decode }}"
+    dest: "{{ sourcemod_path }}/sourcemod-installed-version"
+
+- name: Copy extensions & plugin sources
+  ansible.builtin.synchronize:
     src: "{{ role_path }}/files/"
-    dest: ~/build_sourcemod/
+    dest: "{{ sourcemod_path }}"
 
 - name: Build plugins
   ansible.builtin.command:
-    chdir: ~/build_sourcemod/addons/sourcemod/scripting
+    chdir: "{{ sourcemod_path }}/addons/sourcemod/scripting"
     cmd: bash build.sh
