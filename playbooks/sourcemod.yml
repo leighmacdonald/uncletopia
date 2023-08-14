@@ -2,8 +2,9 @@
 - name: Download & build sourcemod distribution
   hosts: tf2
   vars:
-    sourcemod_path: ~/build_sourcemod/
+    sourcemod_path: ~/build_sourcemod
     sourcemod_version: "1.11"
     metamod_version: "1.11"
+    clean: false
   roles:
     - sourcemod
