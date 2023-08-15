@@ -1,5 +1,10 @@
 ---
 - name: Build uncletopia srcds image
   hosts: tf2
+  vars:
+    dd_path: ~/dd
+    srcds_path: ~/build_srcds
+    sourcemod_path: ~/build_sourcemod
+    clean: false
   roles:
     - srcds

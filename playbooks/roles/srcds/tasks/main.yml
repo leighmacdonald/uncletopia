@@ -1,42 +1,45 @@
 ---
 - name: Clean srcds build directory
   ansible.builtin.file:
-    path: ~/build_srcds
+    path: "{{ srcds_path }}"
     state: absent
+  when: clean
 
 - name: Clean srcds instance build directory
   ansible.builtin.file:
-    path: "~/build_srcds/srcds-{{ item.server_name_short }}/"
+    path: "{{ srcds_path }}/srcds-{{ item.server_name_short }}/"
     state: absent
+  when: clean
   loop: "{{ services }}"
   loop_control:
     index_var: loop0
 
 - name: Create build directory
   ansible.builtin.file:
-    path: ~/build_srcds
+    path: "{{ srcds_path }}"
     state: directory
     mode: "0755"
 
 - name: Build srcds base output
   ansible.builtin.file:
-    path: ~/build_srcds/srcds-base
+    path: "{{ srcds_path }}/srcds-base"
     state: directory
     mode: "0755"
 
 - name: download tf2 base
-  ansible.builtin.command: dotnet ~/dd/DepotDownloader.dll -app 232250 -os linux -osarch 32 -max-downloads 8 -dir ~/build_srcds/srcds-base
+  ansible.builtin.command:
+    cmd: "dotnet {{ dd_path }}/DepotDownloader.dll -app 232250 -os linux -osarch 32 -max-downloads 8 -dir {{ srcds_path }}/srcds-base"
 
 - name: Generate /Dockerfile
   ansible.builtin.template:
     src: "Dockerfile_base.j2"
-    dest: ~/build_srcds/srcds-base/Dockerfile
+    dest: "{{ srcds_path }}/srcds-base/Dockerfile"
 
 - name: Build base tf2 image
   community.docker.docker_image:
     name: "leighmacdonald/uncletopia-srcds-base:latest"
     build:
-      path: "~/build_srcds/srcds-base"
+      path: "{{ srcds_path }}/srcds-base"
     source: build
     state: "present"
     force_source: true
@@ -48,7 +51,7 @@
 
 - name: Clean state
   ansible.builtin.file:
-    path: "~/build_srcds/srcds-{{ item.server_name_short }}/"
+    path: "{{ srcds_path }}/srcds-{{ item.server_name_short }}/"
     state: absent
   loop: "{{ services }}"
   loop_control:
@@ -56,7 +59,7 @@
 
 - name: Create srcds build dirs
   ansible.builtin.file:
-    path: "~/build_srcds/srcds-{{ item.server_name_short }}/"
+    path: "{{ srcds_path }}/srcds-{{ item.server_name_short }}/"
     state: directory
     owner: tf2server
     mode: 0755
@@ -70,8 +73,8 @@
 
 - name: Copy sourcemod distribution to /tf
   ansible.posix.synchronize:
-    src: /home/tf2server/build_sourcemod/
-    dest: /home/tf2server/build_srcds/srcds-{{ item.server_name_short }}/tf/
+    src: "{{ sourcemod_path }}"
+    dest: "{{ srcds_path }}/srcds-{{ item.server_name_short }}/tf/"
     recursive: true
   loop: "{{ services }}"
   # Perform the copy from the *remote* sourcemod build output
@@ -80,7 +83,7 @@
 - name: Copy navmeshes /tf/maps/
   ansible.builtin.copy:
     src: "{{ role_path }}/files/navmeshes/"
-    dest: /home/tf2server/build_srcds/srcds-{{ item.server_name_short }}/tf/maps/
+    dest: "{{ srcds_path }}/srcds-{{ item.server_name_short }}/tf/maps/"
   loop: "{{ services }}"
   # Perform the copy from the *remote* sourcemod build output
   #delegate_to: "{{ inventory_hostname }}"
@@ -88,7 +91,7 @@
 - name: /tf/mapcycle.txt
   ansible.builtin.template:
     src: mapcycle.txt.j2
-    dest: ~/build_srcds/srcds-{{ item.server_name_short }}/tf/mapcycle.txt
+    dest: "{{ srcds_path }}/srcds-{{ item.server_name_short }}/tf/mapcycle.txt"
     mode: 0755
   loop: "{{ services }}"
   loop_control:
@@ -97,7 +100,7 @@
 - name: /tf/addons/sourcemod/configs/maplists.cfg
   ansible.builtin.template:
     src: maplists.cfg.j2
-    dest: ~/build_srcds/srcds-{{ item.server_name_short }}/tf/addons/sourcemod/configs/maplists.cfg
+    dest: "{{ srcds_path }}/srcds-{{ item.server_name_short }}/tf/addons/sourcemod/configs/maplists.cfg"
     mode: 0755
   loop: "{{ services }}"
   loop_control:
@@ -106,7 +109,7 @@
 - name: /tf/cfg/autoexec.cfg
   ansible.builtin.template:
     src: autoexec.cfg.j2
-    dest: ~/build_srcds/srcds-{{ item.server_name_short }}/tf/cfg/autoexec.cfg
+    dest: "{{ srcds_path }}/srcds-{{ item.server_name_short }}/tf/cfg/autoexec.cfg"
     mode: 0755
   loop: "{{ services }}"
   loop_control:
@@ -115,7 +118,7 @@
 - name: /tf/cfg/server.cfg
   ansible.builtin.template:
     src: server.cfg.j2
-    dest: ~/build_srcds/srcds-{{ item.server_name_short }}/tf/cfg/server.cfg
+    dest: "{{ srcds_path }}/srcds-{{ item.server_name_short }}/tf/cfg/server.cfg"
     mode: 0755
   loop: "{{ services }}"
   loop_control:
@@ -124,7 +127,7 @@
 - name: /tf/cfg/motd.cfg
   ansible.builtin.template:
     src: motd.txt.j2
-    dest: ~/build_srcds/srcds-{{ item.server_name_short }}/tf/cfg/motd.txt
+    dest: "{{ srcds_path }}/srcds-{{ item.server_name_short }}/tf/cfg/motd.txt"
     mode: 0755
   loop: "{{ services }}"
   loop_control:
@@ -133,7 +136,7 @@
 - name: /tf/addons/sourcemod/configs/core.cfg
   ansible.builtin.template:
     src: core.cfg.j2
-    dest: ~/build_srcds/srcds-{{ item.server_name_short }}/tf/addons/sourcemod/configs/core.cfg
+    dest: "{{ srcds_path }}/srcds-{{ item.server_name_short }}/tf/addons/sourcemod/configs/core.cfg"
     mode: 0755
   loop: "{{ services }}"
   loop_control:
@@ -142,7 +145,7 @@
 - name: /tf/addons/sourcemod/configs/discord.cfg
   ansible.builtin.template:
     src: discord.cfg.j2
-    dest: ~/build_srcds/srcds-{{ item.server_name_short }}/tf/addons/sourcemod/configs/discord.cfg
+    dest: "{{ srcds_path }}/srcds-{{ item.server_name_short }}/tf/addons/sourcemod/configs/discord.cfg"
     mode: 0755
   loop: "{{ services }}"
   loop_control:
@@ -151,7 +154,7 @@
 - name: /tf/addons/sourcemod/configs/danepve.cfg
   ansible.builtin.template:
     src: danepve.cfg.j2
-    dest: ~/build_srcds/srcds-{{ item.server_name_short }}/tf/addons/sourcemod/configs/danepve.cfg
+    dest: "{{ srcds_path }}/srcds-{{ item.server_name_short }}/tf/addons/sourcemod/configs/danepve.cfg"
     mode: 0755
   loop: "{{ services }}"
   when: item.pve_mode|default(false) == true
@@ -161,7 +164,7 @@
 - name: /tf/cfg/sourcemod/gbans.cfg
   ansible.builtin.template:
     src: gbans.cfg.j2
-    dest: ~/build_srcds/srcds-{{ item.server_name_short }}/tf/cfg/sourcemod/gbans.cfg
+    dest: "{{ srcds_path }}/srcds-{{ item.server_name_short }}/tf/cfg/sourcemod/gbans.cfg"
     mode: 0755
   loop: "{{ services }}"
   loop_control:
@@ -170,7 +173,7 @@
 - name: /tf/cfg/sourcemod/basevotes.cfg
   ansible.builtin.template:
     src: basevotes.cfg.j2
-    dest: ~/build_srcds/srcds-{{ item.server_name_short }}/tf/cfg/sourcemod/basevotes.cfg
+    dest: "{{ srcds_path }}/srcds-{{ item.server_name_short }}/tf/cfg/sourcemod/basevotes.cfg"
     mode: 0755
   loop: "{{ services }}"
   loop_control:
@@ -179,7 +182,7 @@
 - name: /tf/cfg/sourcemod/funvotes.cfg
   ansible.builtin.template:
     src: funvotes.cfg.j2
-    dest: ~/build_srcds/srcds-{{ item.server_name_short }}/tf/cfg/sourcemod/funvotes.cfg
+    dest: "{{ srcds_path }}/srcds-{{ item.server_name_short }}/tf/cfg/sourcemod/funvotes.cfg"
     mode: 0755
   loop: "{{ services }}"
   loop_control:
@@ -188,7 +191,7 @@
 - name: /tf/cfg/sourcemod/mapchooser.cfg
   ansible.builtin.template:
     src: mapchooser.cfg.j2
-    dest: ~/build_srcds/srcds-{{ item.server_name_short }}/tf/cfg/sourcemod/mapchooser.cfg
+    dest: "{{ srcds_path }}/srcds-{{ item.server_name_short }}/tf/cfg/sourcemod/mapchooser.cfg"
     mode: 0755
   loop: "{{ services }}"
   loop_control:
@@ -197,7 +200,7 @@
 - name: /tf/cfg/sourcemod/nativevotes.cfg
   ansible.builtin.template:
     src: nativevotes.cfg.j2
-    dest: ~/build_srcds/srcds-{{ item.server_name_short }}/tf/cfg/sourcemod/nativevotes.cfg
+    dest: "{{ srcds_path }}/srcds-{{ item.server_name_short }}/tf/cfg/sourcemod/nativevotes.cfg"
     mode: 0755
   loop: "{{ services }}"
   loop_control:
@@ -206,7 +209,7 @@
 - name: /tf/cfg/sourcemod/sigsegv_convars.cfg
   ansible.builtin.template:
     src: sigsegv_convars.cfg.j2
-    dest: ~/build_srcds/srcds-{{ item.server_name_short }}/tf/cfg/sourcemod/sigsegv_convars.cfg
+    dest: "{{ srcds_path }}/srcds-{{ item.server_name_short }}/tf/cfg/sourcemod/sigsegv_convars.cfg"
     mode: 0755
   loop: "{{ services }}"
   loop_control:
@@ -215,7 +218,7 @@
 - name: /tf/cfg/sourcemod/randomcycle.cfg
   ansible.builtin.template:
     src: randomcycle.cfg.j2
-    dest: ~/build_srcds/srcds-{{ item.server_name_short }}/tf/cfg/sourcemod/randomcycle.cfg
+    dest: "{{ srcds_path }}/srcds-{{ item.server_name_short }}/tf/cfg/sourcemod/randomcycle.cfg"
     mode: 0755
   loop: "{{ services }}"
   loop_control:
@@ -224,7 +227,7 @@
 - name: /tf/cfg/sourcemod/rtv.cfg
   ansible.builtin.template:
     src: rtv.cfg.j2
-    dest: ~/build_srcds/srcds-{{ item.server_name_short }}/tf/cfg/sourcemod/rtv.cfg
+    dest: "{{ srcds_path }}/srcds-{{ item.server_name_short }}/tf/cfg/sourcemod/rtv.cfg"
     mode: 0755
   loop: "{{ services }}"
   loop_control:
@@ -233,7 +236,7 @@
 - name: /tf/cfg/sourcemod/sourcemod.cfg
   ansible.builtin.template:
     src: sourcemod.cfg.j2
-    dest: ~/build_srcds/srcds-{{ item.server_name_short }}/tf/cfg/sourcemod/sourcemod.cfg
+    dest: "{{ srcds_path }}/srcds-{{ item.server_name_short }}/tf/cfg/sourcemod/sourcemod.cfg"
     mode: 0755
   loop: "{{ services }}"
   loop_control:
@@ -242,7 +245,7 @@
 - name: /tf/cfg/sourcemod/stac.cfg
   ansible.builtin.template:
     src: stac.cfg.j2
-    dest: ~/build_srcds/srcds-{{ item.server_name_short }}/tf/cfg/sourcemod/stac.cfg
+    dest: "{{ srcds_path }}/srcds-{{ item.server_name_short }}/tf/cfg/sourcemod/stac.cfg"
     mode: 0755
   loop: "{{ services }}"
   loop_control:
@@ -251,7 +254,7 @@
 - name: /tf/cfg/sourcemod/networktools.cfg
   ansible.builtin.template:
     src: networktools.cfg.j2
-    dest: ~/build_srcds/srcds-{{ item.server_name_short }}/tf/cfg/sourcemod/networktools.cfg
+    dest: "{{ srcds_path }}/srcds-{{ item.server_name_short }}/tf/cfg/sourcemod/networktools.cfg"
     mode: 0755
   loop: "{{ services }}"
   loop_control:
@@ -260,7 +263,7 @@
 - name: /tf/cfg/sourcemod/discord_accelerator.cfg
   ansible.builtin.template:
     src: discord_accelerator.cfg.j2
-    dest: "~/build_srcds/srcds-{{ item.server_name_short }}/tf/cfg/sourcemod/discord_accelerator.cfg"
+    dest: "{{ srcds_path }}/srcds-{{ item.server_name_short }}/tf/cfg/sourcemod/discord_accelerator.cfg"
     mode: 0755
   loop: "{{ services }}"
   loop_control:
@@ -269,7 +272,7 @@
 - name: Generate /entry.sh
   ansible.builtin.template:
     src: "entry.sh.j2"
-    dest: "~/build_srcds/srcds-{{ item.server_name_short }}/entry.sh"
+    dest: "{{ srcds_path }}/srcds-{{ item.server_name_short }}/entry.sh"
     mode: 0775
   loop: "{{ services }}"
   loop_control:
@@ -278,7 +281,7 @@
 - name: Dockerfile
   ansible.builtin.template:
     src: "Dockerfile.j2"
-    dest: "~/build_srcds/srcds-{{ item.server_name_short }}/Dockerfile"
+    dest: "{{ srcds_path }}/srcds-{{ item.server_name_short }}/Dockerfile"
   loop: "{{ services }}"
   loop_control:
     index_var: loop0
@@ -288,7 +291,7 @@
     name: "leighmacdonald/uncletopia-srcds"
     tag: "{{ item.server_name_short }}-latest"
     build:
-      path: "~/build_srcds/srcds-{{ item.server_name_short }}/"
+      path: "{{ srcds_path }}/srcds-{{ item.server_name_short }}/"
     source: build
     state: "present"
     force_source: true
