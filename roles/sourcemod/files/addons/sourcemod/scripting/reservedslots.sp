@@ -91,7 +91,7 @@ public void OnPluginStart()
 	sm_reserve_type      = CreateConVar("sm_reserve_type", "0", "Method of reserving slots", 0, true, 0.0, true, 2.0);
 	sm_reserve_maxadmins = CreateConVar("sm_reserve_maxadmins", "1", "Maximum amount of admins to let in the server with reserve type 2", 0, true, 0.0);
 	sm_reserve_kicktype  = CreateConVar("sm_reserve_kicktype", "0", "How to select a client to kick (if appropriate)", 0, true, 0.0, true, 2.0);
-	sm_reserve_grace     = CreateConVar("sm_reserve_grace", 60, "How long (seconds) to reserve slots for players when changing maps", 0, true, 0.0, true, 120.0);
+	sm_reserve_grace     = CreateConVar("sm_reserve_grace", "60", "How long (seconds) to reserve slots for players when changing maps", 0, true, 0.0, true, 120.0);
 
 	sm_reserved_slots.AddChangeHook(SlotCountChanged);
 	sm_hide_slots.AddChangeHook(SlotHideChanged);
@@ -113,7 +113,7 @@ public void OnMapStart()
 		CreateTimer(sm_reserve_grace.FloatValue, ClearTemporarySlotReserve);
 }
 
-public void OnGameOver()
+public void OnGameOver(Event event, const char[] name, bool dontBroadcast)
 {
 	if (sm_reserve_grace.FloatValue > 0.0)
 		ReserveTemporarySlots();
@@ -361,7 +361,7 @@ bool IsTemporarilyReserved(int client)
 	if (g_previouslyConnectedUsers == null)
 		return false;
 
-	clientId = GetClientUserId(client);
+	int clientId = GetClientUserId(client);
 	return g_previouslyConnectedUsers.FindValue(clientId) != -1;
 }
 
@@ -370,16 +370,16 @@ void ReserveTemporarySlots()
 	if (sm_reserve_grace.FloatValue == 0.0)
 		return;
 
-	ClearTemporarySlotReserve();
+	ClearTemporarySlotReserve(null);
 
-	for (int i = 1; i <= GetMaxClients(); i++)
+	for (int i = 1; i <= MaxClients; i++)
 	{
-		if (IsClientIngame(i) && !IsFakeClient(i))
+		if (IsClientInGame(i) && !IsFakeClient(i))
 			g_previouslyConnectedUsers.Push(GetClientUserId(i));
 	}
 }
 
-public Action ClearTemporarySlotReserve()
+public Action ClearTemporarySlotReserve(Handle timer)
 {
 	if (g_previouslyConnectedUsers != null)
 	{
@@ -388,4 +388,6 @@ public Action ClearTemporarySlotReserve()
 	else {
 		g_previouslyConnectedUsers = new ArrayList();
 	}
+
+	return Plugin_Handled;
 }
