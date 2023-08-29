@@ -57,6 +57,8 @@ gbans_web:
     roles: [00000000000000000, 11111111111111111]
     mod_channel_ids: [00000000000000000]
     log_channel_id: 00000000000000000
+    public_match_log_channel_id: 111111111111111
+
   logging:
     srcds_log_addr: ":27115"
     srcds_log_external_host: ""
