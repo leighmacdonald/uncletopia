@@ -1,0 +1,28 @@
+- name: Create gbans_minio_data volume
+  docker_volume:
+    name: gbans_minio_data
+    state: present
+
+- name: Create gbans_minio_data container
+  docker_container:
+    name: gbans_minio
+    image: minio/minio
+    restart: true
+    pull: true
+    purge_networks: true
+    restart_policy: unless-stopped
+    recreate: true
+    command: server /data --console-address ":9901" --address ":9900"
+    env:
+      MINIO_ROOT_USER: "gbansgbans"
+      MINIO_ROOT_PASSWORD: "gbansgbansgbansgbans"
+    labels:
+      logging: "promtail"
+      logging_jobname: "containerlogs"
+    networks:
+      - name: caddy_net
+    volumes:
+      - gbans_minio_data:/data
+    ports:
+      - 127.0.0.1:9900:9900
+      - 127.0.0.1:9901:9901
