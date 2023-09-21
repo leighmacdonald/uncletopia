@@ -1,0 +1,41 @@
+ip: "54.39.20.83"
+timezone: "America/Montreal"
+srcds_region: 1
+srcds_server_password: "poop"
+stv_enable: false
+srcds_rcon_password: "blahblah"
+tv_port: 27020
+sv_tags: "nocrits,nodmgspread"
+
+wireguard_addresses:
+  - "10.20.30.2/24"
+
+#image_tag: ghcr.io/leighmacdonald/uncletopia-srcds:master
+services:
+#  - name: "Minecraft Training Center"
+#    server_name_short: "test-2"
+#    gslt: "FF851F27F11EA9D2BC51CC262D4746B5"
+#    gbans_key: "xxxxxxxxxxxxxxxxxxx"
+#    log_secret: 333333333
+#    start_map: "pl_upward"
+#    rotation: "pve"
+#    plugins_disabled: ["reservedslots.smx", "classrestrict.smx", "supstats2.smx", "medicstats.smx", "networktools.smx", "votescramble.smx"]
+#    extensions_disabled: []
+#    pve_mode: true
+#    tf_weapon_criticals: true
+#    sv_alltalk: true
+#    sv_tags: danepve,uncletopia
+#    sv_visiblemaxplayers: 32
+#    stv_enable: false
+#    tf_classlimit: 0
+#    tf_forced_holiday: true
+#    mp_allowspectators: false
+#    srcds_rcon_password: ySknfRnxD8
+  - name: "Minecraft Training Center"
+    server_name_short: "test-2"
+    gslt: "FF851F27F11EA9D2BC51CC262D4746B5"
+    gbans_key: "QGXfpAvLzBKesfGmssAW"
+    log_secret: 333333333
+    rotation: "all"
+    sv_visiblemaxplayers: 69
+    stv_enable: false
