@@ -24,7 +24,7 @@
 }
 {% endfor %}
 
-{% for host in caddy.static  %}
+{% for host in caddy.static|default([])  %}
 {{ host }} {
         root * {{ caddy.static[host].root }}
         file_server browse

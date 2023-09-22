@@ -13,6 +13,7 @@
     pull: true
     purge_networks: true
     restart_policy: unless-stopped
+    shm_size: 1g
     networks:
       - name: caddy_net
     volumes:
@@ -26,25 +27,40 @@
     labels:
       logging: "promtail"
       logging_jobname: "containerlogs"
-    command: [
-      "postgres",
-      "-c", "max_connections=100",
-      "-c", "shared_buffers=8GB",
-      "-c", "effective_cache_size=24GB",
-      "-c", "maintenance_work_mem=2GB",
-      "-c", "checkpoint_completion_target=0.9",
-      "-c", "wal_buffers=16MB",
-      "-c", "default_statistics_target=100",
-      "-c", "random_page_cost=1.1",
-      "-c", "effective_io_concurrency=200",
-      "-c", "work_mem=10485kB",
-      "-c", "min_wal_size=1GB",
-      "-c", "max_wal_size=4GB",
-      "-c", "max_worker_processes=8",
-      "-c", "max_parallel_workers_per_gather=4",
-      "-c", "max_parallel_workers=8",
-      "-c", "max_parallel_maintenance_workers=4"
-    ]
+#    command: [
+#      "postgres",
+#      "-c", "max_connections=100",
+#      "-c", "shared_buffers=8GB",
+#      "-c", "effective_cache_size=24GB",
+#      "-c", "maintenance_work_mem=2GB",
+#      "-c", "checkpoint_completion_target=0.9",
+#      "-c", "wal_buffers=16MB",
+#      "-c", "default_statistics_target=100",
+#      "-c", "random_page_cost=1.1",
+#      "-c", "effective_io_concurrency=200",
+#      "-c", "work_mem=10485kB",
+#      "-c", "min_wal_size=1GB",
+#      "-c", "max_wal_size=4GB",
+#      "-c", "max_worker_processes=8",
+#      "-c", "max_parallel_workers_per_gather=4",
+#      "-c", "max_parallel_workers=8",
+#      "-c", "max_parallel_maintenance_workers=4"
+#    ]
+
+- name: Join gbans network
+  community.docker.docker_network:
+    name: gbans_net
+    connected:
+      - gbans-postgres
+    appends: true
+
+#
+#- name: Join caddy network
+#  community.docker.docker_network:
+#    name: caddy_net
+#    connected:
+#      - gbans-service
+#    appends: true
 
 - name: Create gbans-postgres_exporter container
   docker_container:

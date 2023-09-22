@@ -15,11 +15,6 @@
   tags:
     - metrics-server
 
-- name: cadvisor
-  import_tasks: cadvisor.yml
-  tags:
-    - metrics-client
-
 - name: promtail
   import_tasks: promtail.yml
   tags:
