@@ -33,6 +33,8 @@
       - gbans_demos:/app/demos
       - gbans_cache_data:/app/.cache
       - /etc/gbans.yml:/app/gbans.yml
+    networks:
+      - name: caddy_net
     labels:
       logging: "promtail"
       logging_jobname: "containerlogs"
