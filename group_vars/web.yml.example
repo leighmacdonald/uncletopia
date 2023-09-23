@@ -21,6 +21,7 @@ patreon:
   refresh_token: asdfasdfasdf
 
 gbans_web:
+  image: ghcr.io/leighmacdonald/gbans:v0.3.2
   # steamid64
   owner: 0000000000000000000
   dsn: postgresql://gbans:gbans@gbans-postgres/gbans
