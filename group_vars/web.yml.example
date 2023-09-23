@@ -41,7 +41,8 @@ gbans_web:
   s3:
     access_key: "xxxxxxxxxxxxxxxxxxxx"
     secret_key: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-    endpoint: "localhost:9900"
+    endpoint: "localhost:9901"
+    external_url: "https://asset.exmaple.com"
     ssl: false
     region: ""
     bucket_media: media
