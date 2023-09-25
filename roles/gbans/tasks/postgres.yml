@@ -11,11 +11,12 @@
     restart: true
     recreate: true
     pull: true
-    purge_networks: true
-    restart_policy: unless-stopped
-    shm_size: 1g
+    comparisons:
+      networks: strict
     networks:
       - name: caddy_net
+    restart_policy: unless-stopped
+    shm_size: 1g
     volumes:
       - gbans_db:/var/lib/postgresql/data
     env:
@@ -47,27 +48,13 @@
 #      "-c", "max_parallel_maintenance_workers=4"
 #    ]
 
-- name: Join gbans network
-  community.docker.docker_network:
-    name: gbans_net
-    connected:
-      - gbans-postgres
-    appends: true
-
-#
-#- name: Join caddy network
-#  community.docker.docker_network:
-#    name: caddy_net
-#    connected:
-#      - gbans-service
-#    appends: true
-
 - name: Create gbans-postgres_exporter container
   docker_container:
     name: gbans-postgres_exporter
     image: quay.io/prometheuscommunity/postgres-exporter:latest
     restart_policy: unless-stopped
-    purge_networks: true
+    comparisons:
+      networks: strict
     networks:
       - name: caddy_net
     pull: true

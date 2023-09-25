@@ -12,14 +12,14 @@ general:
   warning_limit: 2
 
 s3:
-  access_key: "hk5ddd5wXWrXFCWeBcs7"
-  secret_key: "8aEzgpgFP52DOVxDmIwjDF0m2xnDxaR7WHKPeqfl"
-  endpoint: "localhost:9901"
-  external_url: {{ gbans_web.cookie_key }}
-  ssl: false
-  region: ""
-  bucket_media: media
-  bucket_demo: demos
+  access_key: {{ gbans_web.s3.access_key }}
+  secret_key: {{ gbans_web.s3.secret_key }}
+  endpoint: {{ gbans_web.s3.endpoint|default("gbans_minio:9901") }}
+  external_url: {{ gbans_web.s3.external_url }}
+  ssl: {{ gbans_web.s3.ssl|default(false) }}
+  region: {{ gbans_web.s3.region|default("") }}
+  bucket_media: {{ gbans_web.s3.bucket_media|default("media") }}
+  bucket_demo: {{ gbans_web.s3.bucket_demo|default("demos") }}
 
 http:
   # Listen on this ip address

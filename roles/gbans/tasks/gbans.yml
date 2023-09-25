@@ -14,7 +14,7 @@
   ansible.builtin.template:
     src: gbans.yml.j2
     dest: /etc/gbans.yml
-    mode: 0775
+    mode: 0770
 
 - name: gbans-service
   docker_container:
@@ -25,18 +25,14 @@
     pull: true
     restart_policy: always
     state: started
-# Needs newer ansible
-#    logging:
-#      driver: json-file
-#      options:
-#        max-size: 10m
-#        max-file: "10"
+    comparisons:
+      networks: strict
+    networks:
+      - name: caddy_net
     volumes:
       - gbans_demos:/app/demos
       - gbans_cache_data:/app/.cache
       - /etc/gbans.yml:/app/gbans.yml
-    networks:
-      - name: caddy_net
     labels:
       logging: "promtail"
       logging_jobname: "containerlogs"
