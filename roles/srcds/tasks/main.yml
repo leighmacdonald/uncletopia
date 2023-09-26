@@ -59,7 +59,7 @@
     path: "~/build_srcds/srcds-{{ item.server_name_short }}/"
     state: directory
     owner: tf2server
-    mode: 0755
+    mode: "0755"
   loop: "{{ services }}"
   loop_control:
     index_var: loop0
