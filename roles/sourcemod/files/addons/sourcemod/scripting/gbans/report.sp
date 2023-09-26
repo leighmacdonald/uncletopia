@@ -60,8 +60,10 @@ public Action OnClientSayCommand(int clientId, const char[] command, const char[
 		PrintToChat(gReportSourceId, "Report reason too short, try again or type \"cancel\" to reset");
 		return Plugin_Continue;
 	}
+
 	gbLog("Got report reason: %s", args);
 	report(gReportSourceId, gReportTargetId, gReportTargetReason, args);
+	
 	return Plugin_Continue;
 }
 
@@ -122,9 +124,8 @@ void onReportRespReceived(bool success, const char[] error, System2HTTPRequest r
 	char[] content = new char[response.ContentLength + 1];
 	response.GetContent(content, response.ContentLength + 1);
 
-	JSON_Object resp = json_decode(content);
-	int status = resp.GetBool("status");
-	if(response.StatusCode != HTTP_STATUS_CREATED || !status)
+	JSON_Object result = json_decode(content);
+	if(response.StatusCode != HTTP_STATUS_CREATED)
 	{
 		if(response.StatusCode == HTTP_STATUS_CONFLICT)
 		{
@@ -132,19 +133,14 @@ void onReportRespReceived(bool success, const char[] error, System2HTTPRequest r
 			resetReportStatus();
 			return ;
 		}
+
 		gbLog("Invalid response status");
-		char err[200];
-		resp.GetString("error", err, sizeof err);
-		if(StrEqual(err, ""))
-		{
-			err = "Internal Error";
-		}
-		PrintToChat(gReportSourceId, "[Report] Error: %s", err);
+
+		PrintToChat(gReportSourceId, "[Report] Error creating report");
 		resetReportStatus();
 		return ;
 	}
 
-	JSON_Object result = resp.GetObject("result");
 	int reportId = result.GetInt("report_id");
 	char serverHost[PLATFORM_MAX_PATH];
 	gHost.GetString(serverHost, sizeof serverHost);
@@ -152,7 +148,7 @@ void onReportRespReceived(bool success, const char[] error, System2HTTPRequest r
 	Format(fullAddr, sizeof fullAddr, "%s/report/%d", serverHost, reportId);
 	PrintToChat(gReportSourceId, "[Report] Report created succesfully, thanks for your help");
 	PrintToChat(gReportSourceId, "[Report] %s", fullAddr);
-	json_cleanup_and_delete(resp);
+	json_cleanup_and_delete(result);
 	resetReportStatus();
 }
 

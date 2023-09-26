@@ -46,26 +46,25 @@ void onAuthReqReceived(bool success, const char[] error, System2HTTPRequest requ
 			gbLog("Bad status on authentication request: %d", statusCode);
 			return ;
 		}
+
 		char[] content = new char[response.ContentLength + 1];
 		response.GetContent(content, response.ContentLength + 1);
-		JSON_Object resp = json_decode(content);
-		bool ok = resp.GetBool("status");
-		if(!ok)
-		{
-			gbLog("Invalid response status, cannot authenticate");
-			return ;
-		}
-		JSON_Object data = resp.GetObject("result");
+
+		JSON_Object data = json_decode(content);
+
 		char token[512];
+
 		data.GetString("token", token, sizeof token);
+
 		if(strlen(token) == 0)
 		{
 			gbLog("Invalid response status, invalid token");
 			return ;
 		}
+
 		gAccessToken = token;
 		gbLog("Successfully authenticated with gbans server");
-		json_cleanup_and_delete(resp);
+		json_cleanup_and_delete(data);
 	}
 	else
 	{
@@ -222,12 +221,12 @@ void onCheckResp(bool success, const char[] error, System2HTTPRequest request, S
 		response.GetContent(content, response.ContentLength + 1);
 		if(statusCode != HTTP_STATUS_OK)
 		{
-// Fail open if the server is broken
+			// Fail open if the server is broken
+			gbLog("Invalid response code on check call: %d", statusCode);
 			return ;
 		}
 
-		JSON_Object resp = json_decode(content);
-		JSON_Object data = resp.GetObject("result");
+		JSON_Object data = json_decode(content);
 		int clientId = data.GetInt("client_id");
 		int banType = data.GetInt("ban_type");
 		int permissionLevel = data.GetInt("permission_level");
@@ -246,7 +245,7 @@ void onCheckResp(bool success, const char[] error, System2HTTPRequest request, S
 		gPlayers[clientId].permissionLevel = permissionLevel;
 
 		gbLog("Client authenticated (banType: %d level: %d)", banType, permissionLevel);
-		json_cleanup_and_delete(resp);
+		json_cleanup_and_delete(data);
 		// Called manually since we are using the connect extension
 		onClientPostAdminCheck(clientId);
 	}

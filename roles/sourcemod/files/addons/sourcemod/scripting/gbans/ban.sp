@@ -115,17 +115,10 @@ void onBanRespReceived(bool success, const char[] error, System2HTTPRequest requ
 
 	response.GetContent(content, response.ContentLength + 1);
 
-	JSON_Object resp = json_decode(content);
-	if(!resp.GetBool("status"))
-	{
-		gbLog("Invalid response status");
-		json_cleanup_and_delete(resp);
-		return ;
-	}
+	JSON_Object banResult = json_decode(content);
 
-	JSON_Object banResult = resp.GetObject("result");
 	int banId = banResult.GetInt("ban_id");
 	ReplyToCommand(gReplyToClientId, "User banned (#%d)", banId);
 	gReplyToClientId = -1;
-	json_cleanup_and_delete(resp);
+	json_cleanup_and_delete(banResult);
 }
