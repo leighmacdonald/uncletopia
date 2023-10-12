@@ -35,7 +35,13 @@ test: srcds
 logs:
 	docker logs -f srcds-localhost-1
 
+deploy:
+	@ansible-playbook -l tf2 $(PLAYBOOK_PATH)/deploy.yml
+
 srcds:
+	@ansible-playbook -l tf2 --skip-tags clean $(PLAYBOOK_PATH)/srcds.yml
+
+srcds_clean:
 	@ansible-playbook -l tf2 $(PLAYBOOK_PATH)/srcds.yml
 
 shell:

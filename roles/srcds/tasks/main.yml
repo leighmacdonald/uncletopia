@@ -3,6 +3,7 @@
   ansible.builtin.file:
     path: ~/build_srcds
     state: absent
+  tags: clean
 
 - name: Clean srcds instance build directory
   ansible.builtin.file:
