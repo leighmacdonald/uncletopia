@@ -21,6 +21,7 @@ patreon:
   refresh_token: asdfasdfasdf
 
 gbans_web:
+  image: ghcr.io/leighmacdonald/gbans:v0.3.2
   # steamid64
   owner: 0000000000000000000
   dsn: postgresql://gbans:gbans@gbans-postgres/gbans
@@ -36,6 +37,17 @@ gbans_web:
     - name: tf2bd
       url: https://raw.githubusercontent.com/PazerOP/tf2_bot_detector/master/staging/cfg/playerlist.official.json
       type: tf2bd
+
+  s3:
+    access_key: "xxxxxxxxxxxxxxxxxxxx"
+    secret_key: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+    endpoint: "localhost:9901"
+    external_url: "https://asset.exmaple.com"
+    ssl: false
+    region: ""
+    bucket_media: media
+    bucket_demo: demos
+
   relay:
     enabled: true
     channel_ids: [000000000000000000]
@@ -57,6 +69,8 @@ gbans_web:
     roles: [00000000000000000, 11111111111111111]
     mod_channel_ids: [00000000000000000]
     log_channel_id: 00000000000000000
+    public_match_log_channel_id: 111111111111111
+
   logging:
     srcds_log_addr: ":27115"
     srcds_log_external_host: ""

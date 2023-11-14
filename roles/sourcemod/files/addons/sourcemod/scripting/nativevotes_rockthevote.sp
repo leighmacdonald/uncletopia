@@ -341,7 +341,6 @@ void AttemptRTV(int client, bool isVoteMenu=false)
 public Action Timer_DelayRTV(Handle timer)
 {
 	g_RTVAllowed = true;
-	return Plugin_Continue;
 }
 
 void StartRTV()
@@ -367,7 +366,7 @@ void StartRTV()
 			
 			g_RTVAllowed = false;
 		}
-		return;
+		return;	
 	}
 	
 	if (CanMapChooserStartVote())

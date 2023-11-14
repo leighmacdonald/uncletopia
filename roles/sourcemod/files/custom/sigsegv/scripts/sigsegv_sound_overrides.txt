@@ -1,0 +1,41 @@
+"MVM.Robot_Teleporter_Activate"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1"
+	"pitch"			"100"
+	"soundlevel"  	"SNDLVL_150dB"
+	"wave"			")mvm/mvm_tele_activate.wav"
+}
+
+"Engineer.MvM_Wrangler01"
+{
+	"channel"    "CHAN_VOICE"
+	"volume"     "1.000"
+	"pitch"      "PITCH_NORM"
+	"soundlevel" "SNDLVL_95dB"
+	"wave"       "vo/mvm/norm/engineer_mvm_wranglekills01.mp3"
+}
+"Engineer.MvM_Wrangler02"
+{
+	"channel"    "CHAN_VOICE"
+	"volume"     "1.000"
+	"pitch"      "PITCH_NORM"
+	"soundlevel" "SNDLVL_95dB"
+	"wave"       "vo/mvm/norm/engineer_mvm_wranglekills02.mp3"
+}
+"Engineer.MvM_Wrangler03"
+{
+	"channel"    "CHAN_VOICE"
+	"volume"     "1.000"
+	"pitch"      "PITCH_NORM"
+	"soundlevel" "SNDLVL_95dB"
+	"wave"       "vo/mvm/norm/engineer_mvm_wranglekills03.mp3"
+}
+"Engineer.MvM_Wrangler04"
+{
+	"channel"    "CHAN_VOICE"
+	"volume"     "1.000"
+	"pitch"      "PITCH_NORM"
+	"soundlevel" "SNDLVL_95dB"
+	"wave"       "vo/mvm/norm/engineer_mvm_wranglekills04.mp3"
+}

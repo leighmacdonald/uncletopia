@@ -1,4 +1,10 @@
 ---
+- name: Create ~/build_sourcemod/ directory
+  ansible.builtin.file:
+    path: ~/build_sourcemod/
+    state: absent
+    mode: "0775"
+  tags: clean
 
 - name: Create ~/build_sourcemod/ directory
   ansible.builtin.file:
@@ -11,15 +17,17 @@
     src: https://mms.alliedmods.net/mmsdrop/1.11/mmsource-1.11.0-git1148-linux.tar.gz
     dest: ~/build_sourcemod/
     remote_src: true
+    creates: ~/build_sourcemod/addons/metamod
 
 - name: Download latest sourcemod
   ansible.builtin.unarchive:
-    src: https://sm.alliedmods.net/smdrop/1.11/sourcemod-1.11.0-git6934-linux.tar.gz
+    src: "{{ sm_download|default(\"https://sm.alliedmods.net/smdrop/1.11/sourcemod-1.11.0-git6936-linux.tar.gz\") }}"
     dest: ~/build_sourcemod/
     remote_src: true
+    creates: ~/build_sourcemod/addons/sourcemod
 
 - name: Copy extensions & plugin sources
-  ansible.builtin.copy:
+  ansible.posix.synchronize:
     src: "{{ role_path }}/files/"
     dest: ~/build_sourcemod/
 

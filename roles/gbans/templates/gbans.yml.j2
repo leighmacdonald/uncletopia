@@ -11,6 +11,16 @@ general:
   external_url: {{ gbans_host }}
   warning_limit: 2
 
+s3:
+  access_key: {{ gbans_web.s3.access_key }}
+  secret_key: {{ gbans_web.s3.secret_key }}
+  endpoint: {{ gbans_web.s3.endpoint|default("gbans_minio:9901") }}
+  external_url: {{ gbans_web.s3.external_url }}
+  ssl: {{ gbans_web.s3.ssl|default(false) }}
+  region: {{ gbans_web.s3.region|default("") }}
+  bucket_media: {{ gbans_web.s3.bucket_media|default("media") }}
+  bucket_demo: {{ gbans_web.s3.bucket_demo|default("demos") }}
+
 http:
   # Listen on this ip address
   # 0.0.0.0 = Any
@@ -43,20 +53,12 @@ discord:
   # Your discord bot token
   # See: https://discord.com/developers/applications
   token: {{ gbans_web.discord.token }}
-  mod_role_ids:
-{% for rid in gbans_web.discord.roles %}
-    - {{ rid }}
-{% endfor %}
-  # People in these channels automatically have moderator privilege
-  # To find these, Right click the channel -> copy id
-  mod_channel_ids:
-{% for cid in gbans_web.discord.mod_channel_ids %}
-    - {{ cid }}
-{% endfor %}
   log_channel_id: {{ gbans_web.discord.log_channel_id }}
   public_log_channel_enable: {{ gbans_web.discord.public_log_enabled }}
   public_log_channel_id: {{ gbans_web.discord.public_log_channel_id }}
-
+  public_match_log_channel_id: {{ gbans_web.discord.public_match_log_channel_id }}
+  mod_ping_role_id:  {{ gbans_web.discord.mod_ping_role_id }}
+  unregister_on_start: {{ gbans_web.discord.unregister_on_start|default(false) }}
 
 logging:
   # Set the debug log level

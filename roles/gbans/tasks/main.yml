@@ -1,6 +1,13 @@
 ---
+- name: Create caddy_net network
+  community.docker.docker_network:
+    name: caddy_net
+
 - name: Install postgres
   import_tasks: postgres.yml
+
+- name: Install minio
+  import_tasks: minio.yml
 
 - name: Install gbans
   import_tasks: gbans.yml

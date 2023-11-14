@@ -14,23 +14,21 @@
   ansible.builtin.template:
     src: gbans.yml.j2
     dest: /etc/gbans.yml
-    mode: 0775
+    mode: 0770
 
 - name: gbans-service
   docker_container:
     name: gbans-service
-    image: ghcr.io/leighmacdonald/gbans:master
+    image: "{{ gbans_web.image }}"
     restart: true
     recreate: true
     pull: true
     restart_policy: always
     state: started
-# Needs newer ansible
-#    logging:
-#      driver: json-file
-#      options:
-#        max-size: 10m
-#        max-file: "10"
+    comparisons:
+      networks: strict
+    networks:
+      - name: caddy_net
     volumes:
       - gbans_demos:/app/demos
       - gbans_cache_data:/app/.cache
@@ -43,25 +41,7 @@
       GBANS_GENERAL_STEAM_KEY: "{{ steam_key }}"
     ports:
       - 127.0.0.1:6006:6006
-
-- name: Join gbans network
-  community.docker.docker_network:
-    name: gbans_net
-    connected:
-      - gbans-service
-    appends: true
-
-- name: Join caddy network
-  community.docker.docker_network:
-    name: caddy_net
-    connected:
-      - gbans-service
-    appends: true
-
-- name: Reload networks
-  docker_container:
-    name: gbans-service
-    restart: true
+      - 27115:27115/udp
 
 - name: srcds-log-fw
   become: true

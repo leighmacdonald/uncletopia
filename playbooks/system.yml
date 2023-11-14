@@ -18,10 +18,16 @@
         repo: ppa:damentz/liquorix
       when: perf_kernel | default(true) == true
 
-    - name: Add .net repo
-      apt:
-        deb: https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb
-      when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+    - name: Remove msft .net repo
+      ansible.builtin.file:
+        path: /etc/apt/sources.list.d/microsoft-prod.list
+        state: absent
+
+    - name: Remove msft .net repo 2
+      ansible.builtin.file:
+        path: /etc/apt/sources.list.d/microsoft-prod.list.save
+        state: absent
 
     - name: Configure cpufrequtils
       become: true
@@ -34,17 +40,17 @@
       ansible.builtin.command: dpkg --add-architecture i386
       when: result_i386_check.rc == 1
 
-    - name: Install gpg
+    - name: Install gpg & dd dependencies
       when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
       ansible.builtin.apt:
         update_cache: true
         cache_valid_time: 0
         state: present
         pkg:
-          - linux-image-liquorix-amd64
+          - unzip
           - gpg
-          - aspnetcore-runtime-6.0
           - cpufrequtils
+          - dotnet-sdk-6.0
 
     - name: Create a directory if it does not exist
       ansible.builtin.file:
@@ -52,17 +58,12 @@
         state: directory
         mode: '0755'
 
-    - name: dd installed
-      ansible.builtin.stat:
-        path: ~/dd/DepotDownloader.dll
-      register: dd_exists
-
     - name: get dd
       ansible.builtin.unarchive:
         remote_src: true
-        src: "https://github.com/SteamRE/DepotDownloader/releases/download/DepotDownloader_2.4.7/depotdownloader-2.4.7.zip"
+        src: "https://github.com/SteamRE/DepotDownloader/releases/download/DepotDownloader_2.5.0/depotdownloader-2.5.0.zip"
         dest: ~/dd
-      when: not dd_exists.stat.exists
+        creates: ~/dd/DepotDownloader.dll
 
     - name: Create rcon directory if it does not exist
       ansible.builtin.file:
@@ -104,10 +105,8 @@
         state: present
         pkg:
           - wget
-          - unzip
           - apt-transport-https
           - ca-certificates
-          - gpg
           - curl
           - gnupg
           - docker-ce
@@ -142,6 +141,7 @@
     # ondemand service will force ondemand
     - name: Disable ondemand
       become: true
+      ignore_errors: true
       ansible.builtin.systemd:
         name: ondemand
         state: stopped
@@ -150,6 +150,7 @@
 
     - name: Disable irqbalance
       become: true
+      ignore_errors: true
       ansible.builtin.systemd:
         name: irqbalance
         state: stopped

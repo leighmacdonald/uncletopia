@@ -1,4 +1,18 @@
 ---
+- name: Clean srcds build directory
+  ansible.builtin.file:
+    path: ~/build_srcds
+    state: absent
+  tags: clean
+
+- name: Clean srcds instance build directory
+  ansible.builtin.file:
+    path: "~/build_srcds/srcds-{{ item.server_name_short }}/"
+    state: absent
+  loop: "{{ services }}"
+  loop_control:
+    index_var: loop0
+
 - name: Create build directory
   ansible.builtin.file:
     path: ~/build_srcds
@@ -46,7 +60,7 @@
     path: "~/build_srcds/srcds-{{ item.server_name_short }}/"
     state: directory
     owner: tf2server
-    mode: 0755
+    mode: "0755"
   loop: "{{ services }}"
   loop_control:
     index_var: loop0
@@ -85,15 +99,6 @@
   ansible.builtin.template:
     src: maplists.cfg.j2
     dest: ~/build_srcds/srcds-{{ item.server_name_short }}/tf/addons/sourcemod/configs/maplists.cfg
-    mode: 0755
-  loop: "{{ services }}"
-  loop_control:
-    index_var: loop0
-
-- name: /tf/addons/sourcemod/configs/curated_maplist.txt
-  ansible.builtin.template:
-    src: curated_maplist.txt.j2
-    dest: ~/build_srcds/srcds-{{ item.server_name_short }}/tf/addons/sourcemod/configs/curated_maplist.txt
     mode: 0755
   loop: "{{ services }}"
   loop_control:

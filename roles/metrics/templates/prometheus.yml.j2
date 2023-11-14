@@ -29,14 +29,6 @@ scrape_configs:
     static_configs:
       - targets: ['grafana:3000']
 
-  - job_name: 'cadvisor'
-    static_configs:
-{% for hostname, conf in vpn_hosts.items() %}
-      - targets: ['{{ conf.dns }}:8084']
-        labels:
-          instance: {{ hostname }}
-{% endfor %}
-
   - job_name: 'promtail'
     static_configs:
 {% for hostname, conf in vpn_hosts.items() %}

@@ -2,7 +2,7 @@
 
 // we don't need 64 maxplayers because this is only for tf2. saves some memory.
 // 34 == 32 + stv + replay
-#define TFMAXPLAYERS 34
+#define TFMAXPLAYERS 101
 
 /********** GLOBAL VARS **********/
 // Regex steamidRegex;

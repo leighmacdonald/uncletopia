@@ -19,15 +19,6 @@
     labels:
       logging: "promtail"
       logging_jobname: "containerlogs"
-
-- name: Join caddy network
-  community.docker.docker_network:
-    name: caddy_net
-    connected:
-      - tf2bdd-service
-    appends: true
-
-- name: Reload networks
-  docker_container:
-    name: tf2bdd-service
-    restart: true
+    networks:
+      - name: caddy_net
+  ignore_errors: true
