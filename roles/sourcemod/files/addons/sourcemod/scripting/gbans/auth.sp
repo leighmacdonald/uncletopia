@@ -5,7 +5,7 @@
 #include "globals.sp"
 
 /**
-Authenicates the server with the backend API system.
+Authenticates the server with the backend API system.
 
 Send unauthenticated request for token to -> API /api/server_auth
 Recv Token <- API

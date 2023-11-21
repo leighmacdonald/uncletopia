@@ -13,7 +13,7 @@
 
 public void onPluginStartSTV()
 {
-// STV settings
+	// STV settings
 	gAutoRecord = CreateConVar("gb_stv_enable", "1", "Enable automatic recording", _, true, 0.0, true, 1.0);
 	gMinPlayersStart = CreateConVar("gb_stv_minplayers", "1", "Minimum players on server to start recording", _, true, 0.0);
 	gIgnoreBots = CreateConVar("gb_stv_ignorebots", "1", "Ignore bots in the player count", _, true, 0.0, true, 1.0);
@@ -30,7 +30,7 @@ public void setupSTV()
 	RegAdminCmd("gb_stv_record", Command_Record, ADMFLAG_KICK, "Starts a SourceTV demo");
 	RegAdminCmd("gb_stv_stoprecord", Command_StopRecord, ADMFLAG_KICK, "Stops the current SourceTV demo");
 
-	gScores = new JSON_Object();
+	
 	gTvEnabled = FindConVar("tv_enable");
 	char sPath[PLATFORM_MAX_PATH];
 	gDemoPathActive.GetString(sPath, sizeof sPath);
@@ -64,7 +64,7 @@ public void OnMapStart()
 	reloadAdmins();
 	if(!gStvMapChanged)
 	{
-// STV does not function until a map change has occurred.
+		// STV does not function until a map change has occurred.
 		gbLog("Restarting map to enabled STV");
 		gStvMapChanged = true;
 		char mapName[128];
@@ -256,22 +256,11 @@ void saveClientScore(int client)
 		gbLog("Invalid entity: %d", ent);
 		return ;
 	}
-	// TODO These props fail?
-	// int assists = GetEntProp(ent, Prop_Send, "m_iKillAssists", _, client);
-	// gbLog("Assists: %d", assists);
-	// int captures = GetEntProp(ent, Prop_Send, "m_iCaptures", _, client);
-	// gbLog("captures: %d", captures);
-	// int defenses = GetEntProp(ent, Prop_Send, "m_iDefenses", _, client);
-	// gbLog("defenses: %d", defenses);
-	// values.SetInt("score", GetEntProp(ent, Prop_Send, "m_iScore"));
-	values.SetInt("score", GetEntProp(ent, Prop_Send, "m_iScore", _, client));
-	values.SetInt("score_total", GetEntProp(ent, Prop_Send, "m_iTotalScore", _, client));
-	// values.SetInt("assists", assists);
-	values.SetInt("deaths", GetEntProp(ent, Prop_Send, "m_iDeaths", _, client));
-	// values.SetInt("captures", captures);
-	// values.SetInt("defenses", defenses);
-	//  Only trigger for client indexes actually in the game
-	// int score = TF2_GetPlayerResourceData(client, TFResource_TotalScore);
+
+	values.SetInt("score", 0);
+	values.SetInt("score_total", 0);
+	values.SetInt("deaths", 0);
+
 	gScores.SetObject(authId, values);
 }
 

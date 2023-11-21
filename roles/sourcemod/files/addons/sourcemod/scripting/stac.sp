@@ -4,6 +4,7 @@
 
 #pragma semicolon 1
 #pragma newdecls required
+
 // For json
 #pragma dynamic 8192 * 4
 
@@ -13,7 +14,16 @@
 #include <sdkhooks>
 #include <tf2_stocks>
 #include <dhooks>
+
+// hack for unrestricted maxplayers. sorry.
+#if defined (MAXPLAYERS)
+    #undef MAXPLAYERS
+    #define MAXPLAYERS 101
+#endif
+
+#if !defined (AUTOLOAD_EXTENSIONS)
 #define AUTOLOAD_EXTENSIONS
+#endif
 // REQUIRED extensions:
 // SteamWorks for being able to make webrequests: https://forums.alliedmods.net/showthread.php?t=229556
 // Get latest version from here: https://github.com/KyleSanderson/SteamWorks/releases
@@ -45,7 +55,7 @@
 #pragma semicolon 1
 #pragma newdecls required
 
-#define PLUGIN_VERSION  "6.0.4"
+#define PLUGIN_VERSION  "6.1.2"
 
 #define UPDATE_URL      "https://raw.githubusercontent.com/sapphonie/StAC-tf2/master/updatefile.txt"
 
@@ -92,7 +102,6 @@ public void OnPluginStart()
 {
     StopIncompatPlugins();
     StacLog("\n\n----> StAC version [%s] loaded\n", PLUGIN_VERSION);
-    EngineSanityChecks();
     DoStACGamedata();
 
     if (!AddCommandListener(OnAllClientCommands))
@@ -143,6 +152,8 @@ public void OnPluginStart()
 
     // Create Stac ConVars for adjusting settings
     initCvars();
+
+    EngineSanityChecks();
 
     // redo all client based stuff on plugin reload
     for (int cl = 1; cl <= MaxClients; cl++)
@@ -255,15 +266,15 @@ void StopIncompatPlugins()
         // I will not provide any support for you or your annoying server if you do this.
         if
         (
-               StrContains("Simple block",  plName, false)  != -1 /* SM Plugins blocker */
-            || StrContains("Block SM",      plName, false)  != -1 /* wildcard for blocking sm plugins */
+               StrContains(plName, "Simple block",  false)  != -1 /* SM Plugins blocker */
+            || StrContains(plName, "Block SM",      false)  != -1 /* wildcard for blocking sm plugins */
         )
         {
             delete plugini;
             SetFailState("[StAC] Refusing to load with malicious plugins.");
             return;
         }
-        else if (StrContains("SMAC", plName, false) != -1) /* SMAC */
+        else if (StrContains(plName, "SMAC", false) != -1) /* SMAC */
         {
             delete plugini;
             SetFailState("[StAC] Refusing to load with SMAC. SMAC is outdated and is actively harmful to server performance as well as StAC's operation. Uninstall SMAC and try again.");
@@ -271,8 +282,8 @@ void StopIncompatPlugins()
         }
         else if
         (
-               StrContains("Backtrack Patch",       plName, false)  != -1 /* JTanz backtrack fix */
-            || StrContains("Backtrack Elimination", plName, false)  != -1 /* Shavit backtrack fix */
+               StrContains(plName, "Backtrack Patch",       false)  != -1 /* JTanz backtrack fix */
+            || StrContains(plName, "Backtrack Elimination", false)  != -1 /* Shavit backtrack fix */
         )
         {
             delete plugini;
@@ -299,9 +310,9 @@ void EngineSanityChecks()
         SetFailState("[StAC] This plugin is only supported for TF2! Aborting!");
     }
 
-    if ( MaxClients > TFMAXPLAYERS || GetMaxHumanPlayers() > TFMAXPLAYERS )
+    if ( MaxClients > 33 || GetMaxHumanPlayers() > 33 )
     {
-        SetFailState("[StAC] This plugin (and TF2 in general) does not support more than 34 players; 32, + 1 for STV, + 1 for the Replay bot. MaxClients = %i, GetMaxHumanPlayers = %i. Aborting!",
-        MaxClients, GetMaxHumanPlayers());
+        highPlayerServer = true;
+        StacLog("Running StAC with high maxplayers. Things will break!");
     }
 }

@@ -11,7 +11,7 @@
 #define _gbans_globals_included 
 
 #define PLUGIN_AUTHOR "Leigh MacDonald"
-#define PLUGIN_VERSION "0.0.1"
+#define PLUGIN_VERSION "0.5.4"
 #define PLUGIN_NAME "gbans"
 
 #define MAX_SCORES 256
@@ -39,6 +39,9 @@ ConVar gPort = null;
 ConVar gHost = null;
 ConVar gServerName = null;
 ConVar gServerKey = null;
+
+// Balancing options
+ConVar gDisableAutoTeam = null;
 
 // STV options
 ConVar gTvEnabled = null;
@@ -78,4 +81,5 @@ int gReportStartedAtTime = -1;
 bool gStvMapChanged = false;
 bool gIsRecording = false;
 bool gIsManual = false;
+
 JSON_Object gScores = null;

@@ -1,7 +1,5 @@
 #pragma semicolon 1
-
-// we don't need 64 maxplayers because this is only for tf2. saves some memory.
-// 34 == 32 + stv + replay
+// formerly custom defined, now at 101 as of unrestricted_maxplayers update
 #define TFMAXPLAYERS 101
 
 /********** GLOBAL VARS **********/
@@ -13,6 +11,7 @@ ConVar stac_ban_duration;
 ConVar stac_verbose_info;
 ConVar stac_max_allowed_turn_secs;
 ConVar stac_ban_for_misccheats;
+ConVar stac_generic_ban_msgs;
 ConVar stac_optimize_cvars;
 ConVar stac_max_aimsnap_detections;
 ConVar stac_max_psilent_detections;
@@ -75,6 +74,7 @@ float tps;
 int itps;
 //int itps_maxaheadsecs;
 int servertick;
+bool highPlayerServer           = false;
 
 // time to wait after server lags before checking all client's OnPlayerRunCmd
 float ServerLagWaitLength = 5.0;

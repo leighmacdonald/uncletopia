@@ -109,6 +109,25 @@ void initCvars()
     );
     HookConVarChange(stac_ban_for_misccheats, setStacVars);
 
+
+
+    stac_generic_ban_msgs =
+    AutoExecConfig_CreateConVar
+    (
+        "stac_generic_ban_msgs",
+        "1",
+        "[StAC] Use a generic message when banning clients - this goes in SourceBans, chat, and other public places, but it does NOT change your logs.\n\
+        You should almost always leave this alone.\n\
+        (recommended 1)",
+        FCVAR_NONE,
+        true,
+        0.0,
+        true,
+        1.0
+    );
+
+
+
     // cheatvars ban bool
     if (optimizeCvars)
     {
@@ -464,7 +483,7 @@ void initCvars()
     );
     HookConVarChange(stac_max_connections_from_ip, setStacVars);
 
-    // max connections from the same ip
+    // work with sv_cheats
     IntToString(ignore_sv_cheats, buffer, sizeof(buffer));
     stac_work_with_sv_cheats =
     AutoExecConfig_CreateConVar
@@ -521,6 +540,7 @@ void setStacVars(ConVar convar, const char[] oldValue, const char[] newValue)
     optimizeCvars           = GetConVarBool(stac_optimize_cvars);
     if (optimizeCvars)
     {
+        EngineSanityChecks();
         RunOptimizeCvars();
     }
 
@@ -614,6 +634,12 @@ public void GenericCvarChanged(ConVar convar, const char[] oldValue, const char[
 
 void RunOptimizeCvars()
 {
+    // don't optimize anything if we have high players, let server ops override
+    if ( highPlayerServer )
+    {
+        return;
+    }
+
     // attempt to patch doubletap (CS:GO default value!)
     SetConVarInt(FindConVar("sv_maxusrcmdprocessticks"), 8);
 
