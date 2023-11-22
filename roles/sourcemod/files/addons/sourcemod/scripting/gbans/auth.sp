@@ -54,12 +54,18 @@ void onAuthReqReceived(bool success, const char[] error, System2HTTPRequest requ
 
 		char token[512];
 
+		bool status = data.GetBool("status");
+		if (!status) {
+			gbLog("Invalid server auth status returned");
+			return;
+		}
+
 		data.GetString("token", token, sizeof token);
 
 		if(strlen(token) == 0)
 		{
 			gbLog("Invalid response status, invalid token");
-			return ;
+			return;
 		}
 
 		gAccessToken = token;

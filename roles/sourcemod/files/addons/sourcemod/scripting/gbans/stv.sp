@@ -13,7 +13,7 @@
 
 public void onPluginStartSTV()
 {
-	// STV settings
+// STV settings
 	gAutoRecord = CreateConVar("gb_stv_enable", "1", "Enable automatic recording", _, true, 0.0, true, 1.0);
 	gMinPlayersStart = CreateConVar("gb_stv_minplayers", "1", "Minimum players on server to start recording", _, true, 0.0);
 	gIgnoreBots = CreateConVar("gb_stv_ignorebots", "1", "Ignore bots in the player count", _, true, 0.0, true, 1.0);
@@ -30,7 +30,7 @@ public void setupSTV()
 	RegAdminCmd("gb_stv_record", Command_Record, ADMFLAG_KICK, "Starts a SourceTV demo");
 	RegAdminCmd("gb_stv_stoprecord", Command_StopRecord, ADMFLAG_KICK, "Stops the current SourceTV demo");
 
-	
+	gScores = new JSON_Object();
 	gTvEnabled = FindConVar("tv_enable");
 	char sPath[PLATFORM_MAX_PATH];
 	gDemoPathActive.GetString(sPath, sizeof sPath);
@@ -64,7 +64,7 @@ public void OnMapStart()
 	reloadAdmins();
 	if(!gStvMapChanged)
 	{
-		// STV does not function until a map change has occurred.
+// STV does not function until a map change has occurred.
 		gbLog("Restarting map to enabled STV");
 		gStvMapChanged = true;
 		char mapName[128];
@@ -260,6 +260,10 @@ void saveClientScore(int client)
 	values.SetInt("score", 0);
 	values.SetInt("score_total", 0);
 	values.SetInt("deaths", 0);
+
+	if (gScores == INVALID_HANDLE) {
+		gScores = new JSON_Object();
+	}
 
 	gScores.SetObject(authId, values);
 }
