@@ -55,7 +55,7 @@
 #pragma semicolon 1
 #pragma newdecls required
 
-#define PLUGIN_VERSION  "6.1.2"
+#define PLUGIN_VERSION  "6.1.3-beta"
 
 #define UPDATE_URL      "https://raw.githubusercontent.com/sapphonie/StAC-tf2/master/updatefile.txt"
 
@@ -146,7 +146,7 @@ public void OnPluginStart()
     // hook sv_cheats so we can instantly unload if cheats get turned on
     HookConVarChange(FindConVar("sv_cheats"), GenericCvarChanged);
     // hook host_timescale so we don't ban ppl if it's not default
-    HookConVarChange(FindConVar("host_timescale"), GenericCvarChanged);
+    // HookConVarChange(FindConVar("host_timescale"), GenericCvarChanged);
     // hook wait command status for tbot
     HookConVarChange(FindConVar("sv_allow_wait_command"), GenericCvarChanged);
 
@@ -172,6 +172,10 @@ public void OnPluginStart()
     // create global timer running every couple jiffys for getting all clients' network info
     // This immediately populates the arrays instead of waiting a timer tick
     CreateTimer(0.1, Timer_GetNetInfo, _, TIMER_REPEAT);
+
+    SetUpIPConnectLeakyBucket();
+
+
     Timer_GetNetInfo(null);
 
     // init hud sync stuff for livefeed
@@ -189,6 +193,10 @@ public void OnPluginStart()
 
 public void OnPluginEnd()
 {
+    // do this to make sure we don't try and fail to send discord messages if the server is restarting
+    // we need to use OnLibraryLoad/Unload eventually...
+    CheckNatives();
+
     StacLog("\n\n----> StAC version [%s] unloaded\n", PLUGIN_VERSION);
 
     MC_PrintToChatAll("{hotpink}StAC{white} version [%s] unloaded!!! If this wasn't intentional, something nefarious is afoot!", PLUGIN_VERSION);
@@ -243,7 +251,7 @@ public void OnGameFrame()
         timeSinceLagSpikeFor[0] = GetEngineTime();
 
         StacLog("Server framerate stuttered. Expected: ~%.1f, got %i.\nDisabling OnPlayerRunCmd checks for %.2f seconds.", tps, tickspersec[0], ServerLagWaitLength);
-        if (DEBUG)
+        if (stac_debug.BoolValue)
         {
             PrintToImportant("{hotpink}[StAC]{white} Server framerate stuttered. Expected: {palegreen}~%.1f{white}, got {fullred}%i{white}.\nDisabling OnPlayerRunCmd checks for %f seconds.",
             tps, tickspersec[0], ServerLagWaitLength);
