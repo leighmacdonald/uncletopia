@@ -13,7 +13,7 @@
 
 public void onPluginStartSTV()
 {
-// STV settings
+	// STV settings
 	gAutoRecord = CreateConVar("gb_stv_enable", "1", "Enable automatic recording", _, true, 0.0, true, 1.0);
 	gMinPlayersStart = CreateConVar("gb_stv_minplayers", "1", "Minimum players on server to start recording", _, true, 0.0);
 	gIgnoreBots = CreateConVar("gb_stv_ignorebots", "1", "Ignore bots in the player count", _, true, 0.0, true, 1.0);
@@ -30,7 +30,6 @@ public void setupSTV()
 	RegAdminCmd("gb_stv_record", Command_Record, ADMFLAG_KICK, "Starts a SourceTV demo");
 	RegAdminCmd("gb_stv_stoprecord", Command_StopRecord, ADMFLAG_KICK, "Stops the current SourceTV demo");
 
-	gScores = new JSON_Object();
 	gTvEnabled = FindConVar("tv_enable");
 	char sPath[PLATFORM_MAX_PATH];
 	gDemoPathActive.GetString(sPath, sizeof sPath);
@@ -64,7 +63,7 @@ public void OnMapStart()
 	reloadAdmins();
 	if(!gStvMapChanged)
 	{
-// STV does not function until a map change has occurred.
+	// STV does not function until a map change has occurred.
 		gbLog("Restarting map to enabled STV");
 		gStvMapChanged = true;
 		char mapName[128];
@@ -230,89 +229,17 @@ void StopRecord()
 	}
 }
 
-
-public void OnClientDisconnect(int client)
-{
-	saveClientScore(client);
-}
-
-
-void saveClientScore(int client)
-{
-	if(!isValidClient(client))
-	{
-		return ;
-	}
-	JSON_Object values = new JSON_Object();
-	char authId[60];
-	if(!GetClientAuthId(client, AuthId_SteamID64, authId, sizeof authId, true))
-	{
-		gbLog("Invalid auth id: %d", client);
-		return ;
-	}
-	int ent = GetPlayerResourceEntity();
-	if(!IsValidEntity(ent))
-	{
-		gbLog("Invalid entity: %d", ent);
-		return ;
-	}
-
-	values.SetInt("score", 0);
-	values.SetInt("score_total", 0);
-	values.SetInt("deaths", 0);
-
-	if (gScores == INVALID_HANDLE) {
-		gScores = new JSON_Object();
-	}
-
-	gScores.SetObject(authId, values);
-}
-
-// TODO track scores for disconnected
-JSON_Object writeMeta()
-{
-	JSON_Object root = new JSON_Object();
-	for(int i = 1; i <= MaxClients; i++)
-	{
-		saveClientScore(i);
-	}
-	root.SetObject("scores", gScores);
-
-	char mapName[256];
-	GetCurrentMap(mapName, sizeof mapName);
-	root.SetString("map_name", mapName);
-
-	return root;
-}
-
-
 public void SourceTV_OnStopRecording(int instance, const char[] filename, int recordingtick)
 {
-	char outMeta[4096];
 	char sPieces[32][PLATFORM_MAX_PATH];
 	char outPath[PLATFORM_MAX_PATH];
-	char outPathMeta[PLATFORM_MAX_PATH];
-
-	JSON_Object metaData = writeMeta();
-	metaData.Encode(outMeta, sizeof outMeta);
-	json_cleanup_and_delete(metaData);
 
 	gDemoPathComplete.GetString(outPath, sizeof outPath);
 
 	int iNumPieces = ExplodeString(filename, "/", sPieces, sizeof sPieces, sizeof sPieces[] );
 
 	Format(outPath, sizeof outPath, "%s/%s", outPath, sPieces[iNumPieces - 1]);
-	Format(outPathMeta, sizeof outPathMeta, "%s.json", outPath);
-	gbLog("Writing meta: %s", outPathMeta);
-	File outFileMeta = OpenFile(outPathMeta, "w");
-	if(outFileMeta != null)
-	{
-		if(!WriteFileString(outFileMeta, outMeta, false))
-		{
-			gbLog("Failed to open for writing: %s", outPathMeta);
-		}
-	}
-	outFileMeta.Close();
+
 	gbLog("Writing stv: %s dest: %s", filename, outPath);
 	if(!RenameFile(outPath, filename))
 	{
