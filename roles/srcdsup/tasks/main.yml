@@ -9,22 +9,6 @@
     mode: 0777
   loop: "{{ services }}"
 
-- name: srcds-logs volume
-  docker_volume:
-    name: srcds-{{ item.server_name_short }}-logs
-    state: present
-  loop: "{{ services }}"
-  loop_control:
-    index_var: loop0
-
-- name: srcds-stv volume
-  docker_volume:
-    name: srcds-{{ item.server_name_short }}-stv
-    state: present
-  loop: "{{ services }}"
-  loop_control:
-    index_var: loop0
-
 - name: Generate srcdsup.yml
   become: true
   ansible.builtin.template:
