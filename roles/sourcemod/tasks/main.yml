@@ -27,7 +27,7 @@
     creates: ~/build_sourcemod/addons/sourcemod
 
 - name: Copy extensions & plugin sources
-  ansible.builtin.copy:
+  ansible.posix.synchronize:
     src: "{{ role_path }}/files/"
     dest: ~/build_sourcemod/
   vars:
