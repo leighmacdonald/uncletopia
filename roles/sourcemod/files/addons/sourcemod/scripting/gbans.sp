@@ -12,6 +12,7 @@
 #include <system2>	// system2 extension
 
 #include "gbans/auth.sp"
+#include "gbans/balance.sp"
 #include "gbans/ban.sp"
 #include "gbans/commands.sp"
 #include "gbans/common.sp"
@@ -55,6 +56,7 @@ public void onPluginStartCore()
 	gServerKey = CreateConVar("gb_core_server_key", "", "GBans server key used to authenticate with the service");
 
 	gHideConnections = CreateConVar("gb_hide_connections", "1", "Dont show the disconnect message to users", _, true, 0.0, true, 1.0);
+	gDisableAutoTeam = CreateConVar("gb_disable_autoteam", "1", "Dont allow the use of autoteam command", _, true, 0.0, true, 1.0);
 
 	AutoExecConfig(true, "gbans");
 
@@ -63,6 +65,7 @@ public void onPluginStartCore()
 	RegConsoleCmd("gb_mod", onCmdMod, "Ping a moderator");
 	RegConsoleCmd("mod", onCmdMod, "Ping a moderator");
 	RegConsoleCmd("report", onCmdReport, "Report a player");
+	RegConsoleCmd("autoteam", onCmdAutoTeamAction);
 
 	RegAdminCmd("gb_ban", onAdminCmdBan, ADMFLAG_BAN);
 	RegAdminCmd("gb_reauth", onAdminCmdReauth, ADMFLAG_ROOT);

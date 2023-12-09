@@ -86,7 +86,7 @@ whitelist
     particles\explosion_high.pcf              trusted_source
     particles\disguise.pcf                    trusted_source
     particles\flag_particles.pcf              trusted_source
-
+    particles\medicgun_attrib.pcf             trusted_source
     particles\player_recent_teleport.pcf      trusted_source
     particles\player_recent_teleport_dx80.pcf trusted_source
     particles\speechbubbles.pcf               trusted_source

@@ -13,7 +13,7 @@ public void OnMapStart()
     OpenStacLog();
     DoTPSMath();
     ResetTimers();
-    if (optimizeCvars)
+    if (stac_optimize_cvars.BoolValue)
     {
         RunOptimizeCvars();
     }
@@ -21,6 +21,16 @@ public void OnMapStart()
     CreateTimer(0.1, checkNativesEtc);
     CreateTimer(0.2, getIP);
     EngineSanityChecks();
+
+    if ( !host_timescale )
+    {
+        host_timescale = FindConVar("host_timescale");
+        if ( !host_timescale )
+        {
+            SetFailState("Couldn't get host_timescale cvar!");
+        }
+    }
+
 
 /*
     int ent = -1;
@@ -50,24 +60,82 @@ public void OnMapEnd()
     CloseStacLog();
 }
 
+void CheckNatives()
+{
+    // check natives!
+
+    // sourcebans
+    if (GetFeatureStatus(FeatureType_Native, "SBPP_BanPlayer") == FeatureStatus_Available)
+    {
+        SOURCEBANS = true;
+    }
+    else
+    {
+        SOURCEBANS = false;
+    }
+
+
+    // materialadmin
+    if (GetFeatureStatus(FeatureType_Native, "MABanPlayer") == FeatureStatus_Available)
+    {
+        MATERIALADMIN = true;
+    }
+    else
+    {
+        MATERIALADMIN = false;
+    }
+
+
+    // gbans
+    if (CommandExists("gb_ban"))
+    {
+        GBANS = true;
+    }
+    else
+    {
+        GBANS = false;
+    }
+
+
+    // sourcemod aimplotter
+    if (CommandExists("sm_aimplot"))
+    {
+        AIMPLOTTER = true;
+    }
+    else
+    {
+        AIMPLOTTER = false;
+    }
+
+
+    // discord functionality
+    if (GetFeatureStatus(FeatureType_Native, "Discord_SendMessage") == FeatureStatus_Available)
+    {
+        DISCORD = true;
+    }
+    else
+    {
+        DISCORD = false;
+    }
+}
+
 Action checkNativesEtc(Handle timer)
 {
+    CheckNatives();
+
     if (!configsExecuted)
     {
         return Plugin_Handled;
     }
 
     // check sv cheats
-    if (!ignore_sv_cheats)
+    if ( !stac_work_with_sv_cheats.BoolValue )
     {
         if (GetConVarBool(FindConVar("sv_cheats")))
         {
             SetFailState("sv_cheats set to 1! Aborting!");
         }
     }
-
-    // check timescale so we can check if the client's matches the server's
-    timescale = GetConVarFloat(FindConVar("host_timescale"));
 
     // check wait command
     if (GetConVarBool(FindConVar("sv_allow_wait_command")))
@@ -82,34 +150,6 @@ Action checkNativesEtc(Handle timer)
     else
     {
         MVM = false;
-    }
-
-    // check natives!
-
-    // sourcebans
-    if (GetFeatureStatus(FeatureType_Native, "SBPP_BanPlayer") == FeatureStatus_Available)
-    {
-        SOURCEBANS = true;
-    }
-    // materialadmin
-    if (GetFeatureStatus(FeatureType_Native, "MABanPlayer") == FeatureStatus_Available)
-    {
-        MATERIALADMIN = true;
-    }
-    // gbans
-    if (CommandExists("gb_ban"))
-    {
-        GBANS = true;
-    }
-    // sourcemod aimplotter
-    if (CommandExists("sm_aimplot"))
-    {
-        AIMPLOTTER = true;
-    }
-    // discord functionality
-    if (GetFeatureStatus(FeatureType_Native, "Discord_SendMessage") == FeatureStatus_Available)
-    {
-        DISCORD = true;
     }
 
     return Plugin_Continue;
@@ -133,7 +173,7 @@ void ResetTimers()
         {
             int userid = GetClientUserId(cl);
 
-            if (DEBUG)
+            if (stac_debug.BoolValue)
             {
                 StacLog("Creating timer for %L", cl);
             }
@@ -141,11 +181,7 @@ void ResetTimers()
             QueryTimer[cl] =
             CreateTimer
             (
-                GetRandomFloat
-                (
-                    minRandCheckVal,
-                    maxRandCheckVal
-                ),
+                float_rand( stac_min_randomcheck_secs.FloatValue, stac_max_randomcheck_secs.FloatValue ),
                 Timer_CheckClientConVars,
                 userid
             );
@@ -163,7 +199,7 @@ Action getIP(Handle timer)
     SteamWorks_GetPublicIP(sw_ip);
     Format(hostipandport, sizeof(hostipandport), "%i.%i.%i.%i:%s", sw_ip[0], sw_ip[1], sw_ip[2], sw_ip[3], hostport);
 
-    if (DEBUG)
+    if (stac_debug.BoolValue)
     {
         StacLog("Server IP + Port = %s", hostipandport);
     }
@@ -180,7 +216,7 @@ void DoTPSMath()
     //static int maxAheadSeconds = 5;
     //itps_maxaheadsecs = ( itps * maxAheadSeconds );
 
-    if (DEBUG)
+    if (stac_debug.BoolValue)
     {
         StacLog("tickinterv %f, tps %f, itps %i", tickinterv, tps, itps);
     }

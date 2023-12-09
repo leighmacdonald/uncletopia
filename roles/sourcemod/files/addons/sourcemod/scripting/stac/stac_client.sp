@@ -16,10 +16,17 @@
 // There is almost certainly no way to ever have a client ever trigger OCPCE -> EPC -> OCC out of order
 // But just in case we do a ton of checks
 
-
-
 static char latestIP        [16];
 static char latestSteamID   [MAX_AUTHID_LENGTH];
+
+StringMap IPBuckets = null;
+// runs on plugin start
+void SetUpIPConnectLeakyBucket()
+{
+    IPBuckets = new StringMap();
+    CreateTimer(5.0, LeakIPConnectBucket, _, TIMER_REPEAT);
+    IPBuckets.Clear();
+}
 
 // Fired before anything
 // CBaseServer::ConnectClient
@@ -27,7 +34,7 @@ static char latestSteamID   [MAX_AUTHID_LENGTH];
 // Does NOT fire on map change
 public bool OnClientPreConnectEx(const char[] name, char password[255], const char[] ip, const char[] steamID, char rejectReason[255])
 {
-    if (DEBUG)
+    if (stac_debug.BoolValue)
     {
         StacLog("-> OnClientPreConnectEx (name %s, ip %s) t=%f", name, ip, GetEngineTime());
         StacLog("-> OnClientPreConnectEx (steamid = %s)", steamID);
@@ -37,7 +44,91 @@ public bool OnClientPreConnectEx(const char[] name, char password[255], const ch
     strcopy(latestIP,       sizeof(latestIP),       ip);
     strcopy(latestSteamID,  sizeof(latestSteamID),  steamID);
 
+
+    if (!stac_prevent_connect_spam.BoolValue)
+    {
+        return true;
+    }
+
+    // TODO: does this need to be higher? or lower? or...?
+    static int threshold = 5;
+    int connects;
+    IPBuckets.GetValue(ip, connects); // 0 if not present
+    connects++;
+    if (connects >= threshold)
+    {
+        rejectReason = "Rate limited.";
+        
+        // BanIdentity(steamID, 60, BANFLAG_AUTHID, "");
+        // BanIdentity(ip, 60, BANFLAG_IP, "");
+
+        // THE REASON we are doing this, is so that we hook into srcds's built in
+        // "firewall", basically, where with the default game banning system,
+        // srcds will ignore packets from banned ips.
+        // this prevents any clients from spamming, in a way that would otherwise not really be possible,
+        // without stupid memory hacks that would be overcomplicated anyway since this already exists
+        if ( CommandExists("sm_banip") && CommandExists("sm_addban") )
+        {
+            ServerCommand("sm_addban 60 %s %s", steamID,    "Rate limited");
+            ServerCommand("sm_banip %s 60 %s",  ip,         "Rate limited");
+        }
+        else
+        {
+            ServerCommand("addip 60 %s", ip);
+            ServerCommand("banid 60 %s", steamID);
+        }
+
+        return false;
+    }
+    IPBuckets.SetValue(ip, connects);
+
+    if (stac_debug.BoolValue)
+    {
+        StacLog("-> connects from ip %s %i", ip, connects);
+    }
+
     return true;
+}
+
+Action LeakIPConnectBucket(Handle timer)
+{
+    if (!stac_prevent_connect_spam.BoolValue)
+    {
+        return Plugin_Continue;
+    }
+
+    StringMapSnapshot snap = IPBuckets.Snapshot();
+    
+    for (int i = 0; i < snap.Length; i++)
+    {
+        char ip[32];
+        snap.GetKey(i, ip, sizeof(ip));
+
+        int connects;
+        IPBuckets.GetValue(ip, connects); // 0 if not present per zero-init above
+        connects--;
+
+        if (stac_debug.BoolValue)
+        {
+            StacLog("(LeakIPConnectBucket) connects from ip %s %i", ip, connects);
+        }
+
+        if (connects <= 0)
+        {
+            if (stac_debug.BoolValue)
+            {
+                StacLog("-> connects from ip %s %i [ REMOVING ] ", ip, connects);
+            }
+
+            IPBuckets.Remove(ip);
+            continue;
+        }
+        IPBuckets.SetValue(ip, connects);
+    }
+
+    delete snap;
+
+    return Plugin_Continue;
 }
 
 // Fired after client is allowed thru connect ext
@@ -84,7 +175,7 @@ public void ePlayerConnect(Handle event, const char[] name, bool dontBroadcast)
     )
     {
         strcopy(SteamAuthFor[cl], sizeof(latestSteamID), latestSteamID);
-        if (DEBUG)
+        if (stac_debug.BoolValue)
         {
             StacLog("\n\nplayer_connect steamid = %s\n", SteamAuthFor[cl]);
         }
@@ -142,7 +233,7 @@ public bool OnClientConnect(int cl, char[] rejectmsg, int maxlen)
 {
     float nowTime = GetEngineTime();
 
-    if (DEBUG)
+    if (stac_debug.BoolValue)
     {
         StacLog("-> OnClientConnect (index %i)", cl);
         StacLog("-> OnClientConnect t=%f", nowTime);
@@ -153,7 +244,7 @@ public bool OnClientConnect(int cl, char[] rejectmsg, int maxlen)
 
 public void OnClientConnected(int cl)
 {
-    if (DEBUG)
+    if (stac_debug.BoolValue)
     {
         StacLog("-> OnClientConnected (index %i) t=%f", cl, GetEngineTime());
     }
@@ -162,7 +253,7 @@ public void OnClientConnected(int cl)
 // client join
 public void OnClientPutInServer(int cl)
 {
-    if (DEBUG)
+    if (stac_debug.BoolValue)
     {
         StacLog("-> OnClientPutInServer (index %i) t=%f", cl, GetEngineTime());
     }
@@ -186,7 +277,7 @@ public void OnClientPutInServer(int cl)
     // clear timer
     QueryTimer[cl] = null;
     // query convars on player connect
-    if (DEBUG)
+    if (stac_debug.BoolValue)
     {
         StacLog("%N joined. Checking cvars", cl);
     }
@@ -234,13 +325,13 @@ public void OnClientPutInServer(int cl)
         }
     }
 
-    if (DEBUG)
+    if (stac_debug.BoolValue)
     {
         StacLog("OCPIS steamid = %s", SteamAuthFor[cl]);
     }
 
     // bail if cvar is set to 0
-    if (maxip > 0)
+    if (stac_max_connections_from_ip.IntValue > 0)
     {
         checkIP(cl);
     }
@@ -269,14 +360,14 @@ void checkIP(int cl)
     }
 
     // maxip is our cached stac_max_connections_from_ip
-    if (sameip > maxip)
+    if (sameip > stac_max_connections_from_ip.IntValue)
     {
         char msg[256];
         Format(msg, sizeof(msg), "Too many connections from the same IP address %s from client %N", clientIP, cl);
         StacNotify(userid, msg);
         PrintToImportant("{hotpink}[StAC]{white} Too many connections (%i) from the same IP address {mediumpurple}%s{white} from client %N!", sameip, clientIP, cl);
         StacLog(msg);
-        KickClient(cl, "[StAC] Too many concurrent connections from your IP address!", maxip);
+        KickClient(cl, "[StAC] Too many concurrent connections from your IP address!");
     }
 }
 
