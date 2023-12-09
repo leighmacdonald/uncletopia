@@ -1,5 +1,7 @@
 ---
 - name: Build sourcemod distribution
   hosts: tf2
-  roles:
-    - sourcemod
+  tasks:
+    - name: sourcemod
+      ansible.builtin.import_role:
+        name: sourcemod

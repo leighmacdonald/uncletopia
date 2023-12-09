@@ -13,7 +13,7 @@
 #include <stocksoup/handles>
 #include <stocksoup/memory>
 
-#define PLUGIN_VERSION "0.19.0"
+#define PLUGIN_VERSION "0.19.1"
 public Plugin myinfo = {
 	name = "[TF2] Econ Data",
 	author = "nosoop",
@@ -519,7 +519,7 @@ int GetProtoDefIndex(Address pProtoDefinition) {
 }
 
 static bool TranslateWeaponEntForClass(char[] buffer, int maxlen, int playerClass) {
-	return SDKCall(g_SDKCallTranslateWeaponEntForClass, buffer, maxlen, buffer, playerClass);
+	return SDKCall(g_SDKCallTranslateWeaponEntForClass, buffer, maxlen, buffer, playerClass) > 0;
 }
 
 static Address GameConfGetAddressOffset(Handle gamedata, const char[] key) {
