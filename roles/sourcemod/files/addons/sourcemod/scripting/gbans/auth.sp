@@ -36,46 +36,55 @@ void refreshToken()
 
 void onAuthReqReceived(bool success, const char[] error, System2HTTPRequest request, System2HTTPResponse response, HTTPRequestMethod method)
 {
-	if(success)
-	{
-		char lastURL[128];
-		response.GetLastURL(lastURL, sizeof lastURL);
-		int statusCode = response.StatusCode;
-		if(statusCode != HTTP_STATUS_OK)
-		{
-			gbLog("Bad status on authentication request: %d", statusCode);
-			return ;
-		}
-
-		char[] content = new char[response.ContentLength + 1];
-		response.GetContent(content, response.ContentLength + 1);
-
-		JSON_Object data = json_decode(content);
-
-		char token[512];
-
-		bool status = data.GetBool("status");
-		if (!status) {
-			gbLog("Invalid server auth status returned");
-			return;
-		}
-
-		data.GetString("token", token, sizeof token);
-
-		if(strlen(token) == 0)
-		{
-			gbLog("Invalid response status, invalid token");
-			return;
-		}
-
-		gAccessToken = token;
-		gbLog("Successfully authenticated with gbans server");
-		json_cleanup_and_delete(data);
-	}
-	else
-	{
+	if (!success) {
 		gbLog("Error on authentication request: %s", error);
+		return;
 	}
+
+	char lastURL[128];
+	response.GetLastURL(lastURL, sizeof lastURL);
+	int statusCode = response.StatusCode;
+	if(statusCode != HTTP_STATUS_OK)
+	{
+		gbLog("Bad status on authentication request: %d", statusCode);
+		return ;
+	}
+
+	char[] content = new char[response.ContentLength + 1];
+	int contentSize = response.GetContent(content, response.ContentLength + 1);
+	PrintToServer("Content of the response: %s", content); 
+	if (contentSize <= 0) {
+		gbLog("Empty content");
+		return;
+	}
+
+	JSON_Object data = json_decode(content);
+	if (data == null) {
+		gbLog("Invalid auth response json");
+		return;
+	}
+
+
+	char token[512];
+
+	bool status = data.GetBool("status");
+	if (!status) {
+		gbLog("Invalid server auth status returned");
+		return;
+	}
+
+	data.GetString("token", token, sizeof token);
+
+	if(strlen(token) == 0)
+	{
+		gbLog("Invalid response status, invalid token");
+		return;
+	}
+
+	gAccessToken = token;
+	gbLog("Successfully authenticated with gbans server");
+	json_cleanup_and_delete(data);
+	delete response;
 }
 
 
@@ -97,38 +106,35 @@ void reloadAdmins()
 
 void onAdminsReqReceived(bool success, const char[] error, System2HTTPRequest request, System2HTTPResponse response, HTTPRequestMethod method)
 {
-	if(success)
-	{
-		char lastURL[128];
-		response.GetLastURL(lastURL, sizeof lastURL);
-		int statusCode = response.StatusCode;
-		if(statusCode != HTTP_STATUS_OK)
-		{
-			gbLog("Bad status on reload admins request: %d", statusCode);
-			return ;
-		}
-		char[] content = new char[response.ContentLength + 1];
-		response.GetContent(content, response.ContentLength + 1);
-		char path[PLATFORM_MAX_PATH];
-		BuildPath(Path_SM, path, PLATFORM_MAX_PATH, "configs/admins_simple.ini");
-
-		gbLog(path);
-		Handle f = OpenFile(path, "w", false, "");
-		if(!WriteFileString(f, content, false))
-		{
-			gbLog("Failed to write admin file");
-			return ;
-		}
-		CloseHandle(f);
-		ServerCommand("sm_reloadadmins");
-		gbLog("Reloaded admins");
-	}
-	else
-	{
-// Try and load cached data on failure
-
+	if (!success) {
 		gbLog("Error on reload admins request: %s", error);
+		return;
 	}
+
+	char lastURL[128];
+	response.GetLastURL(lastURL, sizeof lastURL);
+	int statusCode = response.StatusCode;
+	if(statusCode != HTTP_STATUS_OK)
+	{
+		gbLog("Bad status on reload admins request: %d", statusCode);
+		return ;
+	}
+	char[] content = new char[response.ContentLength + 1];
+	response.GetContent(content, response.ContentLength + 1);
+	char path[PLATFORM_MAX_PATH];
+	BuildPath(Path_SM, path, PLATFORM_MAX_PATH, "configs/admins_simple.ini");
+
+	gbLog(path);
+	Handle f = OpenFile(path, "w", false, "");
+	if(!WriteFileString(f, content, false))
+	{
+		gbLog("Failed to write admin file");
+		return ;
+	}
+	CloseHandle(f);
+	ServerCommand("sm_reloadadmins");
+	gbLog("Reloaded admins");
+	delete response;
 }
 
 
