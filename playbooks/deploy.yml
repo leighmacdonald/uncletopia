@@ -22,10 +22,22 @@
       loop_control:
         index_var: loop0
 
-    - name: srcds-stv volume
-      docker_volume:
-        name: srcds-{{ item.server_name_short }}-stv
-        state: present
+#    - name: srcds-stv volume
+#      docker_volume:
+#        name: srcds-{{ item.server_name_short }}-stv
+#        state: present
+#      loop: "{{ services }}"
+#      loop_control:
+#        index_var: loop0
+
+    - name: Create stv sub directories
+      become: true
+      ansible.builtin.file:
+        recurse: true
+        path: "/home/tf2server/stv/srcds-{{ item.server_name_short }}"
+        state: directory
+        owner: tf2server
+        mode: 0777
       loop: "{{ services }}"
       loop_control:
         index_var: loop0
@@ -80,7 +92,7 @@
           # and the query port are the same.
           STEAM_GAMESERVER_PACKET_HANDLER_NO_IPC: "1"
         volumes:
-          - srcds-{{ item.server_name_short }}-stv:/home/tf2server/tf-dedicated/tf/stv_demos
+          - ~/stv/srcds-{{ item.server_name_short }}/:/home/tf2server/tf-dedicated/tf/stv_demos
           - srcds-{{ item.server_name_short }}-logs:/home/tf2server/tf-dedicated/tf/logs
       loop: "{{ services }}"
       loop_control:
