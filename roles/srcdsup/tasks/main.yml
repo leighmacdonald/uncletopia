@@ -31,7 +31,7 @@
     recreate: true
     restart_policy: always
     volumes:
-      - srcds-{{ item.server_name_short }}-stv:/app/demos
+      - ~/stv/srcds-{{ item.server_name_short }}/:/app/demos
       - srcds-{{ item.server_name_short }}-logs:/app/logs
       - /build/{{ item.server_name_short }}/srcdsup.yml:/app/srcdsup.yml
     labels:
