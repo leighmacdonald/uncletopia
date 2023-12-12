@@ -143,7 +143,7 @@
         index_var: loop0
       when: ansible_distribution == 'Ubuntu'
 
-    - name: cron
+    - name: cron-srcds
       become: true
       ansible.builtin.cron:
         name: "tf2-restart-{{ item.server_name_short }}"
@@ -155,5 +155,20 @@
       loop_control:
         index_var: loop0
       when: ansible_distribution == 'Ubuntu'
+      tags: cron
+
+    - name: cron-srcdsup
+      become: true
+      ansible.builtin.cron:
+        name: "tf2-restart-srcdsup-{{ item.server_name_short }}"
+        weekday: "*"
+        minute: "*/15"
+        hour: "*"
+        job: "docker restart srcdsup-{{ item.server_name_short }}"
+      loop: "{{ services }}"
+      loop_control:
+        index_var: loop0
+      when: ansible_distribution == 'Ubuntu'
+      tags: cron
   roles:
     - srcdsup
