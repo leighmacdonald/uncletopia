@@ -1504,7 +1504,7 @@ void PerformVisChecks(int client, ArrayList hVoteTypes)
 		Action hide = Plugin_Continue;
 		
 #if defined LOG
-		LogMessage("Checking visibility forward for %d: %d", voteData.CallVoteList_VoteType., g_CallVotes[voteData.CallVoteList_VoteType].CallVote_Vis);
+		LogMessage("Checking visibility forward for %d: %d", voteData.CallVoteList_VoteType, g_CallVotes[voteData.CallVoteList_VoteType].CallVote_Vis);
 #endif
 		Call_StartForward(g_CallVotes[voteData.CallVoteList_VoteType].CallVote_Vis);
 		Call_PushCell(client);
