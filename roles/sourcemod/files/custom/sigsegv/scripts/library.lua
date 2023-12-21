@@ -53,10 +53,10 @@ function CVector:Copy(vector) end
 function CVector:CopyUnpacked(x, y, z) end
 
 --Game entity class.
---It is possible to access entity netprops, datamap and custom variables like a typical field, like entity.m_iTeamNum or entity.m_iAmmo[1] (Arrays start from 1 instead of 0)
+--It is possible to access entity netprops, datamap and custom variables like a typical field, like entity.m_iTeamNum or entity.m_iAmmo[1] (Arrays start from 1 instead of 0). You should omit $ from custom prop names
 --List of netprops https://raw.githubusercontent.com/powerlord/tf2-data/master/netprops.txt
 --List of datamap props https://raw.githubusercontent.com/powerlord/tf2-data/master/datamaps.txt
---Is is also possible to call entity inputs like a typical function, like entity:FireUser1()
+--Is is also possible to call entity inputs like a typical function, like entity:FireUser1(). You should omit $ from custom input names
 ---@class Entity
 local CEntity = {}
 
@@ -84,7 +84,7 @@ function CEntity:GetHandleIndex() end
 function CEntity:GetNetIndex() end
 
 ---@return nil
-function CEntity:Spawn() end
+function CEntity:DispatchSpawn() end
 
 ---@return nil
 function CEntity:Activate() end
@@ -443,6 +443,11 @@ function CEntity:HideToAll() end
 ---@return nil
 function CEntity:ShowToAll() end
 
+function CEntity:AddModule(name) end
+function CEntity:StopParticleEffects() end
+function CEntity:SetSolidFlags(flags) end
+function CEntity:SetSolid(solidType) end
+
 -------------
 -- Player inputs
 -------------
@@ -469,11 +474,11 @@ function CEntity:AddCurrency(currency) end
 function CEntity:RemoveCurrency(currency) end
 function CEntity:RefillAmmo() end
 function CEntity:Regenerate() end
-function CEntity:BotCommand() end
+function CEntity:BotCommand(command) end
 function CEntity:ResetInventory() end
 function CEntity:PlaySequence(name) end
 function CEntity:AwardExtraItem(name) end
-function CEntity:BleedDuration(duration) end
+function CEntity:BleedPlayer(duration) end
 -- For player only
 function CEntity:SetCustomModel(name) end
 function CEntity:SetHUDVisibility(visible) end
@@ -554,7 +559,7 @@ function ents.RemoveCreateCallback(id) end
 
 --Finds a player with given userid, or nil if not found
 ---@param userid number
----@return Entity player Player with given user id, or nil if not found
+---@return Entity player Player with given user id, or `nil` if not found
 function ents.GetPlayerByUserId(userid) end
 
 --Creates an entity with specified classname and keyvalues
@@ -776,7 +781,7 @@ function precache.PrecacheParticle(name) end
 ---@return number
 function CurTime() end
 
---Returns tick coount since map load
+--Returns tick count since map load
 ---@return number
 function TickCount() end
 

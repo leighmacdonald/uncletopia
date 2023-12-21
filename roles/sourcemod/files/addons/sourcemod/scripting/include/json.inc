@@ -32,18 +32,17 @@
  */
 
 #if defined _json_included
- #endinput
+#endinput
 #endif
 #define _json_included
 
-#include <string>
+#include <json/array>
 #include <json/definitions>
 #include <json/helpers/decode>
 #include <json/helpers/errors>
 #include <json/helpers/string>
 #include <json/object>
-#include <json/array>
-
+#include <string>
 
 /**
  * Calculates the buffer size required to store an encoded JSON instance.
@@ -53,8 +52,7 @@
  * @param depth     The current depth of the encoder.
  * @return          The required buffer size.
  */
-stock int json_encode_size(JSON_Object obj, int options = JSON_NONE, int depth = 0)
-{
+stock int json_encode_size(JSON_Object obj, int options = JSON_NONE, int depth = 0) {
     bool pretty_print = (options & JSON_ENCODE_PRETTY) != 0;
 
     bool is_array = obj.IsArray;
@@ -94,7 +92,7 @@ stock int json_encode_size(JSON_Object obj, int options = JSON_NONE, int depth =
             size += (depth + 1) * strlen(JSON_PP_INDENT);
         }
 
-        if (! is_array) {
+        if (!is_array) {
             // add the size of the key and + 1 for :
             size += json_cell_string_size(key) + 1;
 
@@ -114,11 +112,11 @@ stock int json_encode_size(JSON_Object obj, int options = JSON_NONE, int depth =
             case JSON_Type_Int: {
                 size += JSON_INT_BUFFER_SIZE;
             }
-            #if SM_INT64_SUPPORTED
+#if SM_INT64_SUPPORTED
             case JSON_Type_Int64: {
                 size += JSON_INT64_BUFFER_SIZE;
             }
-            #endif
+#endif
             case JSON_Type_Float: {
                 size += JSON_FLOAT_BUFFER_SIZE;
             }
@@ -137,7 +135,7 @@ stock int json_encode_size(JSON_Object obj, int options = JSON_NONE, int depth =
         is_empty = false;
     }
 
-    if (! is_empty) {
+    if (!is_empty) {
         // remove the final comma
         size -= 1;
 
@@ -161,14 +159,7 @@ stock int json_encode_size(JSON_Object obj, int options = JSON_NONE, int depth =
  * @param options   Bitwise combination of `JSON_ENCODE_*` options.
  * @param depth     The current depth of the encoder.
  */
-stock void json_encode(
-    JSON_Object obj,
-    char[] output,
-    int max_size,
-    int options = JSON_NONE,
-    int depth = 0
-)
-{
+stock void json_encode(JSON_Object obj, char[] output, int max_size, int options = JSON_NONE, int depth = 0) {
     bool pretty_print = (options & JSON_ENCODE_PRETTY) != 0;
 
     bool is_array = obj.IsArray;
@@ -217,11 +208,11 @@ stock void json_encode(
             case JSON_Type_Int: {
                 cell_length = JSON_INT_BUFFER_SIZE;
             }
-            #if SM_INT64_SUPPORTED
+#if SM_INT64_SUPPORTED
             case JSON_Type_Int64: {
                 cell_length = JSON_INT64_BUFFER_SIZE;
             }
-            #endif
+#endif
             case JSON_Type_Float: {
                 cell_length = JSON_FLOAT_BUFFER_SIZE;
             }
@@ -246,13 +237,13 @@ stock void json_encode(
                 int value = obj.GetInt(key);
                 IntToString(value, cell, cell_length);
             }
-            #if SM_INT64_SUPPORTED
+#if SM_INT64_SUPPORTED
             case JSON_Type_Int64: {
                 int value[2];
                 obj.GetInt64(key, value);
                 Int64ToString(value, cell, cell_length);
             }
-            #endif
+#endif
             case JSON_Type_Float: {
                 float value = obj.GetFloat(key);
                 FloatToString(value, cell, cell_length);
@@ -279,7 +270,7 @@ stock void json_encode(
         // make the builder fit our key:value
         // use previously determined cell length and + 1 for ,
         builder_size = cell_length + 1;
-        if (! is_array) {
+        if (!is_array) {
             // get the length of the key and + 1 for :
             builder_size += json_cell_string_size(key) + 1;
 
@@ -292,7 +283,7 @@ stock void json_encode(
         strcopy(builder, builder_size, "");
 
         // add the key if we're working with an object
-        if (! is_array) {
+        if (!is_array) {
             json_cell_string(key, builder, builder_size);
             StrCat(builder, builder_size, ":");
 
@@ -319,7 +310,7 @@ stock void json_encode(
         is_empty = false;
     }
 
-    if (! is_empty) {
+    if (!is_empty) {
         // remove the final comma
         output[strlen(output) - 1] = '\0';
 
@@ -349,16 +340,10 @@ stock void json_encode(
  * @error           If the buffer does not contain valid JSON,
  *                  an error will be thrown.
  */
-stock JSON_Object json_decode(
-    const char[] buffer,
-    int options = JSON_NONE,
-    int &pos = 0,
-    int depth = 0
-)
-{
+stock JSON_Object json_decode(const char[] buffer, int options = JSON_NONE, int& pos = 0, int depth = 0) {
     int length = strlen(buffer);
     // skip preceding whitespace
-    if (! json_skip_whitespace(buffer, length, pos)) {
+    if (!json_skip_whitespace(buffer, length, pos)) {
         json_set_last_error("buffer ended early at position %d", pos);
 
         return null;
@@ -388,15 +373,12 @@ stock JSON_Object json_decode(
     bool empty_checked = false;
 
     // while we haven't reached the end of our structure
-    while (
-        (! is_array && buffer[pos] != '}')
-        || (is_array && buffer[pos] != ']')
-    ) {
+    while ((!is_array && buffer[pos] != '}') || (is_array && buffer[pos] != ']')) {
         // pos is either an opening structure or comma, so increment past it
         pos += 1;
 
         // skip any whitespace preceding the element
-        if (! json_skip_whitespace(buffer, length, pos)) {
+        if (!json_skip_whitespace(buffer, length, pos)) {
             json_set_last_error("buffer ended early at position %d", pos);
             json_cleanup_and_delete(obj);
             json_cleanup_and_delete(arr);
@@ -406,11 +388,8 @@ stock JSON_Object json_decode(
 
         // if we haven't checked for empty yet and we are at the end
         // of an object or array, we can stop here (empty structure)
-        if (! empty_checked) {
-            if (
-                (! is_array && buffer[pos] == '}')
-                || (is_array && buffer[pos] == ']')
-            ) {
+        if (!empty_checked) {
+            if ((!is_array && buffer[pos] == '}') || (is_array && buffer[pos] == ']')) {
                 break;
             }
 
@@ -418,9 +397,9 @@ stock JSON_Object json_decode(
         }
 
         int key_length = 1;
-        if (! is_array) {
+        if (!is_array) {
             // if dealing with an object, look for the key and determine length
-            if (! json_is_string(buffer[pos], allow_single_quotes)) {
+            if (!json_is_string(buffer[pos], allow_single_quotes)) {
                 json_set_last_error("expected key string at position %d", pos);
                 json_cleanup_and_delete(obj);
                 json_cleanup_and_delete(arr);
@@ -428,22 +407,17 @@ stock JSON_Object json_decode(
                 return null;
             }
 
-            key_length = json_extract_string_size(
-                buffer,
-                length,
-                pos,
-                is_array
-            );
+            key_length = json_extract_string_size(buffer, length, pos, is_array);
         }
 
         char[] key = new char[key_length];
 
-        if (! is_array) {
+        if (!is_array) {
             // extract the key from the buffer
             json_extract_string(buffer, length, pos, key, key_length, is_array);
 
             // skip any whitespace following the key
-            if (! json_skip_whitespace(buffer, length, pos)) {
+            if (!json_skip_whitespace(buffer, length, pos)) {
                 json_set_last_error("buffer ended early at position %d", pos);
                 json_cleanup_and_delete(obj);
                 json_cleanup_and_delete(arr);
@@ -453,10 +427,7 @@ stock JSON_Object json_decode(
 
             // ensure that we find a colon
             if (buffer[pos++] != ':') {
-                json_set_last_error(
-                    "expected colon after key at position %d",
-                    pos
-                );
+                json_set_last_error("expected colon after key at position %d", pos);
                 json_cleanup_and_delete(obj);
                 json_cleanup_and_delete(arr);
 
@@ -464,7 +435,7 @@ stock JSON_Object json_decode(
             }
 
             // skip any whitespace following the colon
-            if (! json_skip_whitespace(buffer, length, pos)) {
+            if (!json_skip_whitespace(buffer, length, pos)) {
                 json_set_last_error("buffer ended early at position %d", pos);
                 json_cleanup_and_delete(obj);
                 json_cleanup_and_delete(arr);
@@ -479,33 +450,18 @@ stock JSON_Object json_decode(
             cell_type = JSON_Type_Object;
         } else if (json_is_string(buffer[pos], allow_single_quotes)) {
             cell_type = JSON_Type_String;
-            cell_length = json_extract_string_size(
-                buffer,
-                length,
-                pos,
-                is_array
-            );
+            cell_length = json_extract_string_size(buffer, length, pos, is_array);
         } else {
             // in this particular instance, we use JSON_Type_Invalid to
             // represent any type that isn't an object or string
-            cell_length = json_extract_until_end_size(
-                buffer,
-                length,
-                pos,
-                is_array
-            );
+            cell_length = json_extract_until_end_size(buffer, length, pos, is_array);
         }
 
         char[] cell = new char[cell_length];
         switch (cell_type) {
             case JSON_Type_Object: {
                 // if we are dealing with an object or array, decode recursively
-                JSON_Object value = json_decode(
-                    buffer,
-                    options,
-                    pos,
-                    depth + 1
-                );
+                JSON_Object value = json_decode(buffer, options, pos, depth + 1);
 
                 // decoding failed, error will be logged in json_decode
                 if (value == null) {
@@ -523,18 +479,8 @@ stock JSON_Object json_decode(
             }
             case JSON_Type_String: {
                 // if we are dealing with a string, attempt to extract it
-                if (! json_extract_string(
-                    buffer,
-                    length,
-                    pos,
-                    cell,
-                    cell_length,
-                    is_array
-                )) {
-                    json_set_last_error(
-                        "couldn't extract string at position %d",
-                        pos
-                    );
+                if (!json_extract_string(buffer, length, pos, cell, cell_length, is_array)) {
+                    json_set_last_error("couldn't extract string at position %d", pos);
                     json_cleanup_and_delete(obj);
                     json_cleanup_and_delete(arr);
 
@@ -548,18 +494,8 @@ stock JSON_Object json_decode(
                 }
             }
             case JSON_Type_Invalid: {
-                if (! json_extract_until_end(
-                    buffer,
-                    length,
-                    pos,
-                    cell,
-                    cell_length,
-                    is_array
-                )) {
-                    json_set_last_error(
-                        "couldn't extract until end at position %d",
-                        pos
-                    );
+                if (!json_extract_until_end(buffer, length, pos, cell, cell_length, is_array)) {
+                    json_set_last_error("couldn't extract until end at position %d", pos);
                     json_cleanup_and_delete(obj);
                     json_cleanup_and_delete(arr);
 
@@ -567,10 +503,7 @@ stock JSON_Object json_decode(
                 }
 
                 if (strlen(cell) == 0) {
-                    json_set_last_error(
-                        "empty cell encountered at position %d",
-                        pos
-                    );
+                    json_set_last_error("empty cell encountered at position %d", pos);
                     json_cleanup_and_delete(obj);
                     json_cleanup_and_delete(arr);
 
@@ -579,7 +512,7 @@ stock JSON_Object json_decode(
 
                 if (json_is_int(cell)) {
                     int value = StringToInt(cell);
-                    #if SM_INT64_SUPPORTED
+#if SM_INT64_SUPPORTED
                     if (json_is_int64(cell, value)) {
                         int values[2];
                         StringToInt64(cell, values);
@@ -596,13 +529,13 @@ stock JSON_Object json_decode(
                             obj.SetInt(key, value);
                         }
                     }
-                    #else
+#else
                     if (is_array) {
                         arr.PushInt(value);
                     } else {
                         obj.SetInt(key, value);
                     }
-                    #endif
+#endif
                 } else if (json_is_float(cell)) {
                     float value = StringToFloat(cell);
                     if (is_array) {
@@ -624,11 +557,7 @@ stock JSON_Object json_decode(
                         obj.SetObject(key, null);
                     }
                 } else {
-                    json_set_last_error(
-                        "unknown type encountered at position %d: %s",
-                        pos,
-                        cell
-                    );
+                    json_set_last_error("unknown type encountered at position %d: %s", pos, cell);
                     json_cleanup_and_delete(obj);
                     json_cleanup_and_delete(arr);
 
@@ -637,7 +566,7 @@ stock JSON_Object json_decode(
             }
         }
 
-        if (! json_skip_whitespace(buffer, length, pos)) {
+        if (!json_skip_whitespace(buffer, length, pos)) {
             json_set_last_error("buffer ended early at position %d", pos);
             json_cleanup_and_delete(obj);
             json_cleanup_and_delete(arr);
@@ -649,10 +578,7 @@ stock JSON_Object json_decode(
     // skip remaining whitespace and ensure we're at the end of the buffer
     pos += 1;
     if (json_skip_whitespace(buffer, length, pos) && depth == 0) {
-        json_set_last_error(
-            "unexpected data after structure end at position %d",
-            pos
-        );
+        json_set_last_error("unexpected data after structure end at position %d", pos);
         json_cleanup_and_delete(obj);
         json_cleanup_and_delete(arr);
 
@@ -671,12 +597,7 @@ stock JSON_Object json_decode(
  * @param options     Options to pass to `json_encode`.
  * @return            True on success, false otherwise.
  */
-stock bool json_write_to_file(
-    JSON_Object obj,
-    const char[] path,
-    int options = JSON_NONE
-)
-{
+stock bool json_write_to_file(JSON_Object obj, const char[] path, int options = JSON_NONE) {
     File f = OpenFile(path, "wb");
     if (f == null) {
         return false;
@@ -699,8 +620,7 @@ stock bool json_write_to_file(
  * @param options     Options to pass to `json_decode`.
  * @return            The decoded object on success, null otherwise.
  */
-stock JSON_Object json_read_from_file(const char[] path, int options = JSON_NONE)
-{
+stock JSON_Object json_read_from_file(const char[] path, int options = JSON_NONE) {
     File f = OpenFile(path, "rb");
     if (f == null) {
         return null;
@@ -723,20 +643,13 @@ stock JSON_Object json_read_from_file(const char[] path, int options = JSON_NONE
  * @param obj   Object to copy.
  * @return      A shallow copy of the specified object.
  */
-stock JSON_Object json_copy_shallow(JSON_Object obj)
-{
+stock JSON_Object json_copy_shallow(JSON_Object obj) {
     bool isArray = obj.IsArray;
-    JSON_Object result = isArray
-        ? view_as<JSON_Object>(new JSON_Array())
-        : new JSON_Object();
+    JSON_Object result = isArray ? view_as<JSON_Object>(new JSON_Array()) : new JSON_Object();
 
     if (isArray) {
         view_as<JSON_Array>(result).Concat(view_as<JSON_Array>(obj));
     } else {
-        if (obj.OrderedKeys) {
-            result.EnableOrderedKeys();
-        }
-
         result.Merge(obj);
     }
 
@@ -749,8 +662,7 @@ stock JSON_Object json_copy_shallow(JSON_Object obj)
  * @param obj   Object to copy.
  * @return      A deep copy of the specified object.
  */
-stock JSON_Object json_copy_deep(JSON_Object obj)
-{
+stock JSON_Object json_copy_deep(JSON_Object obj) {
     JSON_Object result = json_copy_shallow(obj);
 
     int length = obj.Iterate();
@@ -778,8 +690,7 @@ stock JSON_Object json_copy_deep(JSON_Object obj)
  *
  * @param obj   Object to clean up.
  */
-stock void json_cleanup(JSON_Object obj)
-{
+stock void json_cleanup(JSON_Object obj) {
     if (obj == null) {
         return;
     }
@@ -812,8 +723,7 @@ stock void json_cleanup(JSON_Object obj)
  *
  * @param obj   Object to clean up.
  */
-stock void json_cleanup_and_delete(JSON_Object &obj)
-{
+stock void json_cleanup_and_delete(JSON_Object& obj) {
     json_cleanup(obj);
     obj = null;
 }

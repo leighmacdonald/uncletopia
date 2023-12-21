@@ -70,6 +70,33 @@
                     }
                 }
              }
+            "CTFPlayer::CreateFeignDeathRagdoll"
+            {
+                "signature" "CTFPlayer::CreateFeignDeathRagdoll"
+                "hooktype"  "raw"
+                "callconv"  "thiscall"
+                "return"    "void"
+                "this"      "ignore"
+                "arguments"
+                {
+                    "info"
+                    {
+                        "type" "int"
+                    }
+                    "bGib"
+                    {
+                        "type" "int"
+                    }
+                    "bBurning"
+                    {
+                        "type" "int"
+                    }
+                    "bDisguised"
+                    {
+                        "type" "int"
+                    }
+                }
+             }
         }
 
         "Offsets"
@@ -84,6 +111,24 @@
             {
                 "windows" "17"
                 "linux" "17"
+            }
+
+            "WindowsOrLinux"
+            {
+                "windows" "1"
+                "linux" "0"
+            }
+        }
+
+        "Addresses"
+        {
+            "sv"
+            {
+                "windows"
+                {
+                    "signature" "sv"
+                    "read" "13"
+                }
             }
         }
 
@@ -113,6 +158,7 @@
             {
                 "library"   "engine"
                 "linux"     "@sv"
+                "windows"   "\x83\x3D\x2A\x2A\x2A\x2A\x02\x7D\x2A\x33\xC0\xC3"
             }
 
             // blocking facial flexes
@@ -129,6 +175,12 @@
                 "library"   "server"
                 "windows"   "\x55\x8B\xEC\x81\xEC\x08\x01\x00\x00\x8D\x85\xF8\xFE\xFF\xFF\x56\x68\x04\x01\x00\x00"
                 "linux"     "@_ZN9CTFPlayer16UpdateExpressionEv"
+            }
+            "CTFPlayer::CreateFeignDeathRagdoll"
+            {
+                "library"   "server"
+                "windows"   "\x55\x8B\xEC\x83\xEC\x10\x53\x8B\xD9\x56\x89\x5D\xFC"
+                "linux"     "@_ZN9CTFPlayer23CreateFeignDeathRagdollERK15CTakeDamageInfobbb"
             }
 
         }
@@ -147,12 +199,12 @@
                 "windows"
                 {
                     "offset"    "0EEh"
+                    // ja
                     "verify"    "\x77\x1B"
+                    // unconditional jmp
                     "patch"     "\xEB\x1B"
                 }
             }
         }
-
-
     }
 }
