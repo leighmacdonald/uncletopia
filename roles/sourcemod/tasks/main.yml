@@ -30,8 +30,14 @@
   ansible.posix.synchronize:
     src: "{{ role_path }}/files/"
     dest: ~/build_sourcemod/
-  vars:
-    debugmode: true
+
+#
+#- name: Copy extensions & plugin sources
+#  ansible.builtin.copy:
+#    src: "{{ role_path }}/files/"
+#    dest: ~/build_sourcemod/
+#  vars:
+#    debugmode: true
 
 - name: Build plugins
   ansible.builtin.command:
