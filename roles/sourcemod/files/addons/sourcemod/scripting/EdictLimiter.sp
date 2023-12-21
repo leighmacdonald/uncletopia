@@ -5,34 +5,49 @@
 #pragma newdecls required
 #pragma semicolon 1
 
-bool edictExists[2049];
-
 #define MAX_EDICTS 2048
+
+bool edictExists[MAX_EDICTS + 1];
+
 
 int edicts = 0;
 float nextActionIn = 0.0;
 float nextForwardIn = 0.0;
+float nextCleanupIn = 0.0;
 bool isBlocking = false;
+int isWindows = 0;
+
+Handle g_hAttemptTimer = INVALID_HANDLE;
+Handle g_hHudMessage;
+int g_iAttempts = 0;
+
 GlobalForward g_entityLockdownForward;
 ConVar g_cvLowEdictAction;
 ConVar g_cvLowEdictThreshold;
 ConVar g_cvLowEdictBlockThreshold;
+ConVar g_cvLowEdictCleanThreshold;
 ConVar g_cvForwardCooldown;
+ConVar g_cvMaxAttempts;
+ConVar g_cvAttemptResetTime;
+ConVar g_cvHardCleanupThreshold;
+ConVar ed_aggressive_ent_culling;
 
 public Plugin myinfo =
 {
     name        = "Edict Limiter",
     author      = "Poggu & https://sappho.io",
     description = "Prevents edict limit crashes",
-    version     = "3.0.0"
+    version     = "3.1.0"
 };
 
-public void OnMapStart()
+public void OnMapEnd()
 {
     nextActionIn = 0.0;
     nextForwardIn = 0.0;
+    nextCleanupIn = 0.0;
+    g_iAttempts = 0;
+    g_hAttemptTimer = INVALID_HANDLE;
 }
-
 
 /*
     int     num_edicts;     // 0x1E4
@@ -51,28 +66,32 @@ int GetSvOffs(int offs)
     return LoadFromAddress(sv + view_as<Address>(offs), NumberType_Int32);
 }
 
-ConVar ed_aggressive_ent_culling;
-
 public void OnPluginStart()
 {
     // edicts = MaxClients + 1; // +1 for worldspawn
     edicts = ExpensivelyGetUsedEdicts();
 
-
     RegAdminCmd("sm_edictcount", Command_EdictCount, ADMFLAG_ROOT);
     RegAdminCmd("sm_spewedicts", Command_SpewEdicts, ADMFLAG_ROOT);
+    RegAdminCmd("sm_murder", Command_Murder, ADMFLAG_ROOT);
+    RegAdminCmd("sm_tptoclassname", Command_TPToClassname, ADMFLAG_ROOT);
+    RegAdminCmd("sm_addtostripper", Command_AddToStripper, ADMFLAG_ROOT);
 
     g_entityLockdownForward     = new GlobalForward("OnEntityLockdown", ET_Ignore);
     g_cvLowEdictAction          = CreateConVar("ed_lowedict_action",            "1", "0 - no action, 1 - only prevent entity spawns, 2 - attempt to restart the game, if applicable, 3 - restart the map, 4 - go to the next map in the map cycle, 5 - spew all edicts.", _, true, 0.0, true, 5.0);
     g_cvLowEdictThreshold       = CreateConVar("ed_lowedict_threshold",         "8", "When only this many edicts are free, take the action specified by sv_lowedict_action.", _, true, 0.0, true, 1920.0);
     g_cvLowEdictBlockThreshold  = CreateConVar("ed_lowedict_block_threshold",   "8", "When only this many edicts are free, prevent entity spawns.", _, true, 0.0, true, 1920.0);
+    g_cvLowEdictCleanThreshold  = CreateConVar("ed_lowedict_clean_threshold",   "16", "When only this many edicts are free, clear less important entities.", _, true, 0.0, true, 1920.0);
+    g_cvHardCleanupThreshold    = CreateConVar("ed_hard_cleanup_threshold",     "100", "If less entities than this get cleaned nuke harder", _, true, 0.0, false);
     g_cvForwardCooldown         = CreateConVar("ed_announce_cooldown",          "1", "OnEntityLockdown cooldown", _, true, 0.0, false);
+    g_cvMaxAttempts             = CreateConVar("ed_max_attempts",               "3", "How many attempts before giving up and calling action", _, true, 0.0, false);
+    g_cvAttemptResetTime        = CreateConVar("ed_attempt_reset_time",         "90", "After how many seconds should attempts be reset", _, true, 0.0, false);
 
     ed_aggressive_ent_culling   = CreateConVar("ed_aggressive_ent_culling",     "1", "1 - Enable aggressive culling of entities, 2 - enable HYPER AGGRESSIVE, and likely unstable methods of entity culling.", _, true, 0.0, false);
 
     DoGameData();
 
-
+    g_hHudMessage = CreateHudSynchronizer();
 }
 
 
@@ -107,11 +126,24 @@ void DoGameData()
     }
 
 
+    {
+        isWindows = hGameConf.GetOffset("WindowsOrLinux");
+        if(isWindows)
+        {
+            LogMessage("-> Running on Windows");
+            OFFS_num_edicts     = 0x1EC;
+            OFFS_max_edicts     = 0x1F0;
+            OFFS_free_edicts    = 0x1F4;
+        }
+    }
 
 
     // @sv - for sv.num_entities and other offsets
     {
-        sv = hGameConf.GetMemSig("sv");
+        if(isWindows)
+            sv = hGameConf.GetAddress("sv");
+        else
+            sv = hGameConf.GetMemSig("sv");
         if (!sv)
         {
             SetFailState("Couldn't find sv.");
@@ -205,6 +237,16 @@ void DoGameData()
         LogMessage("-> Set up [PRE]  ED_Alloc detour");
     }
 
+    Handle CreateFeignDeathRagdoll = DHookCreateFromConf(hGameConf, "CTFPlayer::CreateFeignDeathRagdoll");
+    if (!CreateFeignDeathRagdoll)
+    {
+        SetFailState("Couldn't create DHOOK for CreateFeignDeathRagdoll");
+    }
+    if (!DHookEnableDetour(CreateFeignDeathRagdoll, false /* pre */, CTFPlayer__CreateFeignDeathRagdoll))
+    {
+        SetFailState("Couldn't set up detour for CreateFeignDeathRagdoll");
+    }
+    LogMessage("-> Set up [PRE]  CreateFeignDeathRagdoll detour");
 
     if (ed_aggressive_ent_culling.IntValue == 2)
     {
@@ -234,6 +276,12 @@ void DoGameData()
 
     delete hGameConf;
 }
+
+public MRESReturn CTFPlayer__CreateFeignDeathRagdoll(Handle hParams)
+{
+    return MRES_Supercede;
+}
+
 public MRESReturn CTFPlayer__SpeakWeaponFire(Handle hParams)
 {
     return MRES_Supercede;
@@ -343,6 +391,10 @@ char ignoreEnts[][] =
     "passtime_ball",
     "instanced_scripted_scene",
     "tf_viewmodel",
+    "beam",
+    "env_spritetrail",
+    "env_sprite",
+    "vgui_screen",
 };
 
 void DoLowEntAction(int doAction = -1)
@@ -409,6 +461,8 @@ public MRESReturn CEntityFactoryDictionary__Create_Pre(Handle hReturn, Handle hP
         (
                 StrEqual(classname, "tf_dropped_weapon")
              || StrEqual(classname, "tf_ragdoll")
+             || StrEqual(classname, "halloween_souls_pack")
+             || StrEqual(classname, "tf_mann_vs_machine_stats")
         )
     )
     {
@@ -416,10 +470,16 @@ public MRESReturn CEntityFactoryDictionary__Create_Pre(Handle hReturn, Handle hP
         return MRES_Supercede;
     }
 
+    int freeEdicts = MAX_EDICTS - edicts;
 
-    if (g_cvLowEdictAction.IntValue > 0 && MAX_EDICTS - edicts <= g_cvLowEdictThreshold.IntValue)
+    if (g_cvLowEdictCleanThreshold.IntValue > 0 && freeEdicts <= g_cvLowEdictCleanThreshold.IntValue && (nextCleanupIn <= GetGameTime() || nextCleanupIn == 0.0))
     {
-        PrintToServer("[Edict Limiter] Warning: free edicts below threshold. %i free edict%s remaining", MAX_EDICTS - edicts, MAX_EDICTS - edicts == 1 ? "" : "s");
+      DoEntCleanup();
+    }
+
+    if (g_cvLowEdictAction.IntValue > 0 && freeEdicts <= g_cvLowEdictThreshold.IntValue)
+    {
+        PrintToServer("[Edict Limiter] Warning: free edicts below threshold. %i free edict%s remaining", freeEdicts, freeEdicts == 1 ? "" : "s");
 
         if(nextActionIn <= GetGameTime() || nextActionIn == 0.0)
         {
@@ -435,7 +495,7 @@ public MRESReturn CEntityFactoryDictionary__Create_Pre(Handle hReturn, Handle hP
         }
     }
 
-    if (g_cvLowEdictBlockThreshold.IntValue > 0 && MAX_EDICTS - edicts <= g_cvLowEdictBlockThreshold.IntValue)
+    if (g_cvLowEdictBlockThreshold.IntValue > 0 && freeEdicts <= g_cvLowEdictBlockThreshold.IntValue)
     {
         if((nextForwardIn <= GetGameTime() || nextForwardIn == 0.0) && !isBlocking)
         {
@@ -447,8 +507,6 @@ public MRESReturn CEntityFactoryDictionary__Create_Pre(Handle hReturn, Handle hP
         PrintToServer("[Edict Limiter] Blocking entity creation of %s", classname);
         DHookSetReturn(hReturn, 0);
 
-
-
         return MRES_Supercede;
     }
 
@@ -456,11 +514,90 @@ public MRESReturn CEntityFactoryDictionary__Create_Pre(Handle hReturn, Handle hP
     return MRES_Ignored;
 }
 
+Action ClearLockDownAttempts(Handle timer)
+{
+    g_hAttemptTimer = INVALID_HANDLE;
+    g_iAttempts = 0;
+
+    return Plugin_Handled;
+}
+
+char uselessEntsSoft[][] =
+{
+    "tf_ammo_pack"
+};
+
+char uselessEntsHard[][] =
+{
+    "func_dustmotes",
+    "func_smokevolume"
+};
+
+char uselessEntsHarder[][] =
+{
+    "ambient_generic",
+    "info_particle_system",
+    "trigger_soundscape"
+};
+
+int NukeEntityClassname(const char[][] array, int size)
+{
+    int ents_nuked;
+    for(int i = 0; i < size; i++)
+    {
+        int ent = 0;
+        while((ent = FindEntityByClassname(ent, array[i])) != -1)
+        {
+            RemoveEntity(ent);
+            ents_nuked++;
+        }
+    }
+
+    return ents_nuked;
+}
+
+void DoEntCleanup()
+{
+    if(g_hAttemptTimer != INVALID_HANDLE)
+      delete g_hAttemptTimer;
+
+    // too many attempts, give up
+    if(++g_iAttempts >= g_cvMaxAttempts.IntValue)
+    {
+        g_iAttempts = 0;
+        if(nextActionIn <= GetGameTime() || nextActionIn == 0.0)
+        {
+            GlobalPrint("[Edict Limiter] Too many attempts, taking action.");
+            DoLowEntAction();
+        }
+        nextCleanupIn = GetGameTime() + 5.0;
+        return;
+    }
+
+    g_hAttemptTimer = CreateTimer(g_cvAttemptResetTime.FloatValue, ClearLockDownAttempts, _, TIMER_FLAG_NO_MAPCHANGE);
+
+    PrintToServer("[Edict Limiter] Attempting to clear less important entities.");
+
+    int ents_nuked;
+    ents_nuked += NukeEntityClassname(uselessEntsSoft, sizeof uselessEntsSoft);
+
+    if(ents_nuked < g_cvHardCleanupThreshold.IntValue)
+        ents_nuked += NukeEntityClassname(uselessEntsHard, sizeof uselessEntsHard);
+
+    if(g_iAttempts >= 2)
+    {
+        ents_nuked += NukeEntityClassname(uselessEntsHarder, sizeof uselessEntsHarder);
+        nextCleanupIn = GetGameTime() + 1.0;
+    }
+
+    GlobalPrint("[Edict Limiter] Nuked %i entities.", ents_nuked);
+}
+
+
 void AnnounceEntityLockDown()
 {
     PrintToServer("[Edict Limiter] Entity creation is blocked until edicts are freed.");
     PrintToChatAll("[Edict Limiter] Entity creation is blocked until edicts are freed.\nThe server will probably change level soon.");
-
 
     Call_StartForward(g_entityLockdownForward);
     Call_Finish();
@@ -484,6 +621,125 @@ int ExpensivelyGetUsedEdicts()
 public Action Command_EdictCount(int client, int args)
 {
     ReplyToCommand(client, "GetEntityCount: %i | Used edicts: %i | Used edicts (Precise, expensive): %i", GetEntityCount(), edicts, ExpensivelyGetUsedEdicts());
+    return Plugin_Handled;
+}
+
+char g_szTargetClassname[128];
+
+public bool RayRemoveTarget(int entity, int client)
+{
+    if(entity != client)
+    {
+        if(!IsValidEdict(entity) || entity == 0 || (entity > 0 && entity <= MaxClients))
+            return true;
+
+        TR_ClipCurrentRayToEntity(MASK_ALL, entity);
+
+        if(TR_DidHit())
+		{
+            char classname[128];
+            GetEdictClassname(entity, classname, sizeof classname);
+
+            if(StrEqual(classname, g_szTargetClassname))
+            {
+                PrintToChat(client ,"Removed and added to list");
+
+                char map[PLATFORM_MAX_PATH];
+                GetCurrentMap(map, sizeof(map));
+
+                File file;
+                char dataDir[PLATFORM_MAX_PATH];
+                FormatEx(dataDir, sizeof(dataDir), "../tf/addons/stripper/maps/%s.cfg", map);
+                if(!FileExists(dataDir)) file = OpenFile(dataDir, "a+");
+                else if(FileExists(dataDir)) file = OpenFile(dataDir, "a");
+                file.WriteLine("filter:");
+                file.WriteLine("{");
+                file.WriteLine("	\"hammerid\" \"%i\"", GetEntProp(entity, Prop_Data, "m_iHammerID"));
+                file.WriteLine("	\"classname\" \"%s\"", classname);
+                file.WriteLine("}");
+                delete file;
+
+                RemoveEntity(entity);
+                return false;
+            }
+        }
+
+        return true;
+    }
+    return true;
+}
+
+public Action Command_AddToStripper(int client, int args)
+{
+    if(!client)
+    {
+        PrintToServer("This command can only be used in-game");
+        return Plugin_Handled;
+    }
+
+    if(args != 1)
+    {
+        ReplyToCommand(client, "Usage: sm_addtostripper <classname>");
+        return Plugin_Handled;
+    }
+
+    GetCmdArg(1, g_szTargetClassname, sizeof g_szTargetClassname);
+
+    float ang[3], pos[3];
+    GetClientEyeAngles(client, ang);
+    GetClientEyePosition(client, pos);
+
+    TR_EnumerateEntities(pos, ang, PARTITION_NON_STATIC_EDICTS | PARTITION_SOLID_EDICTS | PARTITION_STATIC_PROPS | PARTITION_TRIGGER_EDICTS, RayType_Infinite, RayRemoveTarget, client);
+    return Plugin_Handled;
+}
+
+public Action Command_TPToClassname(int client, int args)
+{
+    if(args != 2)
+    {
+        ReplyToCommand(client, "Usage: sm_tptoclassname <classname> <index>");
+        return Plugin_Handled;
+    }
+
+    char classname[128];
+    GetCmdArg(1, classname, sizeof classname);
+
+    int ent = 0;
+    int index;
+    while((ent = FindEntityByClassname(ent, classname)) != -1)
+    {
+        if(index == GetCmdArgInt(2))
+        {
+            float origin[3];
+            GetEntPropVector(ent, Prop_Send, "m_vecOrigin", origin);
+            TeleportEntity(client, origin, NULL_VECTOR, NULL_VECTOR);
+            break;
+        }
+        index++;
+    }
+
+    return Plugin_Handled;
+}
+public Action Command_Murder(int client, int args)
+{
+    if(args != 1)
+    {
+        ReplyToCommand(client, "Usage: sm_murder <classname>");
+        return Plugin_Handled;
+    }
+
+    char classname[128];
+    GetCmdArg(1, classname, sizeof classname);
+
+    int ent = 0;
+    int ents_nuked;
+    while((ent = FindEntityByClassname(ent, classname)) != -1)
+    {
+        RemoveEntity(ent);
+        ents_nuked++;
+    }
+
+    ReplyToCommand(client, "Killed %i entities", ents_nuked);
     return Plugin_Handled;
 }
 
@@ -595,4 +851,22 @@ void SpewEdicts(int client = 0)
         PrintToConsole(client, "sv.max_edicts %i", GetSvOffs(OFFS_max_edicts));
         PrintToConsole(client, "sv.free_edicts %i", GetSvOffs(OFFS_free_edicts));
     }
+}
+
+void GlobalPrint(const char[] format, any ...)
+{
+    char message[256];
+    VFormat(message, sizeof(message), format, 2);
+
+    SetHudTextParams(-1.0, 0.75, 5.0, 255, 255, 255, 255, _, _, _, _);
+    for(int i = 1; i <= MaxClients; i++)
+    {
+        if(IsClientInGame(i))
+        {
+            ShowSyncHudText(i, g_hHudMessage, "%s", message);
+        }
+    }
+
+    PrintToChatAll("%s", message);
+    PrintToServer("%s", message);
 }
