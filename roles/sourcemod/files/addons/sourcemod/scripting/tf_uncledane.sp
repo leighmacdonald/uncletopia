@@ -8,14 +8,14 @@
 #include <tf_econ_data>
 #include <dhooks>
 
-#define PLUGIN_VERSION "0.7.0"
+#define PLUGIN_VERSION "0.7.1"
 
 /** Display name of the humans team */
 #define PVE_TEAM_HUMANS_NAME 	"blue"
 /** Internal game index of the bots team */
 #define PVE_TEAM_BOTS_NAME 		"red"
 /** Maximum amount of players that can be on the server in TF2 */
-#define TF_MAXPLAYERS 			101
+#define TF_MAXPLAYERS 			32
 
 #define GOLDEN_PAN_DEFID 		1071 
 #define GOLDEN_PAN_CHANCE 		1
@@ -67,9 +67,9 @@ ConVar sm_danepve_max_connected_humans;
 
 // SDK Call Handles
 Handle g_hSdkEquipWearable;
-Handle gHook_PointIsWithin;
-Handle gHook_EstimateValidBuildPos;
-Handle gHook_HandleSwitchTeams;
+DynamicHook gHook_HandleSwitchTeams;
+DynamicDetour gHook_PointIsWithin;
+DynamicDetour gHook_EstimateValidBuildPos;
 DynamicDetour gHook_CreateAmmoPack;
 
 // Offset cache
@@ -122,36 +122,45 @@ public OnPluginStart()
 	PrepSDKCall_AddParameter(SDKType_CBaseEntity, SDKPass_Pointer);
 	g_hSdkEquipWearable = EndPrepSDKCall();
 
+	CreateTimer(0.5, Timer_UpdateRoundTime, _, TIMER_REPEAT);
+
 	//-----------------------------------------------------//
-	// Setup DHook Detours
-	gHook_PointIsWithin = DHookCreateDetour(Address_Null, CallConv_THISCALL, ReturnType_Bool, ThisPointer_Address);
-	DHookSetFromConf(gHook_PointIsWithin, hConf, SDKConf_Signature, "PointIsWithin");
-	DHookAddParam(gHook_PointIsWithin, HookParamType_VectorPtr);
-	DHookEnableDetour(gHook_PointIsWithin, false, Detour_OnPointIsWithin);
+	// CTFGameRules::HandleSwitchTeams
+	gHook_HandleSwitchTeams = new DynamicHook(0, HookType_GameRules, ReturnType_Void, ThisPointer_Ignore);
+	if(gHook_HandleSwitchTeams.SetFromConf(hConf, SDKConf_Virtual, "CTFGameRules::HandleSwitchTeams") == false)
+		SetFailState("Failed to load CTFGameRules::HandleSwitchTeams detour.");
 
-	gHook_EstimateValidBuildPos = DHookCreateDetour(Address_Null, CallConv_THISCALL, ReturnType_Bool, ThisPointer_Address);
-	DHookSetFromConf(gHook_EstimateValidBuildPos, hConf, SDKConf_Signature, "EstimateValidBuildPos");
-	DHookEnableDetour(gHook_EstimateValidBuildPos, false, Detour_EstimateValidBuildPos);
-	DHookEnableDetour(gHook_EstimateValidBuildPos, true, Detour_EstimateValidBuildPos_Post);
+	//-----------------------------------------------------//
+	// PointIsWithin
+	gHook_PointIsWithin = new DynamicDetour(Address_Null, CallConv_THISCALL, ReturnType_Bool, ThisPointer_Address);
+	if(gHook_PointIsWithin.SetFromConf(hConf, SDKConf_Signature, "PointIsWithin") == false)
+		SetFailState("Failed to load PointIsWithin detour.");
+	gHook_PointIsWithin.AddParam(HookParamType_VectorPtr);
+	gHook_PointIsWithin.Enable(Hook_Pre, Detour_OnPointIsWithin);
 
-	int offset = GameConfGetOffset(hConf, "CTFGameRules::HandleSwitchTeams");
-	gHook_HandleSwitchTeams = DHookCreate(offset, HookType_GameRules, ReturnType_Void, ThisPointer_Ignore, CTFGameRules_HandleSwitchTeams);
+	//-----------------------------------------------------//
+	// EstimateValidBuildPos
+	gHook_EstimateValidBuildPos = new DynamicDetour(Address_Null, CallConv_THISCALL, ReturnType_Bool, ThisPointer_Address);
+	gHook_EstimateValidBuildPos.SetFromConf(hConf, SDKConf_Signature, "EstimateValidBuildPos");
+	if(gHook_PointIsWithin.SetFromConf(hConf, SDKConf_Signature, "EstimateValidBuildPos") == false)
+		SetFailState("Failed to load EstimateValidBuildPos detour.");
+	gHook_EstimateValidBuildPos.Enable(Hook_Pre, Detour_EstimateValidBuildPos);
+	gHook_EstimateValidBuildPos.Enable(Hook_Post, Detour_EstimateValidBuildPos_Post);
 	
+	//-----------------------------------------------------//
+	// CBaseObject::CreateAmmoPack
 	gHook_CreateAmmoPack = new DynamicDetour(Address_Null, CallConv_THISCALL, ReturnType_CBaseEntity, ThisPointer_CBaseEntity);
-	gHook_CreateAmmoPack.SetFromConf(hConf, SDKConf_Signature, "CBaseObject::CreateAmmoPack");
+	if(gHook_CreateAmmoPack.SetFromConf(hConf, SDKConf_Signature, "CBaseObject::CreateAmmoPack") == false)
+		SetFailState("Failed to load CBaseObject::CreateAmmoPack detour.");
 	gHook_CreateAmmoPack.AddParam(HookParamType_CharPtr);
 	gHook_CreateAmmoPack.AddParam(HookParamType_Int);
 	gHook_CreateAmmoPack.Enable(Hook_Pre, Detour_CreateAmmoPack);
-
-	//-----------------------------------------------------//
-	// Setup DHook Detours
-	CreateTimer(0.5, Timer_UpdateRoundTime, _, TIMER_REPEAT);
 
 }
 
 public OnMapStart()
 {
-	DHookGamerules(gHook_HandleSwitchTeams, false);
+	gHook_HandleSwitchTeams.HookGamerules(Hook_Pre, CTFGameRules_HandleSwitchTeams);
 
 	//-----------------------------------------------------//
 	// Load config and setup the game
