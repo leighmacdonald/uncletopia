@@ -129,43 +129,43 @@ CONTENTS_HITBOX			= 0x40000000	-- use accurate hitboxes on trace
 ----------------
 -- Masks
 ----------------
-MASK_ALL					= (0xFFFFFFFF) -- everything that is normally solid
+MASK_ALL					= (0xFFFFFFFF)
 
-MASK_SOLID					= (CONTENTS_SOLID|CONTENTS_MOVEABLE|CONTENTS_WINDOW|CONTENTS_MONSTER|CONTENTS_GRATE) -- everything that blocks player movement
+MASK_SOLID					= (CONTENTS_SOLID|CONTENTS_MOVEABLE|CONTENTS_WINDOW|CONTENTS_MONSTER|CONTENTS_GRATE) -- everything that is normally solid
 
-MASK_PLAYERSOLID			= (CONTENTS_SOLID|CONTENTS_MOVEABLE|CONTENTS_PLAYERCLIP|CONTENTS_WINDOW|CONTENTS_MONSTER|CONTENTS_GRATE) -- blocks npc movement
+MASK_PLAYERSOLID			= (CONTENTS_SOLID|CONTENTS_MOVEABLE|CONTENTS_PLAYERCLIP|CONTENTS_WINDOW|CONTENTS_MONSTER|CONTENTS_GRATE) -- everything that blocks player movement
 
-MASK_NPCSOLID				= (CONTENTS_SOLID|CONTENTS_MOVEABLE|CONTENTS_MONSTERCLIP|CONTENTS_WINDOW|CONTENTS_MONSTER|CONTENTS_GRATE) -- water physics in these contents
+MASK_NPCSOLID				= (CONTENTS_SOLID|CONTENTS_MOVEABLE|CONTENTS_MONSTERCLIP|CONTENTS_WINDOW|CONTENTS_MONSTER|CONTENTS_GRATE) -- blocks npc movement
 
-MASK_WATER					= (CONTENTS_WATER|CONTENTS_MOVEABLE|CONTENTS_SLIME) -- everything that blocks lighting
+MASK_WATER					= (CONTENTS_WATER|CONTENTS_MOVEABLE|CONTENTS_SLIME) -- water physics in these contents
 
-MASK_OPAQUE					= (CONTENTS_SOLID|CONTENTS_MOVEABLE|CONTENTS_OPAQUE) -- everything that blocks lighting, but with monsters added.
+MASK_OPAQUE					= (CONTENTS_SOLID|CONTENTS_MOVEABLE|CONTENTS_OPAQUE) -- everything that blocks lighting
 
-MASK_OPAQUE_AND_NPCS		= (MASK_OPAQUE|CONTENTS_MONSTER) -- everything that blocks line of sight for AI
+MASK_OPAQUE_AND_NPCS		= (MASK_OPAQUE|CONTENTS_MONSTER) -- everything that blocks lighting, but with monsters added.
 
-MASK_BLOCKLOS				= (CONTENTS_SOLID|CONTENTS_MOVEABLE|CONTENTS_BLOCKLOS) -- everything that blocks line of sight for AI plus NPCs
+MASK_BLOCKLOS				= (CONTENTS_SOLID|CONTENTS_MOVEABLE|CONTENTS_BLOCKLOS) -- everything that blocks line of sight for AI
 
-MASK_BLOCKLOS_AND_NPCS		= (MASK_BLOCKLOS|CONTENTS_MONSTER) -- everything that blocks line of sight for players
+MASK_BLOCKLOS_AND_NPCS		= (MASK_BLOCKLOS|CONTENTS_MONSTER) -- everything that blocks line of sight for AI plus NPCs
 
-MASK_VISIBLE					= (MASK_OPAQUE|CONTENTS_IGNORE_NODRAW_OPAQUE) -- everything that blocks line of sight for players, but with monsters added.
+MASK_VISIBLE					= (MASK_OPAQUE|CONTENTS_IGNORE_NODRAW_OPAQUE) -- everything that blocks line of sight for players
 
-MASK_VISIBLE_AND_NPCS		= (MASK_OPAQUE_AND_NPCS|CONTENTS_IGNORE_NODRAW_OPAQUE) -- bullets see these as solid
+MASK_VISIBLE_AND_NPCS		= (MASK_OPAQUE_AND_NPCS|CONTENTS_IGNORE_NODRAW_OPAQUE) -- everything that blocks line of sight for players, but with monsters added.
 
-MASK_SHOT					= (CONTENTS_SOLID|CONTENTS_MOVEABLE|CONTENTS_MONSTER|CONTENTS_WINDOW|CONTENTS_DEBRIS|CONTENTS_HITBOX) -- non-raycasted weapons see this as solid = (includes grates)
+MASK_SHOT					= (CONTENTS_SOLID|CONTENTS_MOVEABLE|CONTENTS_MONSTER|CONTENTS_WINDOW|CONTENTS_DEBRIS|CONTENTS_HITBOX) -- bullets see these as solid
 
-MASK_SHOT_HULL				= (CONTENTS_SOLID|CONTENTS_MOVEABLE|CONTENTS_MONSTER|CONTENTS_WINDOW|CONTENTS_DEBRIS|CONTENTS_GRATE) -- hits solids = (not grates) and passes through everything else
+MASK_SHOT_HULL				= (CONTENTS_SOLID|CONTENTS_MOVEABLE|CONTENTS_MONSTER|CONTENTS_WINDOW|CONTENTS_DEBRIS|CONTENTS_GRATE) -- non-raycasted weapons see this as solid = (includes grates)
 
-MASK_SHOT_PORTAL			= (CONTENTS_SOLID|CONTENTS_MOVEABLE|CONTENTS_WINDOW|CONTENTS_MONSTER) -- everything normally solid, except monsters = (world+brush only)
+MASK_SHOT_PORTAL			= (CONTENTS_SOLID|CONTENTS_MOVEABLE|CONTENTS_WINDOW|CONTENTS_MONSTER) -- hits solids = (not grates) and passes through everything else
 
-MASK_SOLID_BRUSHONLY		= (CONTENTS_SOLID|CONTENTS_MOVEABLE|CONTENTS_WINDOW|CONTENTS_GRATE) -- everything normally solid for player movement, except monsters = (world+brush only)
+MASK_SOLID_BRUSHONLY		= (CONTENTS_SOLID|CONTENTS_MOVEABLE|CONTENTS_WINDOW|CONTENTS_GRATE) -- everything normally solid, except monsters = (world+brush only)
 
-MASK_PLAYERSOLID_BRUSHONLY	= (CONTENTS_SOLID|CONTENTS_MOVEABLE|CONTENTS_WINDOW|CONTENTS_PLAYERCLIP|CONTENTS_GRATE) -- everything normally solid for npc movement, except monsters = (world+brush only)
+MASK_PLAYERSOLID_BRUSHONLY	= (CONTENTS_SOLID|CONTENTS_MOVEABLE|CONTENTS_WINDOW|CONTENTS_PLAYERCLIP|CONTENTS_GRATE) -- everything normally solid for player movement, except monsters = (world+brush only)
 
-MASK_NPCSOLID_BRUSHONLY		= (CONTENTS_SOLID|CONTENTS_MOVEABLE|CONTENTS_WINDOW|CONTENTS_MONSTERCLIP|CONTENTS_GRATE) -- just the world, used for route rebuilding
+MASK_NPCSOLID_BRUSHONLY		= (CONTENTS_SOLID|CONTENTS_MOVEABLE|CONTENTS_WINDOW|CONTENTS_MONSTERCLIP|CONTENTS_GRATE) -- everything normally solid for npc movement, except monsters = (world+brush only)
 
-MASK_NPCWORLDSTATIC			= (CONTENTS_SOLID|CONTENTS_WINDOW|CONTENTS_MONSTERCLIP|CONTENTS_GRATE) -- These are things that can split areaportals
+MASK_NPCWORLDSTATIC			= (CONTENTS_SOLID|CONTENTS_WINDOW|CONTENTS_MONSTERCLIP|CONTENTS_GRATE) -- just the world, used for route rebuilding
 
-MASK_SPLITAREAPORTAL		= (CONTENTS_WATER|CONTENTS_SLIME)
+MASK_SPLITAREAPORTAL		= (CONTENTS_WATER|CONTENTS_SLIME) -- These are things that can split areaportals
 
 MASK_DEADSOLID				= (CONTENTS_SOLID|CONTENTS_PLAYERCLIP|CONTENTS_WINDOW|CONTENTS_GRATE) -- everything that blocks corpse movement
 
@@ -688,6 +688,18 @@ LOADOUT_POSITION_TAUNT7 = 17
 LOADOUT_POSITION_TAUNT8 = 18
 
 ----------------
+-- Ammo Type (m_iAmmo player field)
+----------------
+TF_AMMO_DUMMY     = 1;
+TF_AMMO_PRIMARY   = 2;
+TF_AMMO_SECONDARY = 3;
+TF_AMMO_METAL     = 4;
+TF_AMMO_GRENADES1 = 5;
+TF_AMMO_GRENADES2 = 6;
+TF_AMMO_GRENADES3 = 7;
+TF_AMMO_COUNT     = 8;
+
+----------------
 -- Entity callbacks
 ----------------
 ON_REMOVE = 0               -- Callback function parameters: entity
@@ -748,6 +760,15 @@ SPAWN_LOCATION_TELEPORTER = 2 -- Spawn bots at position specified by 2nd vector 
 ON_SHOULD_COLLIDE_CAUSE_FIRE_WEAPON = 0 -- Caused by firing weapons
 ON_SHOULD_COLLIDE_CAUSE_OTHER       = 1 -- Caused from any other source
 
+----------------
+-- Causes for ON_SHOULD_COLLIDE
+----------------
+MENU_CANCEL_DISCONNECTED = -1	-- Client dropped from the server
+MENU_CANCEL_INTERRUPTED = -2	-- Client was interrupted with another menu
+MENU_CANCEL_EXIT = -3			-- Client selected "exit" on a paginated menu
+MENU_CANCEL_NODISPLAY = -4	    -- Menu could not be displayed to the client
+MENU_CANCEL_TIMEOUT = -5		-- Menu timed out
+MENU_CANCEL_EXITBACK = -6		-- Client selected "exit back" on a paginated menu
 ----------------
 -- Table structures
 ----------------
@@ -872,6 +893,7 @@ DefaultTakeDamageInfo = {
     Damage = 0,
     DamageType = DMG_GENERIC, -- Damage type, see DMG_* globals. Can be combined with | operator
     DamageCustom = TF_DMG_CUSTOM_NONE, -- Custom damage type, see TF_DMG_* globals
+    CritType = 0, -- Crit type, 0 = no crit, 1 = mini crit, 2 = normal crit
     DamagePosition = Vector(0,0,0), -- Where the target was hit at
     DamageForce = Vector(0,0,0), -- Knockback force of the attack
     ReportedPosition = Vector(0,0,0) -- Where the attacker attacked from
@@ -942,6 +964,7 @@ DefaultSpawnTemplateInfo = {
 ---@return table result
 function table.JoinArray(...)
     local result = {}
+    local arg = {...}
     for i = 1, #arg do
         local argtable = arg[i]
         for k, v in pairs(argtable) do
@@ -956,6 +979,7 @@ end
 ---@return table result
 function table.JoinTable(...)
     local result = {}
+    local arg = {...}
     for i = 1, #arg do
         local argtable = arg[i]
         for k, v in pairs(argtable) do
@@ -1102,4 +1126,21 @@ function PrintTable(t, indent, done, output)
             table.insert(output, line..key..string.rep(" ", keysize - #tostring(key) + 1).."=\t"..tostring(value))
         end
     end
+end
+
+--Setups collision bounds for trigger entities
+---@param trigger Entity Trigger entity to setup bounds for
+---@param mins? Vector Trigger min bounds
+---@param maxs? Vector Trigger max bounds
+function SetupTriggerBounds(trigger, mins, maxs)
+    trigger:SetModel("models/weapons/w_models/w_rocket.mdl");
+    if mins then
+        trigger.m_vecMins = mins;
+        trigger.m_vecMinsPreScaled = mins;
+    end
+    if maxs then
+        trigger.m_vecMins = maxs;
+        trigger.m_vecMinsPreScaled = maxs;
+    end
+    trigger:SetSolid(SOLID_BBOX);
 end
