@@ -24,8 +24,8 @@ bash "{{srcds_steam_app_dir}}/srcds_run" -game "{{srcds_steam_app}}" -console \
   -port "{{ srcds_base_port + (loop0 * 10) }}" \
   +tv_port "{{ srcds_base_port + (loop0 * 10) + 1 }}" \
   +clientport "{{ srcds_base_port + (loop0 * 10) + 2 }}" \
-  {% if srcds_max_players > 33 %}-unrestricted_maxplayers{% endif %} \
-  +maxplayers {{ srcds_max_players|default(24) }} \
+  {% if item.srcds_max_players|default(srcds_max_players) > 33 %}-unrestricted_maxplayers{% endif %} \
+  +maxplayers {{ item.srcds_max_players|default(srcds_max_players) }} \
   +map "{{ map_rotation[item.rotation|default("all")] | random }}" \
   +sv_setsteamaccount "{{ item.gslt }}" \
   +rcon_password "{{ item.srcds_rcon_password | default(srcds_rcon_password) }}" \
