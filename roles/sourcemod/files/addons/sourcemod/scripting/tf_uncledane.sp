@@ -8,7 +8,7 @@
 #include <tf_econ_data>
 #include <dhooks>
 
-#define PLUGIN_VERSION "0.7.0"
+#define PLUGIN_VERSION "0.7.1"
 
 /** Display name of the humans team */
 #define PVE_TEAM_HUMANS_NAME 	"blue"
