@@ -12,6 +12,7 @@
 #define BSOK 0       // OK
 #define BSNoComm 1   // Muted
 #define BSBanned 2   // Banned
+#define BSNetwork 3   // Network blocked
 
 #define PERMISSION_RESERVED 15
 #define PERMISSION_EDITOR 25
