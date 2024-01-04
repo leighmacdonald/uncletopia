@@ -187,9 +187,15 @@ public void OnClientPutInServerMutes(int clientId)
 
 public void onClientPostAdminCheck(int clientId)
 {
+    // BSNoComm handled in OnClientPutInServer
 	switch(gPlayers[clientId].banType)
 	{
-		// BSNoComm handled in OnClientPutInServer		
+
+		case BSNetwork:
+		{
+		    KickClient(clientId, gPlayers[clientId].message);
+		    LogAction(0, clientId, "Kicked \"%L\" for a network block.", clientId);
+		}
 		case BSBanned:
 		{
 			KickClient(clientId, gPlayers[clientId].message);
