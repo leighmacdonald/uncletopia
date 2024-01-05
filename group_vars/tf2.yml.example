@@ -28,8 +28,8 @@ stv_enable: true
 stv_password: "your_global_stv_password"
 stv_name: "Level 3 Sentry"
 
-plugins_disabled: []
-extensions_disabled: []
+plugins_disabled: ["tf_uncledane.smx", "EdictLimiter.smx", "stopwatch.smx"]
+extensions_disabled: ["tf2items.autoload", "tf2items.ext.2.ep2v.so", "sourcescramble.ext.so"]
 
 pve:
   bot_attrs:
