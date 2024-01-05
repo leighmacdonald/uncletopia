@@ -21,7 +21,6 @@
 #include "gbans/report.sp"
 #include "gbans/rules.sp"
 #include "gbans/stats.sp"
-#include "gbans/stopwatch.sp"
 #include "gbans/stv.sp"
 
 #define DEBUG 
@@ -40,7 +39,6 @@ public void OnPluginStart()
 {
 	onPluginStartCore();
 	onPluginStartRules();
-	onPluginStartStopwatch();
 	onPluginStartSTV();
 }
 

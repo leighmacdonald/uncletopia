@@ -63,9 +63,9 @@ gbans:
   gb_stv_path_complete: "stv_demos/complete"
   gb_stv_timestart: "-1"
   gb_stv_timestop: "-1"
-  gb_stopwatch_enabled: "{% if item.stopwatch | default(false) %}1{% else %}0{% endif %}"
-  gb_stopwatch_blueteamname: "Team A"
-  gb_stopwatch_redteamname: "Team B"
+  stopwatch_enabled: "{% if item.stopwatch | default(false) %}1{% else %}0{% endif %}"
+  stopwatch_blueteamname: "Team A"
+  stopwatch_redteamname: "Team B"
 
 wireguard_preup:
   - echo 1 > /proc/sys/net/ipv4/ip_forward

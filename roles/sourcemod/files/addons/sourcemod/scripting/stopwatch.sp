@@ -2,20 +2,39 @@
 #pragma tabsize 4
 #pragma newdecls required
 
+#include <sdktools>
+
+public Plugin myinfo =
+{
+	name = "Stopwatch Mode",
+	author = "leigh MacDonald",
+	description = "Enables stopwatch mode for pub servers",
+	version = "0.0.1",
+	url = "https://github.com/leighmacdonald/stopwatch",
+};
+
 bool g_bHasWaitedForPlayers;
 int g_iRoundsCompleted;
 
+ConVar gStopwatchEnabled = null;
+ConVar gStopwatchNameRed = null;
+ConVar gStopwatchNameBlu = null;
+ConVar gStopwatchChangelvlTime = null;
 
-
-public void onPluginStartStopwatch()
+void log(const char[] format, any...)
 {
-// Stopwatch mode settings
-	gStopwatchEnabled = CreateConVar("gb_stopwatch_enabled", "0", "Enables stopwatch mode", _, true, 0.0, true, 1.0);
-	gStopwatchNameBlu = CreateConVar("gb_stopwatch_blueteamname", "Team A", "Name for the team that starts BLU.");
-	gStopwatchNameRed = CreateConVar("gb_stopwatch_redteamname", "Team B", "Name for the team that starts RED.");
-	gStopwatchChangelvlTime = CreateConVar("gb_stopwatch_changelevel_time", "35", "Time to wait (in seconds) before changelevel after map end.", _, true, 0.0);
-	// configure this manually, float to int woes, this should be good enough for any vote ^
+	char buffer[254];
+	VFormat(buffer, sizeof buffer, format, 2);
+	PrintToServer("[Stopwatch] %s", buffer);
+}
 
+public void OnPluginStart()
+{
+    // Stopwatch mode settings
+	gStopwatchEnabled = CreateConVar("stopwatch_enabled", "0", "Enables stopwatch mode", _, true, 0.0, true, 1.0);
+	gStopwatchNameBlu = CreateConVar("stopwatch_blueteamname", "Team A", "Name for the team that starts BLU.");
+	gStopwatchNameRed = CreateConVar("stopwatch_redteamname", "Team B", "Name for the team that starts RED.");
+	gStopwatchChangelvlTime = CreateConVar("stopwatch_changelevel_time", "35", "Time to wait (in seconds) before changelevel after map end.", _, true, 0.0);
 	AddCommandListener(cmd_mp_tournament_teamname, "mp_tournament_redteamname");
 	AddCommandListener(cmd_mp_tournament_teamname, "mp_tournament_blueteamname");
 	HookEvent("teamplay_round_start", onTeamplayRoundStart, EventHookMode_PostNoCopy);
@@ -27,12 +46,12 @@ public void onPluginStartStopwatch()
 }
 
 
-void onMapStartStopwatch()
+public void OnMapStart()
 {
 // Don't enable for non-pl maps
 	if(gStopwatchEnabled.BoolValue && GetConVarBool(FindConVar("mp_tournament")) && !isValidStopwatchMap())
 	{
-		gbLog("Disabling mp_tournament");
+		log("Disabling mp_tournament");
 		SetConVarBool(FindConVar("mp_tournament"), false);
 	}
 
@@ -70,12 +89,6 @@ public Action handleChangelevel(Handle timer)
 
 	return Plugin_Continue;
 }
-// public
-// int onMatchEnd(Handle event, const char[] name, bool dontBroadcast) {
-//     gbLog("Game ended");
-//     FindAndSet
-//     return 0;
-// }
 
 public int onMapEndStopwatch()
 {
@@ -83,6 +96,7 @@ public int onMapEndStopwatch()
 	{
 		SetConVarBool(FindConVar("mp_tournament"), false);
 	}
+
 	return 0;
 }
 
@@ -93,6 +107,7 @@ public Action cmd_mp_tournament_teamname(int client, const char[] command, int a
 	{
 		return Plugin_Stop;
 	}
+
 	return Plugin_Continue;
 }
 
@@ -103,10 +118,11 @@ bool isValidStopwatchMap()
 	GetCurrentMap(mapName, sizeof mapName);
 	if(StrContains(mapName, "workshop/", false) == 0)
 	{
-		gbLog("matched workshop: %s", mapName);
+		log("matched workshop: %s", mapName);
 		return StrContains(mapName, "workshop/pl_", false) == 0;
 	}
-	gbLog("mapName: %s", mapName);
+	log("mapName: %s", mapName);
+
 	return StrContains(mapName, "pl_", false) == 0;
 }
 
@@ -117,7 +133,9 @@ public int onTeamplayRoundStart(Handle event, const char[] name, bool dontBroadc
 	{
 		return 0;
 	}
-	gbLog("Enabling mp_tournament");
+
+	log("Enabling stopwatch mode (mp_tournament)");
+
 	// set cvars
 	SetConVarBool(FindConVar("mp_tournament"), true);
 	SetConVarBool(FindConVar("mp_tournament_allow_non_admin_restart"), false);
@@ -137,6 +155,7 @@ public int onTeamplayRoundStart(Handle event, const char[] name, bool dontBroadc
 	g_bHasWaitedForPlayers = true;
 
 	AllowMatch();
+
 	return 0;
 }
 

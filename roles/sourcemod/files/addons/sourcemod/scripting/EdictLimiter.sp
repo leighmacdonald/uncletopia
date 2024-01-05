@@ -79,15 +79,15 @@ public void OnPluginStart()
 
     g_entityLockdownForward     = new GlobalForward("OnEntityLockdown", ET_Ignore);
     g_cvLowEdictAction          = CreateConVar("ed_lowedict_action",            "1", "0 - no action, 1 - only prevent entity spawns, 2 - attempt to restart the game, if applicable, 3 - restart the map, 4 - go to the next map in the map cycle, 5 - spew all edicts.", _, true, 0.0, true, 5.0);
-    g_cvLowEdictThreshold       = CreateConVar("ed_lowedict_threshold",         "8", "When only this many edicts are free, take the action specified by sv_lowedict_action.", _, true, 0.0, true, 1920.0);
-    g_cvLowEdictBlockThreshold  = CreateConVar("ed_lowedict_block_threshold",   "8", "When only this many edicts are free, prevent entity spawns.", _, true, 0.0, true, 1920.0);
-    g_cvLowEdictCleanThreshold  = CreateConVar("ed_lowedict_clean_threshold",   "16", "When only this many edicts are free, clear less important entities.", _, true, 0.0, true, 1920.0);
+    g_cvLowEdictThreshold       = CreateConVar("ed_lowedict_threshold",         "32", "When only this many edicts are free, take the action specified by sv_lowedict_action.", _, true, 0.0, true, 1920.0);
+    g_cvLowEdictBlockThreshold  = CreateConVar("ed_lowedict_block_threshold",   "32", "When only this many edicts are free, prevent entity spawns.", _, true, 0.0, true, 1920.0);
+    g_cvLowEdictCleanThreshold  = CreateConVar("ed_lowedict_clean_threshold",   "64", "When only this many edicts are free, clear less important entities.", _, true, 0.0, true, 1920.0);
     g_cvHardCleanupThreshold    = CreateConVar("ed_hard_cleanup_threshold",     "100", "If less entities than this get cleaned nuke harder", _, true, 0.0, false);
     g_cvForwardCooldown         = CreateConVar("ed_announce_cooldown",          "1", "OnEntityLockdown cooldown", _, true, 0.0, false);
-    g_cvMaxAttempts             = CreateConVar("ed_max_attempts",               "3", "How many attempts before giving up and calling action", _, true, 0.0, false);
+    g_cvMaxAttempts             = CreateConVar("ed_max_attempts",               "5", "How many attempts before giving up and calling action", _, true, 0.0, false);
     g_cvAttemptResetTime        = CreateConVar("ed_attempt_reset_time",         "90", "After how many seconds should attempts be reset", _, true, 0.0, false);
 
-    ed_aggressive_ent_culling   = CreateConVar("ed_aggressive_ent_culling",     "1", "1 - Enable aggressive culling of entities, 2 - enable HYPER AGGRESSIVE, and likely unstable methods of entity culling.", _, true, 0.0, false);
+    ed_aggressive_ent_culling   = CreateConVar("ed_aggressive_ent_culling",     "2", "1 - Enable aggressive culling of entities, 2 - enable HYPER AGGRESSIVE, and likely unstable methods of entity culling.", _, true, 0.0, false);
 
     DoGameData();
 
