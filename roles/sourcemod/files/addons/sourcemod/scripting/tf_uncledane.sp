@@ -188,16 +188,14 @@ public bool OnClientConnect(int client, char[] rejectMsg, int maxlen)
 
 public OnEntityCreated(int entity, const char[] szClassname)
 {
-	if((g_bIsRoundEnd && g_bLastDeathWasBot) || g_flForceClearGibsUntil > GetGameTime())
-	{
-		// Remove these entities on round end / humiliation.
-		if(	StrEqual(szClassname, "tf_ammo_pack") || 
-			StrEqual(szClassname, "tf_dropped_weapon") ||
-			StrEqual(szClassname, "tf_ragdoll"))
-		{
-			AcceptEntityInput(entity, "Kill");
-		}
-	}
+    // Remove these entities on round end / humiliation.
+    if(	StrEqual(szClassname, "tf_ammo_pack") ||
+        StrEqual(szClassname, "tf_dropped_weapon") ||
+        StrEqual(szClassname, "tf_ragdoll"))
+    {
+        AcceptEntityInput(entity, "Kill");
+    }
+
 
 	// No halloween allowed >:C
 	if(StrEqual(szClassname, "halloween_souls_pack"))
