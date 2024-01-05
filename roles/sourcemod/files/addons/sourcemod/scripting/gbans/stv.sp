@@ -70,7 +70,6 @@ public void OnMapStart()
 		GetCurrentMap(mapName, sizeof mapName);
 		ForceChangeLevel(mapName, "Enable STV");
 	}
-	onMapStartStopwatch();
 }
 
 
