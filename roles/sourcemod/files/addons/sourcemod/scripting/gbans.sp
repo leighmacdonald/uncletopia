@@ -81,7 +81,7 @@ public void OnConfigsExecuted()
 {
 	setupSTV();
 	refreshToken();
-	CreateTimer(15.0, updateState, _, TIMER_REPEAT);
+	
 }
 
 
