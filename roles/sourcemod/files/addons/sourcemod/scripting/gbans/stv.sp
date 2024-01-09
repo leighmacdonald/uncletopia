@@ -9,73 +9,62 @@
 #include <sourcemod>
 #include <sourcetvmanager>
 #include <tf2_stocks>
-#include "globals.sp"
-
-public void onPluginStartSTV()
-{
-	// STV settings
-	gAutoRecord = CreateConVar("gb_stv_enable", "1", "Enable automatic recording", _, true, 0.0, true, 1.0);
-	gMinPlayersStart = CreateConVar("gb_stv_minplayers", "1", "Minimum players on server to start recording", _, true, 0.0);
-	gIgnoreBots = CreateConVar("gb_stv_ignorebots", "1", "Ignore bots in the player count", _, true, 0.0, true, 1.0);
-	gTimeStart = CreateConVar("gb_stv_timestart", "-1", "Hour in the day to start recording (0-23, -1 disables)");
-	gTimeStop = CreateConVar("gb_stv_timestop", "-1", "Hour in the day to stop recording (0-23, -1 disables)");
-	gFinishMap = CreateConVar("gb_stv_finishmap", "1", "If 1, continue recording until the map ends", _, true, 0.0, true, 1.0);
-	gDemoPathActive = CreateConVar("gb_stv_path", "stv_demos/active", "Path to store currently recording demos");
-	gDemoPathComplete = CreateConVar("gb_stv_path_complete", "stv_demos/complete", "Path to store complete demos");
-}
 
 
-public void setupSTV()
-{
-	RegAdminCmd("gb_stv_record", Command_Record, ADMFLAG_KICK, "Starts a SourceTV demo");
-	RegAdminCmd("gb_stv_stoprecord", Command_StopRecord, ADMFLAG_KICK, "Stops the current SourceTV demo");
+// public void setupSTV()
+// {
+// 	gTvEnabled = FindConVar("tv_enable");
+// 	char sPath[PLATFORM_MAX_PATH];
+	
+// 	GetConVarString(gDemoPathActive, sPath, sizeof sPath);
+// 	if(!DirExists(sPath))
+// 	{
+// 		initDirectory(sPath);
+// 	}
 
-	gTvEnabled = FindConVar("tv_enable");
-	char sPath[PLATFORM_MAX_PATH];
-	gDemoPathActive.GetString(sPath, sizeof sPath);
-	if(!DirExists(sPath))
-	{
-		initDirectory(sPath);
-	}
+// 	char sPathComplete[PLATFORM_MAX_PATH];
+// 	GetConVarString(gDemoPathComplete, sPathComplete, sizeof sPathComplete);
+// 	if(!DirExists(sPathComplete))
+// 	{
+// 		initDirectory(sPathComplete);
+// 	}
 
-	char sPathComplete[PLATFORM_MAX_PATH];
-	gDemoPathComplete.GetString(sPathComplete, sizeof sPathComplete);
-	if(!DirExists(sPathComplete))
-	{
-		initDirectory(sPathComplete);
-	}
+// 	gMinPlayersStart.AddChangeHook(OnConVarChanged);
+// 	gIgnoreBots.AddChangeHook(OnConVarChanged);
+// 	gTimeStart.AddChangeHook(OnConVarChanged);
+// 	gTimeStop.AddChangeHook(OnConVarChanged);
+// 	gDemoPathActive.AddChangeHook(OnConVarChanged);
 
-	gMinPlayersStart.AddChangeHook(OnConVarChanged);
-	gIgnoreBots.AddChangeHook(OnConVarChanged);
-	gTimeStart.AddChangeHook(OnConVarChanged);
-	gTimeStop.AddChangeHook(OnConVarChanged);
-	gDemoPathActive.AddChangeHook(OnConVarChanged);
+// 	CreateTimer(300.0, Timer_CheckStatus, _, TIMER_REPEAT);
 
-	CreateTimer(300.0, Timer_CheckStatus, _, TIMER_REPEAT);
-
-	StopRecord();
-	CheckStatus();
-}
+// 	StopRecord();
+// 	CheckStatus();
+// }
 
 
-public void OnMapStart()
-{
-	reloadAdmins();
-	if(!gStvMapChanged)
-	{
-	// STV does not function until a map change has occurred.
-		gbLog("Restarting map to enabled STV");
-		gStvMapChanged = true;
-		char mapName[128];
-		GetCurrentMap(mapName, sizeof mapName);
-		ForceChangeLevel(mapName, "Enable STV");
-	}
-}
+// public void OnMapStart()
+// {
+// 	//setupSTV();
+
+// 	reloadAdmins();
+// 	if(!gStvMapChanged)
+// 	{
+// 	// STV does not function until a map change has occurred.
+// 		gbLog("Restarting map to enabled STV");
+// 		gStvMapChanged = true;
+// 		char mapName[128];
+// 		GetCurrentMap(mapName, sizeof mapName);
+// 		ForceChangeLevel(mapName, "Enable STV");
+// 	}
+// }
 
 
 public void OnConVarChanged(ConVar convar, const char[] oldValue, const char[] newValue)
 {
-	if(convar == gDemoPathActive || convar == gDemoPathComplete)
+	ConVar gb_stv_path = FindConVar("gb_stv_path");
+	ConVar gb_stv_path_complete = FindConVar("gb_stv_path_complete");
+
+	if(convar == gb_stv_path || convar == gb_stv_path_complete)
 	{
 		if(!DirExists(newValue))
 		{
@@ -99,16 +88,16 @@ public void onMapEndSTV()
 }
 
 
-public void OnClientPutInServerSTV(int client)
-{
-	CheckStatus();
-}
+// public void OnClientPutInServerSTV(int client)
+// {
+// 	CheckStatus();
+// }
 
 
-public void OnClientDisconnect_Post(int client)
-{
-	CheckStatus();
-}
+// public void OnClientDisconnect_Post(int client)
+// {
+// 	CheckStatus();
+// }
 
 
 public Action Timer_CheckStatus(Handle timer)
@@ -140,32 +129,42 @@ public Action Command_StopRecord(int client, int args)
 		ReplyToCommand(client, "[GB] SourceTV is not recording!");
 		return Plugin_Handled;
 	}
+
 	StopRecord();
+
 	if(gIsManual)
 	{
 		gIsManual = false;
 		CheckStatus();
 	}
+
 	ReplyToCommand(client, "[GB] Stopped recording.");
+
 	return Plugin_Handled;
 }
 
 
 void CheckStatus()
 {
-	if(gAutoRecord.BoolValue && !gIsManual)
+	ConVar gb_auto_record = FindConVar("gb_auto_record");
+	ConVar gb_stv_minplayers = FindConVar("gb_stv_minplayers");
+	ConVar gb_stv_finishmap = FindConVar("gb_stv_finishmap");
+	ConVar gb_stv_timestart = FindConVar("gb_stv_timestart");
+	ConVar gb_stv_timestop = FindConVar("gb_stv_timestop");
+
+	if(GetConVarBool(gb_auto_record) && !gIsManual)
 	{
-		int iTimeStart = gTimeStart.IntValue;
-		int iTimeStop = gTimeStop.IntValue;
+		int iTimeStart = GetConVarInt(gb_stv_timestart);
+		int iTimeStop = GetConVarInt(gb_stv_timestop);
 		bool bReverseTimes = (iTimeStart > iTimeStop);
 		char sCurrentTime[4];
 		FormatTime(sCurrentTime, sizeof sCurrentTime, "%H", GetTime());
 		int iCurrentTime = StringToInt(sCurrentTime);
-		if(GetPlayerCount() >= gMinPlayersStart.IntValue && (iTimeStart < 0 || (iCurrentTime >= iTimeStart && (bReverseTimes || iCurrentTime < iTimeStop))))
+		if(GetPlayerCount() >= GetConVarInt(gb_stv_minplayers) && (iTimeStart < 0 || (iCurrentTime >= iTimeStart && (bReverseTimes || iCurrentTime < iTimeStop))))
 		{
 			StartRecord();
 		}
-		else if(gIsRecording && !gFinishMap.BoolValue && (iTimeStop < 0 || iCurrentTime >= iTimeStop))
+		else if(gIsRecording && !GetConVarBool(gb_stv_finishmap) && (iTimeStop < 0 || iCurrentTime >= iTimeStop))
 		{
 			StopRecord();
 		}
@@ -175,7 +174,9 @@ void CheckStatus()
 
 int GetPlayerCount()
 {
-	bool bIgnoreBots = gIgnoreBots.BoolValue;
+	ConVar gb_stv_ignorebots = FindConVar("gb_stv_ignorebots");
+
+	bool bIgnoreBots = GetConVarBool(gb_stv_ignorebots);
 
 	int iNumPlayers = 0;
 	for(int i = 1; i <= MaxClients; i++)
@@ -197,13 +198,16 @@ int GetPlayerCount()
 
 void StartRecord()
 {
-	if(gTvEnabled.BoolValue && !gIsRecording)
+	ConVar gb_stv_enable = FindConVar("gb_stv_enable");
+	ConVar gb_stv_path = FindConVar("gb_stv_path");
+
+	if(GetConVarBool(gb_stv_enable) && !gIsRecording)
 	{
 		char sPath[PLATFORM_MAX_PATH];
 		char sTime[16];
 		char sMap[64];
 
-		gDemoPathActive.GetString(sPath, sizeof sPath);
+		gb_stv_path.GetString(sPath, sizeof sPath);
 		FormatTime(sTime, sizeof sTime, "%Y%m%d-%H%M%S", GetTime());
 		GetCurrentMap(sMap, sizeof sMap);
 
@@ -221,7 +225,9 @@ void StartRecord()
 
 void StopRecord()
 {
-	if(gTvEnabled.BoolValue)
+	ConVar gb_stv_enable = FindConVar("gb_stv_enable");
+
+	if(GetConVarBool(gb_stv_enable))
 	{
 		ServerCommand("tv_stoprecord");
 		gIsRecording = false;
@@ -229,11 +235,12 @@ void StopRecord()
 }
 
 public void SourceTV_OnStopRecording(int instance, const char[] filename, int recordingtick)
-{
+{	
+	ConVar gb_stv_path_complete = FindConVar("gb_stv_path_complete");
 	char sPieces[32][PLATFORM_MAX_PATH];
 	char outPath[PLATFORM_MAX_PATH];
 
-	gDemoPathComplete.GetString(outPath, sizeof outPath);
+	GetConVarString(gb_stv_path_complete, outPath, sizeof outPath);
 
 	int iNumPieces = ExplodeString(filename, "/", sPieces, sizeof sPieces, sizeof sPieces[] );
 

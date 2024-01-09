@@ -43,6 +43,8 @@ public void OnPluginStart()
 
 	RegConsoleCmd("tournament_readystate", cmd_block);
 	RegConsoleCmd("tournament_teamname", cmd_block);
+
+	AutoExecConfig(true, "stopwatch");
 }
 
 

@@ -9,7 +9,6 @@ void gbLog(const char[] format, any...)
 	PrintToServer("[GB] %s", buffer);
 }
 
-
 public bool parseReason(const char[] reasonStr, GB_BanReason &reason)
 {
 	int reasonInt = StringToInt(reasonStr, 10);
@@ -21,25 +20,18 @@ public bool parseReason(const char[] reasonStr, GB_BanReason &reason)
 	return true;
 }
 
+stock void makeURL(const char[] path, char[] outURL, int maxLen) {
+	ConVar gb_core_host = FindConVar("gb_core_host");
+	ConVar gb_core_port = FindConVar("gb_core_port");
 
-System2HTTPRequest newReq(System2HTTPResponseCallback cb, const char[] path)
-{
 	char serverHost[PLATFORM_MAX_PATH];
-	gHost.GetString(serverHost, sizeof serverHost);
-	int port = gPort.IntValue;
-	char fullAddr[1024];
-	Format(fullAddr, sizeof fullAddr, "%s%s", serverHost, path);
-	System2HTTPRequest httpRequest = new System2HTTPRequest(cb, fullAddr);
-	httpRequest.SetPort(port);
-	httpRequest.SetHeader("Content-Type", "application/json");
-	if(strlen(gAccessToken) > 0)
-	{
-		httpRequest.SetHeader("Authorization", gAccessToken);
-	}
-	
-	return httpRequest;
-}
+	GetConVarString(gb_core_host, serverHost, sizeof serverHost);
+	int port = GetConVarInt(gb_core_port);
 
+	Format(outURL, maxLen, "%s:%d%s", serverHost, port, path);
+
+	gbLog("Made url: %s", outURL);
+}
 
 public void OnMapEnd()
 {
