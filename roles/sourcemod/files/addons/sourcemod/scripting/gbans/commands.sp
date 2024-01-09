@@ -56,6 +56,7 @@ public Action onCmdMod(int clientId, int argc)
 	makeURL("/api/ping_mod", url, sizeof url);
 
 	HTTPRequest request = new HTTPRequest(url);
+	addAuthHeader(request);
     request.Post(obj, onPingModRespReceived, clientId); 
 
 	delete obj;
