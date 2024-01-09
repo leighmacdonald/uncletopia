@@ -1,9 +1,3 @@
-public void onPluginStart()
-{
-	CreateTimer(30.0, updateState, _, TIMER_REPEAT);
-}
-
-
 stock GetRealClientCount()
 {
 	int iClients = 0;

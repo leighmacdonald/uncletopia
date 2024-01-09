@@ -15,7 +15,7 @@
 /** Internal game index of the bots team */
 #define PVE_TEAM_BOTS_NAME 		"red"
 /** Maximum amount of players that can be on the server in TF2 */
-#define TF_MAXPLAYERS 			32
+#define TF_MAXPLAYERS 			101
 
 #define GOLDEN_PAN_DEFID 		1071 
 #define GOLDEN_PAN_CHANCE 		1
@@ -188,14 +188,16 @@ public bool OnClientConnect(int client, char[] rejectMsg, int maxlen)
 
 public OnEntityCreated(int entity, const char[] szClassname)
 {
-    // Remove these entities on round end / humiliation.
-    if(	StrEqual(szClassname, "tf_ammo_pack") ||
-        StrEqual(szClassname, "tf_dropped_weapon") ||
-        StrEqual(szClassname, "tf_ragdoll"))
-    {
-        AcceptEntityInput(entity, "Kill");
-    }
-
+	if(g_bLastDeathWasBot || g_flForceClearGibsUntil > GetGameTime())
+	{
+		// Remove these entities if it was a bot
+		if(	StrEqual(szClassname, "tf_ammo_pack") || 
+			StrEqual(szClassname, "tf_dropped_weapon") ||
+			StrEqual(szClassname, "tf_ragdoll"))
+		{
+			AcceptEntityInput(entity, "Kill");
+		}
+	}
 
 	// No halloween allowed >:C
 	if(StrEqual(szClassname, "halloween_souls_pack"))

@@ -2,7 +2,7 @@
 #pragma tabsize 4
 #pragma newdecls required
 
-#include "globals.sp"
+#include <ripext>
 
 /**
 Authenticates the server with the backend API system.
@@ -12,68 +12,51 @@ Recv Token <- API
 Send authenticated commands with header "Authorization $token" set for subsequent calls -> API /api/<path>
 
 */
-void refreshToken()
+public void refreshToken()
 {
+	gbLog("Refreshing token %s", PLUGIN_VERSION);
+
 	char serverName[PLATFORM_MAX_PATH];
-	gServerName.GetString(serverName, sizeof serverName);
+	GetConVarString(gb_core_server_name, serverName, sizeof serverName);
 
 	char serverKey[PLATFORM_MAX_PATH];
-	gServerKey.GetString(serverKey, sizeof serverKey);
+	GetConVarString(gb_core_server_key, serverKey, sizeof serverKey);
 
-	JSON_Object obj = new JSON_Object();
+	JSONObject obj = new JSONObject();
 	obj.SetString("server_name", serverName);
 	obj.SetString("key", serverKey);
-	char encoded[1024];
-	obj.Encode(encoded, sizeof encoded);
-	json_cleanup_and_delete(obj);
 
-	System2HTTPRequest req = newReq(onAuthReqReceived, "/api/server/auth");
-	req.SetData(encoded);
-	req.POST();
-	delete req;
+	char url[1024];
+	makeURL("/api/server/auth", url, sizeof url);
+	
+	gbLog("Calling: %s", url);
+	
+	HTTPRequest request = new HTTPRequest(url);
+    request.Post(obj, onAuthReqReceived);
+
+	delete obj;
 }
 
-
-void onAuthReqReceived(bool success, const char[] error, System2HTTPRequest request, System2HTTPResponse response, HTTPRequestMethod method)
+public void onAuthReqReceived(HTTPResponse response, any value)
 {
-	if (!success) {
-		gbLog("Error on authentication request: %s", error);
-		return;
-	}
+	gbLog("Refreshing token reponded");
 
-	char lastURL[128];
-	response.GetLastURL(lastURL, sizeof lastURL);
-	int statusCode = response.StatusCode;
-	if(statusCode != HTTP_STATUS_OK)
-	{
-		gbLog("Bad status on authentication request: %d", statusCode);
-		return ;
-	}
+	if (response.Status != HTTPStatus_OK) {
+        gbLog("Invalid refreshToken response code: %d", response.Status);
+        return;
+    } 
 
-	char[] content = new char[response.ContentLength + 1];
-	int contentSize = response.GetContent(content, response.ContentLength + 1);
-	PrintToServer("Content of the response: %s", content); 
-	if (contentSize <= 0) {
-		gbLog("Empty content");
-		return;
-	}
-
-	JSON_Object data = json_decode(content);
-	if (data == null) {
-		gbLog("Invalid auth response json");
-		return;
-	}
-
+	JSONObject resp = view_as<JSONObject>(response.Data); 
 
 	char token[512];
 
-	bool status = data.GetBool("status");
+	bool status = resp.GetBool("status");
 	if (!status) {
 		gbLog("Invalid server auth status returned");
 		return;
 	}
 
-	data.GetString("token", token, sizeof token);
+	resp.GetString("token", token, sizeof token);
 
 	if(strlen(token) == 0)
 	{
@@ -83,58 +66,65 @@ void onAuthReqReceived(bool success, const char[] error, System2HTTPRequest requ
 
 	gAccessToken = token;
 	gbLog("Successfully authenticated with gbans server");
-	json_cleanup_and_delete(data);
-	delete response;
-}
 
+	reloadAdmins(false);
+}
 
 public Action onAdminCmdReload(int clientId, int argc)
 {
-	reloadAdmins();
+	reloadAdmins(true);
+
 	return Plugin_Handled;
 }
 
-
-void reloadAdmins()
+public void reloadAdmins(bool force)
 {
-	gbLog("Fetching admin users");
-	System2HTTPRequest req = newReq(onAdminsReqReceived, "/export/sourcemod/admins_simple.ini");
-	req.GET();
-	delete req;
-}
+	gbLog("Reloading admin users");
+	char path[PLATFORM_MAX_PATH];
+	getAdminCachePath(path);
 
+	bool doRequest = false;
 
-void onAdminsReqReceived(bool success, const char[] error, System2HTTPRequest request, System2HTTPResponse response, HTTPRequestMethod method)
-{
-	if (!success) {
-		gbLog("Error on reload admins request: %s", error);
+	if (force || !FileExists(path)) {
+		doRequest = true;
+	} else {
+		int time = GetFileTime(path, FileTime_LastChange);
+		doRequest = time == -1 || (GetTime() - time) > 3600;
+	}
+
+	if (!doRequest) {
+		gbLog("Using cached admins");
+
 		return;
 	}
 
-	char lastURL[128];
-	response.GetLastURL(lastURL, sizeof lastURL);
-	int statusCode = response.StatusCode;
-	if(statusCode != HTTP_STATUS_OK)
-	{
-		gbLog("Bad status on reload admins request: %d", statusCode);
-		return ;
-	}
-	char[] content = new char[response.ContentLength + 1];
-	response.GetContent(content, response.ContentLength + 1);
-	char path[PLATFORM_MAX_PATH];
-	BuildPath(Path_SM, path, PLATFORM_MAX_PATH, "configs/admins_simple.ini");
+	char url[1024];
+	makeURL("/export/sourcemod/admins_simple.ini", url, sizeof url);
 
-	gbLog(path);
-	Handle f = OpenFile(path, "w", false, "");
-	if(!WriteFileString(f, content, false))
-	{
-		gbLog("Failed to write admin file");
-		return ;
-	}
-	CloseHandle(f);
+	char savePath[PLATFORM_MAX_PATH];
+	getAdminCachePath(savePath);
+
+	HTTPRequest request = new HTTPRequest(url);
+
+	request.SetHeader("Authorization", gAccessToken);
+
+	request.DownloadFile(savePath, onAdminsReqReceived); 
+}
+
+void getAdminCachePath(char[] out) {
+	BuildPath(Path_SM, out, PLATFORM_MAX_PATH, "configs/admins_simple.ini");
+}
+
+void onAdminsReqReceived(HTTPStatus status, any value)
+{
+	if (status != HTTPStatus_OK) {
+        gbLog("Invalid reloadAdmins response code: %d", status);
+        return;
+    } 
+
 	ServerCommand("sm_reloadadmins");
+
 	gbLog("Reloaded admins");
-	delete response;
 }
 
 
@@ -160,7 +150,7 @@ public void readCachedFile(const char[] name)
 public void OnClientPutInServer(int clientId)
 {
 	OnClientPutInServerMutes(clientId);
-	OnClientPutInServerSTV(clientId);
+	//OnClientPutInServerSTV(clientId);
 }
 
 
@@ -207,68 +197,59 @@ public void onClientPostAdminCheck(int clientId)
 
 void checkPlayer(int clientId, const char[] auth, const char[] ip, const char[] name)
 {
-	if(!IsClientConnected(clientId) || IsFakeClient(clientId))
-	{
+	if(!IsClientConnected(clientId) || IsFakeClient(clientId)) {
 		gbLog("Skipping check on invalid player");
 		return ;
 	}
-	char encoded[1024];
-	JSON_Object obj = new JSON_Object();
+
+	JSONObject obj = new JSONObject(); 
 	obj.SetString("steam_id", auth);
 	obj.SetInt("client_id", clientId);
 	obj.SetString("ip", ip);
 	obj.SetString("name", name);
-	obj.Encode(encoded, sizeof encoded);
-	json_cleanup_and_delete(obj);
 
-	System2HTTPRequest req = newReq(onCheckResp, "/api/check");
-	req.SetData(encoded);
-	req.POST();
-	delete req;
+	char url[1024];
+	makeURL("/api/check", url, sizeof url);
+
+	HTTPRequest request = new HTTPRequest(url);
+    request.Post(obj, onCheckResp); 
+
+	delete obj;
 }
 
 
-void onCheckResp(bool success, const char[] error, System2HTTPRequest request, System2HTTPResponse response, HTTPRequestMethod method)
+void onCheckResp(HTTPResponse response, any value)
 {
-	if(success)
-	{
-		char lastURL[128];
-		response.GetLastURL(lastURL, sizeof lastURL);
-		int statusCode = response.StatusCode;
-		char[] content = new char[response.ContentLength + 1];
-		response.GetContent(content, response.ContentLength + 1);
-		if(statusCode != HTTP_STATUS_OK)
-		{
-			// Fail open if the server is broken
-			gbLog("Invalid response code on check call: %d", statusCode);
-			return ;
-		}
+	if (response.Status != HTTPStatus_OK) {
+		LogError("Invalid check response code: %d", response.Status);
 
-		JSON_Object data = json_decode(content);
-		int clientId = data.GetInt("client_id");
-		int banType = data.GetInt("ban_type");
-		int permissionLevel = data.GetInt("permission_level");
-		char msg[256];	// welcome or ban message
-		data.GetString("msg", msg, sizeof msg);
-		if(IsFakeClient(clientId))
-		{
-			return ;
-		}
-		char ip[16];
-		GetClientIP(clientId, ip, sizeof ip);
-		gPlayers[clientId].authed = true;
-		gPlayers[clientId].ip = ip;
-		gPlayers[clientId].banType = banType;
-		gPlayers[clientId].message = msg;
-		gPlayers[clientId].permissionLevel = permissionLevel;
+        return;
+    } 
 
-		gbLog("Client authenticated (banType: %d level: %d)", banType, permissionLevel);
-		json_cleanup_and_delete(data);
-		// Called manually since we are using the connect extension
-		onClientPostAdminCheck(clientId);
-	}
-	else
+	JSONObject data = view_as<JSONObject>(response.Data); 
+
+	int clientId = data.GetInt("client_id");
+	int banType = data.GetInt("ban_type");
+	int permissionLevel = data.GetInt("permission_level");
+	
+	char msg[256];	// welcome or ban message
+	data.GetString("msg", msg, sizeof msg);
+
+	if(IsFakeClient(clientId))
 	{
-		gbLog("Error on authentication request: %s", error);
+		return ;
 	}
+
+	char ip[16];
+	GetClientIP(clientId, ip, sizeof ip);
+	gPlayers[clientId].authed = true;
+	gPlayers[clientId].ip = ip;
+	gPlayers[clientId].banType = banType;
+	gPlayers[clientId].message = msg;
+	gPlayers[clientId].permissionLevel = permissionLevel;
+
+	gbLog("Client authenticated (banType: %d level: %d)", banType, permissionLevel);
+
+	// Called manually since we are using the connect extension
+	onClientPostAdminCheck(clientId);
 }
