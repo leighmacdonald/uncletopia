@@ -2,20 +2,38 @@
 #pragma tabsize 4
 #pragma newdecls required
 
+bool gMatchStarted = false;
+
 public Action onRoundStart(Handle event, const char[] name, bool dontBroadcast) {
+	if (gMatchStarted) {
+		return Plugin_Continue;
+	}
+	
+	gMatchStarted = true;
+
+	gbLog("Round start");
 	char url[1024];
 	makeURL("/api/sm/match/start", url, sizeof url);
 
 	HTTPRequest request = new HTTPRequest(url);
 	addAuthHeader(request);
-    request.Get(onRoundStartCB); 
+
+	char stvFileName[1024];
+	SourceTV_GetDemoFileName(stvFileName, sizeof stvFileName);
+
+	JSONObject obj = new JSONObject();
+	obj.SetString("demo_name", stvFileName);
+
+    request.Post(obj, onRoundStartCB); 
+
+	delete obj;
 
     return Plugin_Continue;
 }
 
 void onRoundStartCB(HTTPResponse response, any value)
 {
-	if (response.Status != HTTPStatus_OK) { 
+	if (response.Status != HTTPStatus_Created) { 
 		gbLog("Round start request did not complete successfully");
 		return ;
 	}
@@ -30,6 +48,7 @@ void onRoundStartCB(HTTPResponse response, any value)
 }
 
 public Action onRoundEnd(Handle event, const char[] name, bool dontBroadcast) {
+	gbLog("Round end");
 	char url[1024];
 	makeURL("/api/sm/match/end", url, sizeof url);
 

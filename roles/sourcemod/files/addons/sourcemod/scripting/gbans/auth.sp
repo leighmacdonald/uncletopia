@@ -92,7 +92,8 @@ public void reloadAdmins(bool force)
 
 	if (!doRequest) {
 		gbLog("Using cached admins");
-
+		ServerCommand("sm_reloadadmins");
+		
 		return;
 	}
 

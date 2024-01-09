@@ -128,6 +128,10 @@ public void OnClientDisconnect_Post(int client)
 	CheckStatus();
 }
 
+public void OnMapStart() {
+	gMatchStarted = false;
+}
+
 public void OnMapEnd()
 {
 	if(gIsRecording)
@@ -135,6 +139,18 @@ public void OnMapEnd()
 		StopRecord();
 		gIsManual = false;
 	}
+
+	if (StrEqual(gMatchID, "")) {
+		return;
+	}
+
+	char path[1024];
+	Format(path, sizeof path, "/match/%s", gMatchID);
+
+	char matchURL[1024];
+	makeURL(path, matchURL, sizeof matchURL);
+
+	PrintToChatAll("Match stats: %s", matchURL);
 }
 
 public void OnClientPutInServer(int clientId)
