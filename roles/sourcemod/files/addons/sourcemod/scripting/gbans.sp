@@ -3,13 +3,16 @@
 #pragma newdecls required
 
 #include <admin>
+#include <adminmenu>
 #include <basecomm>
 #include <connect>	// connect extension
 #include <gbans>
 #include <sdktools>
+#include <ripext>
 #include <sourcemod>
 #include <autoexecconfig>
-
+#include <sourcetvmanager>
+#include <tf2_stocks>
 
 #include "gbans/globals.sp"
 #include "gbans/auth.sp"
@@ -20,7 +23,6 @@
 #include "gbans/connect.sp"
 #include "gbans/match.sp"
 #include "gbans/report.sp"
-#include "gbans/stats.sp"
 #include "gbans/stv.sp"
 
 public Plugin myinfo =
@@ -93,14 +95,14 @@ public void OnConfigsExecuted()
 
 	char sPath[PLATFORM_MAX_PATH];
 
-	stv_path.GetString(sPath, sizeof(sPath));
+	gb_stv_path.GetString(sPath, sizeof(sPath));
 	if(!DirExists(sPath))
 	{
 		initDirectory(sPath);
 	}
 
 	char sPathComplete[PLATFORM_MAX_PATH];
-	GetConVarString(stv_path_complete, sPathComplete, sizeof sPathComplete);
+	GetConVarString(gb_stv_path_complete, sPathComplete, sizeof sPathComplete);
 	if(!DirExists(sPathComplete))
 	{
 		initDirectory(sPathComplete);
@@ -119,6 +121,42 @@ public void OnConfigsExecuted()
 		GetCurrentMap(mapName, sizeof mapName);
 		ForceChangeLevel(mapName, "Enable STV");
 	}
+}
+
+public void OnClientDisconnect_Post(int client)
+{
+	CheckStatus();
+}
+
+public void OnMapEnd()
+{
+	if(gIsRecording)
+	{
+		StopRecord();
+		gIsManual = false;
+	}
+}
+
+public void OnClientPutInServer(int clientId)
+{
+	switch(gPlayers[clientId].banType)
+	{
+		case BSNoComm:
+		{
+			if(!BaseComm_IsClientMuted(clientId))
+			{
+				BaseComm_SetClientMute(clientId, true);
+			}
+			if(!BaseComm_IsClientGagged(clientId))
+			{
+				BaseComm_SetClientGag(clientId, true);
+			}
+			ReplyToCommand(clientId, "You are currently muted/gag, it will expire automatically");
+			gbLog("Muted \"%L\" for an unfinished mute punishment.", clientId);
+		}
+	}
+	
+	CheckStatus();
 }
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)

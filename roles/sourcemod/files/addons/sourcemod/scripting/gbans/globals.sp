@@ -34,9 +34,8 @@ enum struct PlayerInfo
 	char ip[16] ;
 	int banType;
 	int permissionLevel;
-	char message[256] ;
+	char message[256];
 }
-
 // clang-format on
 
 // Globals must all start with g

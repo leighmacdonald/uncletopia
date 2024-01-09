@@ -2,8 +2,6 @@
 #pragma tabsize 4
 #pragma newdecls required
 
-#include <ripext>
-
 /**
 Authenticates the server with the backend API system.
 
@@ -105,9 +103,9 @@ public void reloadAdmins(bool force)
 	getAdminCachePath(savePath);
 
 	HTTPRequest request = new HTTPRequest(url);
-
-	request.SetHeader("Authorization", gAccessToken);
-
+	
+	addAuthHeader(request);
+	
 	request.DownloadFile(savePath, onAdminsReqReceived); 
 }
 
@@ -146,35 +144,6 @@ public void readCachedFile(const char[] name)
 	// ReadFileString(fp, )
 }
 
-
-public void OnClientPutInServer(int clientId)
-{
-	OnClientPutInServerMutes(clientId);
-	//OnClientPutInServerSTV(clientId);
-}
-
-
-public void OnClientPutInServerMutes(int clientId)
-{
-	switch(gPlayers[clientId].banType)
-	{
-		case BSNoComm:
-		{
-			if(!BaseComm_IsClientMuted(clientId))
-			{
-				BaseComm_SetClientMute(clientId, true);
-			}
-			if(!BaseComm_IsClientGagged(clientId))
-			{
-				BaseComm_SetClientGag(clientId, true);
-			}
-			ReplyToCommand(clientId, "You are currently muted/gag, it will expire automatically");
-			gbLog("Muted \"%L\" for an unfinished mute punishment.", clientId);
-		}
-	}
-}
-
-
 public void onClientPostAdminCheck(int clientId)
 {
     // BSNoComm handled in OnClientPutInServer
@@ -212,6 +181,8 @@ void checkPlayer(int clientId, const char[] auth, const char[] ip, const char[] 
 	makeURL("/api/check", url, sizeof url);
 
 	HTTPRequest request = new HTTPRequest(url);
+	addAuthHeader(request);
+
     request.Post(obj, onCheckResp); 
 
 	delete obj;

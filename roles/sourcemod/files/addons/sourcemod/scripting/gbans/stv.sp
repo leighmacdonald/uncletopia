@@ -5,60 +5,6 @@
 #pragma tabsize 4
 #pragma newdecls required
 
-#include <json>
-#include <sourcemod>
-#include <sourcetvmanager>
-#include <tf2_stocks>
-
-
-// public void setupSTV()
-// {
-// 	gTvEnabled = FindConVar("tv_enable");
-// 	char sPath[PLATFORM_MAX_PATH];
-	
-// 	GetConVarString(gDemoPathActive, sPath, sizeof sPath);
-// 	if(!DirExists(sPath))
-// 	{
-// 		initDirectory(sPath);
-// 	}
-
-// 	char sPathComplete[PLATFORM_MAX_PATH];
-// 	GetConVarString(gDemoPathComplete, sPathComplete, sizeof sPathComplete);
-// 	if(!DirExists(sPathComplete))
-// 	{
-// 		initDirectory(sPathComplete);
-// 	}
-
-// 	gMinPlayersStart.AddChangeHook(OnConVarChanged);
-// 	gIgnoreBots.AddChangeHook(OnConVarChanged);
-// 	gTimeStart.AddChangeHook(OnConVarChanged);
-// 	gTimeStop.AddChangeHook(OnConVarChanged);
-// 	gDemoPathActive.AddChangeHook(OnConVarChanged);
-
-// 	CreateTimer(300.0, Timer_CheckStatus, _, TIMER_REPEAT);
-
-// 	StopRecord();
-// 	CheckStatus();
-// }
-
-
-// public void OnMapStart()
-// {
-// 	//setupSTV();
-
-// 	reloadAdmins();
-// 	if(!gStvMapChanged)
-// 	{
-// 	// STV does not function until a map change has occurred.
-// 		gbLog("Restarting map to enabled STV");
-// 		gStvMapChanged = true;
-// 		char mapName[128];
-// 		GetCurrentMap(mapName, sizeof mapName);
-// 		ForceChangeLevel(mapName, "Enable STV");
-// 	}
-// }
-
-
 public void OnConVarChanged(ConVar convar, const char[] oldValue, const char[] newValue)
 {
 	if(convar == gb_stv_path || convar == gb_stv_path_complete)
@@ -73,28 +19,6 @@ public void OnConVarChanged(ConVar convar, const char[] oldValue, const char[] n
 		CheckStatus();
 	}
 }
-
-
-public void onMapEndSTV()
-{
-	if(gIsRecording)
-	{
-		StopRecord();
-		gIsManual = false;
-	}
-}
-
-
-// public void OnClientPutInServerSTV(int client)
-// {
-// 	CheckStatus();
-// }
-
-
-// public void OnClientDisconnect_Post(int client)
-// {
-// 	CheckStatus();
-// }
 
 
 public Action Timer_CheckStatus(Handle timer)
@@ -162,7 +86,6 @@ void CheckStatus()
 	}
 }
 
-
 int GetPlayerCount()
 {
 	bool bIgnoreBots = GetConVarBool(gb_stv_ignorebots);
@@ -183,7 +106,6 @@ int GetPlayerCount()
 
 	return iNumPlayers;
 }
-
 
 void StartRecord()
 {
@@ -207,7 +129,6 @@ void StartRecord()
 		gbLog("Recording to %s-%s.dem", sTime, sMap);
 	}
 }
-
 
 void StopRecord()
 {
@@ -237,7 +158,6 @@ public void SourceTV_OnStopRecording(int instance, const char[] filename, int re
 	}
 	gbLog("Wrote demo");
 }
-
 
 void initDirectory(const char[] sDir)
 {

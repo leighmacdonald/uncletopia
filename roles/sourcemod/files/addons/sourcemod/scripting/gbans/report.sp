@@ -2,13 +2,8 @@
 #pragma tabsize 4
 #pragma newdecls required
 
-#include <adminmenu>
-#include <sourcetvmanager>
-
 const reportTimeout = 30;
 const reportMinReasonLen = 10;
-
-
 
 public Action onCmdReport(int clientId, int argc)
 {
@@ -22,7 +17,6 @@ public Action onCmdReport(int clientId, int argc)
 	return Plugin_Handled;
 }
 
-
 public void ShowTargetMenu(int clientId)
 {
 	Menu menu = CreateMenu(MenuHandler_Target);
@@ -32,7 +26,6 @@ public void ShowTargetMenu(int clientId)
 	DisplayMenu(menu, clientId, MENU_TIME_FOREVER);
 }
 
-
 void resetReportStatus()
 {
 	gReportSourceId = -1;
@@ -41,7 +34,6 @@ void resetReportStatus()
 	gReportTargetReason = unknown;
 	gReportWaitingForReason = false;
 }
-
 
 public Action OnClientSayCommand(int clientId, const char[] command, const char[] args)
 {
@@ -66,7 +58,6 @@ public Action OnClientSayCommand(int clientId, const char[] command, const char[
 	
 	return Plugin_Continue;
 }
-
 
 public bool report(int sourceId, int targetId, GB_BanReason reason, const char[] reasonText)
 {
@@ -103,13 +94,13 @@ public bool report(int sourceId, int targetId, GB_BanReason reason, const char[]
 	makeURL("/api/sm/report/create", url, sizeof url);
 	
 	HTTPRequest request = new HTTPRequest(url);
+	addAuthHeader(request);
     request.Post(obj, onReportRespReceived, sourceId); 
 
 	delete obj;
 
 	return true;
 }
-
 
 void onReportRespReceived(HTTPResponse response, any clientId)
 {
@@ -144,7 +135,6 @@ void onReportRespReceived(HTTPResponse response, any clientId)
 	resetReportStatus();
 }
 
-
 public void ShowReasonMenu(int clientId)
 {
 	Menu menu = CreateMenu(MenuHandler_Reason);
@@ -163,7 +153,6 @@ public void ShowReasonMenu(int clientId)
 	DisplayMenu(menu, clientId, MENU_TIME_FOREVER);
 }
 
-
 public Action Timer_checkReportState()
 {
 	if(gReportStartedAtTime - GetTime() > reportTimeout)
@@ -172,7 +161,6 @@ public Action Timer_checkReportState()
 	}
 	return Plugin_Continue;
 }
-
 
 public int MenuHandler_Target(Menu menu, MenuAction action, int clientId, int selectedId)
 {
@@ -208,7 +196,6 @@ public int MenuHandler_Target(Menu menu, MenuAction action, int clientId, int se
 	}
 	return 0;
 }
-
 
 public int MenuHandler_Reason(Menu menu, MenuAction action, int clientId, int selectedId)
 {

@@ -2,7 +2,7 @@
 #pragma tabsize 4
 #pragma newdecls required
 
-void gbLog(const char[] format, any...)
+stock void gbLog(const char[] format, any...)
 {
 	char buffer[254];
 	VFormat(buffer, sizeof buffer, format, 2);
@@ -26,15 +26,7 @@ stock void makeURL(const char[] path, char[] outURL, int maxLen) {
 	int port = GetConVarInt(gb_core_port);
 
 	Format(outURL, maxLen, "%s:%d%s", serverHost, port, path);
-
-	gbLog("Made url: %s", outURL);
 }
-
-public void OnMapEnd()
-{
-	onMapEndSTV();
-}
-
 
 stock bool isValidClient(int client)
 {
@@ -43,4 +35,36 @@ stock bool isValidClient(int client)
 		return false;
 	}
 	return true;
+}
+
+stock void addAuthHeader(HTTPRequest request) {
+	request.SetHeader("Authorization", gAccessToken);
+}
+
+stock int GetRealClientCount()
+{
+	int iClients = 0;
+	for(int i = 1; i <= MaxClients; i++)
+	{
+		if(IsClientInGame(i) && !IsFakeClient(i))
+		{
+			iClients++;
+		}
+	}
+
+	return iClients;
+}
+
+stock int GetAllClientCount()
+{
+	int iClients = 0;
+	for(int i = 1; i <= MaxClients; i++)
+	{
+		if(IsClientInGame(i))
+		{
+			iClients++;
+		}
+	}
+
+	return iClients;
 }

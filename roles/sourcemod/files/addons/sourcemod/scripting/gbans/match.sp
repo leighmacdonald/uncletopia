@@ -2,13 +2,12 @@
 #pragma tabsize 4
 #pragma newdecls required
 
-#include <ripext>
-
 public Action onRoundStart(Handle event, const char[] name, bool dontBroadcast) {
 	char url[1024];
 	makeURL("/api/sm/match/start", url, sizeof url);
 
 	HTTPRequest request = new HTTPRequest(url);
+	addAuthHeader(request);
     request.Get(onRoundStartCB); 
 
     return Plugin_Continue;
@@ -35,6 +34,7 @@ public Action onRoundEnd(Handle event, const char[] name, bool dontBroadcast) {
 	makeURL("/api/sm/match/end", url, sizeof url);
 
 	HTTPRequest request = new HTTPRequest(url);
+	addAuthHeader(request);
     request.Get(onRoundEndCB);
 
     return Plugin_Continue;

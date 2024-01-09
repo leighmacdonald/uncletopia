@@ -83,6 +83,8 @@ public bool ban(int sourceId, int targetId, GB_BanReason reason, const char[] du
 	makeURL("/api/sm/bans/steam/create", url, sizeof url);
 	
 	HTTPRequest request = new HTTPRequest(url);
+	addAuthHeader(request);
+	
     request.Post(obj, onBanRespReceived, sourceId); 
 
 	delete obj;
