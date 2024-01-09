@@ -61,9 +61,6 @@
 
 public void OnConVarChanged(ConVar convar, const char[] oldValue, const char[] newValue)
 {
-	ConVar gb_stv_path = FindConVar("gb_stv_path");
-	ConVar gb_stv_path_complete = FindConVar("gb_stv_path_complete");
-
 	if(convar == gb_stv_path || convar == gb_stv_path_complete)
 	{
 		if(!DirExists(newValue))
@@ -146,12 +143,6 @@ public Action Command_StopRecord(int client, int args)
 
 void CheckStatus()
 {
-	ConVar gb_auto_record = FindConVar("gb_auto_record");
-	ConVar gb_stv_minplayers = FindConVar("gb_stv_minplayers");
-	ConVar gb_stv_finishmap = FindConVar("gb_stv_finishmap");
-	ConVar gb_stv_timestart = FindConVar("gb_stv_timestart");
-	ConVar gb_stv_timestop = FindConVar("gb_stv_timestop");
-
 	if(GetConVarBool(gb_auto_record) && !gIsManual)
 	{
 		int iTimeStart = GetConVarInt(gb_stv_timestart);
@@ -174,8 +165,6 @@ void CheckStatus()
 
 int GetPlayerCount()
 {
-	ConVar gb_stv_ignorebots = FindConVar("gb_stv_ignorebots");
-
 	bool bIgnoreBots = GetConVarBool(gb_stv_ignorebots);
 
 	int iNumPlayers = 0;
@@ -198,9 +187,6 @@ int GetPlayerCount()
 
 void StartRecord()
 {
-	ConVar gb_stv_enable = FindConVar("gb_stv_enable");
-	ConVar gb_stv_path = FindConVar("gb_stv_path");
-
 	if(GetConVarBool(gb_stv_enable) && !gIsRecording)
 	{
 		char sPath[PLATFORM_MAX_PATH];
@@ -225,8 +211,6 @@ void StartRecord()
 
 void StopRecord()
 {
-	ConVar gb_stv_enable = FindConVar("gb_stv_enable");
-
 	if(GetConVarBool(gb_stv_enable))
 	{
 		ServerCommand("tv_stoprecord");
@@ -236,7 +220,6 @@ void StopRecord()
 
 public void SourceTV_OnStopRecording(int instance, const char[] filename, int recordingtick)
 {	
-	ConVar gb_stv_path_complete = FindConVar("gb_stv_path_complete");
 	char sPieces[32][PLATFORM_MAX_PATH];
 	char outPath[PLATFORM_MAX_PATH];
 

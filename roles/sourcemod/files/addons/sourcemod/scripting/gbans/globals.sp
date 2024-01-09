@@ -7,25 +7,25 @@
 #define MAX_SCORES 256
 
 // Core gbans options
-// ConVar gb_core_host;
-// ConVar gb_core_port;
-// ConVar gb_core_server_name;
-// ConVar gb_core_server_key;
+ConVar gb_core_host;
+ConVar gb_core_port;
+ConVar gb_core_server_name;
+ConVar gb_core_server_key;
 
-// // In Game Tweaks
-// ConVar gb_disable_autoteam;
-// ConVar gb_hide_connections;
+// In Game Tweaks
+ConVar gb_disable_autoteam;
+ConVar gb_hide_connections;
 
-// // STV options
-// ConVar gb_stv_enable;
-// ConVar gb_auto_record;
-// ConVar gb_stv_minplayers;
-// ConVar gb_stv_ignorebots;
-// ConVar gb_stv_timestart;
-// ConVar gb_stv_timestop;
-// ConVar gb_stv_finishmap;
-// ConVar gb_stv_path;
-// ConVar gb_stv_path_complete;
+// STV options
+ConVar gb_stv_enable;
+ConVar gb_auto_record;
+ConVar gb_stv_minplayers;
+ConVar gb_stv_ignorebots;
+ConVar gb_stv_timestart;
+ConVar gb_stv_timestop;
+ConVar gb_stv_finishmap;
+ConVar gb_stv_path;
+ConVar gb_stv_path_complete;
 
 // clang-format off
 enum struct PlayerInfo

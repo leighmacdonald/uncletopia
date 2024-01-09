@@ -42,8 +42,6 @@ public Action onCmdMod(int clientId, int argc)
 		return Plugin_Continue;
 	}
 
-	ConVar gb_core_host = FindConVar("gb_core_host");
-
 	char serverName[PLATFORM_MAX_PATH];
 	GetConVarString(gb_core_host, serverName, sizeof serverName);
 

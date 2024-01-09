@@ -12,7 +12,6 @@ public bool OnClientConnect(int clientId, char[] rejectMsg, int maxLen)
 
 public Action Event_PlayerConnect(Event event, const char[] name, bool dontBroadcast)
 {
-	ConVar gb_hide_connections = FindConVar("gb_hide_connections");
 	event.BroadcastDisabled = GetConVarBool(gb_hide_connections);
 	return Plugin_Continue;
 }
@@ -20,7 +19,6 @@ public Action Event_PlayerConnect(Event event, const char[] name, bool dontBroad
 
 public Action Event_PlayerDisconnect(Event event, const char[] name, bool dontBroadcast)
 {
-	ConVar gb_hide_connections = FindConVar("gb_hide_connections");
 	event.BroadcastDisabled = GetConVarBool(gb_hide_connections);
 	return Plugin_Continue;
 }

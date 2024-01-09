@@ -14,13 +14,10 @@ Send authenticated commands with header "Authorization $token" set for subsequen
 */
 public void refreshToken()
 {
-	ConVar gb_core_server_name = FindConVar("gb_core_server_name");
-	ConVar gb_core_server_key = FindConVar("gb_core_server_key");
-
 	gbLog("Refreshing token %s", PLUGIN_VERSION);
 
 	char serverName[PLATFORM_MAX_PATH];
-	gb_core_server_name.GetString(serverName, sizeof serverName);
+	GetConVarString(gb_core_server_name, serverName, sizeof serverName);
 
 	char serverKey[PLATFORM_MAX_PATH];
 	GetConVarString(gb_core_server_key, serverKey, sizeof serverKey);

@@ -32,7 +32,7 @@ public Plugin myinfo =
 	url = "https://github.com/leighmacdonald/gbans",
 };
 
-public void onPluginStart()
+public void OnPluginStart()
 {
 	LoadTranslations("common.phrases.txt");
 
@@ -53,56 +53,45 @@ public void onPluginStart()
 	HookEvent("player_connect_client", Event_PlayerConnect, EventHookMode_Pre);
 	HookEvent("teamplay_round_start", onRoundStart, EventHookMode_Pre);
 	HookEvent("teamplay_game_over", onRoundEnd, EventHookMode_Post);
+	
+	AutoExecConfig_SetFile("gbans");
 
 	// Core settings
-	CreateConVar("gb_core_host", "localhost", "Remote gbans host", FCVAR_NONE);
-
-    CreateConVar("gb_core_port", "6006", "Remote gbans port", FCVAR_NONE, true, 1.0, true, 65535.0);
-	CreateConVar("gb_core_server_name", "", "Short hand server name", FCVAR_NONE);
-	CreateConVar("gb_core_server_key", "", "GBans server key used to authenticate with the service", FCVAR_NONE);
+	gb_core_host = AutoExecConfig_CreateConVar("gb_core_host", "localhost", "Remote gbans host", FCVAR_NONE);
+    gb_core_port = AutoExecConfig_CreateConVar("gb_core_port", "6006", "Remote gbans port", FCVAR_NONE, true, 1.0, true, 65535.0);
+	gb_core_server_name = AutoExecConfig_CreateConVar("gb_core_server_name", "", "Short hand server name", FCVAR_NONE);
+	gb_core_server_key = AutoExecConfig_CreateConVar("gb_core_server_key", "", "GBans server key used to authenticate with the service", FCVAR_NONE);
 
 	// In Game Tweaks
-	CreateConVar("gb_hide_connections", "1", "Dont show the disconnect message to users", FCVAR_NONE, true, 0.0, true, 1.0);
-	CreateConVar("gb_disable_autoteam", "1", "Dont allow the use of autoteam command", FCVAR_NONE, true, 0.0, true, 1.0);
+	gb_disable_autoteam = AutoExecConfig_CreateConVar("gb_hide_connections", "1", "Dont show the disconnect message to users", FCVAR_NONE, true, 0.0, true, 1.0);
+	gb_hide_connections = AutoExecConfig_CreateConVar("gb_disable_autoteam", "1", "Dont allow the use of autoteam command", FCVAR_NONE, true, 0.0, true, 1.0);
 
 	// STV settings
-	CreateConVar("gb_stv_enable", "1", "Enable SourceTV", FCVAR_NONE, true, 0.0, true, 1.0);
-	CreateConVar("gb_auto_record", "1", "Enable automatic recording", FCVAR_NONE, true, 0.0, true, 1.0);
-	CreateConVar("gb_stv_minplayers", "1", "Minimum players on server to start recording", _, true, 0.0);
-	CreateConVar("gb_stv_ignorebots", "1", "Ignore bots in the player count", FCVAR_NONE, true, 0.0, true, 1.0);
-	CreateConVar("gb_stv_timestart", "-1", "Hour in the day to start recording (0-23, -1 disables)", FCVAR_NONE);
-	CreateConVar("gb_stv_timestop", "-1", "Hour in the day to stop recording (0-23, -1 disables)", FCVAR_NONE);
-	CreateConVar("gb_stv_finishmap", "1", "If 1, continue recording until the map ends", FCVAR_NONE, true, 0.0, true, 1.0);
-	CreateConVar("gb_stv_path", "stv_demos/active", "Path to store currently recording demos", FCVAR_NONE);
-    CreateConVar("gb_stv_path_complete", "stv_demos/complete", "Path to store complete demos", FCVAR_NONE);
+	gb_stv_enable = AutoExecConfig_CreateConVar("gb_stv_enable", "1", "Enable SourceTV", FCVAR_NONE, true, 0.0, true, 1.0);
+	gb_auto_record = AutoExecConfig_CreateConVar("gb_auto_record", "1", "Enable automatic recording", FCVAR_NONE, true, 0.0, true, 1.0);
+	gb_stv_minplayers = AutoExecConfig_CreateConVar("gb_stv_minplayers", "1", "Minimum players on server to start recording", _, true, 0.0);
+	gb_stv_ignorebots = AutoExecConfig_CreateConVar("gb_stv_ignorebots", "1", "Ignore bots in the player count", FCVAR_NONE, true, 0.0, true, 1.0);
+	gb_stv_timestart = AutoExecConfig_CreateConVar("gb_stv_timestart", "-1", "Hour in the day to start recording (0-23, -1 disables)", FCVAR_NONE);
+	gb_stv_timestop = AutoExecConfig_CreateConVar("gb_stv_timestop", "-1", "Hour in the day to stop recording (0-23, -1 disables)", FCVAR_NONE);
+	gb_stv_finishmap = AutoExecConfig_CreateConVar("gb_stv_finishmap", "1", "If 1, continue recording until the map ends", FCVAR_NONE, true, 0.0, true, 1.0);
+	gb_stv_path = AutoExecConfig_CreateConVar("gb_stv_path", "stv_demos/active", "Path to store currently recording demos", FCVAR_NONE);
+    gb_stv_path_complete = AutoExecConfig_CreateConVar("gb_stv_path_complete", "stv_demos/complete", "Path to store complete demos", FCVAR_NONE);
 
-	//AutoExecConfig(true, "gbans");
+	AutoExecConfig_ExecuteFile();
+	AutoExecConfig_CleanFile();
 }
 
 public void OnConfigsExecuted()
 {
-	ConVar stv_mp = FindConVar("gb_stv_minplayers");
-	stv_mp.AddChangeHook(OnConVarChanged);
-
-	ConVar stv_ignorebots = FindConVar("gb_stv_ignorebots");
-	stv_ignorebots.AddChangeHook(OnConVarChanged);
-
-	ConVar stv_timestart = FindConVar("gb_stv_timestart");
-	stv_timestart.AddChangeHook(OnConVarChanged);
-
-	ConVar stv_timestop = FindConVar("gb_stv_timestop");
-	stv_timestop.AddChangeHook(OnConVarChanged);
-
-	ConVar stv_path = FindConVar("gb_stv_path");
-	stv_path.AddChangeHook(OnConVarChanged);
-
-	ConVar stv_path_complete = FindConVar("gb_stv_path_complete");
+	gb_stv_minplayers.AddChangeHook(OnConVarChanged);
+	gb_stv_ignorebots.AddChangeHook(OnConVarChanged);
+	gb_stv_timestart.AddChangeHook(OnConVarChanged);
+	gb_stv_timestop.AddChangeHook(OnConVarChanged);
+	gb_stv_path.AddChangeHook(OnConVarChanged);
 
 	refreshToken();
 
 	char sPath[PLATFORM_MAX_PATH];
-	
-	gbLog("gb_stv_path: %b", stv_path == null);
 
 	stv_path.GetString(sPath, sizeof(sPath));
 	if(!DirExists(sPath))

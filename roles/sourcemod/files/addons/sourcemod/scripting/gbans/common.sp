@@ -21,9 +21,6 @@ public bool parseReason(const char[] reasonStr, GB_BanReason &reason)
 }
 
 stock void makeURL(const char[] path, char[] outURL, int maxLen) {
-	ConVar gb_core_host = FindConVar("gb_core_host");
-	ConVar gb_core_port = FindConVar("gb_core_port");
-
 	char serverHost[PLATFORM_MAX_PATH];
 	GetConVarString(gb_core_host, serverHost, sizeof serverHost);
 	int port = GetConVarInt(gb_core_port);

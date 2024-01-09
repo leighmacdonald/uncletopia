@@ -4,8 +4,6 @@
 
 public Action onCmdAutoTeamAction(int clientId, int argc)
 {
-    ConVar gb_disable_autoteam = FindConVar("gb_disable_autoteam");
-
     if (GetConVarBool(gb_disable_autoteam)) {
         KickClient(clientId, "Please stop trying to stack :(");
 
