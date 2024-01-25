@@ -46,7 +46,6 @@ any Native_GB_BanClient(Handle plugin, int numParams)
 	}
 	return true;
 }
-
 /**
  * ban performs the actual work of sending the ban request to the gbans server
  *
@@ -67,7 +66,7 @@ public bool ban(int sourceId, int targetId, GB_BanReason reason, const char[] du
 		return false;
 	}
 
-	JSONObject obj = new JSONObject();
+	JSON_Object obj = new JSON_Object();
 	obj.SetString("source_id", sourceSid);
 	obj.SetString("target_id", targetSid);
 	obj.SetString("note", "");
@@ -79,36 +78,47 @@ public bool ban(int sourceId, int targetId, GB_BanReason reason, const char[] du
 	obj.SetString("demo_name", demoName);
 	obj.SetInt("demo_tick", tick);
 
-	char url[1024];
-	makeURL("/api/sm/bans/steam/create", url, sizeof url);
-	
-	HTTPRequest request = new HTTPRequest(url);
-	addAuthHeader(request);
-	
-    request.Post(obj, onBanRespReceived, sourceId); 
+	char encoded[1024];
+	obj.Encode(encoded, sizeof encoded);
+	json_cleanup_and_delete(obj);
+	System2HTTPRequest req = newReq(onBanRespReceived, "/api/sm/bans/steam/create");
+	req.SetData(encoded);
+	req.POST();
+	delete req;
 
-	delete obj;
+	gReplyToClientId = sourceId;
 
 	return true;
 }
 
 
-void onBanRespReceived(HTTPResponse response, any clientId)
+void onBanRespReceived(bool success, const char[] error, System2HTTPRequest request, System2HTTPResponse response, HTTPRequestMethod method)
 {
-	if(response.Status != HTTPStatus_OK)
+	if(!success)
 	{
-		if(response.Status == HTTPStatus_Conflict)
-		{
-			ReplyToCommand(clientId, "Duplicate ban");
-			return ;
-		}
-		ReplyToCommand(clientId, "Unhandled error response");
+		gbLog("Ban request did not complete successfully");
 		return ;
 	}
 
+	if(response.StatusCode != HTTP_STATUS_OK)
+	{
+		if(response.StatusCode == HTTP_STATUS_CONFLICT)
+		{
+			ReplyToCommand(gReplyToClientId, "Duplicate ban");
+			return ;
+		}
+		ReplyToCommand(gReplyToClientId, "Unhandled error response");
+		return ;
+	}
 
-	JSONObject data = view_as<JSONObject>(response.Data); 
+	char[] content = new char[response.ContentLength + 1];
 
-	int banId = data.GetInt("ban_id");
-	ReplyToCommand(clientId, "User banned (#%d)", banId);
+	response.GetContent(content, response.ContentLength + 1);
+
+	JSON_Object banResult = json_decode(content);
+
+	int banId = banResult.GetInt("ban_id");
+	ReplyToCommand(gReplyToClientId, "User banned (#%d)", banId);
+	gReplyToClientId = -1;
+	json_cleanup_and_delete(banResult);
 }
