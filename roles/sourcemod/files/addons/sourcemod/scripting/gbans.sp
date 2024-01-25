@@ -53,9 +53,10 @@ public void OnPluginStart()
 	
 	HookEvent("player_disconnect", Event_PlayerDisconnect, EventHookMode_Pre);
 	HookEvent("player_connect_client", Event_PlayerConnect, EventHookMode_Pre);
-	HookEvent("teamplay_round_start", onRoundStart, EventHookMode_Pre);
-	HookEvent("teamplay_game_over", onRoundEnd, EventHookMode_Post);
-	
+	HookEvent("teamplay_round_start", onRoundStart, EventHookMode_PostNoCopy);
+	HookEvent("teamplay_game_over", onRoundEnd, EventHookMode_Pre);
+	HookEvent("tf_game_over", onRoundEnd, EventHookMode_Pre);
+
 	AutoExecConfig_SetFile("gbans");
 
 	// Core settings
@@ -129,7 +130,7 @@ public void OnClientDisconnect_Post(int client)
 }
 
 public void OnMapStart() {
-	gMatchStarted = false;
+	gMatchStartedCount = 0;
 }
 
 public void OnMapEnd()
@@ -139,18 +140,6 @@ public void OnMapEnd()
 		StopRecord();
 		gIsManual = false;
 	}
-
-	if (StrEqual(gMatchID, "")) {
-		return;
-	}
-
-	char path[1024];
-	Format(path, sizeof path, "/match/%s", gMatchID);
-
-	char matchURL[1024];
-	makeURL(path, matchURL, sizeof matchURL);
-
-	PrintToChatAll("Match stats: %s", matchURL);
 }
 
 public void OnClientPutInServer(int clientId)
