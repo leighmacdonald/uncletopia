@@ -1014,7 +1014,7 @@ void DrawHintProgress()
 	
 	int iTimeRemaining = RoundFloat(timeRemaining);
 
-	PrintCenterTextAll("%t%s", "Vote Count", g_NumVotes, g_TotalClients, iTimeRemaining, g_LeaderList);
+	PrintHintTextToAll("%t%s", "Vote Count", g_NumVotes, g_TotalClients, iTimeRemaining, g_LeaderList);
 }
 
 void BuildVoteLeaders()

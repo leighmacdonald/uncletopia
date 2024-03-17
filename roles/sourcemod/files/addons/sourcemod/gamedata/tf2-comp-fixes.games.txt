@@ -323,7 +323,7 @@
 			// contains string "mult_player_aiming_movespeed"
 			"CTFPlayer::TeamFortress_CalculateMaxSpeed" {
 				"linux" "@_ZNK9CTFPlayer30TeamFortress_CalculateMaxSpeedEb"
-				"windows" "\x55\x8B\xEC\x83\xEC\x18\x83\x3D\x2A\x2A\x2A\x2A\x00"
+				"windows" "\x55\x8B\xEC\x83\xEC\x18\x83\x3D\x2A\x2A\x2A\x2A\x00\x56"
 			}
 
 			// contains string "projectile_spread_angle"

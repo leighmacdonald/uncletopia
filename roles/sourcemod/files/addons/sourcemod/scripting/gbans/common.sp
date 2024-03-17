@@ -2,12 +2,13 @@
 #pragma tabsize 4
 #pragma newdecls required
 
-stock void gbLog(const char[] format, any...)
+void gbLog(const char[] format, any...)
 {
 	char buffer[254];
 	VFormat(buffer, sizeof buffer, format, 2);
 	PrintToServer("[GB] %s", buffer);
 }
+
 
 public bool parseReason(const char[] reasonStr, GB_BanReason &reason)
 {
@@ -20,13 +21,31 @@ public bool parseReason(const char[] reasonStr, GB_BanReason &reason)
 	return true;
 }
 
-stock void makeURL(const char[] path, char[] outURL, int maxLen) {
-	char serverHost[PLATFORM_MAX_PATH];
-	GetConVarString(gb_core_host, serverHost, sizeof serverHost);
-	int port = GetConVarInt(gb_core_port);
 
-	Format(outURL, maxLen, "%s:%d%s", serverHost, port, path);
+System2HTTPRequest newReq(System2HTTPResponseCallback cb, const char[] path)
+{
+	char serverHost[PLATFORM_MAX_PATH];
+	gHost.GetString(serverHost, sizeof serverHost);
+	int port = gPort.IntValue;
+	char fullAddr[1024];
+	Format(fullAddr, sizeof fullAddr, "%s%s", serverHost, path);
+	System2HTTPRequest httpRequest = new System2HTTPRequest(cb, fullAddr);
+	httpRequest.SetPort(port);
+	httpRequest.SetHeader("Content-Type", "application/json");
+	if(strlen(gAccessToken) > 0)
+	{
+		httpRequest.SetHeader("Authorization", gAccessToken);
+	}
+	
+	return httpRequest;
 }
+
+
+public void OnMapEnd()
+{
+	onMapEndSTV();
+}
+
 
 stock bool isValidClient(int client)
 {
@@ -35,36 +54,4 @@ stock bool isValidClient(int client)
 		return false;
 	}
 	return true;
-}
-
-stock void addAuthHeader(HTTPRequest request) {
-	request.SetHeader("Authorization", gAccessToken);
-}
-
-stock int GetRealClientCount()
-{
-	int iClients = 0;
-	for(int i = 1; i <= MaxClients; i++)
-	{
-		if(IsClientInGame(i) && !IsFakeClient(i))
-		{
-			iClients++;
-		}
-	}
-
-	return iClients;
-}
-
-stock int GetAllClientCount()
-{
-	int iClients = 0;
-	for(int i = 1; i <= MaxClients; i++)
-	{
-		if(IsClientInGame(i))
-		{
-			iClients++;
-		}
-	}
-
-	return iClients;
 }

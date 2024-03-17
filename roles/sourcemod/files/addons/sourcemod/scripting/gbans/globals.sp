@@ -2,30 +2,19 @@
 #pragma tabsize 4
 #pragma newdecls required
 
-#define PLUGIN_VERSION "0.5.15-next2"
+// clang-format off
+#if defined _gbans_globals_included
+#endinput
+#endif
+// clang-format on
+
+#define _gbans_globals_included 
+
+#define PLUGIN_AUTHOR "Leigh MacDonald"
+#define PLUGIN_VERSION "0.5.13"
+#define PLUGIN_NAME "gbans"
 
 #define MAX_SCORES 256
-
-// Core gbans options
-ConVar gb_core_host;
-ConVar gb_core_port;
-ConVar gb_core_server_name;
-ConVar gb_core_server_key;
-
-// In Game Tweaks
-ConVar gb_disable_autoteam;
-ConVar gb_hide_connections;
-
-// STV options
-ConVar gb_stv_enable;
-ConVar gb_auto_record;
-ConVar gb_stv_minplayers;
-ConVar gb_stv_ignorebots;
-ConVar gb_stv_timestart;
-ConVar gb_stv_timestop;
-ConVar gb_stv_finishmap;
-ConVar gb_stv_path;
-ConVar gb_stv_path_complete;
 
 // clang-format off
 enum struct PlayerInfo
@@ -34,15 +23,46 @@ enum struct PlayerInfo
 	char ip[16] ;
 	int banType;
 	int permissionLevel;
-	char message[256];
+	char message[256] ;
 }
+
 // clang-format on
 
 // Globals must all start with g
 PlayerInfo gPlayers[MAXPLAYERS + 1];
 
-char gMatchID[37];
+ConVar gSvVisibleMaxPlayers = null;
+ConVar gHostname = null;
+
+// Core gbans options
+ConVar gPort = null;
+ConVar gHost = null;
+ConVar gServerName = null;
+ConVar gServerKey = null;
+
+// Balancing options
+ConVar gDisableAutoTeam = null;
+
+// STV options
+ConVar gTvEnabled = null;
+ConVar gAutoRecord = null;
+ConVar gMinPlayersStart = null;
+ConVar gIgnoreBots = null;
+ConVar gTimeStart = null;
+ConVar gTimeStop = null;
+ConVar gFinishMap = null;
+ConVar gDemoPathActive = null;
+ConVar gDemoPathComplete = null;
+
+// Game ruleset options
+ConVar gRulesRoundTime = null;
+
+ConVar gHideConnections = null;
+
 char gAccessToken[512];
+
+// Store temp clientId for networked callbacks
+int gReplyToClientId = 0;
 
 // Reports command
 int gReportSourceId = -1;
@@ -55,3 +75,4 @@ int gReportStartedAtTime = -1;
 bool gStvMapChanged = false;
 bool gIsRecording = false;
 bool gIsManual = false;
+

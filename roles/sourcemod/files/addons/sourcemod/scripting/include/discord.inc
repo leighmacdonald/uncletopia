@@ -3,9 +3,6 @@
 #endif
 #define _discord_included
 
-#pragma semicolon 1
-#pragma newdecls required
-
 native void Discord_SendMessage(const char[] webhook, const char[] message);
 
 public SharedPlugin __pl_discord =
@@ -21,7 +18,7 @@ public SharedPlugin __pl_discord =
 
 #if !defined REQUIRE_PLUGIN
 
-public void __pl_discord_SetNTVOptional()
+public __pl_discord_SetNTVOptional()
 {
 	MarkNativeAsOptional("Discord_SendMessage");
 }

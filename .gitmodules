@@ -1,0 +1,33 @@
+[submodule "sm_plugins/stac"]
+	path = sm_plugins/stac
+	url = https://github.com/sapphonie/StAC-tf2.git
+[submodule "sm_plugins/discord"]
+	path = sm_plugins/discord
+	url = https://gitlab.com/Zipcore/Discord.git
+[submodule "sm_plugins/accelerator"]
+	path = sm_plugins/accelerator
+	url = https://github.com/asherkin/accelerator.git
+[submodule "sm_plugins/f2"]
+	path = sm_plugins/f2
+	url = https://github.com/F2/F2s-sourcemod-plugins
+[submodule "sm_plugins/gbans"]
+	path = sm_plugins/gbans
+	url = https://github.com/leighmacdonald/gbans.git
+[submodule "sm_plugins/edict-limiter"]
+	path = sm_plugins/edict-limiter
+	url = https://github.com/sapphonie/tf2-edict-limiter
+[submodule "sm_plugins/nativevotes"]
+	path = sm_plugins/nativevotes
+	url = https://github.com/sapphonie/sourcemod-nativevotes-updated.git
+[submodule "sm_plugins/tf2_econ_data"]
+	path = sm_plugins/tf2_econ_data
+	url = https://github.com/nosoop/SM-TFEconData
+[submodule "sm_plugins/tf2centerprojectiles"]
+	path = sm_plugins/tf2centerprojectiles
+	url = https://github.com/rtldg/tf2centerprojectiles.git
+[submodule "sm_plugins/tf2attributes"]
+	path = sm_plugins/tf2attributes
+	url = https://github.com/FlaminSarge/tf2attributes.git
+[submodule "sm_plugins/tf2-comp-fixes"]
+	path = sm_plugins/tf2-comp-fixes
+	url = https://github.com/ldesgoui/tf2-comp-fixes.git

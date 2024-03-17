@@ -122,9 +122,7 @@ native int TF2Econ_GetItemRarity(int itemdef);
  * Returns an `ArrayList` containing attribute defindex / value pairs corresponding to the given
  * item definition, or `null` if not a valid item definition.
  * 
- * The `ArrayList` has a blocksize of 2.  Block 0 contains the attribute defindex; block 1
- * contains the attribute value, which is a 32-bit value that may represent an int, float, or
- * pointer to a complex type.
+ * The value is a raw 32-bit value which may represent an int, float, or pointer.
  * 
  * This handle is owned by the calling plugin, so it should be `delete`d when not needed
  * anymore.

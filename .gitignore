@@ -16,3 +16,4 @@ host_vars/*
 group_vars/*
 roles/cloudalchemy.*
 /hosts.yml
+*.dll
