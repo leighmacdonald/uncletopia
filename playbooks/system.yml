@@ -97,6 +97,7 @@
           - python3-distutils
           - libc6:i386
           - lib32stdc++6
+          - libcurl4:i386
 
     - name: Reload systemd daemon
       become: true
