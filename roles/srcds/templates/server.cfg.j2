@@ -35,7 +35,8 @@ tv_title "{{ stv_name }}"
 // Server Logging
 sv_logbans 1
 sv_logecho 1
-sv_logfile 0
+// Must be enabled for sm-sentry-error-logger...
+sv_logfile 1
 sv_log_onefile 0
 {% if log.net_enable %}
 // net log enabled
@@ -195,3 +196,8 @@ sm_cvar {{ k }} "{{ v }}"
 {% endfor %}
 
 sm_cvar mp_waitingforplayers_time {% if item.rotation|default("all") == "community" %}60{% else %}35{% endif %}
+
+ce_sentry_dsn_url "{{ item.sentry_dsn }}"
+ce_region {{ item.sentry_ce_region|default("") }}
+ce_type {{ item.sentry_ce_type|default("") }}
+ce_server_id "{{ item.server_name_short }}"

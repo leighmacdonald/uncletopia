@@ -2,13 +2,8 @@
 #pragma tabsize 4
 #pragma newdecls required
 
-#include <adminmenu>
-#include <sourcetvmanager>
-
 const reportTimeout = 30;
 const reportMinReasonLen = 10;
-
-
 
 public Action onCmdReport(int clientId, int argc)
 {
@@ -22,7 +17,6 @@ public Action onCmdReport(int clientId, int argc)
 	return Plugin_Handled;
 }
 
-
 public void ShowTargetMenu(int clientId)
 {
 	Menu menu = CreateMenu(MenuHandler_Target);
@@ -32,7 +26,6 @@ public void ShowTargetMenu(int clientId)
 	DisplayMenu(menu, clientId, MENU_TIME_FOREVER);
 }
 
-
 void resetReportStatus()
 {
 	gReportSourceId = -1;
@@ -41,7 +34,6 @@ void resetReportStatus()
 	gReportTargetReason = unknown;
 	gReportWaitingForReason = false;
 }
-
 
 public Action OnClientSayCommand(int clientId, const char[] command, const char[] args)
 {
@@ -67,7 +59,6 @@ public Action OnClientSayCommand(int clientId, const char[] command, const char[
 	return Plugin_Continue;
 }
 
-
 public bool report(int sourceId, int targetId, GB_BanReason reason, const char[] reasonText)
 {
 	char sourceSid[50];
@@ -91,7 +82,7 @@ public bool report(int sourceId, int targetId, GB_BanReason reason, const char[]
 		demoTick = SourceTV_GetRecordingTick();
 	}
 
-	JSON_Object obj = new JSON_Object();
+	JSONObject obj = new JSONObject();
 	obj.SetString("source_id", sourceSid);
 	obj.SetString("target_id", targetSid);
 	obj.SetInt("reason", view_as<int>(reason));
@@ -99,59 +90,50 @@ public bool report(int sourceId, int targetId, GB_BanReason reason, const char[]
 	obj.SetString("demo_name", demoName);
 	obj.SetInt("demo_tick", demoTick);
 
-	char encoded[2048];
-	obj.Encode(encoded, sizeof encoded);
-	json_cleanup_and_delete(obj);
+	char url[1024];
+	makeURL("/api/sm/report/create", url, sizeof url);
+	
+	HTTPRequest request = new HTTPRequest(url);
+	addAuthHeader(request);
+    request.Post(obj, onReportRespReceived, sourceId); 
 
-	System2HTTPRequest req = newReq(onReportRespReceived, "/api/sm/report/create");
-	req.SetData(encoded);
-	req.POST();
-	delete req;
+	delete obj;
 
 	return true;
 }
 
-
-void onReportRespReceived(bool success, const char[] error, System2HTTPRequest request, System2HTTPResponse response, HTTPRequestMethod method)
+void onReportRespReceived(HTTPResponse response, any clientId)
 {
-	if(!success)
+	if(response.Status != HTTPStatus_Created)
 	{
-		gbLog("Invalid report response: %s", error);
-		PrintToChat(gReportSourceId, "[Report] Error making request");
-		resetReportStatus();
-		return ;
-	}
-	char[] content = new char[response.ContentLength + 1];
-	response.GetContent(content, response.ContentLength + 1);
-
-	JSON_Object result = json_decode(content);
-	if(response.StatusCode != HTTP_STATUS_CREATED)
-	{
-		if(response.StatusCode == HTTP_STATUS_CONFLICT)
+		if(response.Status == HTTPStatus_Conflict)
 		{
-			PrintToChat(gReportSourceId, "[Report] User has already been reported, thanks.");
+			PrintToChat(clientId, "[Report] User has already been reported, thanks.");
 			resetReportStatus();
 			return ;
 		}
 
-		gbLog("Invalid response status");
+		gbLog("Invalid report response status: %d", response.Status);
 
-		PrintToChat(gReportSourceId, "[Report] Error creating report");
+		PrintToChat(clientId, "[Report] Error creating report");
 		resetReportStatus();
 		return ;
 	}
 
-	int reportId = result.GetInt("report_id");
-	char serverHost[PLATFORM_MAX_PATH];
-	gHost.GetString(serverHost, sizeof serverHost);
-	char fullAddr[PLATFORM_MAX_PATH];
-	Format(fullAddr, sizeof fullAddr, "%s/report/%d", serverHost, reportId);
-	PrintToChat(gReportSourceId, "[Report] Report created succesfully, thanks for your help");
-	PrintToChat(gReportSourceId, "[Report] %s", fullAddr);
-	json_cleanup_and_delete(result);
+	JSONObject data = view_as<JSONObject>(response.Data); 
+	int reportId = data.GetInt("report_id");
+
+	char path[PLATFORM_MAX_PATH];
+	Format(path, sizeof path, "/report/%d", reportId);
+
+	char url[1024];
+	makeURL(path, url, sizeof url);
+
+	PrintToChat(clientId, "[Report] Report created succesfully, thanks for your help");
+	PrintToChat(clientId, "[Report] %s", url);
+	
 	resetReportStatus();
 }
-
 
 public void ShowReasonMenu(int clientId)
 {
@@ -171,7 +153,6 @@ public void ShowReasonMenu(int clientId)
 	DisplayMenu(menu, clientId, MENU_TIME_FOREVER);
 }
 
-
 public Action Timer_checkReportState()
 {
 	if(gReportStartedAtTime - GetTime() > reportTimeout)
@@ -180,7 +161,6 @@ public Action Timer_checkReportState()
 	}
 	return Plugin_Continue;
 }
-
 
 public int MenuHandler_Target(Menu menu, MenuAction action, int clientId, int selectedId)
 {
@@ -216,7 +196,6 @@ public int MenuHandler_Target(Menu menu, MenuAction action, int clientId, int se
 	}
 	return 0;
 }
-
 
 public int MenuHandler_Reason(Menu menu, MenuAction action, int clientId, int selectedId)
 {

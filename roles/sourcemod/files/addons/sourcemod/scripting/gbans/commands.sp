@@ -7,6 +7,7 @@ public Action onCmdVersion(int clientId, int args)
 	ReplyToCommand(clientId, "[GB] Version %s", PLUGIN_VERSION);
 	return Plugin_Handled;
 }
+
 /**
 Ping the moderators through discord
 */
@@ -42,38 +43,37 @@ public Action onCmdMod(int clientId, int argc)
 	}
 
 	char serverName[PLATFORM_MAX_PATH];
-	gHost.GetString(serverName, sizeof serverName);
-	JSON_Object obj = new JSON_Object();
+	GetConVarString(gb_core_host, serverName, sizeof serverName);
+
+	JSONObject obj = new JSONObject();
 	obj.SetString("server_name", serverName);
 	obj.SetString("steam_id", auth_id);
 	obj.SetString("name", name);
 	obj.SetString("reason", reason);
 	obj.SetInt("client", clientId);
-	char encoded[1024];
-	obj.Encode(encoded, sizeof encoded);
-	json_cleanup_and_delete(obj);
-	System2HTTPRequest req = newReq(onPingModRespReceived, "/api/ping_mod");
-	req.SetData(encoded);
-	req.POST();
-	delete req;
 
-	ReplyToCommand(clientId, "Mods have been alerted, thanks!");
+	char url[1024];
+	makeURL("/api/ping_mod", url, sizeof url);
+
+	HTTPRequest request = new HTTPRequest(url);
+	addAuthHeader(request);
+    request.Post(obj, onPingModRespReceived, clientId); 
+
+	delete obj;
 
 	return Plugin_Handled;
 }
 
 
-void onPingModRespReceived(bool success, const char[] error, System2HTTPRequest request, System2HTTPResponse response, HTTPRequestMethod method)
+void onPingModRespReceived(HTTPResponse response, any clientId)
 {
-	if(!success)
-	{
-		return ;
-	}
-	if(response.StatusCode != HTTP_STATUS_OK)
-	{
-		gbLog("Bad status on mod resp request (%d): %s", response.StatusCode, error);
-		return ;
-	}
+	if (response.Status != HTTPStatus_OK) {
+		LogError("Invalid report response code: %d", response.Status);
+
+        return;
+    } 
+
+	ReplyToCommand(clientId, "Mods have been alerted, thanks!");
 }
 
 
