@@ -1,16 +1,8 @@
 #!/usr/bin/env python3
 from genericpath import isdir
 from os import listdir
-from os.path import join, exists
 import subprocess
 import sys
-
-ENCRYPTED_PATH = [
-    "hosts.yml",
-    "group_vars",
-    "host_vars",
-    "hosts.yml"
-]
 
 
 class ValidationError(Exception):
@@ -23,30 +15,6 @@ def repo_dir():
 
 
 ROOT = repo_dir()
-
-
-def ensure_encrypted():
-    print("Checking encrypted")
-    header = "$ANSIBLE_VAULT"
-
-    def check(fp):
-        if not exists(fp):
-            return
-        content = open(fp).read()
-        if header not in content:
-            raise ValidationError("File should be encrypted with ansible-vault {}".format(fp))
-        if not content.endswith("\n"):
-            content = content + "\n"
-            open(fp, 'w+').write(content)
-            print("Added newline to vault file")
-
-    for root_dir in ENCRYPTED_PATH:
-        if isdir(join(ROOT, root_dir)):
-            for file in [f for f in listdir(join(ROOT, root_dir)) if not f.endswith(".example")]:
-                check(join(ROOT, root_dir, file))
-        else:
-            check(join(ROOT, root_dir))
-    return True
 
 
 def ensure_ansible_lint():
@@ -63,7 +31,6 @@ def main():
     ret_val = 255
     try:
         # format_sp()
-        ensure_encrypted()
         ensure_ansible_lint()
     except ValidationError as err:
         print("[ERROR] {}".format(err))

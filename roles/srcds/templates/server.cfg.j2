@@ -197,7 +197,7 @@ sm_cvar {{ k }} "{{ v }}"
 
 sm_cvar mp_waitingforplayers_time {% if item.rotation|default("all") == "community" %}60{% else %}35{% endif %}
 
-ce_sentry_dsn_url "{{ item.sentry_dsn }}"
+ce_sentry_dsn_url "{{ sentry_dsn }}"
 ce_region {{ item.sentry_ce_region|default("") }}
 ce_type {{ item.sentry_ce_type|default("") }}
 ce_server_id "{{ item.server_name_short }}"

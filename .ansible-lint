@@ -17,8 +17,5 @@ skip_list:
   - name[casing]
   - name[play]
 
-warn_lisT:
-
-
 kinds:
   - tasks: "*/tasks/*.yml"
