@@ -49,31 +49,53 @@ public bool OnClientPreConnectEx(const char[] name, char password[255], const ch
         return true;
     }
 
-    // connects == how many times have they connected recently, it decays by 1 every 5 seconds
-    // threshold == how many times is "too many" - TODO: does this need to be higher? or lower? or...?
-    int connects;
-    static int threshold = 6;
+    // DO NOT interfere with lan matches until we have a way to store port from here!
+    ConVar sv_lan = FindConVar("sv_lan");
+    if (sv_lan.BoolValue)
+    {
+        return true;
+    }
 
+    // connects is how many times have they connected recently, it decays by 1 every 5 seconds
+    // threshold how many times is "too many"
+    // thresholdEx is at what point we should start punishing & making each connect be worth double/triple/etc to the algorithm 
+    int connects            = 0;
+    static int threshold    = 6;
+    static int thresholdEx  = 10;
+    bool punish             = false;
     IPBuckets.GetValue(ip, connects); // 0 if not present
+
+    // inc by one since we're in this callback
     connects++;
 
-    if (connects >= threshold)
+    // strong punishment
+    if (connects > thresholdEx)
     {
-        rejectReason = "Rate limited. Please try again in a bit.";
-        if (connects < threshold + 5)
-        {
-            connects += 5; // Lock them out for a bit if they really will not stop spamming after getting rate limited
-        }
-        return false;
+        punish          = true;
+        rejectReason    = "Rate limited for retry spam. Please try again in a few minutes.";
+        // worth double
+        connects++;
     }
+    // light punishment
+    else if (connects >= threshold)
+    {
+        punish          = true;
+        rejectReason    = "Rate limited for retry spam. Please try again in a bit.";
+    }
+    else { /* no punishment, they didn't trip any threshold */ }
+
+    // set our connects to our stupid global var thing
     IPBuckets.SetValue(ip, connects);
 
-    //if (stac_debug.BoolValue)
-    //{
-    StacLog("[stac_prevent_connect_spam - OnClientPreConnectEx] %i connects from ip %s", connects, ip);
-    //}
-
-    return true;
+    if (stac_debug.BoolValue)
+    {
+        StacLog("[stac_prevent_connect_spam - OnClientPreConnectEx] %i connects from ip %s", connects, ip);
+    }
+    
+    // this func detour returns true to let them in, and false to prevent them from connecting
+    // rejectReason is displayed as the reason to their client.
+    // that's just how it is.
+    return !punish;
 }
 
 Action LeakIPConnectBucket(Handle timer)
@@ -95,17 +117,17 @@ Action LeakIPConnectBucket(Handle timer)
         IPBuckets.GetValue(ip, connects); // 0 if not present per zero-init above
         connects--;
 
-        //if (stac_debug.BoolValue)
-        //{
-        StacLog("[stac_prevent_connect_spam - LeakIPConnectBucket] %i connects from ip %s", connects, ip);
-        //}
+        if (stac_debug.BoolValue)
+        {
+            StacLog("[stac_prevent_connect_spam - LeakIPConnectBucket] %i connects from ip %s", connects, ip);
+        }
 
         if (connects <= 0)
         {
-            //if (stac_debug.BoolValue)
-            //{
-            StacLog("[stac_prevent_connect_spam - LeakIPConnectBucket] %i connects from ip %s [ REMOVING ] ", connects, ip);
-            //}
+            if (stac_debug.BoolValue)
+            {
+                StacLog("[stac_prevent_connect_spam - LeakIPConnectBucket] %i connects from ip %s [ REMOVING ] ", connects, ip);
+            }
 
             IPBuckets.Remove(ip);
             continue;
@@ -317,8 +339,10 @@ public void OnClientPutInServer(int cl)
         StacLog("OCPIS steamid = %s", SteamAuthFor[cl]);
     }
 
-    // bail if cvar is set to 0
-    if (stac_max_connections_from_ip.IntValue > 0)
+    ConVar sv_lan = FindConVar("sv_lan");
+
+    // bail if cvar is set to 0 or if we're in sv_lan 1
+    if ( stac_max_connections_from_ip.IntValue > 0 && !(sv_lan.BoolValue) )
     {
         checkIP(cl);
     }
@@ -536,6 +560,7 @@ Action OnAllClientCommands(int cl, const char[] command, int argc)
     return Plugin_Continue;
 }
 
+// Runs OnClientPutInServer (which runs on map change too!) and OnClientDisconnect
 void ClearClBasedVars(int userid)
 {
     // get fresh cli id
@@ -552,6 +577,7 @@ void ClearClBasedVars(int userid)
     cmdnumSpikeDetects      [cl] = 0;
     tbotDetects             [cl] = -1;
     invalidUsercmdDetects   [cl] = 0;
+    stacProbingDetects      [cl] = 0;
 
     // frames since client "did something"
     //                      [ client index ][history]

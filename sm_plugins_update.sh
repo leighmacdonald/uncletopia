@@ -4,7 +4,7 @@ SM_ROOT=$ROOT/roles/sourcemod/files/addons/sourcemod
 SRC_ROOT="sm_plugins"
 
 STAC_ROOT="$SRC_ROOT/stac"
-STAC_BRANCH="v6.1.3-beta10-fix"
+STAC_BRANCH="v6.1.4"
 
 ACCEL_ROOT="$SRC_ROOT/accelerator"
 ACCEL_BRANCH="master"
