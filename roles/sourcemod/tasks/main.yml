@@ -4,7 +4,6 @@
     path: ~/build_sourcemod/
     state: absent
     mode: "0775"
-  tags: clean
 
 - name: Create ~/build_sourcemod/ directory
   ansible.builtin.file:

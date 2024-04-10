@@ -7,9 +7,6 @@
 [submodule "sm_plugins/accelerator"]
 	path = sm_plugins/accelerator
 	url = https://github.com/asherkin/accelerator.git
-[submodule "sm_plugins/f2"]
-	path = sm_plugins/f2
-	url = https://github.com/F2/F2s-sourcemod-plugins
 [submodule "sm_plugins/gbans"]
 	path = sm_plugins/gbans
 	url = https://github.com/leighmacdonald/gbans.git
