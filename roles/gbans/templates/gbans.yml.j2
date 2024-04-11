@@ -73,6 +73,10 @@ logging:
   full_timestamp: false
   srcds_log_addr: "{{ gbans_web.logging.srcds_log_addr}}"
   srcds_log_external_host: "{{ gbans_web.logging.srcds_log_external_host}}"
+  sentry_dsn: {{ gbans_web.sentry.sentry_dsn }}
+  sentry_dsn_web: {{ gbans_web.sentry.sentry_dsn_web }}
+  sentry_trace: {{ gbans_web.sentry.sentry_trace }}
+  sentry_sample_rate: {{ gbans_web.sentry.sentry_sample_rate }}
 
 network_bans:
   enabled: {{ gbans_web.network_bans_enabled }}
