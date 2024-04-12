@@ -1,5 +1,5 @@
 #!/bin/env bash
-ROOT=$(pwd)
+ROOT=$(pwd)/playbooks
 SM_ROOT=$ROOT/roles/sourcemod/files/addons/sourcemod
 SRC_ROOT="sm_plugins"
 
@@ -9,12 +9,9 @@ STAC_BRANCH="v6.1.4"
 ACCEL_ROOT="$SRC_ROOT/accelerator"
 ACCEL_BRANCH="master"
 
-F2_ROOT="$SRC_ROOT/f2"
-F2_BRANCH="20240228-1709146386551"
-
 GBANS_ROOT="$SRC_ROOT/gbans"
-#GBANS_BRANCH="v0.5.13"
-GBANS_BRANCH="match-tracking"
+GBANS_BRANCH="v0.6.0"
+#GBANS_BRANCH="match-tracking"
 
 DISCORD_ROOT="$SRC_ROOT/discord"
 DISCORD_BRANCH="master"
@@ -53,13 +50,6 @@ git checkout $ACCEL_BRANCH
 git pull
 
 cp -v accelerator.games.txt "$SM_ROOT/gamedata/"
-popd || exit
-
-pushd $F2_ROOT || exit
-git fetch --all
-git checkout $F2_BRANCH
-cp -v supstats2/supstats2.sp "$SM_ROOT/scripting/"
-cp -v medicstats/medicstats.sp "$SM_ROOT/scripting/"
 popd || exit
 
 pushd $GBANS_ROOT || exit
