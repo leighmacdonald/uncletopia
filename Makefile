@@ -2,8 +2,7 @@
 
 VAULT_PASS_PATH := ~/.vault_pass.txt
 PLAYBOOK_PATH := ./playbooks
-INVENTORY_PATH := "./hosts.yml"
-OPTS := "-i ${INVENTORY_PATH}"
+OPTS := -i hosts.yml
 all: site
 
 format:
@@ -46,7 +45,7 @@ shell:
 	@docker exec -it srcds-test-1 bash
 
 web:
-	@ansible-playbook $(OPTS) $(PLAYBOOK_PATH)/web.yml --limit metrics
+	ansible-playbook $(PLAYBOOK_PATH)/web.yml $(OPTS)  --limit metrics
 
 srcdsup:
 	@ansible-playbook $(OPTS) $(PLAYBOOK_PATH)/srcdsup.yml

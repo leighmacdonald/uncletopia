@@ -4,10 +4,24 @@
     name: gbans_db
     state: present
 
+- name: Create build dir
+  ansible.builtin.file:
+    path: "build/postgres"
+    state: directory
+    mode: '0755'
+
+- name: Copy postgres build
+  ansible.builtin.copy:
+    src: "postgres-ip4r.Dockerfile"
+    dest: "build/postgres/Dockerfile"
+
 - name: Build postgres image
-  docker_image:
-    dockerfile: postgres-ip4r.Dockerfile
-    name: postgres-gbans:latest
+  community.docker.docker_image:
+    build:
+      path: "build/postgres"
+    name: postgres-gbans
+    tag: latest
+    source: build
 
 - name: Create gbans-postgres container
   docker_container:
@@ -15,7 +29,7 @@
     image: postgres-gbans:latest
     restart: true
     recreate: true
-    pull: true
+    pull: false
     comparisons:
       networks: strict
     networks:
