@@ -1,0 +1,51 @@
+---
+- name: Create caddy_data volume
+  docker_volume:
+    name: caddy_data
+    state: present
+
+- name: Create caddy_config volume
+  docker_volume:
+    name: caddy_config
+    state: present
+
+- name: gbans_demos volume
+  docker_volume:
+    name: gbans_demos
+    state: present
+
+- name: Generate /etc/Caddyfile
+  become: true
+  ansible.builtin.template:
+    src: Caddyfile.j2
+    dest: /etc/Caddyfile
+    mode: 0775
+
+- name: Create caddy_net network
+  community.docker.docker_network:
+    name: caddy_net
+
+- name: Create caddy container
+  docker_container:
+    name: caddy
+    image: ghcr.io/iarekylew00t/caddy-cloudflare:latest
+    restart: true
+    recreate: true
+    purge_networks: true
+    restart_policy: always
+    networks:
+      - name: caddy_net
+    pull: true
+    labels:
+      logging: "promtail"
+      logging_jobname: "containerlogs"
+    volumes:
+      - caddy_data:/data
+      - caddy_config:/config
+      - /etc/Caddyfile:/etc/caddy/Caddyfile
+    env:
+      ACME_AGREE: "true"
+    ports:
+      - 443:443
+      - 80:80
+      - "{{ vpn_hosts[inventory_hostname].ip }}:2019:2019"

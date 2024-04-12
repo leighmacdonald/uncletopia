@@ -1,0 +1,15 @@
+"Games"
+{
+	"tf"
+	{
+		"Offsets"
+		{
+			"GiveNamedItem"
+			{
+				"windows"	"472"
+				"linux"	"479"
+				"mac"	"479"
+			}
+		}
+	}
+}

@@ -1,0 +1,56 @@
+target: all,alertmanager,overrides-exporter
+
+common:
+  storage:
+    backend: s3
+    s3:
+      endpoint: minio:9000
+      access_key_id: {{ minio.user | default(mimir) }}
+      secret_access_key: {{ minio.password | default(mimir) }}
+      insecure: true
+      bucket_name: mimir
+
+usage_stats:
+  enabled: false
+
+blocks_storage:
+  s3:
+    bucket_name: mimir-blocks
+
+alertmanager_storage:
+  s3:
+    bucket_name: mimir-alertmanager
+
+ruler_storage:
+  s3:
+    bucket_name: mimir-ruler
+#
+memberlist:
+  join_members: [ localhost:7946 ]
+
+compactor:
+  data_dir: /data/mimir/compactor
+  sharding_ring:
+    kvstore:
+      store: memberlist
+
+distributor:
+  ring:
+    instance_addr: 127.0.0.1
+    kvstore:
+      store: memberlist
+#
+ingester:
+  ring:
+    instance_addr: 127.0.0.1
+    kvstore:
+      store: memberlist
+    replication_factor: 1
+
+server:
+  http_listen_port: 9009
+  log_level: info
+#
+#store_gateway:
+#  sharding_ring:
+#    replication_factor: 0

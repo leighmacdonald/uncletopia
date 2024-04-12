@@ -1,0 +1,48 @@
+// convars
+
+"Games"
+{
+	"#default"
+	{
+		"#supported"
+		{
+			engine "tf2"
+			engine "css"
+			engine "ep1"
+			engine "ep2"
+			engine "hl2dm"
+			engine "dods"
+			engine "sdk2013"
+			engine "l4d"
+			engine "nd"
+			engine "l4d2"
+			engine "blade"
+			engine "insurgency"
+			engine "contagion"
+			engine "bms"
+			engine "doi"
+			engine "pkvii"
+		}
+		
+		"sigsegv"
+		{
+			"addrs_group"
+			{
+				"[common]"
+				{
+					type "convar"
+					lib  "engine"
+				}
+				
+				"con_filter_enable"   "con_filter_enable"
+				"con_filter_text"     "con_filter_text"
+				"con_filter_text_out" "con_filter_text_out"
+				
+				"dtwatchent"   "dtwatchent"
+				"dtwatchvar"   "dtwatchvar"
+				"dtwatchclass" "dtwatchclass"
+				"dtwarning"    "dtwarning"
+			}
+		}
+	}
+}

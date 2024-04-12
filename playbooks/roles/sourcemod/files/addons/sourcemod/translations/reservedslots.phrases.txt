@@ -1,0 +1,7 @@
+"Phrases"
+{
+	"Slot reserved"
+	{
+		"en"			"Server Full"
+	}
+}

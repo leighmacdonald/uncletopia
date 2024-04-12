@@ -1,0 +1,318 @@
+// NextBotEventResponderInterface
+
+"Games"
+{
+	"#default"
+	{
+		"#supported"
+		{
+			engine "tf2"
+		}
+		
+		"sigsegv"
+		{
+			"addrs"
+			{
+//				"INextBotEventResponder::~INextBotEventResponder [D0]"
+//				{
+//					type "sym"
+//					sym  "_ZN22INextBotEventResponderD0Ev"
+//				}
+//				"INextBotEventResponder::~INextBotEventResponder [D2]"
+//				{
+//					type   "func knownvtidx"
+//					sym    "_ZN22INextBotEventResponderD2Ev"
+//					vtable ".?AVINextBotEventResponder@@"
+//					idx    "0x00"
+//				}
+				"INextBotEventResponder::FirstContainedResponder"
+				{
+					type   "func knownvtidx"
+					sym    "_ZNK22INextBotEventResponder23FirstContainedResponderEv"
+					vtable ".?AVINextBotEventResponder@@"
+					idx    "0x01"
+				}
+				"INextBotEventResponder::NextContainedResponder"
+				{
+					type   "func knownvtidx"
+					sym    "_ZNK22INextBotEventResponder22NextContainedResponderEPS_"
+					vtable ".?AVINextBotEventResponder@@"
+					idx    "0x02"
+				}
+				"INextBotEventResponder::OnLeaveGround"
+				{
+					type   "func knownvtidx"
+					sym    "_ZN22INextBotEventResponder13OnLeaveGroundEP11CBaseEntity"
+					vtable ".?AVINextBotEventResponder@@"
+					idx    "0x03"
+				}
+				"INextBotEventResponder::OnLandOnGround"
+				{
+					type   "func knownvtidx"
+					sym    "_ZN22INextBotEventResponder14OnLandOnGroundEP11CBaseEntity"
+					vtable ".?AVINextBotEventResponder@@"
+					idx    "0x04"
+				}
+				"INextBotEventResponder::OnContact"
+				{
+					type   "func knownvtidx"
+					sym    "_ZN22INextBotEventResponder9OnContactEP11CBaseEntityP10CGameTrace"
+					vtable ".?AVINextBotEventResponder@@"
+					idx    "0x05"
+				}
+				"INextBotEventResponder::OnMoveToSuccess"
+				{
+					type   "func knownvtidx"
+					sym    "_ZN22INextBotEventResponder15OnMoveToSuccessEPK4Path"
+					vtable ".?AVINextBotEventResponder@@"
+					idx    "0x06"
+				}
+				"INextBotEventResponder::OnMoveToFailure"
+				{
+					type   "func knownvtidx"
+					sym    "_ZN22INextBotEventResponder15OnMoveToFailureEPK4Path17MoveToFailureType"
+					vtable ".?AVINextBotEventResponder@@"
+					idx    "0x07"
+				}
+				"INextBotEventResponder::OnStuck"
+				{
+					type   "func knownvtidx"
+					sym    "_ZN22INextBotEventResponder7OnStuckEv"
+					vtable ".?AVINextBotEventResponder@@"
+					idx    "0x08"
+				}
+				"INextBotEventResponder::OnUnStuck"
+				{
+					type   "func knownvtidx"
+					sym    "_ZN22INextBotEventResponder9OnUnStuckEv"
+					vtable ".?AVINextBotEventResponder@@"
+					idx    "0x09"
+				}
+				"INextBotEventResponder::OnPostureChanged"
+				{
+					type   "func knownvtidx"
+					sym    "_ZN22INextBotEventResponder16OnPostureChangedEv"
+					vtable ".?AVINextBotEventResponder@@"
+					idx    "0x0a"
+				}
+				"INextBotEventResponder::OnAnimationActivityComplete"
+				{
+					type   "func knownvtidx"
+					sym    "_ZN22INextBotEventResponder27OnAnimationActivityCompleteEi"
+					vtable ".?AVINextBotEventResponder@@"
+					idx    "0x0b"
+				}
+				"INextBotEventResponder::OnAnimationActivityInterrupted"
+				{
+					type   "func knownvtidx"
+					sym    "_ZN22INextBotEventResponder30OnAnimationActivityInterruptedEi"
+					vtable ".?AVINextBotEventResponder@@"
+					idx    "0x0c"
+				}
+				"INextBotEventResponder::OnAnimationEvent"
+				{
+					type   "func knownvtidx"
+					sym    "_ZN22INextBotEventResponder16OnAnimationEventEP11animevent_t"
+					vtable ".?AVINextBotEventResponder@@"
+					idx    "0x0d"
+				}
+				"INextBotEventResponder::OnIgnite"
+				{
+					type   "func knownvtidx"
+					sym    "_ZN22INextBotEventResponder8OnIgniteEv"
+					vtable ".?AVINextBotEventResponder@@"
+					idx    "0x0e"
+				}
+				"INextBotEventResponder::OnInjured"
+				{
+					type   "func knownvtidx"
+					sym    "_ZN22INextBotEventResponder9OnInjuredERK15CTakeDamageInfo"
+					vtable ".?AVINextBotEventResponder@@"
+					idx    "0x0f"
+				}
+				"INextBotEventResponder::OnKilled"
+				{
+					type   "func knownvtidx"
+					sym    "_ZN22INextBotEventResponder8OnKilledERK15CTakeDamageInfo"
+					vtable ".?AVINextBotEventResponder@@"
+					idx    "0x10"
+				}
+				"INextBotEventResponder::OnOtherKilled"
+				{
+					type   "func knownvtidx"
+					sym    "_ZN22INextBotEventResponder13OnOtherKilledEP20CBaseCombatCharacterRK15CTakeDamageInfo"
+					vtable ".?AVINextBotEventResponder@@"
+					idx    "0x11"
+				}
+				"INextBotEventResponder::OnSight"
+				{
+					type   "func knownvtidx"
+					sym    "_ZN22INextBotEventResponder7OnSightEP11CBaseEntity"
+					vtable ".?AVINextBotEventResponder@@"
+					idx    "0x12"
+				}
+				"INextBotEventResponder::OnLostSight"
+				{
+					type   "func knownvtidx"
+					sym    "_ZN22INextBotEventResponder11OnLostSightEP11CBaseEntity"
+					vtable ".?AVINextBotEventResponder@@"
+					idx    "0x13"
+				}
+				"INextBotEventResponder::OnSound"
+				{
+					type   "func knownvtidx"
+					sym    "_ZN22INextBotEventResponder7OnSoundEP11CBaseEntityRK6VectorP9KeyValues"
+					vtable ".?AVINextBotEventResponder@@"
+					idx    "0x14"
+				}
+				"INextBotEventResponder::OnSpokeConcept"
+				{
+					type   "func knownvtidx"
+					sym    "_ZN22INextBotEventResponder14OnSpokeConceptEP20CBaseCombatCharacterPKcP11AI_Response"
+					vtable ".?AVINextBotEventResponder@@"
+					idx    "0x15"
+				}
+				"INextBotEventResponder::OnWeaponFired"
+				{
+					type   "func knownvtidx"
+					sym    "_ZN22INextBotEventResponder13OnWeaponFiredEP20CBaseCombatCharacterP17CBaseCombatWeapon"
+					vtable ".?AVINextBotEventResponder@@"
+					idx    "0x16"
+				}
+				"INextBotEventResponder::OnNavAreaChanged"
+				{
+					type   "func knownvtidx"
+					sym    "_ZN22INextBotEventResponder16OnNavAreaChangedEP8CNavAreaS1_"
+					vtable ".?AVINextBotEventResponder@@"
+					idx    "0x17"
+				}
+				"INextBotEventResponder::OnModelChanged"
+				{
+					type   "func knownvtidx"
+					sym    "_ZN22INextBotEventResponder14OnModelChangedEv"
+					vtable ".?AVINextBotEventResponder@@"
+					idx    "0x18"
+				}
+				"INextBotEventResponder::OnPickUp"
+				{
+					type   "func knownvtidx"
+					sym    "_ZN22INextBotEventResponder8OnPickUpEP11CBaseEntityP20CBaseCombatCharacter"
+					vtable ".?AVINextBotEventResponder@@"
+					idx    "0x19"
+				}
+				"INextBotEventResponder::OnDrop"
+				{
+					type   "func knownvtidx"
+					sym    "_ZN22INextBotEventResponder6OnDropEP11CBaseEntity"
+					vtable ".?AVINextBotEventResponder@@"
+					idx    "0x1a"
+				}
+				"INextBotEventResponder::OnActorEmoted"
+				{
+					type   "func knownvtidx"
+					sym    "_ZN22INextBotEventResponder13OnActorEmotedEP20CBaseCombatCharacteri"
+					vtable ".?AVINextBotEventResponder@@"
+					idx    "0x1b"
+				}
+				"INextBotEventResponder::OnCommandAttack"
+				{
+					type   "func knownvtidx"
+					sym    "_ZN22INextBotEventResponder15OnCommandAttackEP11CBaseEntity"
+					vtable ".?AVINextBotEventResponder@@"
+					idx    "0x1c"
+				}
+				"INextBotEventResponder::OnCommandApproach(vec)"
+				{
+					type   "func knownvtidx"
+					sym    "_ZN22INextBotEventResponder17OnCommandApproachERK6Vectorf"
+					vtable ".?AVINextBotEventResponder@@"
+					idx    "0x1d"
+				}
+				"INextBotEventResponder::OnCommandApproach(ent)"
+				{
+					type   "func knownvtidx"
+					sym    "_ZN22INextBotEventResponder17OnCommandApproachEP11CBaseEntity"
+					vtable ".?AVINextBotEventResponder@@"
+					idx    "0x1e"
+				}
+				"INextBotEventResponder::OnCommandRetreat"
+				{
+					type   "func knownvtidx"
+					sym    "_ZN22INextBotEventResponder16OnCommandRetreatEP11CBaseEntityf"
+					vtable ".?AVINextBotEventResponder@@"
+					idx    "0x1f"
+				}
+				"INextBotEventResponder::OnCommandPause"
+				{
+					type   "func knownvtidx"
+					sym    "_ZN22INextBotEventResponder14OnCommandPauseEf"
+					vtable ".?AVINextBotEventResponder@@"
+					idx    "0x20"
+				}
+				"INextBotEventResponder::OnCommandResume"
+				{
+					type   "func knownvtidx"
+					sym    "_ZN22INextBotEventResponder15OnCommandResumeEv"
+					vtable ".?AVINextBotEventResponder@@"
+					idx    "0x21"
+				}
+				"INextBotEventResponder::OnCommandString"
+				{
+					type   "func knownvtidx"
+					sym    "_ZN22INextBotEventResponder15OnCommandStringEPKc"
+					vtable ".?AVINextBotEventResponder@@"
+					idx    "0x22"
+				}
+				"INextBotEventResponder::OnShoved"
+				{
+					type   "func knownvtidx"
+					sym    "_ZN22INextBotEventResponder8OnShovedEP11CBaseEntity"
+					vtable ".?AVINextBotEventResponder@@"
+					idx    "0x23"
+				}
+				"INextBotEventResponder::OnBlinded"
+				{
+					type   "func knownvtidx"
+					sym    "_ZN22INextBotEventResponder9OnBlindedEP11CBaseEntity"
+					vtable ".?AVINextBotEventResponder@@"
+					idx    "0x24"
+				}
+				"INextBotEventResponder::OnTerritoryContested"
+				{
+					type   "func knownvtidx"
+					sym    "_ZN22INextBotEventResponder20OnTerritoryContestedEi"
+					vtable ".?AVINextBotEventResponder@@"
+					idx    "0x25"
+				}
+				"INextBotEventResponder::OnTerritoryCaptured"
+				{
+					type   "func knownvtidx"
+					sym    "_ZN22INextBotEventResponder19OnTerritoryCapturedEi"
+					vtable ".?AVINextBotEventResponder@@"
+					idx    "0x26"
+				}
+				"INextBotEventResponder::OnTerritoryLost"
+				{
+					type   "func knownvtidx"
+					sym    "_ZN22INextBotEventResponder15OnTerritoryLostEi"
+					vtable ".?AVINextBotEventResponder@@"
+					idx    "0x27"
+				}
+				"INextBotEventResponder::OnWin"
+				{
+					type   "func knownvtidx"
+					sym    "_ZN22INextBotEventResponder5OnWinEv"
+					vtable ".?AVINextBotEventResponder@@"
+					idx    "0x28"
+				}
+				"INextBotEventResponder::OnLose"
+				{
+					type   "func knownvtidx"
+					sym    "_ZN22INextBotEventResponder6OnLoseEv"
+					vtable ".?AVINextBotEventResponder@@"
+					idx    "0x29"
+				}
+			}
+		}
+	}
+}

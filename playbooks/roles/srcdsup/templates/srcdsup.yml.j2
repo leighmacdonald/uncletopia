@@ -1,0 +1,20 @@
+---
+
+update_interval: {{ srcdsup.update_interval }}
+
+remotes:
+{% for remote in srcdsup.remotes %}
+  - name: {{ remote.name }}
+    type: {{ remote.type }}
+    url: {{ remote.url }}
+    password: {{ item.gbans_key }}
+{% endfor %}
+
+rules:
+{% for rule in srcdsup.rules %}
+  - name: {{ rule.name }}
+    root: {{ rule.root }}
+    pattern: "{{ rule.pattern }}"
+    remotes: [ {{ rule.remotes|join(" , ") }} ]
+    server: {{ item.server_name_short }}
+{% endfor %}

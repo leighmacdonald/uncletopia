@@ -1,0 +1,22 @@
+// updated 202301060113
+"Games"
+{
+	"tf"
+	{
+		"Offsets"
+		{
+			// https://asherkin.github.io/vtable/
+			"Weapon_ShootPosition"
+			{
+				"windows" "275"
+				"linux"   "276"
+			}
+			// https://asherkin.github.io/vtable/
+			"IsViewModelFlipped"
+			{
+				"windows" "440"
+				"linux"   "447"
+			}
+		}
+	}
+}

@@ -1,0 +1,37 @@
+---
+
+- name: Generate /etc/tempo.yml
+  become: true
+  ansible.builtin.template:
+    src: tempo.yml.j2
+    dest: /etc/tempo.yml
+    mode: 0770
+
+- name: Create tempo_data volume
+  docker_volume:
+    name: tempo_data
+    state: present
+
+- name: Create tempo container
+  docker_container:
+    name: tempo
+    image: grafana/tempo:latest
+    command: [ "-config.file=/etc/tempo.yml" ]
+    restart: true
+    pull: true
+    purge_networks: true
+    restart_policy: unless-stopped
+    recreate: true
+    networks:
+      - name: caddy_net
+    labels:
+      logging: "promtail"
+      logging_jobname: "containerlogs"
+    volumes:
+      - /etc/tempo.yml:/etc/tempo.yml
+      - tempo_data:/tmp/tempo
+    ports:
+      # tempo
+      - 127.0.0.1:3200:3200
+      # otel grpc
+      - 127.0.0.1:4317:4317

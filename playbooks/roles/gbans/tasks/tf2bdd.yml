@@ -1,0 +1,24 @@
+---
+
+- name: tf2bdd-service
+  docker_container:
+    name: tf2bdd-service
+    image: leighmacdonald/tf2bdd:1.0.0
+    restart: true
+    recreate: true
+    pull: false
+    restart_policy: always
+    state: started
+    volumes:
+      - /home/tf2server/.db.sqlite:/app/db.sqlite
+    env:
+      STEAM_TOKEN: "{{ steam_key }}"
+      BOT_TOKEN: "{{ bot_detector_bot_token }}"
+    ports:
+      - 127.0.0.1:8899:8899
+    labels:
+      logging: "promtail"
+      logging_jobname: "containerlogs"
+    networks:
+      - name: caddy_net
+  ignore_errors: true

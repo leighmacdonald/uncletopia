@@ -1,0 +1,104 @@
+whitelist
+{
+	// Example custom server whitelist.
+	//
+	// Do not modify this file.  Instead, rename this file to "pure_server_whitelist.txt" and then modify it as appropriate.
+	//
+	// sv_pure values are in order of "increasing pureness":
+	//
+	//   -1: No restrictions.  Allow clients to load any files.
+	//    0: Only load pure_server_minimal.txt.
+	//    1: Load pure_server_full.txt, followed by pure_server_whitelist.txt (the custom file).
+	//       Also, in this mode, the server may specify additional public keys that it considers to be trusted.
+	//    2: Load pure_server_full.txt only.
+	//       In this mode, user only the public keys listed in trusted_keys_base are used.
+	//
+	// If multiple rules apply to the same file, then the rule listed later (or from the file loaded later) takes priority.
+	// Therefore, because the custom whitelist file is loaded last, after a fully pure whitelist has been loaded, typically
+	// the custom whitelist file is used to carve out exceptions (where the server wants to be more permissive), rather than
+	// listing the files that are requested to be.
+	//
+	// 2 different rule types may be used:
+	//
+	//	trusted_source - require file to be loaded from a "trusted source".
+	//                   A trusted source is a VPK that is signed with one of the public keys listed
+	//                   in trusted_keys_base.txt or trusted_keys.txt.
+	//	any - Client can use file from any source.
+	//
+	// For historical purposes, the following strings are also allowed:
+	//
+	//	allow_from_disk           - same as "any"
+	//	from_steam                - same as "trusted_source"
+	//  check_crc                 - same as "trusted_source"
+	//  allow_from_disk+check_crc - same as "trusted_source"
+
+	//
+	// Three types of file specifications:
+	//
+	//	1. directory\*.*			- refers to all files under the directory
+	//	2. directory\...			- refers to all files under the directory and all directories under that (recursively)
+	//	3. directory\filename		- refers to a single file
+
+    sound\...                                       any
+    models\...                                      any
+    materials\...                                   any
+    particles\...                                   any
+
+    // Dominations removal mod
+    // https://gamebanana.com/mods/36617
+    resource\ui\freezepanel_basic.res               any
+    sound\ui\tf_domination.wav                      any
+    sound\ui\tf_nemesis.wav                         any
+    sound\ui\tf_revenge.wav                         any
+
+    // Toon rocket trails mod
+    // https://gamebanana.com/mods/12410
+    particles\rockettrail.pcf                       any
+    particles\rockettrail_dx80.pcf                  any
+    particles\nemesis.pcf                           any
+
+    // "trusted_source" (Allow from Steam)
+    materials\water\...                       trusted_source
+    materials\wood\...                        trusted_source
+    materials\concrete\...                    trusted_source
+    materials\metal\...                       trusted_source
+    materials\nature\...                      trusted_source
+    sound\player\footsteps\...                trusted_source
+    sound\player\spy_uncloak.wav              trusted_source
+    sound\player\spy_cloak.wav                trusted_source
+    sound\player\spy_disguise.wav             trusted_source
+    sound\player\spy_uncloak_feigndeath.wav   trusted_source
+    materials\Effects\sniperdot.vmt           trusted_source
+    materials\Effects\sniperdot.vtf           trusted_source
+    materials\Effects\sniperdot_blue.vmt      trusted_source
+    materials\Effects\sniperdot_blue.vtf      trusted_source
+    materials\Effects\sniperdot_red.vmt       trusted_source
+    materials\Effects\sniperdot_red.vtf       trusted_source
+
+    particles\bullet_tracers.pcf              trusted_source
+    particles\burningplayer.pcf               trusted_source
+    particles\burningplayer_dx80.pcf          trusted_source
+    particles\cig_smoke.pcf                   trusted_source
+    particles\cig_smoke_dx80.pcf              trusted_source
+    particles\explosion.pcf                   trusted_source
+    particles\explosion_dx80.pcf              trusted_source
+    particles\explosion_dx90_slow.pcf         trusted_source
+    particles\explosion_high.pcf              trusted_source
+    particles\disguise.pcf                    trusted_source
+    particles\flag_particles.pcf              trusted_source
+    particles\medicgun_attrib.pcf             trusted_source
+    particles\player_recent_teleport.pcf      trusted_source
+    particles\player_recent_teleport_dx80.pcf trusted_source
+    particles\speechbubbles.pcf               trusted_source
+    particles\teleported_fx.pcf               trusted_source
+    particles\teleport_status.pcf             trusted_source
+    particles\water.pcf                       trusted_source
+    particles\water_dx80.pcf                  trusted_source
+    particles\stickybomb.pcf                  trusted_source
+    particles\stickybomb_dx80.pcf             trusted_source
+
+    // Disable sprays
+    materials\temp\...                        trusted_source
+    materials\vgui\logos\...                  trusted_source
+    materials\vgui\logos\ui\...               trusted_source
+}

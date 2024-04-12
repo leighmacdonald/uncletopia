@@ -1,0 +1,44 @@
+---
+- name: Clean ~/build_sourcemod/ directory
+  ansible.builtin.file:
+    path: ~/build_sourcemod/
+    state: absent
+    mode: "0775"
+
+- name: Create ~/build_sourcemod/ directory
+  ansible.builtin.file:
+    path: ~/build_sourcemod/
+    state: directory
+    mode: "0775"
+
+- name: Download latest metamod
+  ansible.builtin.unarchive:
+    src: https://mms.alliedmods.net/mmsdrop/1.12/mmsource-1.12.0-git1192-linux.tar.gz
+    dest: ~/build_sourcemod/
+    remote_src: true
+    #creates: ~/build_sourcemod/addons/metamod
+
+- name: Download latest sourcemod
+  ansible.builtin.unarchive:
+    src: "{{ sm_download|default(\"https://sm.alliedmods.net/smdrop/1.12/sourcemod-1.12.0-git7114-linux.tar.gz\") }}"
+    dest: ~/build_sourcemod/
+    remote_src: true
+    #creates: ~/build_sourcemod/addons/sourcemod
+
+- name: Copy extensions & plugin sources [remote]
+  when: inventory_hostname != "localhost"
+  ansible.posix.synchronize:
+    src: "{{ role_path }}/files/"
+    dest: ~/build_sourcemod/
+
+- name: Copy extensions & plugin sources [local]
+  # TODO rsync doesn't work properly for local?
+  when: inventory_hostname == "localhost"
+  ansible.builtin.copy:
+    src: "{{ role_path }}/files/"
+    dest: ~/build_sourcemod/
+
+- name: Build plugins
+  ansible.builtin.command:
+    chdir: ~/build_sourcemod/addons/sourcemod/scripting
+    cmd: bash build.sh

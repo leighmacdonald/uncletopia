@@ -1,0 +1,3721 @@
+"attributes"
+{
+    //if set to 1, the user cannot deploy parachutes
+    "4324"
+    {
+        "name"	"parachute disabled"
+        "attribute_class"	"parachute_disabled"
+        "description_string"	"Parachute disabled"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"negative"
+        "stored_as_integer"	"0"
+    }
+    //Secondary attack: crossbow fires milk bolt. Regenerates every x seconds as set in attribute
+    "4325"
+    {
+        "name"	"fires milk bolt"
+        "attribute_class"	"fires_milk_bolt"
+        "description_string"	"Alt-Fire: Shoots Mad Milk infused bolt"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //The bot with the attribute distributes its currency on death, like with sniper kills
+    "4326"
+    {
+        "name"	"force distribute currency on death"
+        "attribute_class"	"force_distribute_currency_on_death"
+        "description_string"	"Force distribute currency on death"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //airblast pushes the pyro himself rather than others
+    "4327"
+    {
+        "name"	"airblast dashes"
+        "attribute_class"	"airblast_dashes"
+        "description_string"	"Airblast dashes the user instead of enemies"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //Melee weapon attacks all enemies in range
+    "4328"
+    {
+        "name"	"melee cleave attack"
+        "attribute_class"	"melee_cleave_attack"
+        "description_string"	"Cleave attack: Hits all enemies in range"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //Special mode for revolver: each hit increases damage, up to x times. Likely does not work
+    "4329"
+    {
+        "name"	"extra damage on hit penalty"
+        "attribute_class"	"extra_damage_on_hit_penalty"
+        "description_string"	"Firing the weapon reduces charge by %d"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"negative"
+        "stored_as_integer"	"0"
+    }
+    "4330"
+    {
+        "name"	"extra damage on hit"
+        "attribute_class"	"extra_damage_on_hit"
+        "description_string"	"On Hit: Gain %d charges. Each charge increases damage by 1%"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //Grants the players speed buff for 4 seconds after leaving teleporter
+    "4331"
+    {
+        "name"	"mod teleporter speed boost"
+        "attribute_class"	"mod_teleporter_speed_boost"
+        "description_string"	"Players exiting teleporters gain 4 second speed buff"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //Turns the victim ragdoll to ice.
+    "4332"
+    {
+        "name"	"set turn to ice"
+        "attribute_class"	"set_turn_to_ice"
+        "description_string"	"Victim player becomes ice statue"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //Can player breathe underwater
+    "4333"
+    {
+        "name"	"can breathe under water"
+        "attribute_class"	"can_breathe_under_water"
+        "description_string"	"Wearer can breathe underwater"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //If set to 1 player cannon swim
+    "4334"
+    {
+        "name"	"cannot swim"
+        "attribute_class"	"cannot_swim"
+        "description_string"	"Wearer cannot swim"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"negative"
+        "stored_as_integer"	"0"
+    }
+    //If set to 1 player can swim faster
+    "4335"
+    {
+        "name"	"swimming mastery"
+        "attribute_class"	"swimming_mastery"
+        "description_string"	"25% increased swimming speed"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //If set to 1 player move his teleporter with double tapped movement keys. Does not work
+    "4336"
+    {
+        "name"	"ability doubletap teleport"
+        "attribute_class"	"ability_doubletap_teleport"
+        "description_string"	"melee cleave attack"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //A worse version of damage piercing since it only ignores battalion backup 35% reduction. Not working?
+    "4337"
+    {
+        "name"	"mod ignore resists absorbs"
+        "attribute_class"	"mod_ignore_resists_absorbs"
+        "description_string"	"melee cleave attack"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //Players with this attribute are granted more points for kills but lose points after death
+    "4338"
+    {
+        "name"	"scoreboard minigame"
+        "attribute_class"	"scoreboard_minigame"
+        "description_string"	"melee cleave attack"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //Is the player immune to wet statuses like jarate or mad milk
+    "4339"
+    {
+        "name"	"wet immunity"
+        "attribute_class"	"wet_immunity"
+        "description_string"	"Wearer is wet immune"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //Huntsman: reduces shoot time 40%/70%, same functionality as faster reload rate but limited to 2 points
+    //Sniper rifle: reduces zoom time 40%/70% (like reload rate does). increases charge rate 50%/200%, but actually 100% due to the cap
+    "4340"
+    {
+        "name"	"ability master sniper"
+        "attribute_class"	"ability_master_sniper"
+        "description_string"	"Sniper Master: Reduces zoom time and increases charge rate"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //Last revolver shot in the clip is critical
+    "4341"
+    {
+        "name"	"last shot crits"
+        "attribute_class"	"last_shot_crits"
+        "description_string"	"Last shot in the clip is critical"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //Keep disguise after attacking. Revolver only
+    "4343"
+    {
+        "name"	"keep disguise on attack"
+        "attribute_class"	"keep_disguise_on_attack"
+        "description_string"	"Keep disguise when attacking"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //On hit ally: heal your teammate for x health, draining your own health. Melee only
+    "4344"
+    {
+        "name"	"add give health to teammate on hit"
+        "attribute_class"	"add_give_health_to_teammate_on_hit"
+        "description_string"	"On Hit Teammate: Heal the ally at the cost of your own health"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //Combination of flamethrower flags, used to limit airblast functionality. You have to add those numbers to enable specific functions (by default all are enabled):
+    //1 - If airblast should push players
+    //2 - If airblast can put out afterburn
+    //4 - If airblast can reflect projectiles
+    //8 - If airblast can stun players
+    //16 - If airblast disrupts player aim
+    "4345"
+    {
+        "name"	"airblast functionality flags"
+        "attribute_class"	"airblast_functionality_flags"
+        "description_string"	"melee cleave attack"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //airblast pushes players towards the pyro. Not working?
+    "4346"
+    {
+        "name"	"reverse airblast"
+        "attribute_class"	"reverse_airblast"
+        "description_string"	"Airblast pushes enemies towards the Pyro"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    "4347"
+    {
+        "name"	"mod minigun can holster while spinning"
+        "attribute_class"	"mod_minigun_can_holster_while_spinning"
+        "description_string"	"Can holster while spinning"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //Probably does nothing
+    "4348"
+    {
+        "name"	"sapper deploy time"
+        "attribute_class"	"sapper_deploy_time"
+        "description_string"	"(+-)%d sec sapper deploy time"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"negative"
+        "stored_as_integer"	"0"
+    }
+    //On kill: gives x% fire rate bonus, stacks up to 3 times. Killing different class clears the combo
+    "4349"
+    {
+        "name"	"kill combo fire rate boost"
+        "attribute_class"	"kill_combo_fire_rate_boost"
+        "description_string"	"On Kill: (+-)%p% fire rate Stacks up to 3 times. Killing different class clears the combo"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //Healh dispenser rate
+    "4350"
+    {
+        "name"	"mult dispenser rate"
+        "attribute_class"	"mult_dispenser_rate"
+        "description_string"	"(+-)%p% dispenser health, ammo and metal resupply rate"
+        "description_format"	"value_is_percentage"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //Sentry max ammo multiplier
+    "4351"
+    {
+        "name"	"mvm sentry ammo"
+        "attribute_class"	"mvm_sentry_ammo"
+        "description_string"	"(+-)%p% sentry ammo capacity"
+        "description_format"	"value_is_percentage"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //Sentry is 20% smaller. 33% less health, 25% less metal required to upgrade
+    "4353"
+    {
+        "name"	"build small sentries"
+        "attribute_class"	"build_small_sentries"
+        "description_string"	"Builds small sentries"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"negative"
+        "stored_as_integer"	"0"
+    }
+    //Teleporter recharge duration multiplier
+    "4354"
+    {
+        "name"	"mult teleporter recharge rate"
+        "attribute_class"	"mult_teleporter_recharge_rate"
+        "description_string"	"(+-)%p% teleporter recharge time"
+        "description_format"	"value_is_percentage"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //As spy, disguise as dispenser when crouching
+    "4355"
+    {
+        "name"	"disguise as dispenser on crouch"
+        "attribute_class"	"disguise_as_dispenser_on_crouch"
+        "description_string"	"Duck to disguise as dispenser"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //On hit, as a medic, with "ubercharge ammo" Syringegun : transfer x% of used uber to enemy medic
+    "4356"
+    {
+        "name"	"ubercharge transfer"
+        "attribute_class"	"ubercharge_transfer"
+        "description_string"	"On Hit Medic: Transfer %d% of your used uber to enemy medic"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"negative"
+        "stored_as_integer"	"0"
+    }
+    //On death: x% chance of being immediately revived at spawn with 1 health
+    "4357"
+    {
+        "name"	"teleport instead of die"
+        "attribute_class"	"teleport_instead_of_die"
+        "description_string"	"On Death: %p% chance of being immediately revived at spawn with 1 health"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //Flare and rocket homing seek power in degrees per second, in case of flares, only when the target is ignited
+    "4358"
+    {
+        "name"	"mod projectile heat seek power"
+        "attribute_class"	"mod_projectile_heat_seek_power"
+        "description_string"	"Homing projectiles"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //Flare and rocket homing seek power in degrees per second, in case of flares, only when the target is ignited
+    "4379"
+    {
+        "name"	"mod projectile heat aim error"
+        "attribute_class"	"mod_projectile_heat_aim_error"
+        "description_string"	"melee cleave attack"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //Damage vs same class multipler
+    "4359"
+    {
+        "name"	"mult dmg vs same class"
+        "attribute_class"	"mult_dmg_vs_same_class"
+        "description_string"	"(+-)%p% damage vs the same class"
+        "description_format"	"value_is_percentage"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //On take damage: x% chance of gaining invicibility for 3 seconds
+    "4360"
+    {
+        "name"	"uber on damage taken"
+        "attribute_class"	"uber_on_damage_taken"
+        "description_string"	"On Damage Taken: %p% chance of gaining invicibility for 3 seconds"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //Damage taken from melee multipier
+    "4361"
+    {
+        "name"	"mult dmgtaken from melee"
+        "attribute_class"	"mult_dmgtaken_from_melee"
+        "description_string"	"(+-)%p% damage taken from melee"
+        "description_format"	"value_is_percentage"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //Player is crit boosted when below x% health
+    "4362"
+    {
+        "name"	"mult crit when health is below percent"
+        "attribute_class"	"mult_crit_when_health_is_below_percent"
+        "description_string"	"The wearer is crit boosted when below %p% health"
+        "description_format"	"value_is_percentage"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //Penetrated players receive only x% damage. Bullets only. Can be damage bonus despite the name
+    "4363"
+    {
+        "name"	"penetration damage penalty"
+        "attribute_class"	"penetration_damage_penalty"
+        "description_string"	"(+-)%p% damage dealt to penetrated enemies"
+        "description_format"	"value_is_percentage"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //Player is pushed x units and speed boosted when firing flamethrower. Limited by ground move speed
+    "4364"
+    {
+        "name"	"firing forward pull"
+        "attribute_class"	"firing_forward_pull"
+        "description_string"	"The wearer is pushed forward when firing the flamethrower"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //x% soldier buff range bonus
+    "4365"
+    {
+        "name"	"mod soldier buff range"
+        "attribute_class"	"mod_soldier_buff_range"
+        "description_string"	"(+-)%p% banner buff range"
+        "description_format"	"value_is_percentage"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //Deploy speed bonus when rocket jumping
+    "4366"
+    {
+        "name"	"mult rocketjump deploy time"
+        "attribute_class"	"mult_rocketjump_deploy_time"
+        "description_string"	"(+-)%p% deploy time when rocket jumping"
+        "description_format"	"value_is_percentage"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //On hit: refire time * (x/60) % chance for aoe heal for 1s (24 hp healed total). use 60 for 100% chance on 1s refire time weapon, 600 for 0.1s
+    "4367"
+    {
+        "name"	"aoe heal chance"
+        "attribute_class"	"aoe_heal_chance"
+        "description_string"	"On Hit: Chance of healing teammates by 24 in radius"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //On hit: refire time * (x/60) % chance for crit boost for 3s.  use 60 for 100% chance on 1s refire time weapon, 600 for 0.1s
+    "4368"
+    {
+        "name"	"crits on damage"
+        "attribute_class"	"crits_on_damage"
+        "description_string"	"On Hit: Chance of gaining crit boost for 3 seconds"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //On hit: refire time * (x/60) % chance for stun for 3s. use 60 for 100% chance on 1s refire time weapon, 600 for 0.1s
+    "4369"
+    {
+        "name"	"stun on damage"
+        "attribute_class"	"stun_on_damage"
+        "description_string"	"On Hit: Chance of stunning enemies for 3 seconds"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //On hit: refire time * (x/60) % chance for 100 hu blast that stuns players for 2 seconds and applies bleed. use 60 for 100% chance on 1s refire time weapon, 600 for 0.1s
+    "4370"
+    {
+        "name"	"aoe blast on damage"
+        "attribute_class"	"aoe_blast_on_damage"
+        "description_string"	"On Hit: Chance of blast that causes bleed and stuns enemies"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //Uses ubercharge as ammo. 100 for full uber use. Syringegun only
+    "4371"
+    {
+        "name"	"ubercharge ammo"
+        "attribute_class"	"ubercharge_ammo"
+        "description_string"	"Use %d% ubercharge as ammo"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //Fire rate multiplier when not rocket jumping
+    "4372"
+    {
+        "name"	"mul nonrocketjump attackrate"
+        "attribute_class"	"mul_nonrocketjump_attackrate"
+        "description_string"	"(+-)%p% fire rate when rocket jumping"
+        "description_format"	"value_is_inverted_percentage"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //Grants up to x% damage bonus based on remaining health
+    "4373"
+    {
+        "name"	"mult dmg with reduced health"
+        "attribute_class"	"mult_dmg_with_reduced_health"
+        "description_string"	"Damage increases as health decreases, up to (+-)%p%"
+        "description_format"	"value_is_percentage"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //Multiplier of how fast can pyro use primary fire again after airblasting.
+    "4374"
+    {
+        "name"	"mult airblast primary refire time"
+        "attribute_class"	"mult_airblast_primary_refire_time"
+        "description_string"	"melee cleave attack"
+        "description_format"	"value_is_percentage"
+        "hidden"	"1"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //Spin up time for flamethrowers in seconds
+    "4375"
+    {
+        "name"	"mod flamethrower spinup time"
+        "attribute_class"	"mod_flamethrower_spinup_time"
+        "description_string"	"%d seconds flamethrower spin up time"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"negative"
+        "stored_as_integer"	"0"
+    }
+    //Player pushback cone scale. Might not work after JI
+    "4376"
+    {
+        "name"	"mult airblast cone scale"
+        "attribute_class"	"mult_airblast_cone_scale"
+        "description_string"	"(+-)%p% airblast player pushback cone size"
+        "description_format"	"value_is_percentage"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //Sniper rifle charge rate when looking at the enemy. Still subject to the 200% charge rate limit
+    "4377"
+    {
+        "name"	"mult sniper charge per sec with enemy under crosshair"
+        "attribute_class"	"mult_sniper_charge_per_sec_with_enemy_under_crosshair"
+        "description_string"	"(+-)%p% charge rate with enemy under crosshair"
+        "description_format"	"value_is_percentage"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //Beeps when the sniper is looking at the enemy while charging, if set to 1
+    "4378"
+    {
+        "name"	"sniper beep with enemy under crosshair"
+        "attribute_class"	"sniper_beep_with_enemy_under_crosshair"
+        "description_string"	"melee cleave attack"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //Shoots additional 2 arrows per level
+    "4380"
+    {
+        "name"	"arrow mastery"
+        "attribute_class"	"arrow_mastery"
+        "description_string"	"Arrow Mastery: Shoots %d additional arrows on each side"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //If set to 1, enables healing buildings as medic. increases building healing rate by 10% for each point
+    "4381"
+    {
+        "name"	"medic machinery beam"
+        "attribute_class"	"medic_machinery_beam"
+        "description_string"	"Can heal buildings at 10% rate per point (%d Points)"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //Smack time multiplier (0.2s default)
+    "4382"
+    {
+        "name"	"mult smack time"
+        "attribute_class"	"mult_smack_time"
+        "description_string"	"(+-)%p% melee smack time"
+        "description_format"	"value_is_percentage"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //On building hit: Disable for x seconds
+    "4383"
+    {
+        "name"	"disable buildings on hit"
+        "attribute_class"   "disable_buildings_on_hit"
+        "description_string"	"On Hit Building: disable building for %d seconds"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //Regenerates caber on use
+    "4384"
+    {
+        "name"	"regenerate stickbomb"
+        "attribute_class"	"regenerate_stickbomb"
+        "description_string"	"Regenerates caber on use"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //Custom jump particle name attached to feet (rocketjump_smoke for rocketjump smoke)
+    "4385"
+    {
+        "name"	"custom jump particle"
+        "attribute_class"	"custom_jump_particle"
+		"attribute_type"	"string"
+        "description_string"	"melee cleave attack"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    //Custom item model name
+    "4386"
+    {
+        "name"	"custom item model"
+        "attribute_class"	"custom_item_model"
+		"attribute_type"	"string"
+        "description_string"	"melee cleave attack"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    //Custom weapon fire sound. Does not work for the weapon owner
+    "4387"
+    {
+        "name"	"custom weapon fire sound"
+        "attribute_class"	"custom_weapon_fire_sound"
+		"attribute_type"	"string"
+        "description_string"	"melee cleave attack"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    //Bullets explode in x radius on hit (147 is rocket launcher radius)
+    "4388"
+    {
+        "name"	"explosive bullets"
+        "attribute_class"	"explosive_bullets"
+        "description_string"	"Fires explosive bullets"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //Projectile model scale multipier.
+    "4389"
+    {
+        "name"	"mult projectile scale"
+        "attribute_class"	"mult_projectile_scale"
+        "description_string"	"melee cleave attack"
+        "description_format"	"value_is_percentage"
+        "hidden"	"1"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //Fire multiple projectiles at once
+    "4391"
+    {
+        "name"	"mult projectile count"
+        "attribute_class"	"mult_projectile_count"
+        "description_string"	"Shoots (+-)%p% projectiles at once"
+        "description_format"	"value_is_percentage"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //Projectile trail particle name
+    "4392"
+    {
+        "name"	"projectile trail particle"
+        "attribute_class"	"projectile_trail_particle"
+		"attribute_type"	"string"
+        "description_string"	"melee cleave attack"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    //Explosion particle name
+    "4393"
+    {
+        "name"	"explosion particle"
+        "attribute_class"	"explosion_particle"
+		"attribute_type"	"string"
+        "description_string"	"melee cleave attack"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    //Restores sydney sleeper explosion on headshot
+    "4395"
+    {
+        "name"	"radius sleeper"
+        "attribute_class"	"radius_sleeper"
+        "description_string"	"Covers nearby enemies in jarate"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //Custom projectile collision size
+    "4394"
+    {
+        "name"	"custom projectile size"
+        "attribute_class"	"custom_projectile_size"
+        "description_string"	"melee cleave attack"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //Weapon can headshot. Hitscan only
+    "4396"
+    {
+        "name"	"can headshot"
+        "attribute_class"	"can_headshot"
+        "description_string"	"Weapon can headshot"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //No damage falloff or rampup
+    "4397"
+    {
+        "name"	"no damage falloff"
+        "attribute_class"	"no_damage_falloff"
+        "description_string"	"No damage falloff or rampup"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //Enforce damage falloff and rampup
+    "4398"
+    {
+        "name"	"force damage falloff"
+        "attribute_class"	"force_damage_falloff"
+        "description_string"	"Has damage rampup and falloff"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //Set damage rampup to 50%
+    "4399"
+    {
+        "name"	"no reduced damage rampup"
+        "attribute_class"	"no_reduced_damage_rampup"
+        "description_string"	"melee cleave attack"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //Set damage rampup to 20%
+    "4400"
+    {
+        "name"	"reduced damage rampup"
+        "attribute_class"	"reduced_damage_rampup"
+        "description_string"	"melee cleave attack"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //Don't count damage towards crit rate
+    "4401"
+    {
+        "name"	"dont count damage towards crit rate"
+        "attribute_class"	"dont_count_damage_towards_crit_rate"
+        "description_string"	"melee cleave attack"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //Cannot be sapped
+    "4402"
+    {
+        "name"	"cannot be sapped"
+        "attribute_class"	"cannot_be_sapped"
+        "description_string"	"Cannot be sapped"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //Item color rgb
+    "4403"
+    {
+        "name"	"item color rgb"
+        "attribute_class"	"item_color_rgb"
+        "description_string"	"melee cleave attack"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //Is invisible
+    "4404"
+    {
+        "name"	"is invisible"
+        "attribute_class"	"is_invisible"
+        "description_string"	"melee cleave attack"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //Cannot taunt
+    "4405"
+    {
+        "name"	"cannot taunt"
+        "attribute_class"	"cannot_taunt"
+        "description_string"	"Cannot taunt"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //Projectile acceleration
+    "4406"
+    {
+        "name"	"projectile acceleration"
+        "attribute_class"	"projectile_acceleration"
+        "description_string"	"melee cleave attack"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //Is minigiant
+    "4407"
+    {
+        "name"	"is miniboss"
+        "attribute_class"	"is_miniboss"
+        "description_string"	"melee cleave attack"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    //Is minigiant
+    "4408"
+    {
+        "name"	"model scale"
+        "attribute_class"	"model_scale"
+        "description_string"	"melee cleave attack"
+        "description_format"	"value_is_percentage"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    //Cannot upgrade
+    "4409"
+    {
+        "name"	"cannot upgrade"
+        "attribute_class"	"cannot_upgrade"
+        "description_string"	"Cannot upgrade"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+    }
+    //Minimal respawn timep
+    "4410"
+    {
+        "name"	"min respawn time"
+        "attribute_class"	"min_respawn_time"
+        "description_string"	"melee cleave attack"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    //Always crit
+    "4411"
+    {
+        "name"	"always crit"
+        "attribute_class"	"always_crit"
+        "description_string"	"Always deals critical damage"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+    }
+    //Sentry rocket fire rate bonus
+    "4412"
+    {
+        "name"	"mult firerocket rate"
+        "attribute_class"	"mult_firerocket_rate"
+        "description_string"	"(+-)%p% sentry rocket fire rate"
+        "description_format"	"value_is_inverted_percentage"
+        "hidden"	"0"
+        "effect_type"	"positive"
+    }
+    //Building max level
+    "4413"
+    {
+        "name"	"building max level"
+        "attribute_class"	"building_max_level"
+        "description_string"	"Buildings upgrade only to level %d"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"negative"
+    }
+    //rapid fire sentry
+    "4414"
+    {
+        "name"	"sentry rapid fire"
+        "attribute_class"	"sentry_rapid_fire"
+        "description_string"	"melee cleave attack"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    //Building color rgb
+    "4415"
+    {
+        "name"	"building color rgb"
+        "attribute_class"	"building_color_rgb"
+        "description_string"	"melee cleave attack"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    //Building scale
+    "4416"
+    {
+        "name"	"building scale"
+        "attribute_class"	"building_scale"
+        "description_string"	"melee cleave attack"
+        "description_format"	"value_is_percentage"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    //Stun resistance
+    "4417"
+    {
+        "name"	"mult stun resistance"
+        "attribute_class"	"mult_stun_resistance"
+        "description_string"	"(+-)%p% wearer stun duration"
+        "description_format"	"value_is_percentage"
+        "hidden"	"0"
+        "effect_type"	"positive"
+    }
+    //Allow friendly fire
+    "4418"
+    {
+        "name"	"allow friendly fire"
+        "attribute_class"	"allow_friendly_fire"
+        "description_string"	"Can deal friendly fire damage"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"negative"
+    }
+    //Receive friendly fire
+    "4419"
+    {
+        "name"	"receive friendly fire"
+        "attribute_class"	"receive_friendly_fire"
+        "description_string"	"Wearer can receive friendly fire damage"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"negative"
+        "stored_as_integer"	"0"
+    }
+    //Cannot headshot
+    "4420"
+    {
+        "name"	"cannot headshot"
+        "attribute_class"	"cannot_headshot"
+        "description_string"	"Cannot headshot"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //Mult crit dmg
+    "4421"
+    {
+        "name"	"mult crit dmg"
+        "attribute_class"	"mult_crit_dmg"
+        "description_string"	"(+-)%p% critical damage"
+        "description_format"	"value_is_percentage"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //Can be headshot
+    "4422"
+    {
+        "name"	"cannot be headshot"
+        "attribute_class"	"cannot_be_headshot"
+        "description_string"	"Cannot be headshot"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //Parent item to specified attachment
+    "4423"
+    {
+        "name"	"attachment name"
+        "attribute_class"	"attachment_name"
+		"attribute_type"	"string"
+        "description_string"	"melee cleave attack"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    //Parent item to specified attachment
+    "4424"
+    {
+        "name"	"attachment offset"
+        "attribute_class"	"attachment_offset"
+		"attribute_type"	"string"
+        "description_string"	"melee cleave attack"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    //Parent item to specified attachment
+    "4425"
+    {
+        "name"	"attachment angles"
+        "attribute_class"	"attachment_angles"
+		"attribute_type"	"string"
+        "description_string"	"melee cleave attack"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    //Parent item to specified attachment
+    "4426"
+    {
+        "name"	"attachment scale"
+        "attribute_class"	"attachment_scale"
+        "description_string"	"melee cleave attack"
+        "description_format"	"value_is_percentage"
+        "hidden"	"1"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //Parent item to specified attachment
+    "4427"
+    {
+        "name"	"mod projectile heat aim time"
+        "attribute_class"	"mod_projectile_heat_aim_time"
+        "description_string"	"melee cleave attack"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //Parent item to specified attachment
+    "4428"
+    {
+        "name"	"projectile gravity"
+        "attribute_class"	"projectile_gravity"
+        "description_string"	"melee cleave attack"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //Parent item to specified attachment
+    "4429"
+    {
+        "name"	"projectile acceleration time"
+        "attribute_class"	"projectile_acceleration_time"
+        "description_string"	"melee cleave attack"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //Grenade explode on impact
+    "4430"
+    {
+        "name"	"grenade explode on impact"
+        "attribute_class"	"grenade_explode_on_impact"
+        "description_string"	"Grenade explodes on impact"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //Grenade explode on impact
+    "4431"
+    {
+        "name"	"cloak blink time penalty"
+        "attribute_class"	"cloak_blink_time_penalty"
+        "description_string"	"#Attrib_CloakBlinkTimePenalty"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"negative"
+        "stored_as_integer"	"0"
+    }
+    "4432"
+    {
+        "name"	"quiet unstealth"
+        "attribute_class"	"set_quiet_unstealth"
+        "description_string"	"#Attrib_QuietUnstealth"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    "4433"
+    {
+        "name"	"dmg from sentry reduced"
+        "attribute_class"	"dmg_from_sentry_reduced"
+        "description_string"	"#Attrib_DmgFromSentryReduced"
+        "description_format"	"value_is_inverted_percentage"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    "4434"
+    {
+        "name"	"no death from headshots"
+        "attribute_class"	"no_death_from_headshots"
+        "description_string"	"#Attrib_NoDeathFromHeadshots"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    "4435"
+    {
+        "name"	"special dsp"
+        "attribute_class"	"special_dsp"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    "4436"
+    {
+        "name" "custom taunt particle attr"
+        "attribute_class"	"custom_taunt_particle_attr"
+        "description_string"	"#Attrib_TauntParticles"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    "4437"
+    {
+        "name" "calling card on kill"
+        "attribute_class"	"calling_card_on_kill"
+        "description_string"	"#Attrib_CallingCardOnKill"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    "4438"
+    {
+        "name" "projectile lifetime"
+        "attribute_class"	"projectile_lifetime"
+        "description_string"	"#Attrib_CallingCardOnKill"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    "4439"
+    {
+        "name" "not solid to players"
+        "attribute_class"	"not_solid_to_players"
+        "description_string"	"Becomes non solid to players"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+    }
+    "4440"
+    {
+        "name" "is suicide counter"
+        "attribute_class"	"is_suicide_counter"
+        "description_string"	"#Attrib_CallingCardOnKill"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    "4441"
+    {
+        "name" "always allow taunt"
+        "attribute_class"	"always_allow_taunt"
+        "description_string"	"Always allow taunting"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    "4442"
+    {
+        "name" "mult reflect velocity"
+        "attribute_class"	"mult_reflect_velocity"
+        "description_string"	"(+-)%p% reflected projectile velocity"
+        "description_format"	"value_is_percentage"
+        "hidden"	"0"
+        "effect_type"	"positive"
+    }
+    "4443"
+    {
+        "name" "custom kill icon"
+        "attribute_class"	"custom_kill_icon"
+		"attribute_type"	"string"
+        "description_string"	"#Attrib_CallingCardOnKill"
+        "description_format"	"value_is_percentage"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    //Cannot be upgraded
+    "4444"
+    {
+        "name"	"cannot be upgraded"
+        "attribute_class"	"cannot_be_upgraded"
+        "description_string"	"Weapon cannot be upgraded"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //Is dropped weapon
+    "4445"
+    {
+        "name"	"is dropped weapon"
+        "attribute_class"	"is_dropped_weapon"
+        "description_string"	"melee cleave attack"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //Projectile heat follow crosshair
+    "4446"
+    {
+        "name"	"mod projectile heat follow crosshair"
+        "attribute_class"	"mod_projectile_heat_follow_crosshair"
+        "description_string"	"Homing projectile follows crosshair"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //Projectile No deflect
+    "4447"
+    {
+        "name"	"projectile no deflect"
+        "attribute_class"	"projectile_no_deflect"
+        "description_string"	"Cannot be deflected"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //Projectile acceleration start time
+    "4448"
+    {
+        "name"	"projectile acceleration start time"
+        "attribute_class"	"projectile_acceleration_start_time"
+        "description_string"	"melee cleave attack"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    //Projectile acceleration start time
+    "4449"
+    {
+        "name"	"player gravity ballon head"
+        "attribute_class"	"player_gravity_ballon_head"
+        "description_string"	"melee cleave attack"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    //Projectile acceleration start time
+    "4450"
+    {
+        "name"	"is force item"
+        "attribute_class"	"is_force_item"
+        "description_string"	"melee cleave attack"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //Projectile acceleration start time
+    "4451"
+    {
+        "name"	"mult dmg vs giants"
+        "attribute_class"	"mult_dmg_vs_giants"
+        "description_string"	"(+-)%p% damage vs giants"
+        "description_format"	"value_is_percentage"
+        "hidden"	"0"
+        "effect_type"	"positive"
+    }
+    //Projectile acceleration start time
+    "4452"
+    {
+        "name"	"mult dmg vs npc"
+        "attribute_class"	"mult_dmg_vs_npc"
+        "description_string"	"(+-)%p% damage vs npc"
+        "description_format"	"value_is_percentage"
+        "hidden"	"0"
+        "effect_type"	"positive"
+    }
+    //Projectile acceleration start time
+    "4453"
+    {
+        "name"	"mult dmg vs tanks"
+        "attribute_class"	"mult_dmg_vs_tanks"
+        "description_string"	"(+-)%p% damage vs tanks"
+        "description_format"	"value_is_percentage"
+        "hidden"	"0"
+        "effect_type"	"positive"
+    }
+    //Projectile acceleration start time
+    "4454"
+    {
+        "name" "custom hit sound"
+        "attribute_class"	"custom_hit_sound"
+		"attribute_type"	"string"
+        "description_string"	"#Attrib_CallingCardOnKill"
+        "description_format"	"value_is_percentage"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    //Custom impact sound
+    "4455"
+    {
+        "name" "custom impact sound"
+        "attribute_class"	"custom_impact_sound"
+		"attribute_type"	"string"
+        "description_string"	"#Attrib_CallingCardOnKill"
+        "description_format"	"value_is_percentage"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    //Custom reload sound
+    "4456"
+    {
+        "name" "custom weapon reload sound"
+        "attribute_class"	"custom_weapon_reload_sound"
+		"attribute_type"	"string"
+        "description_string"	"#Attrib_CallingCardOnKill"
+        "description_format"	"value_is_percentage"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    //Disable explosion particle
+    "4457"
+    {
+        "name"	"no explosion particles"
+        "attribute_class"	"no_explosion_particles"
+        "description_string"	"melee cleave attack"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //Override projectile type extra
+    "4458"
+    {
+        "name"	"override projectile type extra"
+        "attribute_class"	"override_projectile_type_extra"
+		"attribute_type"	"string"
+        "description_string"	"melee cleave attack"
+        "description_format"	"value_is_percentage"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    //Override projectile type extra
+    "4459"
+    {
+        "name"	"dmg current health"
+        "attribute_class"	"dmg_current_health"
+        "description_string"	"On Hit: %p% of enemy current health is applied as damage"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+    }
+    //Override projectile type extra
+    "4460"
+    {
+        "name"	"dmg max health"
+        "attribute_class"	"dmg_max_health"
+        "description_string"	"On Hit: %p% of enemy max health is applied as damage"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+    }
+    //Override projectile type extra
+    "4461"
+    {
+        "name"	"dmg missing health"
+        "attribute_class"	"dmg_missing_health"
+        "description_string"	"On Hit: %p% of enemy missing health is applied as damage"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+    }
+    //Cannot be teleported
+    "4462"
+    {
+        "name"	"cannot be teleported"
+        "attribute_class"	"cannot_be_teleported"
+        "description_string"	"Cannot be teleported"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //Medigun range multipier
+    "4463"
+    {
+        "name"	"mult medigun range"
+        "attribute_class"	"mult_medigun_range"
+        "description_string"	"(+-)%p% medigun range"
+        "description_format"	"value_is_percentage"
+        "hidden"	"0"
+        "effect_type"	"positive"
+    }
+    //Projectile penetration with penetration limit
+    "4464"
+    {
+        "name"	"projectile penetration limit"
+        "attribute_class"	"projectile_penetration_limit"
+        "description_string"	"Penetrate up to %d enemies"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //Max aoe enemies affected
+    "4465"
+    {
+        "name"	"max aoe targets"
+        "attribute_class"	"max_aoe_targets"
+        "description_string"	"Applies damage to 3 enemies"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //Addcond on hit
+    "4466"
+    {
+        "name"	"add cond on hit"
+        "attribute_class"	"add_cond_on_hit"
+        "description_string"	"melee cleave attack"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //Addcond on hit duration
+    "4467"
+    {
+        "name"	"add cond on hit duration"
+        "attribute_class"	"add_cond_on_hit_duration"
+        "description_string"	"melee cleave attack"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    //Removecond on hit
+    "4468"
+    {
+        "name"	"remove cond on hit"
+        "attribute_class"	"remove_cond_on_hit"
+        "description_string"	"melee cleave attack"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //Weapon damage type
+    "4469"
+    {
+        "name"	"add damage type"
+        "attribute_class"	"add_damage_type"
+        "description_string"	"melee cleave attack"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //Weapon damage type
+    "4470"
+    {
+        "name"	"remove damage type"
+        "attribute_class"	"remove_damage_type"
+        "description_string"	"melee cleave attack"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //Weapon special type
+    "4471"
+    {
+        "name"	"special damage type"
+        "attribute_class"	"special_damage_type"
+        "description_string"	"melee cleave attack"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //Weapon special type
+    "4472"
+    {
+        "name"	"dmg taken mult from special damage type 1"
+        "attribute_class"	"dmg_taken_mult_from_special_damage_type_1"
+        "description_string"	"melee cleave attack"
+        "description_format"	"value_is_percentage"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    //Weapon special type
+    "4473"
+    {
+        "name"	"dmg taken mult from special damage type 2"
+        "attribute_class"	"dmg_taken_mult_from_special_damage_type_2"
+        "description_string"	"melee cleave attack"
+        "description_format"	"value_is_percentage"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    //Weapon special type
+    "4474"
+    {
+        "name"	"dmg taken mult from special damage type 3"
+        "attribute_class"	"dmg_taken_mult_from_special_damage_type_3"
+        "description_string"	"melee cleave attack"
+        "description_format"	"value_is_percentage"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    //Effect duration
+    "4475"
+    {
+        "name"	"mult effect duration"
+        "attribute_class"	"mult_effect_duration"
+        "description_string"	"(+-)%p% effect duration"
+        "description_format"	"value_is_percentage"
+        "hidden"	"0"
+        "effect_type"	"positive"
+    }
+    //Effect duration
+    "4476"
+    {
+        "name"	"effect cond override"
+        "attribute_class"	"effect_cond_override"
+        "description_string"	"melee cleave attack"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //Addcond on hit
+    "4477"
+    {
+        "name"	"self add cond on hit"
+        "attribute_class"	"self_add_cond_on_hit"
+        "description_string"	"melee cleave attack"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //Addcond on hit duration
+    "4478"
+    {
+        "name"	"self add cond on hit duration"
+        "attribute_class"	"self_add_cond_on_hit_duration"
+        "description_string"	"melee cleave attack"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    //Addcond on kill
+    "4479"
+    {
+        "name"	"add cond on kill"
+        "attribute_class"	"add_cond_on_kill"
+        "description_string"	"melee cleave attack"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //Addcond on kill duration
+    "4480"
+    {
+        "name"	"add cond on kill duration"
+        "attribute_class"	"add_cond_on_kill_duration"
+        "description_string"	"melee cleave attack"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    //Item description
+    "4481"
+    {
+        "name"	"special item description"
+        "attribute_class"	"special_item_description"
+        "attribute_type"    "string"
+        "description_string"	"%d"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+    }
+    //Flag carrier move speed
+    "4482"
+    {
+        "name"	"mult flag carrier move speed"
+        "attribute_class"	"mult_flag_carrier_move_speed"
+        "description_string"	"(+-)%p% flag carrier move speed"
+        "description_format"	"value_is_percentage"
+        "hidden"	"0"
+        "effect_type"	"positive"
+    }
+    //Heal
+    "4483"
+    {
+        "name"	"overheal from heal on kill"
+        "attribute_class"	"overheal_from_heal_on_kill"
+        "description_string"	"Overheal from heal on kill"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //Item description
+    "4484"
+    {
+        "name"	"fire input on hit"
+        "attribute_class"	"fire_input_on_hit"
+        "attribute_type"    "string"
+        "description_string"	"%d"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    //Item description
+    "4485"
+    {
+        "name"	"fire input on hit name restrict"
+        "attribute_class"	"fire_input_on_hit_name_restrict"
+        "attribute_type"    "string"
+        "description_string"	"%d"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    //Max buff health multipier
+    "4486"
+    {
+        "name"	"mult max overheal self"
+        "attribute_class"	"mult_max_ovelheal_self"
+        "description_string"	"overheal from heal on kill"
+        "description_format"	"value_is_percentage"
+        "hidden"	"0"
+        "effect_type"	"positive"
+    }
+    //Max buff health multipier
+    "4487"
+    {
+        "name"	"grenade bounce speed"
+        "attribute_class"	"grenade_bounce_speed"
+        "description_string"	"Grenades bounce off walls"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+    }
+    //Max buff health multipier
+    "4488"
+    {
+        "name"	"grenade bounce damage"
+        "attribute_class"	"grenade_bounce_damage"
+        "description_string"	"Grenades can explode on direct hit after bouncing off walls, dealing (+-)%p% damage"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+    }
+    //Projectile gravity native
+    "4489"
+    {
+        "name"	"projectile gravity native"
+        "attribute_class"	"projectile_gravity_native"
+        "description_string"	"(+-)%p% damage"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    //Projectile gravity native
+    "4490"
+    {
+        "name"	"grenade no drag"
+        "attribute_class"	"grenade_no_drag"
+        "description_string"	"No drag on projectiles"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+    }
+    //Projectile gravity native
+    "4491"
+    {
+        "name"	"stickybomb stick to enemies"
+        "attribute_class"	"stickbomb_stick_to_enemies"
+        "description_string"	"Stickbombs stick to enemies"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+    }
+    //Projectile gravity native
+    "4492"
+    {
+        "name"	"stickybomb no stick"
+        "attribute_class"	"stickbomb_no_stick"
+        "description_string"	"Stickbombs don't stick"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+    }
+    //Projectile gravity native
+    "4493"
+    {
+        "name"	"collect currency on kill"
+        "attribute_class"	"collect_currency_on_kill"
+        "description_string"	"Automatically collects currency from destroyed robots"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+    }
+    //Override step sound special
+    "4494"
+    {
+        "name"	"override step sound string"
+        "attribute_class"	"override_step_sound_string"
+		"attribute_type"	"string"
+        "description_string"	"melee cleave attack"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    //Projectile gravity native
+    "4495"
+    {
+        "name"	"stomp player force"
+        "attribute_class"	"stomp_player_force"
+        "description_string"	"Touched enemy players are knocked back"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+    }
+    //Projectile gravity native
+    "4496"
+    {
+        "name"	"stomp player damage"
+        "attribute_class"	"stomp_player_damage"
+        "description_string"	"Deals %d damage to touched enemies"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+    }
+    //Projectile gravity native
+    "4497"
+    {
+        "name"	"reflect keep team"
+        "attribute_class"	"reflect_keep_team"
+        "description_string"	"Reflected projectiles keep their original team"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+    }
+    //Item description
+    "4498"
+    {
+        "name"	"custom wind up sound"
+        "attribute_class"	"custom_wind_up_sound"
+        "attribute_type"    "string"
+        "description_string"	"%d"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    //Item description
+    "4499"
+    {
+        "name"	"custom wind down sound"
+        "attribute_class"	"custom_wind_down_sound"
+        "attribute_type"    "string"
+        "description_string"	"%d"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    //Projectile gravity native
+    "4500"
+    {
+        "name"	"reflect magnet"
+        "attribute_class"	"reflect_magnet"
+        "description_string"	"Reflects projectiles towards pyro"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+    }
+    //Projectile gravity native
+    "4501"
+    {
+        "name"	"stay after regenerate"
+        "attribute_class"	"stay_after_regenerate"
+        "description_string"	""
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    "4502"
+    {
+        "name"	"custom minigun spin sound"
+        "attribute_class"	"custom_minigun_spin_sound"
+		"attribute_type"	"string"
+        "description_string"	"%d"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    "4503"
+    {
+        "name"	"stomp player time"
+        "attribute_class"	"stomp_player_time"
+        "description_string"	""
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    "4504"
+    {
+        "name"	"arrow hit kill time"
+        "attribute_class"	"arrow_hit_kill_time"
+        "description_string"	""
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    "4505"
+    {
+        "name"	"mod dispenser cost"
+        "attribute_class"	"mod_dispenser_cost"
+        "description_string"	"(+-)%p% dispenser cost"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+    }
+    "4506"
+    {
+        "name"	"mod sentry cost"
+        "attribute_class"	"mod_sentry_cost"
+        "description_string"	"(+-)%p% sentry cost"
+        "description_format"	"value_is_percentage"
+        "hidden"	"0"
+        "effect_type"	"positive"
+    }
+    //Addcond on equip
+    "4507"
+    {
+        "name"	"add cond when active"
+        "attribute_class"	"add_cond_when_active"
+        "description_string"	"melee cleave attack"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //Penetrate teammates
+    "4508"
+    {
+        "name"	"penetrate teammates"
+        "attribute_class"	"penetrate_teammates"
+        "description_string"	"melee cleave attack"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //Penetrate teammates
+    "4509"
+    {
+        "name"	"stomp building damage"
+        "attribute_class"	"stomp_building_damage"
+        "description_string"	"melee cleave attack"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //Penetrate teammates
+    "4510"
+    {
+        "name"	"mult debuff duration"
+        "attribute_class"	"mult_debuff_duration"
+        "description_string"	"(+-)%p% received debuff duration"
+        "description_format"	"value_is_percentage"
+        "hidden"	"0"
+        "effect_type"	"positive"
+    }
+    "4511"
+    {
+        "name"	"custom weapon name"
+        "attribute_class"	"custom_weapon_name"
+		"attribute_type"	"string"
+        "description_string"	"melee cleave attack"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    "4512"
+    {
+        "name"	"add cond when active"
+        "attribute_class"	"add_cond_when_active"
+        "description_string"	""
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    "4513"
+    {
+        "name"	"mult step height"
+        "attribute_class"	"mult_step_height"
+        "description_string"	"(+-)%p% step height"
+        "description_format"	"value_is_percentage"
+        "hidden"	"0"
+        "effect_type"	"positive"
+    }
+    "4514"
+    {
+        "name"	"ignore player clip"
+        "attribute_class"	"ignore_player_clip"
+        "description_string"	""
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    "4515"
+    {
+        "name"	"allow bunny hop"
+        "attribute_class"	"allow_bunny_hop"
+        "description_string"	"Can bunny hop"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+    }
+    //Item description
+    "4516"
+    {
+        "name"	"fire input on kill"
+        "attribute_class"	"fire_input_on_kill"
+        "attribute_type"    "string"
+        "description_string"	"%d"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    //Item description
+    "4517"
+    {
+        "name"	"fire input on kill name restrict"
+        "attribute_class"	"fire_input_on_kill_name_restrict"
+        "attribute_type"    "string"
+        "description_string"	"%d"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    "4518"
+    {
+        "name"	"fire full clip at once"
+        "attribute_class"	"fire_full_clip_at_once"
+        "description_string"	"Fires full clip at once"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+    }
+    "4519"
+    {
+        "name"	"reload full clip at once"
+        "attribute_class"	"reload_full_clip_at_once"
+        "description_string"	"Reloads full clip at once"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+    }
+    "4520"
+    {
+        "name"	"projectile sound"
+        "attribute_class"	"projectile_sound"
+		"attribute_type"	"string"
+        "description_string"	"%d"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    "4521"
+    {
+        "name"	"burst fire count"
+        "attribute_class"	"burst_fire_count"
+        "description_string"	"Fires %d rounds in burst"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+    }
+    "4522"
+    {
+        "name"	"burst fire rate mult"
+        "attribute_class"	"burst_fire_rate_mult"
+        "description_string"	"(+-)%p% fire rate in burst"
+        "description_format"	"value_is_percentage"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    "4523"
+    {
+        "name"	"continous accuracy mult"
+        "attribute_class"	"continous_accuracy_mult"
+        "description_string"	"(+-)%p% accurate over time"
+        "description_format"	"value_is_inverted_percentage"
+        "hidden"	"0"
+        "effect_type"	"positive"
+    }
+    "4524"
+    {
+        "name"	"continous accuracy time"
+        "attribute_class"	"continous_accuracy_time"
+        "description_string"	"Up to (+-)%p% accurate over time"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    "4525"
+    {
+        "name"	"continous accuracy time recovery"
+        "attribute_class"	"continous_accuracy_time_recovery"
+        "description_string"	"Up to (+-)%p% accurate over time"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    "4526"
+    {
+        "name"	"duck accuracy mult"
+        "attribute_class"	"duck_accuracy_mult"
+        "description_string"	"(+-)%p% accurate when crouching"
+        "description_format"	"value_is_inverted_percentage"
+        "hidden"	"0"
+        "effect_type"	"positive"
+    }
+    "4527"
+    {
+        "name"	"move accuracy mult"
+        "attribute_class"	"move_accuracy_mult"
+        "description_string"	"(+-)%p% accurate when moving"
+        "description_format"	"value_is_inverted_percentage"
+        "hidden"	"0"
+        "effect_type"	"positive"
+    }
+    "4528"
+    {
+        "name"	"force fire full clip"
+        "attribute_class"	"force_fire_full_clip"
+        "description_string"	"Fires full clip automatically"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+    }
+    "4529"
+    {
+        "name"	"is extra loadout item"
+        "attribute_class"	"is_extra_loadout_item"
+        "description_string"	"Fires full clip automatically"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    //Item description
+    "4530"
+    {
+        "name"	"special item description 2"
+        "attribute_class"	"special_item_description_2"
+        "attribute_type"    "string"
+        "description_string"	"%d"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+    }
+    //Item description
+    "4531"
+    {
+        "name"	"special item description 3"
+        "attribute_class"	"special_item_description_3"
+        "attribute_type"    "string"
+        "description_string"	"%d"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+    }
+    //Item description
+    "4532"
+    {
+        "name"	"special item description 4"
+        "attribute_class"	"special_item_description_4"
+        "attribute_type"    "string"
+        "description_string"	"%d"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+    }
+    "4533"
+    {
+        "name"	"allowed build types"
+        "attribute_class"	"allowed_build_types"
+        "description_string"	"Allowed build types"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    "4534"
+    {
+        "name"	"max bullet range"
+        "attribute_class"	"max_bullet_range"
+        "description_string"	"%d range"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    //Item description
+    "4535"
+    {
+        "name"	"effect add attributes"
+        "attribute_class"	"effect_add_attributes"
+        "attribute_type"    "string"
+        "description_string"	"%d"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    //Item description
+    "4536"
+    {
+        "name"	"medigun passive attributes"
+        "attribute_class"	"medigun_passive_attributes"
+        "attribute_type"    "string"
+        "description_string"	"%d"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    //Item description
+    "4537"
+    {
+        "name"	"medigun passive attributes owner"
+        "attribute_class"	"medigun_passive_attributes_owner"
+        "attribute_type"    "string"
+        "description_string"	"%d"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    "4538"
+    {
+        "name"	"bullet spread additive"
+        "attribute_class"	"mult_spread_scale"
+        "description_string"	"%d range"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    "4539"
+    {
+        "name"	"mod projectile heat no predict target speed"
+        "attribute_class"	"mod_projectile_heat_no_predict_target_speed"
+        "description_string"	"%d range"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    "4540"
+    {
+        "name"	"mult dmg vs airborne"
+        "attribute_class"	"mult_dmg_vs_airborne"
+        "description_string"	"(+-)%p% damage vs players launched by explosions"
+        "description_format"	"value_is_percentage"
+        "hidden"	"0"
+        "effect_type"	"positive"
+    }
+    "4541"
+    {
+        "name"	"revive rate"
+        "attribute_class"	"revive_rate"
+        "description_string"	"(+-)%p% revive rate"
+        "description_format"	"value_is_percentage"
+        "hidden"	"0"
+        "effect_type"	"positive"
+    }
+    "4542"
+    {
+        "name"	"taunt attack after end"
+        "attribute_class"	"taunt_attack_after_end"
+        "description_string"	"Taunt attack may happen even after the taunt ended"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+    }
+    "4543"
+    {
+        "name"	"taunt attack time mult"
+        "attribute_class"	"taunt_attack_time_mult"
+        "description_string"	"(+-)%p% taunt attack time"
+        "description_format"	"value_is_percentage"
+        "hidden"	"0"
+        "effect_type"	"positive"
+    }
+    "4544"
+    {
+        "name"	"projectile spread angle mult"
+        "attribute_class"	"projectile_spread_angle"
+        "description_string"	"(+-)%p% projectile spread angle"
+        "description_format"	"value_is_percentage"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    "4545"
+    {
+        "name"	"damage returns as health"
+        "attribute_class"	"damage_returns_as_health"
+        "description_string"	"(+-)%p% damage dealt is returned as health"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+    }
+    "4546"
+    {
+        "name"	"no resupply"
+        "attribute_class"	"no_resupply"
+        "description_string"	"Cannot resupply"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+    }
+    "4547"
+    {
+        "name"	"no damage view flinch"
+        "attribute_class"	"no_damage_view_flinch"
+        "description_string"	"No view flinch when taking damage"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+    }
+    "4548"
+    {
+        "name"	"mult dmg friendly fire"
+        "attribute_class"	"mult_dmg_friendly_fire"
+        "description_string"	"Allies receive (+-)%p% damage"
+        "description_format"	"value_is_percentage"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    "4549"
+    {
+        "name"	"disable wrangler shield"
+        "attribute_class"	"disable_wrangler_shield"
+        "description_string"	"No wrangler shield"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+    }
+    "4550"
+    {
+        "name"	"parachute redeploy"
+        "attribute_class"	"parachute_redeploy"
+        "description_string"	"Parachute redeploying is allowed"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+    }
+    "4551"
+    {
+        "name"	"mult duck speed"
+        "attribute_class"	"mult_duck_speed"
+        "description_string"	"(+-)%p% move speed while crouching"
+        "description_format"	"value_is_percentage"
+        "hidden"	"0"
+        "effect_type"	"positive"
+    }
+    "4552"
+    {
+        "name"	"particle color rgb"
+        "attribute_class"	"particle_color_rgb"
+        "description_string"	"(+-)%p% move speed while crouching"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    "4553"
+    {
+        "name"	"particle color rainbow"
+        "attribute_class"	"particle_color_rainbow"
+        "description_string"	"(+-)%p% move speed while crouching"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    "4554"
+    {
+        "name"	"ignored by enemy sentries"
+        "attribute_class"	"ignored_by_enemy_sentries"
+        "description_string"	"Ignored by enemy senties"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+    }
+    "4555"
+    {
+        "name"	"melee airblast"
+        "attribute_class"	"melee_airblast"
+        "description_string"	"Attack reflects projectiles"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+    }
+    "4556"
+    {
+        "name"	"passive reload"
+        "attribute_class"	"passive_reload"
+        "description_string"	"Weapon is automatically reloaded when not active"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+    }
+    "4557"
+    {
+        "name"	"kb fall min velocity"
+        "attribute_class"	"kb_fall_min_velocity"
+        "description_string"	"On fall, all enemies nearby are knocked back"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+    }
+    "4558"
+    {
+        "name"	"kb fall radius"
+        "attribute_class"	"kb_fall_radius"
+        "description_string"	"On fall, all enemies nearby are knocked back"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    "4559"
+    {
+        "name"	"kb fall stun time"
+        "attribute_class"	"kb_fall_stun_time"
+        "description_string"	"On fall, all enemies nearby are knocked back"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    "4560"
+    {
+        "name"	"kb fall force"
+        "attribute_class"	"kb_fall_force"
+        "description_string"	"On fall, all enemies nearby are knocked back"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    "4561"
+    {
+        "name"	"kb fall damage"
+        "attribute_class"	"kb_fall_damage"
+        "description_string"	"On fall, all enemies nearby are knocked back"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    "4562"
+    {
+        "name"	"melee grants protection"
+        "attribute_class"	"melee_grants_protection"
+        "description_string"	"Attacking with this weapon gives you resistance to incoming damage for a brief period of time"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+    }
+    "4563"
+    {
+        "name"	"arrow snap to next target radius"
+        "attribute_class"	"arrow_snap_to_next_target_radius"
+        "description_string"	"Projectiles snap to the next nearest target after being hit"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+    }
+    "4564"
+    {
+        "name"	"arrow snap to next target angle"
+        "attribute_class"	"arrow_snap_to_next_target_angle"
+        "description_string"	"Projectiles snap to the next nearest target after being hit"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    "4565"
+    {
+        "name"	"mult credit collect range"
+        "attribute_class"	"mult_credit_collect_range"
+        "description_string"	"(+-)%p% credit collection range"
+        "description_format"	"value_is_percentage"
+        "hidden"	"0"
+        "effect_type"	"positive"
+    }
+    "4566"
+    {
+        "name"	"health from credits"
+        "attribute_class"	"health_from_credits"
+        "description_string"	"(+-)%d health gained from credits"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+    }
+    "4567"
+    {
+        "name"	"mult bleeding delay"
+        "attribute_class"	"mult_bleeding_delay"
+        "description_string"	"(+-)%p% bleeding damage delay"
+        "description_format"	"value_is_percentage"
+        "hidden"	"0"
+        "effect_type"	"positive"
+    }
+    "4568"
+    {
+        "name"	"mult bleeding dmg"
+        "attribute_class"	"mult_bleeding_dmg"
+        "description_string"	"(+-)%p% bleeding damage"
+        "description_format"	"value_is_percentage"
+        "hidden"	"0"
+        "effect_type"	"positive"
+    }
+    "4569"
+    {
+        "name"	"grenade bounce speed xy"
+        "attribute_class"	"grenade_bounce_speed_xy"
+        "description_string"	"(+-)%p% xy bounce speed"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    "4570"
+    {
+        "name"	"not solid"
+        "attribute_class"	"not_solid"
+        "description_string"	"Player is not solid"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    "4571"
+    {
+        "name"	"dmg taken from self reduced"
+        "attribute_class"	"mult_dmgtaken_from_self"
+        "description_string"	"(+-)%p% damage taken from self"
+        "description_format"	"value_is_percentage"
+        "hidden"	"0"
+        "effect_type"	"positive"
+    }
+    "4572"
+    {
+        "name"	"ignored by bots"
+        "attribute_class"	"ignored_by_bots"
+        "description_string"	"Ignored by bots"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    "4573"
+    {
+        "name"	"custom weapon id"
+        "attribute_class"	"custom_weapon_id"
+        "description_string"	"Custom weapon id"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    "4574"
+    {
+        "name"	"add attributes on hit"
+        "attribute_class"	"add_attributes_on_hit"
+        "attribute_type"    "string"
+        "description_string"	"Attribute on hit"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    "4575"
+    {
+        "name"	"add attributes on kill"
+        "attribute_class"	"add_attributes_on_kill"
+        "attribute_type"    "string"
+        "description_string"	"Attribute on kill"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    "4576"
+    {
+        "name"	"self add attributes on hit"
+        "attribute_class"	"self_add_attributes_on_hit"
+        "attribute_type"    "string"
+        "description_string"	"Attribute on hit"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    "4577"
+    {
+        "name"	"mod projectile heat aim start time"
+        "attribute_class"	"mod_projectile_heat_aim_start_time"
+        "description_string"	"melee cleave attack"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    "4578"
+    {
+        "name"	"move speed as health decreases"
+        "attribute_class"	"move_speed_as_health_decreases"
+        "description_string"	"Up to (+-)%p% move speed as health decreases"
+        "description_format"	"value_is_percentage"
+        "hidden"	"1"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    "4579"
+    {
+        "name"	"no self effect"
+        "attribute_class"	"no_self_effect"
+        "description_string"	"Cannot ignite or cause bleeding to the wielder"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    "4580"
+    {
+        "name"	"reset arrow hits on bounce"
+        "attribute_class"	"reset_arrow_hits_on_bounce"
+        "description_string"	"Hits targets for another time after bounce"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    "4581"
+    {
+        "name"	"arrow target bounce speed"
+        "attribute_class"	"arrow_target_bounce_speed"
+        "description_string"	"Projectiles bounce off hit targets"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    "4582"
+    {
+        "name"	"cannot pickup spells"
+        "attribute_class"	"cannot_pickup_spells"
+        "description_string"	"Cannot pickup spells"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    "4583"
+    {
+        "name"	"mult max health"
+        "attribute_class"	"add_maxhealth"
+        "description_string"	"(+-)%p% Max health"
+        "description_format"	"value_is_percentage"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    "4584"
+    {
+        "name"	"add spread"
+        "attribute_class"	"mult_spread_scale"
+        "description_string"	"(+-)%d bullet spread"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    "4585"
+    {
+        "name"	"always allow disguise"
+        "attribute_class"	"always_allow_disguise"
+        "description_string"	"always allow disguising"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    "4586"
+    {
+        "name"	"always allow cloak"
+        "attribute_class"	"always_allow_cloak"
+        "description_string"	"always allow cloaking"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    "4587"
+    {
+        "name"	"always allow teleport"
+        "attribute_class"	"always_allow_teleport"
+        "description_string"	"always allow teleporting"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    "4588"
+    {
+        "name"	"destroy buildings on death"
+        "attribute_class"	"destroy_buildings_on_death"
+        "description_string"	"Owned buildings are destroyed on death"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    "4589"
+    {
+        "name"	"sentry bullet weapon"
+        "attribute_class"	"sentry_bullet_weapon"
+		"attribute_type"	"string"
+        "description_string"	"Sentry bullet weapon"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    "4590"
+    {
+        "name"	"sentry rocket weapon"
+        "attribute_class"	"sentry_rocket_weapon"
+		"attribute_type"	"string"
+        "description_string"	"Sentry rocket weapon"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    "4591"
+    {
+        "name"	"custom sentry model"
+        "attribute_class"	"custom_sentry_model"
+		"attribute_type"	"string"
+        "description_string"	""
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    "4592"
+    {
+        "name"	"custom dispenser model"
+        "attribute_class"	"custom_dispenser_model"
+		"attribute_type"	"string"
+        "description_string"	""
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    "4593"
+    {
+        "name"	"custom teleporter model"
+        "attribute_class"	"custom_teleporter_model"
+		"attribute_type"	"string"
+        "description_string"	""
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    "4594"
+    {
+        "name"	"mult sentry rocket ammo"
+        "attribute_class"	"mult_sentry_rocket_ammo"
+        "description_string"	"(+-)%p% sentry rocket ammo capacity"
+        "description_format"	"value_is_percentage"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    "4595"
+    {
+        "name"	"midair accuracy mult"
+        "attribute_class"	"midair_accuracy_mult"
+        "description_string"	"(+-)%p% accurate when midair"
+        "description_format"	"value_is_inverted_percentage"
+        "hidden"	"0"
+        "effect_type"	"positive"
+    }
+    "4596"
+    {
+        "name"	"add damage per target"
+        "attribute_class"	"add_damage_per_target"
+        "description_string"	"(+-)%p% damage for every target hit by explosion"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+    }
+    "4597"
+    {
+        "name"	"projectile detonate time"
+        "attribute_class"	"projectile_detonate_time"
+        "description_string"	"Projectiles self detonate in %d seconds after being fired"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+    }
+    "4598"
+    {
+        "name"	"mult afterburn delay"
+        "attribute_class"	"mult_afterburn_delay"
+        "description_string"	"(+-)%p% afterburn damage delay"
+        "description_format"	"value_is_percentage"
+        "hidden"	"0"
+        "effect_type"	"positive"
+    }
+    "4599"
+    {
+        "name"	"custom view model"
+        "attribute_class"	"custom_view_model"
+		"attribute_type"	"string"
+        "description_string"	"custom view model"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    "4600"
+    {
+        "name"	"mult dmg while midair"
+        "attribute_class"	"mult_dmg_while_midair"
+        "description_string"	"(+-)%p% damage while midair"
+        "description_format"	"value_is_percentage"
+        "hidden"	"0"
+        "effect_type"	"positive"
+    }
+    "4601"
+    {
+        "name"	"hidden string attribute 1"
+        "attribute_class"	"string_data_attribute_1"
+        "description_string"	""
+        "description_format"	"value_is_additive"
+		"attribute_type"	"string"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    "4602"
+    {
+        "name"	"hidden string attribute 2"
+        "attribute_class"	"string_data_attribute_2"
+        "description_string"	""
+        "description_format"	"value_is_additive"
+		"attribute_type"	"string"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    "4603"
+    {
+        "name"	"hidden string attribute 3"
+        "attribute_class"	"string_data_attribute_3"
+        "description_string"	""
+        "description_format"	"value_is_additive"
+		"attribute_type"	"string"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    "4604"
+    {
+        "name"	"hidden string attribute 4"
+        "attribute_class"	"string_data_attribute_4"
+        "description_string"	""
+        "description_format"	"value_is_additive"
+		"attribute_type"	"string"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    "4605"
+    {
+        "name"	"medigun keep charged effect"
+        "attribute_class"	"medigun_keep_charged_effect"
+        "description_string"	"(+-)%p% damage while midair"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    "4606"
+    {
+        "name"	"ignores other projectiles"
+        "attribute_class"	"ignores_other_projectiles"
+        "description_string"	"(+-)%p% damage while midair"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    "4607"
+    {
+        "name"	"weapon always gib"
+        "attribute_class"	"weapon_always_gib"
+        "description_string"	"Always gibs enemies"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+    }
+    "4608"
+    {
+        "name"	"weapon never gib"
+        "attribute_class"	"weapon_never_gib"
+        "description_string"	"Never gibs enemies"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+    }
+    "4609"
+    {
+        "name"	"always gib"
+        "attribute_class"	"always_gib"
+        "description_string"	"Always gib"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    "4610"
+    {
+        "name"	"never gib"
+        "attribute_class"	"never_gib"
+        "description_string"	"Never gib"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    "4611"
+    {
+        "name"	"sapper sap allies"
+        "attribute_class"	"sapper_sap_allies"
+        "description_string"	"Place on ally players instead of enemies"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+    }
+    "4612"
+    {
+        "name"	"custom sapper model"
+        "attribute_class"	"custom_sapper_model"
+		"attribute_type"	"string"
+        "description_string"	""
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    "4613"
+    {
+        "name"	"custom sapper sound"
+        "attribute_class"	"custom_sapper_sound"
+		"attribute_type"	"string"
+        "description_string"	""
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    "4614"
+    {
+        "name"	"no clip"
+        "attribute_class"	"no_clip"
+        "description_string"	"Place on allies"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    "4615"
+    {
+        "name"	"arrow ignite"
+        "attribute_class"	"arrow_ignite"
+        "description_string"	"Arrows are always lit"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+    }
+    "4616"
+    {
+        "name"	"use original class weapon animations"
+        "attribute_class"	"use_original_class_weapon_animations"
+        "description_string"	"Arrows are always lit"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    "4617"
+    {
+        "name"	"mult dmg before distance"
+        "attribute_class"	"mult_dmg_before_distance"
+        "description_string"	"Deals up to (+-)%p% damage, the closer to the target"
+        "description_format"	"value_is_percentage"
+        "hidden"	"0"
+        "effect_type"	"positive"
+    }
+    "4618"
+    {
+        "name"	"mult dmg before distance specify"
+        "attribute_class"	"mult_dmg_before_distance_specify"
+        "description_string"	""
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    "4619"
+    {
+        "name"	"mult_item_meter_charge_rate 2"
+        "attribute_class"	"mult_item_meter_charge_rate"
+        "description_string"	"(+-)%p% recharge rate"
+        "description_format"	"value_is_inverted_percentage"
+        "hidden"	"0"
+        "effect_type"	"positive"
+    }
+    "4620"
+    {
+        "name"	"clip size upgrade atomic 2"
+        "attribute_class"	"mult_clipsize_upgrade_atomic"
+        "description_string"	"(+-)%d clip size"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+    }
+    "4621"
+    {
+        "name"	"charge recharge rate increased 2"
+        "attribute_class"	"charge_recharge_rate"
+        "description_string"	"(+-)%p% recharge rate"
+        "description_format"	"value_is_percentage"
+        "hidden"	"0"
+        "effect_type"	"positive"
+    }
+    "4622"
+    {
+        "name"	"mult sentry rocket projectile speed"
+        "attribute_class"	"mult_sentry_rocket_projectile_speed"
+        "description_string"	"(+-)%p% sentry rocket projectile speed"
+        "description_format"	"value_is_percentage"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    "4623"
+    {
+        "name"	"max ammo primary mult"
+        "attribute_class"	"mult_maxammo_primary"
+        "description_string"	"(+-)%p% sentry rocket projectile speed"
+        "description_format"	"value_is_percentage"
+        "hidden"	"1"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    "4624"
+    {
+        "name"	"max ammo secondary mult"
+        "attribute_class"	"mult_maxammo_secondary"
+        "description_string"	"(+-)%p% sentry rocket projectile speed"
+        "description_format"	"value_is_percentage"
+        "hidden"	"1"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    "4625"
+    {
+        "name"	"minigun full movement"
+        "attribute_class"	"minigun_full_movement"
+        "description_string"	"Can move while ducking when shooting"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    "4626"
+    {
+        "name"	"use original class player animations"
+        "attribute_class"	"use_original_class_player_animations"
+        "description_string"	"Arrows are always lit"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    "4627"
+    {
+        "name"	"crit on cond"
+        "attribute_class"	"crit_on_cond"
+		"attribute_type"	"string"
+        "description_string"	""
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    "4628"
+    {
+        "name"	"minicrit on cond"
+        "attribute_class"	"minicrit_on_cond"
+		"attribute_type"	"string"
+        "description_string"	""
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    "4629"
+    {
+        "name"	"add attributes when active"
+        "attribute_class"	"add_attributes_when_active"
+		"attribute_type"	"string"
+        "description_string"	"Arrows are always lit"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    "4630"
+    {
+        "name"	"radial cond"
+        "attribute_class"	"radial_cond"
+        "description_string"	""
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    "4631"
+    {
+        "name"	"mult explosion radius direct hit"
+        "attribute_class"	"mult_explosion_radius_direct_hit"
+        "description_string"	"(+-)%p% explosion radius on direct hit"
+        "description_format"	"value_is_percentage"
+        "hidden"	"0"
+        "effect_type"	"positive"
+    }
+    "4632"
+    {
+        "name"	"buildings cannot be sapped"
+        "attribute_class"	"buildings_cannot_be_sapped"
+        "description_string"	"Buildings cannot be sapped"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+    }
+    "4633"
+    {
+        "name"	"mult dmg direct hit"
+        "attribute_class"	"mult_dmg_direct_hit"
+        "description_string"	"(+-)%p% damage on direct hit"
+        "description_format"	"value_is_percentage"
+        "hidden"	"0"
+        "effect_type"	"positive"
+    }
+    "4634"
+    {
+        "name"	"explosion particle on direct hit"
+        "attribute_class"	"explosion_particle_on_direct_hit"
+		"attribute_type"	"string"
+        "description_string"	""
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    "4635"
+    {
+        "name"	"cannot upgrade bomb"
+        "attribute_class"	"cannot_upgrade_bomb"
+        "description_string"	"Cannot upgrade the bomb as a carrier"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+    }
+    "4636"
+    {
+        "name"	"max ammo primary additive"
+        "attribute_class"	"max_ammo_primary_additive"
+        "description_string"	"(+-)%p% sentry rocket projectile speed"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    "4637"
+    {
+        "name"	"max ammo secondary additive"
+        "attribute_class"	"max_ammo_secondary_additive"
+        "description_string"	"(+-)%p% sentry rocket projectile speed"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    "4638"
+    {
+        "name"	"sentry toolbox model"
+        "attribute_class"	"sentry_toolbox_model"
+		"attribute_type"	"string"
+        "description_string"	"(+-)%p% sentry rocket projectile speed"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    "4639"
+    {
+        "name"	"dispenser toolbox model"
+        "attribute_class"	"dispenser_toolbox_model"
+		"attribute_type"	"string"
+        "description_string"	"(+-)%p% sentry rocket projectile speed"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    "4640"
+    {
+        "name"	"teleporter toolbox model"
+        "attribute_class"	"teleporter_toolbox_model"
+		"attribute_type"	"string"
+        "description_string"	"(+-)%p% sentry rocket projectile speed"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    "4641"
+    {
+        "name"	"medigun attack enemy"
+        "attribute_class"	"medigun_attack_enemy"
+        "description_string"	"Can attack enemies, dealing damage equal to %p% heal rate"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    "4642"
+    {
+        "name"	"medigun self drain"
+        "attribute_class"	"medigun_self_drain"
+        "description_string"	"Drain health equal to %p% heal rate from the user when healing"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    //Item description
+    "4643"
+    {
+        "name"	"fire input on attack"
+        "attribute_class"	"fire_input_on_attack"
+        "attribute_type"    "string"
+        "description_string"	"%d"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    "4644"
+    {
+        "name"	"stun on hit"
+        "attribute_class"	"stun_on_hit"
+        "description_string"	"On Hit: Stun target for %d seconds"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    "4645"
+    {
+        "name"	"stun on hit no giants"
+        "attribute_class"	"stun_on_hit_no_giants"
+        "description_string"	"Cannot stun giants"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    "4646"
+    {
+        "name"	"stun on hit type"
+        "attribute_class"	"stun_on_hit_type"
+        "attribute_type"    "string"
+        "description_string"	"Cannot stun giants"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    "4647"
+    {
+        "name"	"stun on hit slow"
+        "attribute_class"	"stun_on_hit_slow"
+        "description_string"	"Stun slows players by %p%"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    "4648"
+    {
+        "name"	"medigun attack enemy heal mult"
+        "attribute_class"	"medigun_attack_enemy_heal_mult"
+        "description_string"	"%p% of damage dealt is returned as health"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    "4650"
+    {
+        "name"	"medigun particle"
+        "attribute_class"	"medigun_particle"
+		"attribute_type"	"string"
+        "description_string"	"(+-)%p% sentry rocket projectile speed"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    "4651"
+    {
+        "name"	"medigun particle enemy"
+        "attribute_class"	"medigun_particle_enemy"
+		"attribute_type"	"string"
+        "description_string"	"(+-)%p% sentry rocket projectile speed"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    "4652"
+    {
+        "name"	"medigun particle release"
+        "attribute_class"	"medigun_particle_release"
+		"attribute_type"	"string"
+        "description_string"	"(+-)%p% sentry rocket projectile speed"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    "4653"
+    {
+        "name"	"medigun particle spark"
+        "attribute_class"	"medigun_particle_spark"
+		"attribute_type"	"string"
+        "description_string"	"(+-)%p% sentry rocket projectile speed"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    "4654"
+    {
+        "name"	"effect immunity"
+        "attribute_class"	"effect_immunity"
+        "description_string"	"Immune to effects applied by allies and enemies"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    "4655"
+    {
+        "name"	"use human voice"
+        "attribute_class"	"use_human_voice"
+        "description_string"	""
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    "4656"
+    {
+        "name"	"use robot voice"
+        "attribute_class"	"use_robot_voice"
+        "description_string"	""
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    "4657"
+    {
+        "name"	"alt fire attack"
+        "attribute_class"	"alt_fire_attack"
+        "description_string"	""
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    "4658"
+    {
+        "name"	"alt fire attributes"
+        "attribute_class"	"alt_fire_attributes"
+		"attribute_type"	"string"
+        "description_string"	""
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    "4659"
+    {
+        "name"	"no revive"
+        "attribute_class"	"no_revive"
+        "description_string"	"No reanimator on death"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    "4660"
+    {
+        "name"	"fire input on effect"
+        "attribute_class"	"fire_input_on_effect"
+		"attribute_type"	"string"
+        "description_string"	"No reanimator on death"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    "4661"
+    {
+        "name"	"additional step sound"
+        "attribute_class"	"additional_step_sound"
+		"attribute_type"	"string"
+        "description_string"	"No reanimator on death"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    "4662"
+    {
+        "name"	"fov override"
+        "attribute_class"	"fov_override"
+        "description_string"	"No reanimator on death"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    "4663"
+    {
+        "name"	"hud overlay"
+        "attribute_class"	"hud_overlay"
+		"attribute_type"	"string"
+        "description_string"	"No reanimator on death"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    "4664"
+    {
+        "name"	"fire input on taunt"
+        "attribute_class"	"fire_input_on_taunt"
+		"attribute_type"	"string"
+        "description_string"	"No reanimator on death"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    "4665"
+    {
+        "name"	"displace touched enemies"
+        "attribute_class"	"displace_touched_enemies"
+        "description_string"	"Push away enemies"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    "4666"
+    {
+        "name"	"addcond immunity"
+        "attribute_class"	"addcond_immunity"
+		"attribute_type"	"string"
+        "description_string"	"Push away enemies"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    "4667"
+    {
+        "name"	"attribute immunity"
+        "attribute_class"	"attribute_immunity"
+		"attribute_type"	"string"
+        "description_string"	"Push away enemies"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    "4668"
+    {
+        "name"	"hold fire until full reload"
+        "attribute_class"	"hold_fire_until_full_reload"
+        "description_string"	"Hold fire until full reload"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    "4669"
+    {
+        "name"	"projectile hit radius"
+        "attribute_class"	"projectile_hit_radius"
+        "description_string"	""
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    "4670"
+    {
+        "name"	"noclip projectiles"
+        "attribute_class"	"noclip_projectiles"
+        "description_string"	"Projectiles penetrate walls"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    "4671"
+    {
+        "name"	"projectile health"
+        "attribute_class"	"projectile_health"
+        "description_string"	""
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    "4672"
+    {
+        "name"	"projectile take damage type"
+        "attribute_class"	"projectile_take_damage_type"
+        "description_string"	""
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    "4673"
+    {
+        "name"	"projectile take damage time"
+        "attribute_class"	"projectile_take_damage_time"
+        "description_string"	""
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    "4674"
+    {
+        "name"	"projectile explode on destroy"
+        "attribute_class"	"projectile_explode_on_destroy"
+        "description_string"	""
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    "4675"
+    {
+        "name"	"projectile explode time"
+        "attribute_class"	"projectile_explode_time"
+        "description_string"	"Explodes after %ds delay"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    "4676"
+    {
+        "name"	"shoot view punch angle"
+        "attribute_class"	"shoot_view_punch_angle"
+		"attribute_type"	"string"
+        "description_string"	""
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    "4677"
+    {
+        "name"	"shoot view punch angle random"
+        "attribute_class"	"shoot_view_punch_angle_random"
+		"attribute_type"	"string"
+        "description_string"	""
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    "4678"
+    {
+        "name"	"custom item model attachment"
+        "attribute_class"	"custom_item_model_attachment"
+		"attribute_type"	"string"
+        "description_string"	"melee cleave attack"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    "4679"
+    {
+        "name"	"custom item model attachment 2"
+        "attribute_class"	"custom_item_model_attachment"
+		"attribute_type"	"string"
+        "description_string"	"melee cleave attack"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    "4680"
+    {
+        "name"	"custom item model attachment 3"
+        "attribute_class"	"custom_item_model_attachment"
+		"attribute_type"	"string"
+        "description_string"	"melee cleave attack"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    "4681"
+    {
+        "name"	"custom weapon deploy sound"
+        "attribute_class"	"custom_weapon_deploy_sound"
+		"attribute_type"	"string"
+        "description_string"	""
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    "4682"
+    {
+        "name"	"custom item model attachment viewmodel"
+        "attribute_class"	"custom_item_model_attachment_viewmodel"
+		"attribute_type"	"string"
+        "description_string"	"melee cleave attack"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    "4683"
+    {
+        "name"	"custom item model attachment viewmodel 2"
+        "attribute_class"	"custom_item_model_attachment_viewmodel"
+		"attribute_type"	"string"
+        "description_string"	"melee cleave attack"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    "4684"
+    {
+        "name"	"custom item model attachment viewmodel 3"
+        "attribute_class"	"custom_item_model_attachment_viewmodel"
+		"attribute_type"	"string"
+        "description_string"	"melee cleave attack"
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+    }
+    "4685"
+    {
+        "name"	"spread angle pattern"
+        "attribute_class"	"spread_angle_pattern"
+		"attribute_type"	"string"
+        "description_string"	""
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    "4686"
+    {
+        "name"	"spread offset pattern"
+        "attribute_class"	"spread_offset_pattern"
+		"attribute_type"	"string"
+        "description_string"	""
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    "4687"
+    {
+        "name"	"proj attribute pattern"
+        "attribute_class"	"proj_attribute_pattern"
+		"attribute_type"	"string"
+        "description_string"	""
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    "4688"
+    {
+        "name"	"shoot pattern reset time"
+        "attribute_class"	"shoot_pattern_reset_time"
+        "description_string"	""
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    "4689"
+    {
+        "name"	"shoot pattern no rollback"
+        "attribute_class"	"shoot_pattern_no_rollback"
+        "description_string"	""
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    "4690"
+    {
+        "name"	"custom damage type override"
+        "attribute_class"	"custom_damage_type_override"
+        "description_string"	""
+        "description_format"	"value_is_additive"
+        "hidden"	"1"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+    "4691"
+    {
+        "name"	"flare no crit burning"
+        "attribute_class"	"flare_no_crit_burning"
+        "description_string"	"Flares do not critically hit burning enemies"
+        "description_format"	"value_is_additive"
+        "hidden"	"0"
+        "effect_type"	"positive"
+        "stored_as_integer"	"0"
+    }
+}

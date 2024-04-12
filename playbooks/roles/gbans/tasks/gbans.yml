@@ -1,0 +1,51 @@
+---
+- name: gbans_cache_data volume
+  docker_volume:
+    name: gbans_cache_data
+    state: present
+
+- name: gbans_demos volume
+  docker_volume:
+    name: gbans_demos
+    state: present
+
+- name: Generate /etc/gbans.yml
+  become: true
+  ansible.builtin.template:
+    src: gbans.yml.j2
+    dest: /etc/gbans.yml
+    mode: 0770
+
+- name: gbans-service
+  docker_container:
+    name: gbans-service
+    image: "{{ gbans_web.image }}"
+    restart: true
+    recreate: true
+    pull: true
+    restart_policy: always
+    state: started
+    comparisons:
+      networks: strict
+    networks:
+      - name: caddy_net
+    volumes:
+      - gbans_demos:/app/demos
+      - gbans_cache_data:/app/.cache
+      - /etc/gbans.yml:/app/gbans.yml
+    labels:
+      logging: "promtail"
+      logging_jobname: "containerlogs"
+    env:
+      GBANS_DATABASE_DSN: "{{ gbans_web.dsn }}"
+      GBANS_GENERAL_STEAM_KEY: "{{ steam_key }}"
+    ports:
+      - 127.0.0.1:6006:6006
+      - 27115:27115/udp
+
+- name: srcds-log-fw
+  become: true
+  ansible.builtin.ufw:
+    rule: allow
+    port: "27115"
+    proto: udp

@@ -1,0 +1,185 @@
+// NextBotPlayer
+
+"Games"
+{
+	"#default"
+	{
+		"#supported"
+		{
+			engine "tf2"
+		}
+		
+		"sigsegv"
+		{
+			"addrs"
+			{
+				"NextBotPlayer<CTFPlayer>::PhysicsSimulate"
+				{
+					type "sym"
+					sym  "_ZN13NextBotPlayerI9CTFPlayerE15PhysicsSimulateEv"
+				}
+				"NextBotPlayer<CTFPlayer>::Update"
+				{
+					type "sym"
+					sym  "_ZN13NextBotPlayerI9CTFPlayerE6UpdateEv"
+				}
+				"NextBotPlayer<CTFPlayer>::IsFakeClient"
+				{
+					type "sym"
+					sym  "_ZNK13NextBotPlayerI9CTFPlayerE12IsFakeClientEv"
+				}
+				"NextBotPlayer<CTFPlayer>::IsBot"
+				{
+					type "sym"
+					sym  "_ZNK13NextBotPlayerI9CTFPlayerE5IsBotEv"
+				}
+				
+				"NextBotPlayer<CTFPlayer>::PressFireButton"
+				{
+					type "sym"
+					sym  "_ZN13NextBotPlayerI9CTFPlayerE15PressFireButtonEf"
+				}
+				"NextBotPlayer<CTFPlayer>::ReleaseFireButton"
+				{
+					type "sym"
+					sym  "_ZN13NextBotPlayerI9CTFPlayerE17ReleaseFireButtonEv"
+				}
+				"NextBotPlayer<CTFPlayer>::PressAltFireButton"
+				{
+					type "sym"
+					sym  "_ZN13NextBotPlayerI9CTFPlayerE18PressAltFireButtonEf"
+				}
+				"NextBotPlayer<CTFPlayer>::ReleaseAltFireButton"
+				{
+					type "sym"
+					sym  "_ZN13NextBotPlayerI9CTFPlayerE20ReleaseAltFireButtonEv"
+				}
+				"NextBotPlayer<CTFPlayer>::PressMeleeButton"
+				{
+					type "sym"
+					sym  "_ZN13NextBotPlayerI9CTFPlayerE16PressMeleeButtonEf"
+				}
+				"NextBotPlayer<CTFPlayer>::ReleaseMeleeButton"
+				{
+					type "sym"
+					sym  "_ZN13NextBotPlayerI9CTFPlayerE18ReleaseMeleeButtonEv"
+				}
+				"NextBotPlayer<CTFPlayer>::PressSpecialFireButton"
+				{
+					type "sym"
+					sym  "_ZN13NextBotPlayerI9CTFPlayerE22PressSpecialFireButtonEf"
+				}
+				"NextBotPlayer<CTFPlayer>::ReleaseSpecialFireButton"
+				{
+					type "sym"
+					sym  "_ZN13NextBotPlayerI9CTFPlayerE24ReleaseSpecialFireButtonEv"
+				}
+				"NextBotPlayer<CTFPlayer>::PressUseButton"
+				{
+					type "sym"
+					sym  "_ZN13NextBotPlayerI9CTFPlayerE14PressUseButtonEf"
+				}
+				"NextBotPlayer<CTFPlayer>::ReleaseUseButton"
+				{
+					type "sym"
+					sym  "_ZN13NextBotPlayerI9CTFPlayerE16ReleaseUseButtonEv"
+				}
+				"NextBotPlayer<CTFPlayer>::PressReloadButton"
+				{
+					type "sym"
+					sym  "_ZN13NextBotPlayerI9CTFPlayerE17PressReloadButtonEf"
+				}
+				"NextBotPlayer<CTFPlayer>::ReleaseReloadButton"
+				{
+					type "sym"
+					sym  "_ZN13NextBotPlayerI9CTFPlayerE19ReleaseReloadButtonEv"
+				}
+				"NextBotPlayer<CTFPlayer>::PressForwardButton"
+				{
+					type "sym"
+					sym  "_ZN13NextBotPlayerI9CTFPlayerE18PressForwardButtonEf"
+				}
+				"NextBotPlayer<CTFPlayer>::ReleaseForwardButton"
+				{
+					type "sym"
+					sym  "_ZN13NextBotPlayerI9CTFPlayerE20ReleaseForwardButtonEv"
+				}
+				"NextBotPlayer<CTFPlayer>::PressBackwardButton"
+				{
+					type "sym"
+					sym  "_ZN13NextBotPlayerI9CTFPlayerE19PressBackwardButtonEf"
+				}
+				"NextBotPlayer<CTFPlayer>::ReleaseBackwardButton"
+				{
+					type "sym"
+					sym  "_ZN13NextBotPlayerI9CTFPlayerE21ReleaseBackwardButtonEv"
+				}
+				"NextBotPlayer<CTFPlayer>::PressLeftButton"
+				{
+					type "sym"
+					sym  "_ZN13NextBotPlayerI9CTFPlayerE15PressLeftButtonEf"
+				}
+				"NextBotPlayer<CTFPlayer>::ReleaseLeftButton"
+				{
+					type "sym"
+					sym  "_ZN13NextBotPlayerI9CTFPlayerE17ReleaseLeftButtonEv"
+				}
+				"NextBotPlayer<CTFPlayer>::PressRightButton"
+				{
+					type "sym"
+					sym  "_ZN13NextBotPlayerI9CTFPlayerE16PressRightButtonEf"
+				}
+				"NextBotPlayer<CTFPlayer>::ReleaseRightButton"
+				{
+					type "sym"
+					sym  "_ZN13NextBotPlayerI9CTFPlayerE18ReleaseRightButtonEv"
+				}
+				"NextBotPlayer<CTFPlayer>::PressJumpButton"
+				{
+					type "sym"
+					sym  "_ZN13NextBotPlayerI9CTFPlayerE15PressJumpButtonEf"
+				}
+				"NextBotPlayer<CTFPlayer>::ReleaseJumpButton"
+				{
+					type "sym"
+					sym  "_ZN13NextBotPlayerI9CTFPlayerE17ReleaseJumpButtonEv"
+				}
+				"NextBotPlayer<CTFPlayer>::PressCrouchButton"
+				{
+					type "sym"
+					sym  "_ZN13NextBotPlayerI9CTFPlayerE17PressCrouchButtonEf"
+				}
+				"NextBotPlayer<CTFPlayer>::ReleaseCrouchButton"
+				{
+					type "sym"
+					sym  "_ZN13NextBotPlayerI9CTFPlayerE19ReleaseCrouchButtonEv"
+				}
+				"NextBotPlayer<CTFPlayer>::PressWalkButton"
+				{
+					type "sym"
+					sym  "_ZN13NextBotPlayerI9CTFPlayerE15PressWalkButtonEf"
+				}
+				"NextBotPlayer<CTFPlayer>::ReleaseWalkButton"
+				{
+					type "sym"
+					sym  "_ZN13NextBotPlayerI9CTFPlayerE17ReleaseWalkButtonEv"
+				}
+				"NextBotPlayer<CTFPlayer>::SetButtonScale"
+				{
+					type "sym"
+					sym  "_ZN13NextBotPlayerI9CTFPlayerE14SetButtonScaleEff"
+				}
+				"NextBotPlayer<CTFPlayer>::GetEntity"
+				{
+					type "sym"
+					sym  "_ZNK13NextBotPlayerI9CTFPlayerE9GetEntityEv"
+				}
+				"NextBotCreatePlayerBot<CTFBot>"
+				{
+					type "sym"
+					sym  "_Z22NextBotCreatePlayerBotI6CTFBotEPT_PKcb"
+				}
+			}
+		}
+	}
+}
