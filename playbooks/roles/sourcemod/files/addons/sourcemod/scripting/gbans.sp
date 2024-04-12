@@ -21,7 +21,6 @@
 #include "gbans/commands.sp"
 #include "gbans/common.sp"
 #include "gbans/connect.sp"
-#include "gbans/match.sp"
 #include "gbans/report.sp"
 #include "gbans/stv.sp"
 
@@ -53,9 +52,6 @@ public void OnPluginStart()
 	
 	HookEvent("player_disconnect", Event_PlayerDisconnect, EventHookMode_Pre);
 	HookEvent("player_connect_client", Event_PlayerConnect, EventHookMode_Pre);
-	HookEvent("teamplay_round_start", onRoundStart, EventHookMode_PostNoCopy);
-	HookEvent("teamplay_game_over", onRoundEnd, EventHookMode_Pre);
-	HookEvent("tf_game_over", onRoundEnd, EventHookMode_Pre);
 
 	AutoExecConfig_SetFile("gbans");
 
@@ -127,10 +123,6 @@ public void OnConfigsExecuted()
 public void OnClientDisconnect_Post(int client)
 {
 	CheckStatus();
-}
-
-public void OnMapStart() {
-	gMatchStartedCount = 0;
 }
 
 public void OnMapEnd()

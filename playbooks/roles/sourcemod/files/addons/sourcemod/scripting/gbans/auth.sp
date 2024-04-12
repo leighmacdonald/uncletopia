@@ -5,14 +5,14 @@
 /**
 Authenticates the server with the backend API system.
 
-Send unauthenticated request for token to -> API /api/server_auth
+Send unauthenticated request for token to -> API /api/server/auth
 Recv Token <- API
 Send authenticated commands with header "Authorization $token" set for subsequent calls -> API /api/<path>
 
 */
 public void refreshToken()
 {
-	gbLog("Refreshing token %s", PLUGIN_VERSION);
+	gbLog("Refreshing token");
 
 	char serverName[PLATFORM_MAX_PATH];
 	GetConVarString(gb_core_server_name, serverName, sizeof serverName);

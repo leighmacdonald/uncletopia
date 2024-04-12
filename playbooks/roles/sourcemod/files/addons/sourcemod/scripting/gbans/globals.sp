@@ -41,7 +41,6 @@ enum struct PlayerInfo
 // Globals must all start with g
 PlayerInfo gPlayers[MAXPLAYERS + 1];
 
-char gMatchID[37];
 char gAccessToken[512];
 
 // Reports command
