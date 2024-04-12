@@ -28,3 +28,6 @@
 [submodule "sm_plugins/tf2-comp-fixes"]
 	path = sm_plugins/tf2-comp-fixes
 	url = https://github.com/ldesgoui/tf2-comp-fixes.git
+[submodule "playbooks/roles/githubixx.ansible_role_wireguard"]
+	path = playbooks/roles/githubixx.ansible_role_wireguard
+	url = https://github.com/githubixx/ansible-role-wireguard.git

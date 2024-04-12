@@ -7,6 +7,8 @@
 - hosts: all
   name: vpn
   become: true
+  vars:
+    ansible_python_interpreter: python3
   roles:
-    - role: ansible-role-wireguard
+    - role: githubixx.ansible_role_wireguard
       tags: role-wireguard

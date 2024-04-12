@@ -1,11 +1,9 @@
 .PHONY: all pre system deploy
 
 VAULT_PASS_PATH := ~/.vault_pass.txt
-PROD_OPTS := -l production
-DEVELOPMENT_OPTS := -l development
-STAGING_OPTS := --limit test-1.ca.uncletopia.com,test-2.ca.uncletopia.com
 PLAYBOOK_PATH := ./playbooks
-
+INVENTORY_PATH := "./hosts.yml"
+OPTS := "-i ${INVENTORY_PATH}"
 all: site
 
 format:
@@ -18,13 +16,13 @@ deps:
 	@ansible-galaxy collection install -r collections/requirements.yml
 
 adduser:
-	@ansible-playbook $(PROD_OPTS) $(PLAYBOOK_PATH)/adduser.yml -u root
+	@ansible-playbook $(OPTS) $(PLAYBOOK_PATH)/adduser.yml -u root
 
 pre:
-	@ansible-playbook $(PROD_OPTS) $(PLAYBOOK_PATH)/pre.yml
+	@ansible-playbook $(OPTS) $(PLAYBOOK_PATH)/pre.yml
 
 sourcemod:
-	@ansible-playbook $(PROD_OPTS) $(PLAYBOOK_PATH)/sourcemod.yml
+	@ansible-playbook $(OPTS) $(PLAYBOOK_PATH)/sourcemod.yml
 
 test: srcds
 	docker stop srcds-localhost-1 || true # dont bail if a container doesnt already exist
@@ -36,38 +34,38 @@ logs:
 	docker logs -f srcds-localhost-1
 
 deploy:
-	@ansible-playbook -l tf2 $(PLAYBOOK_PATH)/deploy.yml
+	@ansible-playbook -l tf2 $(OPTS) $(PLAYBOOK_PATH)/deploy.yml
 
 srcds:
-	@ansible-playbook -l tf2 --skip-tags clean $(PLAYBOOK_PATH)/srcds.yml
+	@ansible-playbook -l tf2 --skip-tags clean $(OPTS) $(PLAYBOOK_PATH)/srcds.yml
 
 srcds_clean:
-	@ansible-playbook -l tf2 $(PLAYBOOK_PATH)/srcds.yml
+	@ansible-playbook -l tf2 $(OPTS) $(PLAYBOOK_PATH)/srcds.yml
 
 shell:
 	@docker exec -it srcds-test-1 bash
 
 web:
-	@ansible-playbook $(PROD_OPTS) $(PLAYBOOK_PATH)/web.yml --limit metrics
+	@ansible-playbook $(OPTS) $(PLAYBOOK_PATH)/web.yml --limit metrics
 
 srcdsup:
-	@ansible-playbook $(PROD_OPTS) $(PLAYBOOK_PATH)/srcdsup.yml
+	@ansible-playbook $(OPTS) $(PLAYBOOK_PATH)/srcdsup.yml
 
 vpn:
 	# This *does not work* when using --limit
-	@ansible-playbook $(PROD_OPTS) $(PLAYBOOK_PATH)/vpn.yml
+	@ansible-playbook $(OPTS) $(PLAYBOOK_PATH)/vpn.yml
 
 game_config:
-	@ansible-playbook $(PROD_OPTS) $(PLAYBOOK_PATH)/deploy.yml --tags game_config
+	@ansible-playbook $(OPTS) $(PLAYBOOK_PATH)/deploy.yml --tags game_config
 
 system:
-	@ansible-playbook $(PROD_OPTS) $(PLAYBOOK_PATH)/system.yml
+	@ansible-playbook $(OPTS) $(PLAYBOOK_PATH)/system.yml
 
 wg:
-	@ansible-playbook $(PROD_OPTS) $(PLAYBOOK_PATH)/wg.yml
+	@ansible-playbook $(OPTS) $(PLAYBOOK_PATH)/wg.yml
 
 site:
-	ansible-playbook $(PROD_OPTS) site.yml
+	ansible-playbook $(OPTS) site.yml
 
 ping:
 	@ansible tf2 -m ping $(ARGS)
