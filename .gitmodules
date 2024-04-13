@@ -1,6 +1,3 @@
-[submodule "sm_plugins/stac"]
-	path = sm_plugins/stac
-	url = https://github.com/sapphonie/StAC-tf2.git
 [submodule "sm_plugins/discord"]
 	path = sm_plugins/discord
 	url = https://gitlab.com/Zipcore/Discord.git
@@ -31,3 +28,6 @@
 [submodule "playbooks/roles/githubixx.ansible_role_wireguard"]
 	path = playbooks/roles/githubixx.ansible_role_wireguard
 	url = https://github.com/githubixx/ansible-role-wireguard.git
+[submodule "sm_plugins/sm-ugc-blocker"]
+	path = sm_plugins/sm-ugc-blocker
+	url = https://github.com/DosMike/SM-UGC-Blocker.git

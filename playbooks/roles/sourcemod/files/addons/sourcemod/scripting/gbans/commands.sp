@@ -127,12 +127,15 @@ public Action onAdminCmdBan(int clientId, int argc)
 		ReplyToCommand(clientId, "Failed to locate user: %s", targetIdStr);
 		return Plugin_Handled;
 	}
-	GB_BanReason reason = custom;
+
+	GB_BanReason reason = cheating;
+	
 	if(!parseReason(reasonStr, reason))
 	{
 		ReplyToCommand(clientId, "Failed to parse reason");
 		return Plugin_Handled;
 	}
+
 	int banType = StringToInt(banTypeStr);
 	if(banType != BSNoComm && banType != BSBanned)
 	{
@@ -140,7 +143,7 @@ public Action onAdminCmdBan(int clientId, int argc)
 		return Plugin_Handled;
 	}
 
-	if(!ban(clientId, targetIdx, reason, duration, banType, "", 0))
+	if(!ban(clientId, targetIdx, reason, StringToInt(duration), banType, "in-game ban"))
 	{
 		ReplyToCommand(clientId, "Error sending ban request");
 	}
