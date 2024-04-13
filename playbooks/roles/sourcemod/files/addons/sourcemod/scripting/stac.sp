@@ -49,6 +49,7 @@
 #tryinclude <updater>
 #tryinclude <sourcebanspp>
 #tryinclude <materialadmin>
+#tryinclude <gbans>
 #tryinclude <discord>
 // #undef REQUIRE_EXTENSIONS
 

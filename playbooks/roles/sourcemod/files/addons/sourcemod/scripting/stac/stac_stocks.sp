@@ -461,14 +461,16 @@ void BanUser(int userid, char reason[128], char pubreason[256])
             MABanPlayer(0, cl, MA_BAN_STEAM, banDuration, reason);
             return;
         }
-        if (GBANS)
+
+         if (GBANS)
         {
-            ServerCommand("gb_ban %i, %i, %s", userid, banDuration, reason);
+            ServerCommand("gb_ban %i %i %i %i %s", userid, cheating, banDuration, BSBanned, reason);
             // There is a native for gbans now but i don't think it can accept the server as an admin
-            // GB_BanClient(0 /* ? */, userid /* ? */, cheating, banDuration, BSBanned);
+            //GB_BanClient(0, userid, cheating, banDuration, BSBanned, reason);
 
             return;
         }
+
         // stock tf2, no ext ban system. if we somehow fail here, keep going.
         if (BanClient(cl, banDuration, BANFLAG_AUTO, reason, reason, _, _))
         {
