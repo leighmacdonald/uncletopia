@@ -10,9 +10,6 @@
 [submodule "sm_plugins/edict-limiter"]
 	path = sm_plugins/edict-limiter
 	url = https://github.com/sapphonie/tf2-edict-limiter
-[submodule "sm_plugins/nativevotes"]
-	path = sm_plugins/nativevotes
-	url = https://github.com/sapphonie/sourcemod-nativevotes-updated.git
 [submodule "sm_plugins/tf2_econ_data"]
 	path = sm_plugins/tf2_econ_data
 	url = https://github.com/nosoop/SM-TFEconData
