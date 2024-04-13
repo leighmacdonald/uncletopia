@@ -32,7 +32,7 @@ CENTERPROJECTILES_ROOT="$SRC_ROOT/tf2centerprojectiles"
 CENTERPROJECTILES_BRANCH="v8.0"
 
 NATIVEVOTES_ROOT="$SRC_ROOT/nativevotes"
-NATIVEVOTES_BRANCH="workflow-build61"
+NATIVEVOTES_BRANCH="centered"
 
 # git submodule update --init --recursive
 
@@ -103,6 +103,7 @@ popd || exit
 pushd $NATIVEVOTES_ROOT || exit
 git fetch --all
 git checkout $NATIVEVOTES_BRANCH
+git pull
 cp -rv addons/sourcemod/* "$SM_ROOT/"
 rm "$SM_ROOT/scripting/nativevotes_votemanager_test.sp" \
   "$SM_ROOT/scripting/nativevotes_votetest.sp" \

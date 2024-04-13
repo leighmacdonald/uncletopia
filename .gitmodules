@@ -31,3 +31,6 @@
 [submodule "sm_plugins/stac"]
 	path = sm_plugins/stac
 	url = https://github.com/leighmacdonald/StAC-tf2.git
+[submodule "sm_plugins/nativevotes"]
+	path = sm_plugins/nativevotes
+	url = https://github.com/leighmacdonald/sourcemod-nativevotes-updated.git
