@@ -135,11 +135,11 @@ mp_winlimit 0
 mp_maxrounds 0
 
 // No spectators team
-mp_allowspectators {% if item.pve_mode|default(false) %}1{% else %}0{% endif %}
+mp_allowspectators {% if item.config == 'pve' %}1{% else %}0{% endif %}
 
-mp_forceautoteam {% if item.pve_mode|default(false) %}0{% else %}1{% endif %}
+mp_forceautoteam {% if item.config == 'pve' %}0{% else %}1{% endif %}
 
-{% if item.pve_mode|default(false) %}
+{% if item.config =='pve' %}
 mp_defaultteam 3
 mp_humans_must_join_team blue
 {% endif %}
@@ -180,7 +180,7 @@ mp_match_end_at_timelimit {% if item.rotation|default("all") == "stopwatch" %}1{
 
 sm_cvar gb_rules_round_time {% if item.rotation|default("all") == "stopwatch" %}300{% else %}-1{% endif %}
 
-{% if item.pve_mode|default(false) %}
+{% if item.config == 'pve' %}
 
 sm_cvar sm_danepve_respawn_bots_on_round_end 0
 
@@ -199,5 +199,5 @@ sm_cvar mp_waitingforplayers_time {% if item.rotation|default("all") == "communi
 
 ce_sentry_dsn_url "{{ sentry_dsn }}"
 ce_region {{ item.sentry_ce_region|default("") }}
-ce_type {{ item.sentry_ce_type|default("") }}
+ce_type {{ item.config }}
 ce_server_id "{{ item.server_name_short }}"

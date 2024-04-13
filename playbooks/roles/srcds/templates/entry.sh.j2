@@ -1,7 +1,7 @@
 #!/bin/bash
 cd "{{srcds_steam_app_dir}}"
 
-{% for name in item.plugins_disabled|default(plugins_disabled) %}
+{% for name in config[item.config].plugins_disabled|default(config["default"].plugins_disabled) %}
 F={{srcds_steam_app_dir}}/tf/addons/sourcemod/plugins/{{ name }}
 if test -f "$F"; then
     echo "Disabling plugin $F"
@@ -9,7 +9,7 @@ if test -f "$F"; then
 fi
 {% endfor %}
 
-{% for name in item.extensions_disabled|default(extensions_disabled) %}
+{% for name in config[item.config].extensions_disabled|default(config["default"].extensions_disabled) %}
 E={{srcds_steam_app_dir}}/tf/addons/sourcemod/extensions/{{ name }}
 if test -f "$E"; then
     echo "Disabling extension $E"
@@ -26,7 +26,7 @@ bash "{{srcds_steam_app_dir}}/srcds_run" -game "{{srcds_steam_app}}" -console \
   +clientport "{{ srcds_base_port + (loop0 * 10) + 2 }}" \
   {% if item.srcds_max_players|default(srcds_max_players) > 33 %}-unrestricted_maxplayers{% endif %} \
   +maxplayers {{ item.srcds_max_players|default(srcds_max_players) }} \
-  +map "{{ map_rotation[item.rotation|default("all")] | random }}" \
+  +map "{{ map_rotation[item.config|default("all")] | random }}" \
   +sv_setsteamaccount "{{ item.gslt }}" \
   +rcon_password "{{ item.srcds_rcon_password | default(srcds_rcon_password) }}" \
   +sv_password "{{ item.srcds_server_password | default(srcds_server_password) }}" \

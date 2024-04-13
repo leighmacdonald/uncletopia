@@ -1,1 +1,1 @@
-{% if item.pve_mode|default(false) %}{{ motd_pve }}{% else %}{{ motd }}{% endif %}
+{% if item.config == 'pve' %}{{ motd_pve }}{% else %}{{ motd }}{% endif %}
