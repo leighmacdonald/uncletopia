@@ -4,7 +4,7 @@ SM_ROOT=$ROOT/roles/sourcemod/files/addons/sourcemod
 SRC_ROOT="sm_plugins"
 
 STAC_ROOT="$SRC_ROOT/stac"
-STAC_BRANCH="gbans"
+STAC_BRANCH="gbans-native"
 
 ACCEL_ROOT="$SRC_ROOT/accelerator"
 ACCEL_BRANCH="master"

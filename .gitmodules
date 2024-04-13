@@ -31,6 +31,3 @@
 [submodule "sm_plugins/sm-ugc-blocker"]
 	path = sm_plugins/sm-ugc-blocker
 	url = https://github.com/DosMike/SM-UGC-Blocker.git
-[submodule "sm_plugins/stac"]
-	path = sm_plugins/stac
-	url = https://github.com/leighmacdonald/StAC-tf2.git
