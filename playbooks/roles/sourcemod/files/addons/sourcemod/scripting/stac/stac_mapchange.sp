@@ -87,7 +87,7 @@ void CheckNatives()
 
 
     // gbans
-    if (CommandExists("gb_ban"))
+    if (GetFeatureStatus(FeatureType_Native, "GB_BanClient") == FeatureStatus_Available)
     {
         GBANS = true;
     }

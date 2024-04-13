@@ -462,12 +462,9 @@ void BanUser(int userid, char reason[128], char pubreason[256])
             return;
         }
 
-         if (GBANS)
+        if (GBANS)
         {
-            ServerCommand("gb_ban %i %i %i %i %s", userid, cheating, banDuration, BSBanned, reason);
-            // There is a native for gbans now but i don't think it can accept the server as an admin
-            //GB_BanClient(0, userid, cheating, banDuration, BSBanned, reason);
-
+            GB_BanClient(0, userid, cheating, banDuration, BSBanned, reason);
             return;
         }
 
