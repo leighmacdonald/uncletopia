@@ -4,7 +4,7 @@ SM_ROOT=$ROOT/roles/sourcemod/files/addons/sourcemod
 SRC_ROOT="sm_plugins"
 
 STAC_ROOT="$SRC_ROOT/stac"
-STAC_BRANCH="v6.1.4"
+STAC_BRANCH="gbans"
 
 ACCEL_ROOT="$SRC_ROOT/accelerator"
 ACCEL_BRANCH="master"
@@ -39,6 +39,7 @@ NATIVEVOTES_BRANCH="workflow-build61"
 pushd $STAC_ROOT || exit
 git fetch --all
 git checkout $STAC_BRANCH
+git pull
 for d in 'scripting' 'extensions' 'gamedata' 'translations'; do
   cp -rv $d "$SM_ROOT"
 done
