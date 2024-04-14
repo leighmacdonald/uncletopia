@@ -53,10 +53,11 @@ enum GB_BanReason {
  * @param adminId Client idx of admin who banned, -1 for system.
  * @param targetId Client idx of ban target
  * @param reason Reason for the ban
- * @param duration golang style duration string, 0 = permanent
+ * @param duration Duration in seconds, 0 = permanent
  * @param banType One of BSBanned (banned) or BSNoComm (Muted/Gagged)
+ * @param note Optional note for mods
  * @return success status
  */
 native bool
-GB_BanClient(int adminId, int targetId, GB_BanReason reason, const char[] duration = "2d", int banType = BSBanned,
-             const char[] demoname = "", int tick = 0);
+GB_BanClient(int adminId, int targetId, GB_BanReason reason, int duration, int banType = BSBanned,
+             const char[] note = "");

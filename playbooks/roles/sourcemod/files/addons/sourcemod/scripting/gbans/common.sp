@@ -68,3 +68,11 @@ stock int GetAllClientCount()
 
 	return iClients;
 }
+
+stock void reply(int clientId, const char[] message) {
+	if (clientId > 0) {
+		ReplyToCommand(clientId, message);
+	} else {
+		gbLog(message);
+	}
+}

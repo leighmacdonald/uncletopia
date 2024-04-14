@@ -101,48 +101,69 @@ public Action onAdminCmdBan(int clientId, int argc)
 {
 	char command[64];
 	char targetIdStr[50];
-	char duration[50];
-	char banTypeStr[50];
-	char reasonStr[256];
-	char usage[] = "Usage: %s <targetId> <banType> <duration> <reason>";
+	char memo[256];
+	GB_BanReason reason;
+	int duration;
+	int bantype;
+
+	char usage[] = "Usage: %s <targetId> <reason> <duration> <bantype> <memo>";
 
 	GetCmdArg(0, command, sizeof command);
 
 	if(argc < 4)
 	{
-		ReplyToCommand(clientId, usage, command);
+		char usageReply[256];
+		Format(usageReply, sizeof usageReply, usage, command);
+		reply(clientId, usageReply);
 		return Plugin_Handled;
 	}
 
 	GetCmdArg(1, targetIdStr, sizeof targetIdStr);
-	GetCmdArg(2, banTypeStr, sizeof banTypeStr);
-	GetCmdArg(3, duration, sizeof duration);
-	GetCmdArg(4, reasonStr, sizeof reasonStr);
 
-	gbLog("Target: %s banType: %s duration: %s reason: %s", targetIdStr, banTypeStr, duration, reasonStr);
+	int reasonInt = 0;
+	if (!GetCmdArgIntEx(2, reasonInt)) {
+		reply(clientId, "Failed to parse reason");
+		return Plugin_Handled;
+	}
+
+	if(reasonInt < view_as<int>(custom) || reasonInt > view_as<int>(itemDescriptions))
+	{
+		reply(clientId, "Invalid reason value. Out of range.");
+		return Plugin_Handled;
+	}
+
+	reason = view_as<GB_BanReason>(reasonInt);
+
+	if (!GetCmdArgIntEx(3, duration)) {
+		reply(clientId, "Failed to parse duration");
+		return Plugin_Handled;
+	}
+
+	if (!GetCmdArgIntEx(4, bantype)) {
+		reply(clientId, "Failed to parse bantype");
+		return Plugin_Handled;
+	}
+
+	gbLog("args: %d", argc);
+	if (argc > 4) {
+		GetCmdArg(5, memo, sizeof memo);
+	} else {
+		Format(memo, sizeof memo, "in-game ban");
+	}
+	
+	gbLog("Target: %s reason: %d duration: %d bantype: %d memo: %s", targetIdStr, reason, duration, bantype, memo);
 
 	int targetIdx = FindTarget(clientId, targetIdStr, true, false);
 	if(targetIdx < 0)
 	{
-		ReplyToCommand(clientId, "Failed to locate user: %s", targetIdStr);
-		return Plugin_Handled;
-	}
-	GB_BanReason reason = custom;
-	if(!parseReason(reasonStr, reason))
-	{
-		ReplyToCommand(clientId, "Failed to parse reason");
-		return Plugin_Handled;
-	}
-	int banType = StringToInt(banTypeStr);
-	if(banType != BSNoComm && banType != BSBanned)
-	{
-		ReplyToCommand(clientId, "Invalid ban type");
+		reply(clientId, "Failed to locate user");
 		return Plugin_Handled;
 	}
 
-	if(!ban(clientId, targetIdx, reason, duration, banType, "", 0))
+
+	if(!ban(clientId, targetIdx, reason, duration, bantype, memo))
 	{
-		ReplyToCommand(clientId, "Error sending ban request");
+		reply(clientId, "Error sending ban request");
 	}
 
 	return Plugin_Handled;
