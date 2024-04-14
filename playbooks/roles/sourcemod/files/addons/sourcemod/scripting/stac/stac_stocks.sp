@@ -464,8 +464,7 @@ void BanUser(int userid, char reason[128], char pubreason[256])
 
         if (GBANS)
         {
-            ServerCommand("gb_ban %i, %i, %i, %s", userid, cheating, banDuration, BSBanned, reason);
-            //GB_BanClient(0, userid, cheating, banDuration, BSBanned, reason);
+            GB_BanClient(0, userid, cheating, banDuration, BSBanned, reason);
             return;
         }
 

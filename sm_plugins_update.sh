@@ -10,7 +10,7 @@ ACCEL_ROOT="$SRC_ROOT/accelerator"
 ACCEL_BRANCH="master"
 
 GBANS_ROOT="$SRC_ROOT/gbans"
-GBANS_BRANCH="v0.6.0"
+GBANS_BRANCH="v0.6.2"
 #GBANS_BRANCH="match-tracking"
 
 DISCORD_ROOT="$SRC_ROOT/discord"
@@ -56,6 +56,7 @@ popd || exit
 pushd $GBANS_ROOT || exit
 git fetch --all
 git checkout $GBANS_BRANCH
+git pull
 cp -rv sourcemod/scripting/* "$SM_ROOT/scripting"
 popd || exit
 
