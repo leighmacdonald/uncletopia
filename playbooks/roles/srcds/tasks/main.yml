@@ -1,10 +1,10 @@
 ---
-#- name: Clean srcds build directory
-#  ansible.builtin.file:
-#    path: ~/build_srcds
-#    state: absent
-#  tags: clean
--
+- name: Clean srcds build directory
+  ansible.builtin.file:
+    path: ~/build_srcds
+    state: absent
+  tags: clean
+
 - name: Create build directory
   ansible.builtin.file:
     path: ~/build_srcds
@@ -90,6 +90,15 @@
   ansible.builtin.template:
     src: mapcycle.txt.j2
     dest: ~/build_srcds/srcds-{{ item.server_name_short }}/tf/mapcycle.txt
+    mode: 0755
+  loop: "{{ services }}"
+  loop_control:
+    index_var: loop0
+
+- name: /tf/item_whitelist.txt
+  ansible.builtin.template:
+    src: item_whitelist.txt.j2
+    dest: ~/build_srcds/srcds-{{ item.server_name_short }}/tf/item_whitelist.txt
     mode: 0755
   loop: "{{ services }}"
   loop_control:

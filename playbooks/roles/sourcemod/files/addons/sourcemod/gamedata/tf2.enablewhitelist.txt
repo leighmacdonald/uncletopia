@@ -1,0 +1,39 @@
+"Games"
+{
+	"tf"
+	{
+		"Signatures"
+		{
+			"GetLoadoutItem"
+			{
+				"library"	"server"
+				"linux" "@_ZN9CTFPlayer14GetLoadoutItemEiib"
+			}
+
+			"ReloadWhitelist"
+			{
+				"library"	"server"
+				"linux" "@_ZN15CEconItemSystem15ReloadWhitelistEv"
+			}
+        }
+
+		"Functions"
+		{
+			"GetLoadoutItem"
+			{
+				"signature" "GetLoadoutItem"
+				"callconv" "thiscall"
+				"this" "entity"
+				"return" "int"
+			}
+
+			"ReloadWhitelist"
+			{
+				"signature" "ReloadWhitelist"
+				"callconv" "thiscall"
+				"this" "ignore"
+				"return" "void"
+			}
+		}
+	}
+}
