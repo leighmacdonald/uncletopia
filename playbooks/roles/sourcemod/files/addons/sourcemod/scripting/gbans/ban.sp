@@ -7,7 +7,7 @@
 any Native_GB_BanClient(Handle plugin, int numParams)
 {
 	int adminId = GetNativeCell(1);
-	if(adminId <= 0) {
+	if(adminId < 0) {
 		return ThrowNativeError(SP_ERROR_NATIVE, "Invalid adminId index (%d)", adminId);
 	}
 

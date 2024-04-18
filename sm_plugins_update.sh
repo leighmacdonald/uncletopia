@@ -10,7 +10,7 @@ ACCEL_ROOT="$SRC_ROOT/accelerator"
 ACCEL_BRANCH="master"
 
 GBANS_ROOT="$SRC_ROOT/gbans"
-GBANS_BRANCH="v0.6.2"
+GBANS_BRANCH="v0.6.5"
 #GBANS_BRANCH="match-tracking"
 
 DISCORD_ROOT="$SRC_ROOT/discord"
