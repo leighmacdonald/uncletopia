@@ -1,23 +1,22 @@
 #!/bin/bash
-cd "{{srcds_steam_app_dir}}"
 
 {% for name in config[item.config].plugins_disabled|default(config["default"].plugins_disabled) %}
-F={{srcds_steam_app_dir}}/tf/addons/sourcemod/plugins/{{ name }}
+F=./tf/addons/sourcemod/plugins/{{ name }}
 if test -f "$F"; then
     echo "Disabling plugin $F"
-    mv -v "$F" {{srcds_steam_app_dir}}/tf/addons/sourcemod/plugins/disabled/
+    mv -v "$F" ./tf/addons/sourcemod/plugins/disabled/
 fi
 {% endfor %}
 
 {% for name in config[item.config].extensions_disabled|default(config["default"].extensions_disabled) %}
-E={{srcds_steam_app_dir}}/tf/addons/sourcemod/extensions/{{ name }}
+E=./tf/addons/sourcemod/extensions/{{ name }}
 if test -f "$E"; then
     echo "Disabling extension $E"
-    mv -v "$E" {{srcds_steam_app_dir}}/tf/addons/sourcemod/plugins/disabled/
+    mv -v "$E" ./tf/addons/sourcemod/plugins/disabled/
 fi
 {% endfor %}
 
-bash "{{srcds_steam_app_dir}}/srcds_run" -game "{{srcds_steam_app}}" -console \
+bash "./srcds_run" -game "{{srcds_steam_app}}" -console \
   -strictportbind \
   -usercon \
   -secured \

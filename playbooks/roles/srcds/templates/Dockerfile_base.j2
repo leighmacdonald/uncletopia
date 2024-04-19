@@ -19,7 +19,6 @@ RUN set -x \
         libcurl3-gnutls:i386 \
         libstdc++6:i386 \
         libcurl4-gnutls-dev:i386 \
-        libtcmalloc-minimal4:i386 \
         libcurl4:i386 \
     && useradd -ms /bin/bash -u ${PUID} {{ srcds_user }} \
     && sudo -u {{ srcds_user }} mkdir -p "{{ srcds_steam_app_dir }}/tf/logs/stac"
