@@ -1,4 +1,4 @@
-FROM debian:bullseye-slim
+FROM debian:bookworm-slim
 
 ARG PUID=1000
 
@@ -31,10 +31,10 @@ WORKDIR {{ srcds_steam_app_dir }}
 
 COPY --chown={{ srcds_user }}:{{ srcds_user }} . .
 
-RUN mkdir ~/.steam/ && ln -s ./bin ~/.steam/sdk32
+#RUN mkdir ~/.steam/ && ln -s ./bin ~/.steam/sdk64
 
-#VOLUME {{ srcds_steam_app_dir }}/{{ srcds_steam_app }}/stv_demos
-#VOLUME {{ srcds_steam_app_dir }}/{{ srcds_steam_app }}/logs
+VOLUME {{ srcds_steam_app_dir }}/{{ srcds_steam_app }}/stv_demos
+VOLUME {{ srcds_steam_app_dir }}/{{ srcds_steam_app }}/logs
 
 CMD ["bash", "entry.sh"]
 
