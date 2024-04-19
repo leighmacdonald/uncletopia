@@ -36,7 +36,7 @@ deploy:
 	@ansible-playbook -l tf2 $(OPTS) $(PLAYBOOK_PATH)/deploy.yml
 
 srcds:
-	@ansible-playbook -l tf2 --skip-tags clean $(OPTS) $(PLAYBOOK_PATH)/srcds.yml
+	@ansible-playbook -l tf2 $(OPTS) $(PLAYBOOK_PATH)/srcds.yml
 
 srcds_clean:
 	@ansible-playbook -l tf2 $(OPTS) $(PLAYBOOK_PATH)/srcds.yml

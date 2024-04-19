@@ -18,7 +18,7 @@
     mode: "0755"
 
 - name: download tf2 base
-  ansible.builtin.command: dotnet ~/dd/DepotDownloader.dll -app 232250 -os linux -osarch 32 -max-downloads 8 -dir ~/build_srcds/srcds-base
+  ansible.builtin.command: dotnet ~/dd/DepotDownloader.dll -app 232250 -os linux -osarch 64 -max-downloads 8 -dir ~/build_srcds/srcds-base
 
 - name: Clean srcds instance build directory
   ansible.builtin.file:
