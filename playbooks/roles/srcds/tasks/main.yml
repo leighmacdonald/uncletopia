@@ -382,3 +382,19 @@
   loop: "{{ services }}"
   loop_control:
     index_var: loop0
+
+
+- name: Configure logrotate
+  become: true
+  copy:
+    dest: /etc/logrotate.d/srcds-{{ item.server_name_short }}
+    content: |
+      /home/{{ srcds_user }}/srcds-{{ item.server_name_short }}/tf/logs/*.log
+      {
+        daily
+        missingok
+        rotate 7
+      }
+  loop: "{{ services }}"
+  loop_control:
+    index_var: loop0

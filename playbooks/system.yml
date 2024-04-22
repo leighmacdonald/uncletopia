@@ -13,7 +13,6 @@
       failed_when: result_i386_check.rc > 1
       when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
 
-
     - name: Install .net repo
       ansible.builtin.apt:
         deb: https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb
@@ -151,4 +150,3 @@
         state: enabled
         policy: deny
       when: ansible_distribution == 'Ubuntu'
-
