@@ -97,6 +97,7 @@
     src: "{{ role_path }}/files/navmeshes/"
     dest: /home/tf2server/srcds-{{ item.server_name_short }}/tf/maps/
   loop: "{{ services }}"
+  when: item.config == "pve"
   # Perform the copy from the *remote* sourcemod build output
   #delegate_to: "{{ inventory_hostname }}"
 
@@ -278,6 +279,7 @@
     dest: ~/srcds-{{ item.server_name_short }}/tf/cfg/sourcemod/networktools.cfg
     mode: 0755
   loop: "{{ services }}"
+  when: item.config != "pve"
   loop_control:
     index_var: loop0
 
@@ -294,6 +296,15 @@
   ansible.builtin.template:
     src: "entry.sh.j2"
     dest: "~/srcds-{{ item.server_name_short }}/entry.sh"
+    mode: 0775
+  loop: "{{ services }}"
+  loop_control:
+    index_var: loop0
+
+- name: Generate stop.sh
+  ansible.builtin.template:
+    src: "stop.sh.j2"
+    dest: "~/srcds-{{ item.server_name_short }}/stop.sh"
     mode: 0775
   loop: "{{ services }}"
   loop_control:
@@ -366,6 +377,7 @@
   become: true
   systemd:
     name: "srcds-{{ item.server_name_short }}.service"
+    enabled: true
     state: restarted
   loop: "{{ services }}"
   loop_control:
