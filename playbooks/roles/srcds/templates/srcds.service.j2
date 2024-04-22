@@ -14,14 +14,12 @@ Environment=
 RemainAfterExit=yes
 User={{ srcds_user }}
 ExecStart=/usr/bin/tmux -S ./tmux.sock new-session -s {{ item.server_name_short }} -d ./entry.sh
+ExecStop=/usr/bin/bash ./stop.sh
 
-ExecStop=/usr/bin/tmux -S ./tmux.sock send -t "srcds" "sm_csay server restart in 10 seconds" ENTER
-ExecStop=sleep 10
-ExecStop=/usr/bin/tmux -S ./tmux.sock send -t "srcds" "exit" ENTER
 KillSignal=SIGCONT
 
 TimeoutStartSec=0
-TimeoutStopSec=5
+TimeoutStopSec=80
 
 Restart=on-failure
 RestartSec=10

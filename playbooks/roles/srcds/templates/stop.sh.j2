@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+tmux -S ./tmux.sock send -t "srcds" "sm_csay server restart in 60 seconds" ENTER
+sleep 30
+tmux -S ./tmux.sock send -t "srcds" "sm_csay server restart in 30 seconds" ENTER
+sleep 27
+tmux -S ./tmux.sock send -t "srcds" "sm_csay server restart in 3 seconds" ENTER
+sleep 1
+tmux -S ./tmux.sock send -t "srcds" "sm_csay server restart in 2 seconds" ENTER
+sleep 1
+tmux -S ./tmux.sock send -t "srcds" "sm_csay server restart in 1 seconds" ENTER
+sleep 1
+tmux -S ./tmux.sock send -t "srcds" "exit" ENTER
