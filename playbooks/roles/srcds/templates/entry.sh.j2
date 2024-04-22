@@ -27,9 +27,9 @@ bash "./srcds_run" -game "{{srcds_steam_app}}" -console \
   +maxplayers {{ item.srcds_max_players|default(srcds_max_players) }} \
   +map "{{ map_rotation[item.config|default("all")] | random }}" \
   +sv_setsteamaccount "{{ item.gslt }}" \
-  -auto_update
-  -steam_dir ~/steamcmd/
-  -steamcmd_script ~/tf2_update.txt
+  -auto_update \
+  -steam_dir ~/steamcmd/ \
+  -steamcmd_script ~/tf2_update.txt \
   +rcon_password "{{ item.srcds_rcon_password | default(srcds_rcon_password) }}" \
   +sv_password "{{ item.srcds_server_password | default(srcds_server_password) }}" \
   +sv_region "{{ srcds_region | quote }}" \
