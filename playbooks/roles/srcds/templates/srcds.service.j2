@@ -1,0 +1,30 @@
+[Unit]
+Description=srcds-{{ item.server_name_short }}
+PartOf=srcds-master.service
+After=network.target
+
+[Service]
+Type=forking
+User={{ srcds_user }}
+Group=tf2
+
+WorkingDirectory=/home/{{ srcds_user }}/srcds-{{ item.server_name_short }}
+Environment=
+
+RemainAfterExit=yes
+User={{ srcds_user }}
+ExecStart=/usr/bin/tmux -S ./tmux.sock new-session -s {{ item.server_name_short }} -d ./entry.sh
+
+ExecStop=/usr/bin/tmux -S ./tmux.sock send -t "srcds" "sm_csay server restart in 10 seconds" ENTER
+ExecStop=sleep 10
+ExecStop=/usr/bin/tmux -S ./tmux.sock send -t "srcds" "exit" ENTER
+KillSignal=SIGCONT
+
+TimeoutStartSec=0
+TimeoutStopSec=5
+
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

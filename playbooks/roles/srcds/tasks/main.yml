@@ -257,3 +257,26 @@
   loop_control:
     index_var: loop0
 
+- name: Generate srcds services
+  become: true
+  ansible.builtin.template:
+    src: "srcds.service.j2"
+    dest: "/etc/systemd/system/srcds-{{ item.server_name_short }}.service"
+    mode: 0775
+  loop: "{{ services }}"
+  loop_control:
+    index_var: loop0
+
+- name: Reload systemd
+  become: true
+  systemd:
+    daemon_reload: true
+
+- name: Reload srcds-services
+  become: true
+  systemd:
+    name: "srcds-{{ item.server_name_short }}.service"
+    state: reloaded
+  loop: "{{ services }}"
+  loop_control:
+    index_var: loop0
