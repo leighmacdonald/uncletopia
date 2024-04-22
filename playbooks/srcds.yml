@@ -1,5 +1,6 @@
 ---
 - name: Build uncletopia srcds image
   hosts: tf2
+  strategy: free
   roles:
     - srcds
