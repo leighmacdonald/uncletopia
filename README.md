@@ -32,12 +32,6 @@ do *not* use steamcmd nor its auto update mechanics. Containers should not auto 
 [depot downloader](https://github.com/SteamRE/DepotDownloader) to download the latest build, then rebuild the images. 
 To save on download/rebuild times, the base tf2 image is cached untouched so subsequent updates only pull deltas. 
 
-### srcdsup
-
-srcdsup downloads and configures the [srcdsup](https://github.com/leighmacdonald/srcdsup) container. This allows demos
-to be uploaded out of band from the game instance to the gbans central instance for long term storage.
-
-
 ## Setup
 
 Install Ansible & Clone playbooks
