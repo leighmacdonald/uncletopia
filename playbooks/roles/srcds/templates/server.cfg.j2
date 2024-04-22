@@ -30,6 +30,7 @@ tv_password "{{ stv_password }}"
 tv_name "{{ item.name }} | STV"
 // In-game name
 tv_title "{{ stv_name }}"
+tv_snapshotrate {{ tv_snapshotrate|default(66) }}
 {% endif %}
 
 // Server Logging

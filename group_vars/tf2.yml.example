@@ -54,25 +54,6 @@ pve:
     - Uncle Pain
 
 
-# Uploads demos/logs to gbans service
-srcdsup:
-  update_interval: 5m
-  remotes:
-    - name: "{{ item.server_name_short }}"
-      type: gbans_demo
-      url: "https://kittyland.com"
-      password: "{{ item.gbans_key }}"
-  rules:
-#    - name: stac_logs
-#      root: /app/logs/stac/
-#      pattern: "*.log"
-#      remotes: [ gbans_ac ]
-    - name: demos
-      root: /app/demos/complete/
-      pattern: "*.dem"
-      remotes: [ "{{ item.server_name_short }}" ]
-
-
 # Params to generate /tf/cfg/sourcemod/sourcemod.cfg
 sourcemod:
   # Specifies how admin activity should be relayed to users.  Add up the values

@@ -1,19 +1,61 @@
 ---
-#- name: Create srcds root
-#  ansible.builtin.file:
-#    path: ~/steamcmd
-#    state: directory
-#    mode: "0755"
-#
-#- name: steamcmd
-#  unarchive:
-#    src: https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz
-#    dest: ~/steamcmd
-#    remote_src: yes
+- name: Create srcds root
+  ansible.builtin.file:
+    path: ~/steamcmd
+    state: directory
+    mode: "0755"
+
+- name: steamcmd
+  unarchive:
+    src: https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz
+    dest: ~/steamcmd
+    remote_src: yes
+    creates: ~/steamcmd/steamcmd.sh
+
+- name: /tf/addons/sourcemod/configs/maplists.cfg
+  ansible.builtin.template:
+    src: tf2_ds.txt.j2
+    dest: ~/steamcmd/tf2_ds-{{ item.server_name_short }}.txt
+    mode: 0755
+  loop: "{{ services }}"
+  loop_control:
+    index_var: loop0
+
+- name: srcdsup cleanup
+  docker_container:
+    name: srcdsup-{{ item.server_name_short }}
+    state: absent
+  loop: "{{ services }}"
+  loop_control:
+    index_var: loop0
+
+- name: srcds cleanup
+  docker_container:
+    name: srcds-{{ item.server_name_short }}
+    state: absent
+  loop: "{{ services }}"
+  loop_control:
+    index_var: loop0
+
+- name: srcds logs cleanup
+  docker_volume:
+    name: srcds-{{ item.server_name_short }}-logs
+    state: absent
+  loop: "{{ services }}"
+  loop_control:
+    index_var: loop0
+
+- name: srcds stv cleanup
+  docker_volume:
+    name: srcds-{{ item.server_name_short }}-stv
+    state: absent
+  loop: "{{ services }}"
+  loop_control:
+    index_var: loop0
 
 - name: download
   command:
-    cmd: ./steamcmd.sh +force_install_dir ../srcds-{{ item.server_name_short }} +login anonymous +app_update 232250 +quit
+    cmd: ./steamcmd.sh +runscript tf2_ds-{{ item.server_name_short }}.txt
     chdir: ~/steamcmd
   loop: "{{ services }}"
   loop_control:
@@ -257,6 +299,54 @@
   loop_control:
     index_var: loop0
 
+- name: srcds-fw-enable
+  become: true
+  ansible.builtin.ufw:
+    rule: allow
+    port: "{{ srcds_base_port + (loop0 * 10) }}"
+    proto: any
+  loop: "{{ services }}"
+  loop_control:
+    index_var: loop0
+  when: ansible_distribution == 'Ubuntu'
+
+- name: stv-fw-enable
+  become: true
+  ansible.builtin.ufw:
+    rule: allow
+    port: "{{ srcds_base_port + (loop0 * 10) + 1 }}"
+    proto: udp
+  loop: "{{ services }}"
+  loop_control:
+    index_var: loop0
+  when: ansible_distribution == 'Ubuntu'
+
+- name: srcds-fw-client-outbound
+  become: true
+  ansible.builtin.ufw:
+    rule: allow
+    port: "{{ srcds_base_port + (loop0 * 10) + 2 }}"
+    proto: udp
+    direction: out
+  loop: "{{ services }}"
+  loop_control:
+    index_var: loop0
+  when: ansible_distribution == 'Ubuntu'
+
+- name: cron-srcds
+  become: true
+  ansible.builtin.cron:
+    name: "tf2-restart-{{ item.server_name_short }}"
+    weekday: "*"
+    minute: "0"
+    hour: "6"
+    job: "systemctl restart srcds-{{ item.server_name_short }}"
+  loop: "{{ services }}"
+  loop_control:
+    index_var: loop0
+  when: ansible_distribution == 'Ubuntu'
+  tags: cron
+
 - name: Generate srcds services
   become: true
   ansible.builtin.template:
@@ -276,7 +366,7 @@
   become: true
   systemd:
     name: "srcds-{{ item.server_name_short }}.service"
-    state: reloaded
+    state: restarted
   loop: "{{ services }}"
   loop_control:
     index_var: loop0

@@ -23,15 +23,6 @@ pre:
 sourcemod:
 	@ansible-playbook $(OPTS) $(PLAYBOOK_PATH)/sourcemod.yml
 
-test: srcds
-	docker stop srcds-localhost-1 || true # dont bail if a container doesnt already exist
-	docker rm srcds-localhost-1 || true
-	ansible-playbook playbooks/deploy.yml --limit localhost -K
-	make logs
-
-logs:
-	docker logs -f srcds-localhost-1
-
 deploy:
 	@ansible-playbook -l tf2 $(OPTS) $(PLAYBOOK_PATH)/deploy.yml
 
@@ -46,9 +37,6 @@ shell:
 
 web:
 	ansible-playbook $(PLAYBOOK_PATH)/web.yml $(OPTS)  --limit metrics
-
-srcdsup:
-	@ansible-playbook $(OPTS) $(PLAYBOOK_PATH)/srcdsup.yml
 
 vpn:
 	# This *does not work* when using --limit
