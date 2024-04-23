@@ -1,7 +1,6 @@
 "item_whitelist"
 {
-    "unlisted_items_default_to" 					"1"
-    "The Conscientious Objector"					"0"
-    "Flair!"										"0"
-    "Photo Badge"									"0"
+{% for item, flag in (item_whitelist|default(item_whitelist)).items() %}
+    "{{ item }}"                                    "{{ flag }}"
+{% endfor %}
 }
