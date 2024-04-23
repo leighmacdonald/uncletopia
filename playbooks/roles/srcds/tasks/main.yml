@@ -12,7 +12,7 @@
     remote_src: yes
     creates: ~/steamcmd/steamcmd.sh
 
-- name: /tf/addons/sourcemod/configs/maplists.cfg
+- name: Create update scripts
   ansible.builtin.template:
     src: tf2_ds.txt.j2
     dest: ~/steamcmd/tf2_ds-{{ item.server_name_short }}.txt
@@ -101,6 +101,13 @@
   # Perform the copy from the *remote* sourcemod build output
   #delegate_to: "{{ inventory_hostname }}"
 
+- name: Copy attach.sh
+  ansible.builtin.copy:
+    src: "{{ role_path }}/files/attach.sh"
+    dest: /home/tf2server/srcds-{{ item.server_name_short }}/attach.sh
+    mode: 0755
+  loop: "{{ services }}"
+
 - name: /tf/mapcycle.txt
   ansible.builtin.template:
     src: mapcycle.txt.j2
@@ -110,11 +117,20 @@
   loop_control:
     index_var: loop0
 
+- name: count whitelists
+  set_fact:
+    whitelist_enabled: "{{ item.server_name_short|default(item_whitelist|default({})) | length > 0 }}"
+
+- name: Show content of my_array
+  debug:
+    var: whitelist_enabled
+
 - name: /tf/item_whitelist.txt
   ansible.builtin.template:
     src: item_whitelist.txt.j2
     dest: ~/srcds-{{ item.server_name_short }}/tf/item_whitelist.txt
     mode: 0755
+  when: whitelist_enabled == true
   loop: "{{ services }}"
   loop_control:
     index_var: loop0
