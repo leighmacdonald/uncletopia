@@ -192,9 +192,6 @@ sm_cvar sm_danepve_max_connected_humans {{ item.human_count|default(16) }}
 sm_cvar sm_danepve_clear_bots_building_gibs 1
 
 {% endif %}
-{% for k, v in sm_cvars.items() %}
-sm_cvar {{ k }} "{{ v }}"
-{% endfor %}
 
 sm_cvar mp_waitingforplayers_time {% if item.rotation|default("all") == "community" %}60{% else %}35{% endif %}
 
@@ -202,3 +199,9 @@ ce_sentry_dsn_url "{{ sentry_dsn }}"
 ce_region {{ item.sentry_ce_region|default("") }}
 ce_type {{ item.config }}
 ce_server_id "{{ item.server_name_short }}"
+
+sv_playerperfhistorycount 20
+sv_player_usercommand_timeout 1
+net_maxcleartime 0.001
+sv_rcon_whitelist_address 192.168.0.57
+tf_dropped_weapon_lifetime "{% if item.config == 'pve' %}0{% else %}30{% endif %}"
