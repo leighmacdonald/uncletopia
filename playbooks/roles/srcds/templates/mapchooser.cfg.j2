@@ -2,93 +2,93 @@
 // -
 // Default: "10"
 // Minimum: "5.000000"
-sm_extendmap_fragstep: "10"
+sm_extendmap_fragstep "{{ sm_extendmap_fragstep|default(10) }}"
 
 // Specifies how many more rounds each extension makes
 // -
 // Default: "5"
 // Minimum: "1.000000"
-sm_extendmap_roundstep: "2"
+sm_extendmap_roundstep "{{ sm_extendmap_roundstep|default(2) }}"
 
 // Specifies how much many more minutes each extension makes
 // -
 // Default: "15"
 // Minimum: "5.000000"
-sm_extendmap_timestep: "30"
+sm_extendmap_timestep "{{ sm_extendmap_timestep|default(30) }}"
 
 // Specifies if a 'Don't Change' option should be added to early votes
 // -
 // Default: "1"
 // Minimum: "0.000000"
-sm_mapvote_dontchange: "1"
+sm_mapvote_dontchange "{{ sm_mapvote_dontchange|default(1) }}"
 
 // Specifies if MapChooser should run an end of map vote
 // -
 // Default: "1"
 // Minimum: "0.000000"
 // Maximum: "1.000000"
-sm_mapvote_endvote: "1"
+sm_mapvote_endvote "{{ sm_mapvote_endvote|default(1) }}"
 
 // Specifies how many past maps to exclude from the vote.
 // -
 // Default: "5"
 // Minimum: "0.000000"
-sm_mapvote_exclude: "{% if item.pve_mode|default(false) %}0{% else %}8{% endif %}"
+sm_mapvote_exclude {% if item.config == "pve" %}0{% else %}{{ sm_mapvote_exclude|default(8) }}{% endif %}
 
 // Number of extensions allowed each map.
 // -
 // Default: "0"
 // Minimum: "0.000000"
-sm_mapvote_extend: "0"
+sm_mapvote_extend {{ sm_mapvote_extend|default(0) }}
 
 // Specifies how many maps to include in the vote.
 // -
 // Default: "5"
 // Minimum: "2.000000"
 // Maximum: "6.000000"
-sm_mapvote_include: "6"
+sm_mapvote_include "{{ sm_mapvote_include|default(6) }}"
 
 // Specifies whether or not MapChooser should pick a map if no votes are received.
 // -
 // Default: "1"
 // Minimum: "0.000000"
 // Maximum: "1.000000"
-sm_mapvote_novote: "1"
+sm_mapvote_novote "{{ sm_mapvote_novote|default(1) }}"
 
 // Hold runoff votes if winning choice is less than a certain margin
 // -
 // Default: "0"
 // Minimum: "0.000000"
 // Maximum: "1.000000"
-sm_mapvote_runoff: "1"
+sm_mapvote_runoff "{{ sm_mapvote_runoff|default(1) }}"
 
 // If winning choice has less than this percent of votes, hold a runoff
 // -
 // Default: "50"
 // Minimum: "0.000000"
 // Maximum: "100.000000"
-sm_mapvote_runoffpercent: "50"
+sm_mapvote_runoffpercent "{{ sm_mapvote_runoffpercent|default(50) }}"
 
 // Specifies when to start the vote based on time remaining.
 // -
 // Default: "3.0"
 // Minimum: "1.000000"
-sm_mapvote_start: "3.0"
+sm_mapvote_start "{{ sm_mapvote_start|default(3.0) }}"
 
 // Specifies when to start the vote base on frags remaining.
 // -
 // Default: "5.0"
 // Minimum: "1.000000"
-sm_mapvote_startfrags: "1.0"
+sm_mapvote_startfrags "{{ sm_mapvote_startfrags|default(1.0) }}"
 
 // Specifies when to start the vote based on rounds remaining. Use 0 on TF2 to start vote during bonus round time
 // -
 // Default: "2.0"
 // Minimum: "0.000000"
-sm_mapvote_startround: "0"
+sm_mapvote_startround "{{ sm_mapvote_startround|default(0) }}"
 
 // Specifies how long the mapvote should be available for.
 // -
 // Default: "20"
 // Minimum: "5.000000"
-sm_mapvote_voteduration: "15"
+sm_mapvote_voteduration "{{ sm_mapvote_voteduration|default(15) }}"

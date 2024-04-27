@@ -1,3 +1,3 @@
-sm_vote_ban: "0.60"
-sm_vote_kick: "0.60"
-sm_vote_map: "0.60"
+sm_vote_ban "{{ sm_vote_ban|default(0.60) }}"
+sm_vote_kick "{{ sm_vote_kick|default(0.60) }}"
+sm_vote_map "{{ sm_vote_map|default(0.60) }}"

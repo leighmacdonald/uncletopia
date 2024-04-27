@@ -1,26 +1,26 @@
 // What nickname hook will have.
 // -
 // Default: "Captain Crash"
-discord_accelerator_hookname: "SRCDS Crash"
+discord_accelerator_hookname "{{ discord_accelerator_hookname|default('SRCDS Crash') }}"
 
 //  Role ID ir User ID to mention.
 //  You can get Role ID or User ID by making \@User or \@Group
 //  If you want to mention group add & before ID
 //  -
 //  Default: ""
-discord_accelerator_mention: "875965270999588875"
+discord_accelerator_mention "{{ discord_accelerator_mention|default(875965270999588875) }}"
 
 //  Short server name
 //  -
 //  Default: ""
-discord_accelerator_servername: "{{ item.server_name_short }}"
+discord_accelerator_servername "{{ discord_accelerator_servername|default(item.server_name_short) }}"
 
 //  Config key from configs/discord.cfg.
 //  -
 //  Default: "accelerator"
-discord_accelerator_webhook: "crash"
+discord_accelerator_webhook "{{ discord_accelerator_webhook|default('crash') }}"
 
 //  Information text that server crashed in message.
 //  -
 //  Default: "Server crashed"
-discord_accelerator_message: "Server crashed"
+discord_accelerator_message "{{ discord_accelerator_message|default('Server crashed') }}"
