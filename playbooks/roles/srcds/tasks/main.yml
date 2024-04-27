@@ -78,6 +78,7 @@
       - libcurl4:i386
       - libstdc++6:i386
       - libcurl4-gnutls-dev:i386
+      - tmux
 
 - name: Build sourcemod
   ansible.builtin.include_role:
