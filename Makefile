@@ -1,8 +1,9 @@
 .PHONY: all pre system deploy
 
-VAULT_PASS_PATH := ~/.vault_pass.txt
 PLAYBOOK_PATH := ./playbooks
-OPTS := -i hosts.yml
+HOSTS := hosts.yml
+USER := tf2server
+
 all: site
 
 format:
@@ -15,51 +16,44 @@ deps:
 	@ansible-galaxy collection install -r collections/requirements.yml
 
 adduser:
-	@ansible-playbook $(OPTS) $(PLAYBOOK_PATH)/adduser.yml -u root
+	@ansible-playbook -u root -i $(HOSTS) $(PLAYBOOK_PATH)/adduser.yml
 
 pre:
-	@ansible-playbook $(OPTS) $(PLAYBOOK_PATH)/pre.yml
+	@ansible-playbook -u $(USER) -i $(HOSTS) $(PLAYBOOK_PATH)/pre.yml
 
 sourcemod:
-	@ansible-playbook $(OPTS) $(PLAYBOOK_PATH)/sourcemod.yml
+	@ansible-playbook -u $(USER) -i $(HOSTS) $(PLAYBOOK_PATH)/sourcemod.yml
 
 deploy:
-	@ansible-playbook -l tf2 $(OPTS) $(PLAYBOOK_PATH)/deploy.yml
+	@ansible-playbook -u $(USER) -i $(HOSTS) $(PLAYBOOK_PATH)/deploy.yml
 
 srcds:
-	@ansible-playbook -l tf2 $(OPTS) $(PLAYBOOK_PATH)/srcds.yml
+	@ansible-playbook -u $(USER) -i $(HOSTS) $(PLAYBOOK_PATH)/srcds.yml
 
 srcds_clean:
-	@ansible-playbook -l tf2 $(OPTS) $(PLAYBOOK_PATH)/srcds.yml
-
-shell:
-	@docker exec -it srcds-test-1 bash
+	@ansible-playbook -u $(USER) -i $(HOSTS) $(PLAYBOOK_PATH)/srcds.yml
 
 web:
-	ansible-playbook $(PLAYBOOK_PATH)/web.yml $(OPTS)  --limit metrics
+	ansible-playbook -u $(USER) -i $(HOSTS) $(PLAYBOOK_PATH)/web.yml --limit metrics
 
 vpn:
 	# This *does not work* when using --limit
-	@ansible-playbook $(OPTS) $(PLAYBOOK_PATH)/vpn.yml
-
-game_config:
-	@ansible-playbook $(OPTS) $(PLAYBOOK_PATH)/deploy.yml --tags game_config
+	@ansible-playbook -u $(USER) -i $(HOSTS) $(PLAYBOOK_PATH)/vpn.yml
 
 system:
-	@ansible-playbook $(OPTS) $(PLAYBOOK_PATH)/system.yml
+	@ansible-playbook -u $(USER) -i $(HOSTS) $(PLAYBOOK_PATH)/system.yml
 
 wg:
-	@ansible-playbook $(OPTS) $(PLAYBOOK_PATH)/wg.yml
+	@ansible-playbook -u $(USER) -i $(HOSTS) $(PLAYBOOK_PATH)/wg.yml
 
 site:
-	ansible-playbook $(OPTS) site.yml
+	ansible-playbook -u $(USER) -i $(HOSTS) site.yml
 
 ping:
 	@ansible tf2 -m ping $(ARGS)
 
 restart:
-	@ansible all -m reboot -a reboot_timeout=3600 -u tf2server -i hosts.yml -b
+	@ansible all -m reboot -a reboot_timeout=3600 -u $(USER) -i $(HOSTS) -b
 
-local:
-	ansible-playbook playbooks/srcds.yml --limit localhost
-	ansible-playbook playbooks/deploy.yml --limit localhost
+game_config:
+	ansible-playbook $(PLAYBOOK_PATH)/srcds.yml -u $(USER) -i $(HOSTS) --tags game_config
