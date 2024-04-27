@@ -1,6 +1,11 @@
 "item_whitelist"
 {
+{% set found = item_whitelist|default(false) %}
+{% if found %}
 {% for item, flag in (item_whitelist|default(item_whitelist)).items() %}
     "{{ item }}"                                    "{{ flag }}"
 {% endfor %}
+{% else %}
+    "unlisted_items_default_to"                     "1"
+{% endif %}
 }

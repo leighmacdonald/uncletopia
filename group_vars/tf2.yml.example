@@ -48,6 +48,12 @@ config:
     plugins_disabled: ["sm_vprofiler.smx", "roundtimer.smx", "stopwatch.smx", "reservedslots.smx", "classrestrict.smx", "networktools.smx", "votescramble.smx"]
     extensions_disabled: []
 
+item_whitelist:
+  #"unlisted_items_default_to": 1
+  #"The Conscientious Objector": 0
+  #"Flair!": 0
+  #"Photo Badge": 0
+
 pve:
   bot_attrs:
     metal regen: 5000
@@ -73,15 +79,6 @@ pve:
 # Params to generate /tf/addons/sourcemod/configs/admin_overrides.cfg
 admin_overrides:
   - [ "admin_allspec_flag", "b" ]
-
-sm_cvars:
-  sv_playerperfhistorycount: 20
-  sv_player_usercommand_timeout: 1
-  net_maxcleartime: 0.001
-  sm_gimme_chat_notice_enabled: 0
-  sm_gimme_permanent_items_enabled: 1
-  sv_rcon_whitelist_address: 192.168.0.57
-  tf_dropped_weapon_lifetime: "{% if item.pve_mode|default(false) %}0{% else %}30{% endif %}"
 
 discord:
   stac_webhook: "https://discord.com/api/webhooks/xxxxxxxxxxxxxxxxxxxxxxxxxx"
