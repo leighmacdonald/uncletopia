@@ -30,6 +30,8 @@
   ansible.posix.synchronize:
     src: "{{ role_path }}/files/"
     dest: ~/build_sourcemod/
+  tags:
+    - game_config
 
 - name: Copy extensions & plugin sources [local]
   # TODO rsync doesn't work properly for local?
@@ -37,8 +39,12 @@
   ansible.builtin.copy:
     src: "{{ role_path }}/files/"
     dest: ~/build_sourcemod/
+  tags:
+    - game_config
 
 - name: Build plugins
   ansible.builtin.command:
     chdir: ~/build_sourcemod/addons/sourcemod/scripting
     cmd: bash build.sh
+  tags:
+    - game_config
