@@ -28,6 +28,12 @@ stv_enable: true
 stv_password: "your_global_stv_password"
 stv_name: "Level 3 Sentry"
 
+sm_download: "https://sm.alliedmods.net/smdrop/1.12/sourcemod-1.12.0-git7125-linux.tar.gz"
+metamod_download: "https://mms.alliedmods.net/mmsdrop/1.12/mmsource-1.12.0-git1192-linux.tar.gz"
+
+plugins_disabled: ["tf_uncledane.smx", "EdictLimiter.smx", "stopwatch.smx"]
+extensions_disabled: ["tf2items.autoload", "tf2items.ext.2.ep2v.so", "sourcescramble.ext.so"]
+
 config:
   default:
     extensions_disabled: ["tf2items.autoload", "tf2items.ext.2.ep2v.so", "sourcescramble.ext.so"]
