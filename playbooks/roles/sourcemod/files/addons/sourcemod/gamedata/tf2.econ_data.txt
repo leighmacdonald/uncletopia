@@ -7,6 +7,8 @@
 			"GEconItemSchema()"
 			{
 				// taken straight from tf2attributes
+				// on windows: from unique x-ref "Glitched Circuit Board", disassemble next function called
+				// function is called twice in that function
 				"library"	"server"
 				"linux"		"@_Z15GEconItemSchemav"
 				"windows"	"\xE8\x2A\x2A\x2A\x2A\x83\xC0\x04\xC3"
@@ -17,7 +19,7 @@
 				// called in branch before unique x-ref "Item definition index %d in achievement reward %s was not found"
 				"library"	"server"
 				"linux"		"@_ZN15CEconItemSchema17GetItemDefinitionEi"
-				"windows"	"\x55\x8B\xEC\x56\x8B\xF1\x8D\x45\x08\x57\x50\x8D\x8E\x2A\x2A\x2A\x2A\xE8\x2A\x2A\x2A\x2A\x85\xC0"
+				"windows"	"\x55\x8B\xEC\x56\x8B\xF1\x8D\x45\x08\x50\x8D\x8E\x2A\x2A\x2A\x2A\xE8\x2A\x2A\x2A\x2A\x85\xC0"
 			}
 			"CEconItemSchema::GetAttributeDefinition()"
 			{
@@ -25,7 +27,7 @@
 				// called at some point after unique x-ref to "static_attrs"
 				"library"			"server"
 				"linux"				"@_ZN15CEconItemSchema22GetAttributeDefinitionEi"
-				"windows"			"\x55\x8B\xEC\x83\xEC\x2A\x53\x56\x8B\xD9\x8D\x2A\x2A\x57"
+				"windows"			"\x55\x8B\xEC\x56\x8B\xF1\x8D\x45\x08\x50\x8D\x8E\xBC\x01\x00\x00"
 			}
 			"CEconItemSchema::GetAttributeDefinitionByName()"
 			{
@@ -33,7 +35,7 @@
 				// has unique x-ref string "CEconItemSchema::GetAttributeDefinitionByName", even on Windows
 				"library"			"server"
 				"linux"				"@_ZN15CEconItemSchema28GetAttributeDefinitionByNameEPKc"
-				"windows"			"\x55\x8B\xEC\x83\xEC\x14\x53\x8B\x5D\x08\x56\x57\x8B\xF9\x85\xDB"
+				"windows"			"\x55\x8B\xEC\x83\xEC\x1C\x83\x7D\x08\x00"
 			}
 			"CTFItemSchema::GetMasterMapDefByName()"
 			{
@@ -62,7 +64,7 @@
 				// first call in KeyValues::GetString()
 				"library"	"server"
 				"linux"		"@_ZN9KeyValues7FindKeyEPKcb"
-				"windows"	"\x55\x8B\xEC\x81\xEC\x04\x01\x00\x00\x56\x8B\x75\x08\x57"
+				"windows"	"\x55\x8B\xEC\x81\xEC\x04\x01\x00\x00\x56\x8B\x75\x08\x57\x8B\xF9"
 			}
 			
 			"GetProtoScriptObjDefManager()"
@@ -72,7 +74,7 @@
 				// the windows signature here wildcards the size and checks for the subsequent "call" opcode
 				"library"	"server"
 				"linux"		"@_Z27GetProtoScriptObjDefManagerv"
-				"windows"	"\xA1\x2A\x2A\x2A\x2A\x85\xC0\x75\x2A\x68\x2A\x2A\x2A\x2A\xE8"
+				"windows"	"\xA1\x2A\x2A\x2A\x2A\x85\xC0\x0F\x85\x2A\x2A\x2A\x2A\x53"
 			}
 			"IProtoBufScriptObjectDefinition::GetDefIndex()"
 			{
@@ -80,7 +82,7 @@
 				// offset into header is hardcoded on windows (last 0x24 byte)
 				"library"	"server"
 				"linux"		"@_ZNK31IProtoBufScriptObjectDefinition11GetDefIndexEv"
-				"windows"	"\x80\x79\x06\x00\x8B\x01\x74\x2A\xFF\x50\x04\x50\xE8\x2A\x2A\x2A\x2A\x83\xC4\x04\x8B\x40\x24"
+				"windows"	"\xE8\x5B\x00\x00\x00\x8B\x40\x24\xC3"
 			}
 		}
 		
