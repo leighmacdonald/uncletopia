@@ -441,3 +441,18 @@
   loop: "{{ services }}"
   loop_control:
     index_var: loop0
+
+- name: cron-clean-stv
+  become: true
+  ansible.builtin.cron:
+    name: "srcds-clean-stv-{{ item.server_name_short }}"
+    weekday: "*"
+    minute: "0"
+    hour: "*"
+    month: "*"
+    job: "find /home/{{ srcds_user }}/srcds-{{ item.server_name_short }}/tf/stv_demos/complete -type f -mtime +2 -delete"
+  loop: "{{ services }}"
+  loop_control:
+    index_var: loop0
+  when: ansible_distribution == 'Ubuntu'
+  tags: cron
