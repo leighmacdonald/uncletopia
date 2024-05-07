@@ -25,9 +25,6 @@ pre:
 sourcemod:
 	@ansible-playbook -u $(USER) -i $(HOSTS) --forks $(FORKS) $(PLAYBOOK_PATH)/sourcemod.yml
 
-deploy:
-	@ansible-playbook -u $(USER) -i $(HOSTS) --forks $(FORKS) $(PLAYBOOK_PATH)/deploy.yml
-
 srcds:
 	@ansible-playbook -u $(USER) -i $(HOSTS) --forks $(FORKS) $(PLAYBOOK_PATH)/srcds.yml
 
