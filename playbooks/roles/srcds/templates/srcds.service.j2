@@ -8,6 +8,12 @@ Type=forking
 User={{ srcds_user }}
 Group=tf2
 
+{% if enable_threads %}
+CPUAffinity={{ loop0 * 2 }},{{ (loop0 * 2 ) + 1 }}
+{% else %}
+CPUAffinity={{ loop0 }}
+{% endif %}
+
 WorkingDirectory=/home/{{ srcds_user }}/srcds-{{ item.server_name_short }}
 Environment=
 
