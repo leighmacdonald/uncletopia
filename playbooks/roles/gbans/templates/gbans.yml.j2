@@ -13,12 +13,12 @@ general:
   demo_count_limit: 5000
 
 local_store:
-  path_root: "{{ local_store.path_root }}"
+  path_root: "{{ gbans_web.local_store.path_root }}"
 
 exports:
-  bd_enabled: {{ exports.bd_enabled }}
-  valve_enabled: {{ exports.valve_enabled }}
-  authorized_keys: {{ exports.authorized_keys }}
+  bd_enabled: {{ gbans_web.exports.bd_enabled }}
+  valve_enabled: {{ gbans_web.exports.valve_enabled }}
+  authorized_keys: {{ gbans_web.exports.authorized_keys }}
 
 s3:
   access_key: {{ gbans_web.s3.access_key }}
@@ -113,13 +113,12 @@ network_bans:
       type: {{ r.type }}
 {% endfor %}
 
-
 ssh:
-  enabled: {{ ssh.enabled }}
-  username: {{ ssh.username }}
-  port: {{ ssh.port }}
-  private_key_path: "{{ ssh.private_key_path }}"
-  password: "{{ ssh.password }}"
-  update_interval: {{ ssh.update_interval }}
-  timeout: {{ ssh.timeout }}
-  demo_path_fmt: "{{ ssh.demo_path_fmt }}"
+  enabled: {{ gbans_web.ssh.enabled }}
+  username: {{ gbans_web.ssh.username }}
+  port: {{ gbans_web.ssh.port }}
+  private_key_path: "{{ gbans_web.ssh.private_key_path }}"
+  password: "{{ gbans_web.ssh.password }}"
+  update_interval: {{ gbans_web.ssh.update_interval }}
+  timeout: {{ gbans_web.ssh.timeout }}
+  demo_path_fmt: "{{ gbans_web.ssh.demo_path_fmt }}"
