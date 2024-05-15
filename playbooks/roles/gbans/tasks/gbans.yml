@@ -30,6 +30,7 @@
     networks:
       - name: caddy_net
     volumes:
+      - /home/tf2server/.ssh/id_rsa_stv:/app/id_rsa_stv
       - gbans_demos:/app/demos
       - gbans_cache_data:/app/.cache
       - /etc/gbans.yml:/app/gbans.yml
