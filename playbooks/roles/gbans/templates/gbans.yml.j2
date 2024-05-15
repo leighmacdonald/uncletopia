@@ -10,6 +10,15 @@ general:
   banned_steam_group_ids: [ {{ gbans_web.banned_steam_group_ids|join(" , ") }} ]
   external_url: {{ gbans_host }}
   warning_limit: 2
+  demo_count_limit: 5000
+
+local_store:
+  path_root: "{{ local_store.path_root }}"
+
+exports:
+  bd_enabled: {{ exports.bd_enabled }}
+  valve_enabled: {{ exports.valve_enabled }}
+  authorized_keys: {{ exports.authorized_keys }}
 
 s3:
   access_key: {{ gbans_web.s3.access_key }}
@@ -103,3 +112,14 @@ network_bans:
       url: {{ r.url }}
       type: {{ r.type }}
 {% endfor %}
+
+
+ssh:
+  enabled: {{ ssh.enabled }}
+  username: {{ ssh.username }}
+  port: {{ ssh.port }}
+  private_key_path: "{{ ssh.private_key_path }}"
+  password: "{{ ssh.password }}"
+  update_interval: {{ ssh.update_interval }}
+  timeout: {{ ssh.timeout }}
+  demo_path_fmt: "{{ ssh.demo_path_fmt }}"
