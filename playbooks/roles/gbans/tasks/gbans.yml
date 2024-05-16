@@ -4,9 +4,9 @@
     name: gbans_cache_data
     state: present
 
-- name: gbans_demos volume
+- name: gbans assets volume
   docker_volume:
-    name: gbans_demos
+    name: gbans_assets
     state: present
 
 - name: Generate /etc/gbans.yml
@@ -31,7 +31,7 @@
       - name: caddy_net
     volumes:
       - /home/tf2server/.ssh/ut_stv:/app/ut_stv
-      - gbans_demos:/app/demos
+      - gbans_assets:/app/assets
       - gbans_cache_data:/app/.cache
       - /etc/gbans.yml:/app/gbans.yml
     labels:
