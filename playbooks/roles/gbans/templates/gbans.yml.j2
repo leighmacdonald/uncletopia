@@ -10,7 +10,11 @@ general:
   banned_steam_group_ids: [ {{ gbans_web.banned_steam_group_ids|join(" , ") }} ]
   external_url: {{ gbans_host }}
   warning_limit: 2
-  demo_count_limit: 5000
+  demo_count_limit: 2000
+  demo_cleanup_enabled: true
+  demo_cleanup_strategy: pctfree
+  demo_cleanup_mount: /
+  demo_cleanup_min_pct: 80
 
 local_store:
   path_root: "{{ gbans_web.local_store.path_root }}"
