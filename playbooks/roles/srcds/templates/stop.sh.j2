@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+{% if restart_notice|default(true) %}
 tmux -S ./tmux.sock send -t "srcds" "sm_csay server restart in 60 seconds" ENTER
 sleep 30
 tmux -S ./tmux.sock send -t "srcds" "sm_csay server restart in 30 seconds" ENTER
@@ -9,4 +10,5 @@ tmux -S ./tmux.sock send -t "srcds" "sm_csay server restart in 2 seconds" ENTER
 sleep 1
 tmux -S ./tmux.sock send -t "srcds" "sm_csay server restart in 1 seconds" ENTER
 sleep 1
+{% endif %}
 tmux -S ./tmux.sock send -t "srcds" "exit" ENTER

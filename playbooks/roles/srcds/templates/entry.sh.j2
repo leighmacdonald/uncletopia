@@ -8,6 +8,14 @@ if test -f "$F"; then
 fi
 {% endfor %}
 
+{% for name in config[item.config].plugins_enabled|default(config["default"].plugins_enabled) %}
+F=./tf/addons/sourcemod/plugins/disabled/{{ name }}
+if test -f "$F"; then
+    echo "Enabling plugin $F"
+    mv -v "$F" ./tf/addons/sourcemod/plugins/
+fi
+{% endfor %}
+
 {% for name in config[item.config].extensions_disabled|default(config["default"].extensions_disabled) %}
 E=./tf/addons/sourcemod/extensions/{{ name }}
 if test -f "$E"; then

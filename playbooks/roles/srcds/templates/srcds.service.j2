@@ -8,7 +8,7 @@ Type=forking
 User={{ srcds_user }}
 Group=tf2
 
-{% if enable_threads %}
+{% if enable_threads|default(false) %}
 CPUAffinity={{ loop0 * 2 }},{{ (loop0 * 2 ) + 1 }}
 {% else %}
 CPUAffinity={{ loop0 }}
