@@ -34,3 +34,6 @@
 [submodule "sm_plugins/nativevotes"]
 	path = sm_plugins/nativevotes
 	url = https://github.com/leighmacdonald/sourcemod-nativevotes-updated.git
+[submodule "sm_plugins/skipmotd"]
+	path = sm_plugins/skipmotd
+	url = https://github.com/gcommer/skipmotd
