@@ -34,6 +34,9 @@ CENTERPROJECTILES_BRANCH="v8.0"
 NATIVEVOTES_ROOT="$SRC_ROOT/nativevotes"
 NATIVEVOTES_BRANCH="centered"
 
+SKIPMOTD_ROOT="$SRC_ROOT/skipmotd"
+SKIPMOTD_BRANCH="master"
+
 # git submodule update --init --recursive
 
 pushd $STAC_ROOT || exit
@@ -109,4 +112,10 @@ cp -rv addons/sourcemod/* "$SM_ROOT/"
 rm "$SM_ROOT/scripting/nativevotes_votemanager_test.sp" \
   "$SM_ROOT/scripting/nativevotes_votetest.sp" \
   "$SM_ROOT/scripting/csgo_votestart_test.sp"
+popd || exit
+
+pushd $SKIPMOTD_ROOT || exit
+git fetch --all
+git checkout $SKIPMOTD_BRANCH
+cp -rv *.sp "$SM_ROOT/"
 popd || exit
