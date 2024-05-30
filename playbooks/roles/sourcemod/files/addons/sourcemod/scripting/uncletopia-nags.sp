@@ -20,8 +20,8 @@ public Plugin myinfo = {
 
 static bool g_alertToScramble, g_didAlertToNominate;
 static int g_playedRounds;
-static Handle g_teamImbalanceTimer, g_longMapTimer;
-static ConVar g_cvarRtvTimer, g_cvarScrambleTimer;
+Handle g_teamImbalanceTimer, g_longMapTimer;
+ConVar g_cvarRtvTimer, g_cvarScrambleTimer;
 
 public void OnPluginStart() {
     g_playedRounds = 0;
@@ -77,6 +77,9 @@ public void Event_RoundStart(Event event, const char[] name, bool dontBroadcast)
 }
 
 public void Event_RoundEnd(Event event, const char[] name, bool dontBroadcast) {
+    MC_PrintToChatAll("{green}Like our servers?{default} Please consider subscribing to our patreon to help ensure they stay open.");
+    MC_PrintToChatAll("{green}https://www.patreon.com/uncletopia{default}");
+
     CleanupTimer(g_teamImbalanceTimer);
 }
 
