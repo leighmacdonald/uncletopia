@@ -1,177 +1,293 @@
+/**
+ * Copyright (C) 2023  Mikusch
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 #pragma semicolon 1
-#pragma tabsize 4
 #pragma newdecls required
 
 #include <sdktools>
+#include <dhooks>
 
-public Plugin myinfo =
+#define PLUGIN_VERSION "1.0.0"
+
+bool g_bEnabled;
+ArrayList g_dynamicHookIds;
+ConVar mp_tournament;
+ConVar mp_tournament_stopwatch;
+ConVar tf_attack_defend_map;
+
+DynamicDetour g_detour_CTFGameRules_ManageStopwatchTimer;
+DynamicHook g_hook_CTeamRoundTimer_SetTimeRemaining;
+DynamicHook g_hook_CTeamRoundTimer_AddTimerSeconds;
+DynamicHook g_hook_CTeamplayRoundBasedRules_StopWatchModeThink;
+
+public Plugin myinfo = 
 {
-	name = "Stopwatch Mode",
-	author = "leigh MacDonald",
-	description = "Enables stopwatch mode for pub servers",
-	version = "0.0.1",
-	url = "https://github.com/leighmacdonald/stopwatch",
-};
-
-bool g_bHasWaitedForPlayers;
-int g_iRoundsCompleted;
-
-ConVar gStopwatchEnabled = null;
-ConVar gStopwatchNameRed = null;
-ConVar gStopwatchNameBlu = null;
-ConVar gStopwatchChangelvlTime = null;
-
-void log(const char[] format, any...)
-{
-	char buffer[254];
-	VFormat(buffer, sizeof buffer, format, 2);
-	PrintToServer("[Stopwatch] %s", buffer);
+	name = "[TF2] Casual Stopwatch Mode",
+	author = "Mikusch",
+	description = "Allows using Stopwatch mode without enabling Tournament mode.",
+	version = "1.0.0",
+	url = "https://github.com/Mikusch/stopwatch"
 }
 
 public void OnPluginStart()
 {
-    // Stopwatch mode settings
-	gStopwatchEnabled = CreateConVar("stopwatch_enabled", "0", "Enables stopwatch mode", _, true, 0.0, true, 1.0);
-	gStopwatchNameBlu = CreateConVar("stopwatch_blueteamname", "Team A", "Name for the team that starts BLU.");
-	gStopwatchNameRed = CreateConVar("stopwatch_redteamname", "Team B", "Name for the team that starts RED.");
-	gStopwatchChangelvlTime = CreateConVar("stopwatch_changelevel_time", "35", "Time to wait (in seconds) before changelevel after map end.", _, true, 0.0);
-	AddCommandListener(cmd_mp_tournament_teamname, "mp_tournament_redteamname");
-	AddCommandListener(cmd_mp_tournament_teamname, "mp_tournament_blueteamname");
-	HookEvent("teamplay_round_start", onTeamplayRoundStart, EventHookMode_PostNoCopy);
-	HookEvent("teamplay_win_panel", onRoundCompleted, EventHookMode_Pre);
-	// HookEvent("mp_match_end_at_timelimit", onMatchEnd, EventHookMode_PostNoCopy);
-
-	RegConsoleCmd("tournament_readystate", cmd_block);
-	RegConsoleCmd("tournament_teamname", cmd_block);
-
-	AutoExecConfig(true, "stopwatch");
+	g_dynamicHookIds = new ArrayList();
+	
+	mp_tournament = FindConVar("mp_tournament");
+	mp_tournament.AddChangeHook(OnTournamentModeChanged);
+	mp_tournament_stopwatch = FindConVar("mp_tournament_stopwatch");
+	tf_attack_defend_map = FindConVar("tf_attack_defend_map");
+	
+	GameData gameconf = new GameData("stopwatch");
+	if (!gameconf)
+		SetFailState("Failed to find stopwatch gamedata");
+	
+	g_detour_CTFGameRules_ManageStopwatchTimer = CreateDynamicDetour(gameconf, "CTFGameRules::ManageStopwatchTimer");
+	g_hook_CTeamRoundTimer_SetTimeRemaining = CreateDynamicHook(gameconf, "CTeamRoundTimer::SetTimeRemaining");
+	g_hook_CTeamRoundTimer_AddTimerSeconds = CreateDynamicHook(gameconf, "CTeamRoundTimer::AddTimerSeconds");
+	g_hook_CTeamplayRoundBasedRules_StopWatchModeThink = CreateDynamicHook(gameconf, "CTeamplayRoundBasedRules::StopWatchModeThink");
 }
 
+public void OnPluginEnd()
+{
+	if (!g_bEnabled)
+		return;
+	
+	TogglePlugin(false);
+}
+
+public void OnConfigsExecuted()
+{
+	if (g_bEnabled == mp_tournament.BoolValue)
+	{
+		TogglePlugin(!mp_tournament.BoolValue);
+	}
+}
 
 public void OnMapStart()
 {
-// Don't enable for non-pl maps
-	if(gStopwatchEnabled.BoolValue && GetConVarBool(FindConVar("mp_tournament")) && !isValidStopwatchMap())
-	{
-		log("Disabling mp_tournament");
-		SetConVarBool(FindConVar("mp_tournament"), false);
-	}
-
-	g_bHasWaitedForPlayers = false;
-	g_iRoundsCompleted = 0;
+	if (!g_bEnabled)
+		return;
+	
+	g_dynamicHookIds.Push(g_hook_CTeamplayRoundBasedRules_StopWatchModeThink.HookGamerules(Hook_Pre, CTeamplayRoundBasedRules_StopWatchModeThink_Pre, DHookRemovalCB_OnHookRemoved));
+	g_dynamicHookIds.Push(g_hook_CTeamplayRoundBasedRules_StopWatchModeThink.HookGamerules(Hook_Post, CTeamplayRoundBasedRules_StopWatchModeThink_Post, DHookRemovalCB_OnHookRemoved));
+	
+	// Calculates the value of tf_attack_defend_map
+	SetVariantString("IsAttackDefenseMode()");
+	AcceptEntityInput(0, "RunScriptCode");
+	
+	bool bUseStopWatch = tf_attack_defend_map.BoolValue;
+	
+	GameRules_SetProp("m_bStopWatch", bUseStopWatch);
+	mp_tournament_stopwatch.BoolValue = bUseStopWatch;
 }
 
-
-public void onRoundCompleted(Event event, const char[] name, bool dontBroadcast)
+public void OnEntityCreated(int entity, const char[] classname)
 {
-// Don't enable for non-pl maps
-	if(!gStopwatchEnabled.BoolValue || !GetConVarBool(FindConVar("mp_tournament")))
+	if (!g_bEnabled)
+		return;
+	
+	if (StrEqual(classname, "team_round_timer"))
 	{
-		return ;
-	}
-
-	if(event.GetInt("round_complete") == 1 || StrEqual(name, "arena_win_panel"))
-	{
-		g_iRoundsCompleted++;
-	}
-
-	// Stopwatch only works on PL and maybe A/D? This should be fine as they use maxrounds
-	if(g_iRoundsCompleted >= GetConVarInt(FindConVar("mp_maxrounds")))
-	{
-		CreateTimer(gStopwatchChangelvlTime.FloatValue, handleChangelevel);
-	}
-}
-
-
-public Action handleChangelevel(Handle timer)
-{
-	char map[PLATFORM_MAX_PATH];
-	GetNextMap(map, sizeof map);
-	ServerCommand("changelevel %s", map);
-
-	return Plugin_Continue;
-}
-
-public int onMapEndStopwatch()
-{
-	if(GetConVarBool(FindConVar("mp_tournament")))
-	{
-		SetConVarBool(FindConVar("mp_tournament"), false);
-	}
-
-	return 0;
-}
-
-
-public Action cmd_mp_tournament_teamname(int client, const char[] command, int argc)
-{
-	if(GetUserAdmin(client) == INVALID_ADMIN_ID)
-	{
-		return Plugin_Stop;
-	}
-
-	return Plugin_Continue;
-}
-
-
-bool isValidStopwatchMap()
-{
-	char mapName[256];
-	GetCurrentMap(mapName, sizeof mapName);
-	if(StrContains(mapName, "workshop/", false) == 0)
-	{
-		log("matched workshop: %s", mapName);
-		return StrContains(mapName, "workshop/pl_", false) == 0;
-	}
-	log("mapName: %s", mapName);
-
-	return StrContains(mapName, "pl_", false) == 0;
-}
-
-
-public int onTeamplayRoundStart(Handle event, const char[] name, bool dontBroadcast)
-{
-	if(!gStopwatchEnabled.BoolValue || !isValidStopwatchMap() || g_bHasWaitedForPlayers)
-	{
-		return 0;
-	}
-
-	log("Enabling stopwatch mode (mp_tournament)");
-
-	// set cvars
-	SetConVarBool(FindConVar("mp_tournament"), true);
-	SetConVarBool(FindConVar("mp_tournament_allow_non_admin_restart"), false);
-	SetConVarBool(FindConVar("mp_tournament_stopwatch"), true);
-
-	// set team names
-	char teamnameA[16];
-	gStopwatchNameBlu.GetString(teamnameA, sizeof teamnameA);
-	SetConVarString(FindConVar("mp_tournament_blueteamname"), teamnameA);
-
-	char teamnameB[16];
-	gStopwatchNameRed.GetString(teamnameB, sizeof teamnameB);
-	SetConVarString(FindConVar("mp_tournament_redteamname"), teamnameB);
-
-	// wait for players, then start the tournament
-	ServerCommand("mp_restartgame %d", GetConVarInt(FindConVar("mp_waitingforplayers_time")));
-	g_bHasWaitedForPlayers = true;
-
-	AllowMatch();
-
-	return 0;
-}
-
-
-stock void AllowMatch()
-{
-	for(int i = 1; i <= MaxClients; i++)
-	{
-		GameRules_SetProp("m_bTeamReady", 1, .element = i);
+		g_dynamicHookIds.Push(g_hook_CTeamRoundTimer_SetTimeRemaining.HookEntity(Hook_Pre, entity, CTeamRoundTimer_SetTimeRemaining_Pre, DHookRemovalCB_OnHookRemoved));
+		g_dynamicHookIds.Push(g_hook_CTeamRoundTimer_SetTimeRemaining.HookEntity(Hook_Post, entity, CTeamRoundTimer_SetTimeRemaining_Post, DHookRemovalCB_OnHookRemoved));
+		
+		g_dynamicHookIds.Push(g_hook_CTeamRoundTimer_AddTimerSeconds.HookEntity(Hook_Pre, entity, CTeamRoundTimer_AddTimerSeconds_Pre, DHookRemovalCB_OnHookRemoved));
+		g_dynamicHookIds.Push(g_hook_CTeamRoundTimer_AddTimerSeconds.HookEntity(Hook_Post, entity, CTeamRoundTimer_AddTimerSeconds_Post, DHookRemovalCB_OnHookRemoved));
 	}
 }
 
-
-public Action cmd_block(int client, int args)
+public void OnClientPutInServer(int client)
 {
-	return (gStopwatchEnabled.BoolValue ? Plugin_Handled : Plugin_Continue);
+	if (!g_bEnabled)
+		return;
+	
+	if (!IsFakeClient(client))
+		mp_tournament.ReplicateToClient(client, GameRules_GetProp("m_bInWaitingForPlayers") ? "0" : "1");
+}
+
+public void TF2_OnWaitingForPlayersStart()
+{
+	if (!g_bEnabled)
+		return;
+	
+	ReplicateTournamentMode(false);
+}
+
+public void TF2_OnWaitingForPlayersEnd()
+{
+	if (!g_bEnabled)
+		return;
+	
+	ReplicateTournamentMode(true);
+}
+
+void TogglePlugin(bool bEnable)
+{
+	g_bEnabled = bEnable;
+	
+	if (bEnable)
+	{
+		mp_tournament.Flags &= ~(FCVAR_REPLICATED | FCVAR_NOTIFY);
+		
+		g_detour_CTFGameRules_ManageStopwatchTimer.Enable(Hook_Pre, CTFGameRules_ManageStopwatchTimer_Pre);
+		g_detour_CTFGameRules_ManageStopwatchTimer.Enable(Hook_Post, CTFGameRules_ManageStopwatchTimer_Post);
+		
+		for (int client = 1; client <= MaxClients; client++)
+		{
+			if (!IsClientInGame(client))
+				continue;
+			
+			OnClientPutInServer(client);
+		}
+		
+		int entity = -1;
+		while ((entity = FindEntityByClassname(entity, "*")) != -1)
+		{
+			if (entity <= MaxClients)
+				continue;
+			
+			char classname[256];
+			if (!GetEntityClassname(entity, classname, sizeof(classname)))
+				continue;
+			
+			OnEntityCreated(entity, classname);
+		}
+		
+		OnMapStart();
+	}
+	else
+	{
+		mp_tournament.Flags |= (FCVAR_REPLICATED | FCVAR_NOTIFY);
+		ReplicateTournamentMode(mp_tournament.BoolValue);
+		
+		g_detour_CTFGameRules_ManageStopwatchTimer.Disable(Hook_Pre, CTFGameRules_ManageStopwatchTimer_Pre);
+		g_detour_CTFGameRules_ManageStopwatchTimer.Disable(Hook_Post, CTFGameRules_ManageStopwatchTimer_Post);
+		
+		for (int i = g_dynamicHookIds.Length - 1; i >= 0; i--)
+		{
+			int hookid = g_dynamicHookIds.Get(i);
+			DynamicHook.RemoveHook(hookid);
+		}
+	}
+}
+
+DynamicDetour CreateDynamicDetour(GameData gameconf, const char[] name)
+{
+	DynamicDetour detour = DynamicDetour.FromConf(gameconf, name);
+	if (!detour)
+		ThrowError("Failed to create detour for %s", name);
+	
+	return detour;
+}
+
+DynamicHook CreateDynamicHook(GameData gameconf, const char[] name)
+{
+	DynamicHook hook = DynamicHook.FromConf(gameconf, name);
+	if (!hook)
+		ThrowError("Failed to create virtual hook for %s", name);
+	
+	return hook;
+}
+
+void ReplicateTournamentMode(bool bInTournamentMode)
+{
+	char value[11];
+	if (!IntToString(bInTournamentMode, value, sizeof(value)))
+		return;
+	
+	for (int client = 1; client <= MaxClients; client++)
+	{
+		if (!IsClientInGame(client))
+			continue;
+		
+		if (IsFakeClient(client))
+			continue;
+		
+		mp_tournament.ReplicateToClient(client, value);
+	}
+}
+
+void SetTournamentMode(bool bInTournamentMode)
+{
+	mp_tournament.RemoveChangeHook(OnTournamentModeChanged);
+	mp_tournament.BoolValue = bInTournamentMode;
+	mp_tournament.AddChangeHook(OnTournamentModeChanged);
+}
+
+static void OnTournamentModeChanged(ConVar convar, const char[] oldValue, const char[] newValue)
+{
+	if (g_bEnabled == convar.BoolValue)
+	{
+		TogglePlugin(!convar.BoolValue);
+	}
+}
+
+static MRESReturn CTFGameRules_ManageStopwatchTimer_Pre(DHookParam param)
+{
+	SetTournamentMode(true);
+	return MRES_Ignored;
+}
+
+static MRESReturn CTFGameRules_ManageStopwatchTimer_Post(DHookParam param)
+{
+	SetTournamentMode(false);
+	return MRES_Ignored;
+}
+
+static MRESReturn CTeamRoundTimer_SetTimeRemaining_Pre(int timer, DHookParam param)
+{
+	SetTournamentMode(true);
+	return MRES_Ignored;
+}
+
+static MRESReturn CTeamRoundTimer_SetTimeRemaining_Post(int timer, DHookParam param)
+{
+	SetTournamentMode(false);
+	return MRES_Ignored;
+}
+
+static MRESReturn CTeamRoundTimer_AddTimerSeconds_Pre(int timer, DHookParam param)
+{
+	SetTournamentMode(true);
+	return MRES_Ignored;
+}
+
+static MRESReturn CTeamRoundTimer_AddTimerSeconds_Post(int timer, DHookParam param)
+{
+	SetTournamentMode(false);
+	return MRES_Ignored;
+}
+
+static MRESReturn CTeamplayRoundBasedRules_StopWatchModeThink_Pre()
+{
+	SetTournamentMode(true);
+	return MRES_Ignored;
+}
+
+static MRESReturn CTeamplayRoundBasedRules_StopWatchModeThink_Post()
+{
+	SetTournamentMode(false);
+	return MRES_Ignored;
+}
+
+static void DHookRemovalCB_OnHookRemoved(int hookid)
+{
+	int index = g_dynamicHookIds.FindValue(hookid);
+	if (index != -1)
+		g_dynamicHookIds.Erase(index);
 }

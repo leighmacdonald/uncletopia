@@ -1,0 +1,109 @@
+/**
+ * Copyright (C) 2023  Mikusch
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+"Games"
+{
+	"tf"
+	{
+		"Signatures"
+		{
+			"CTFGameRules::ManageStopwatchTimer"
+			{
+				"library"	"server"
+				"linux"		"@_ZN12CTFGameRules20ManageStopwatchTimerEb"
+				"windows"	"\x55\x8B\xEC\x83\xEC\x20\x53\x56\x57\x8B\xF9\x89\x7D\xF4"
+			}
+		}
+		"Offsets"
+		{
+			"CTeamRoundTimer::SetTimeRemaining"
+			{
+				"library"	"server"
+				"linux"		"203"
+				"windows"	"202"
+			}
+			"CTeamRoundTimer::AddTimerSeconds"
+			{
+				"library"	"server"
+				"linux"		"204"
+				"windows"	"203"
+			}
+			"CTeamplayRoundBasedRules::StopWatchModeThink"
+			{
+				"library"	"server"
+				"linux"		"182"
+				"windows"	"181"
+			}
+		}
+		"Functions"
+		{
+			"CTFGameRules::ManageStopwatchTimer"
+			{
+				"signature"	"CTFGameRules::ManageStopwatchTimer"
+				"callconv"	"thiscall"
+				"return"	"void"
+				"this"		"ignore"
+				"arguments"
+				{
+					"bInSetup"
+					{
+						"type"	"bool"
+					}
+				}
+			}
+			"CTeamRoundTimer::SetTimeRemaining"
+			{
+				"offset"	"CTeamRoundTimer::SetTimeRemaining"
+				"hooktype"	"entity"
+				"return"	"void"
+				"this"		"entity"
+				"arguments"
+				{
+					"iTimerSeconds"
+					{
+						"type"	"int"
+					}
+				}
+			}
+			"CTeamRoundTimer::AddTimerSeconds"
+			{
+				"offset"	"CTeamRoundTimer::AddTimerSeconds"
+				"hooktype"	"entity"
+				"return"	"void"
+				"this"		"entity"
+				"arguments"
+				{
+					"iSecondsToAdd"
+					{
+						"type"	"int"
+					}
+					"iTeamResponsible"
+					{
+						"type"	"int"
+					}
+				}
+			}
+			"CTeamplayRoundBasedRules::StopWatchModeThink"
+			{
+				"offset"	"CTeamplayRoundBasedRules::StopWatchModeThink"
+				"hooktype"	"gamerules"
+				"return"	"void"
+				"this"		"ignore"
+			}
+		}
+	}
+}

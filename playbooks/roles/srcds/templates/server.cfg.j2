@@ -174,12 +174,12 @@ tf_fall_damage_disablespread 1
 net_chan_limit_msec 160
 
 // Disable glow for the more "serious" servers running stopwatch
-tf_spawn_glows_duration {% if item.rotation|default("all") == "stopwatch" %}0{% else %}10{% endif %}
+tf_spawn_glows_duration {% if item.config|default("all") == "stopwatch" %}0{% else %}10{% endif %}
 
 // Stopwatch switches
-mp_match_end_at_timelimit {% if item.rotation|default("all") == "stopwatch" %}1{% else %}0{% endif %}
+mp_match_end_at_timelimit {% if item.config|default("all") == "stopwatch" %}1{% else %}0{% endif %}
 
-sm_cvar gb_rules_round_time {% if item.rotation|default("all") == "stopwatch" %}300{% else %}-1{% endif %}
+sm_cvar gb_rules_round_time {% if item.config|default("all") == "stopwatch" %}300{% else %}-1{% endif %}
 
 {% if item.config == 'pve' %}
 sm_cvar sm_danepve_respawn_bots_on_round_end 0
@@ -190,7 +190,7 @@ sm_cvar sm_gimme_chat_notice_enabled: 0
 sm_cvar sm_gimme_permanent_items_enabled: 1
 {% endif %}
 
-sm_cvar mp_waitingforplayers_time {% if item.rotation|default("all") == "community" %}60{% else %}35{% endif %}
+sm_cvar mp_waitingforplayers_time {% if item.config|default("all") == "all_plus" %}60{% else %}35{% endif %}
 
 ce_sentry_dsn_url "{{ sentry_dsn }}"
 ce_region {{ item.sentry_ce_region|default("") }}

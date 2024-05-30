@@ -298,6 +298,30 @@
   loop_control:
     index_var: loop0
 
+- name: /tf/cfg/mapconfig/gametype/pl.cfg
+  ansible.builtin.template:
+    src: pl.cfg.j2
+    dest: ~/srcds-{{ item.server_name_short }}/tf/cfg/mapconfig/gametype/pl.cfg
+    mode: 0775
+  tags:
+    - game_config
+  when: item.config == 'stopwatch'
+  loop: "{{ services }}"
+  loop_control:
+    index_var: loop0
+
+- name: /tf/cfg/mapconfig/gametype/workshop/pl.cfg
+  ansible.builtin.template:
+    src: pl.cfg.j2
+    dest: ~/srcds-{{ item.server_name_short }}/tf/cfg/mapconfig/gametype/workshop/pl.cfg
+    mode: 0775
+  tags:
+    - game_config
+  when: item.config == 'stopwatch'
+  loop: "{{ services }}"
+  loop_control:
+    index_var: loop0
+
 - name: /tf/cfg/sourcemod/rtv.cfg
   ansible.builtin.template:
     src: rtv.cfg.j2
