@@ -2,14 +2,13 @@
 #pragma tabsize 4
 #pragma newdecls required
 
-#define PLUGIN_VERSION "0.6.6"
+#define PLUGIN_VERSION "0.7.7"
 
 #define MAX_SCORES 256
 
 // Core gbans options
 ConVar gb_core_host;
 ConVar gb_core_port;
-ConVar gb_core_server_name;
 ConVar gb_core_server_key;
 
 // In Game Tweaks
@@ -26,22 +25,6 @@ ConVar gb_stv_timestop;
 ConVar gb_stv_finishmap;
 ConVar gb_stv_path;
 ConVar gb_stv_path_complete;
-
-// clang-format off
-enum struct PlayerInfo
-{
-	bool authed;
-	char ip[16] ;
-	int banType;
-	int permissionLevel;
-	char message[256];
-}
-// clang-format on
-
-// Globals must all start with g
-PlayerInfo gPlayers[MAXPLAYERS + 1];
-
-char gAccessToken[512];
 
 // Reports command
 int gReportSourceId = -1;

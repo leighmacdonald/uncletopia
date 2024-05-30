@@ -5,7 +5,6 @@
 #include <admin>
 #include <adminmenu>
 #include <basecomm>
-#include <connect>	// connect extension
 #include <gbans>
 #include <sdktools>
 #include <ripext>
@@ -15,6 +14,7 @@
 #include <tf2_stocks>
 
 #include "gbans/globals.sp"
+#include "gbans/admins.sp"
 #include "gbans/auth.sp"
 #include "gbans/balance.sp"
 #include "gbans/ban.sp"
@@ -23,6 +23,11 @@
 #include "gbans/connect.sp"
 #include "gbans/report.sp"
 #include "gbans/stv.sp"
+
+bool LateLoaded;
+
+bool PlayerStatus[MAXPLAYERS + 1];
+
 
 public Plugin myinfo =
 {
@@ -45,7 +50,6 @@ public void OnPluginStart()
 	RegConsoleCmd("autoteam", onCmdAutoTeamAction);
 
 	RegAdminCmd("gb_ban", onAdminCmdBan, ADMFLAG_BAN);
-	RegAdminCmd("gb_reauth", onAdminCmdReauth, ADMFLAG_ROOT);
 	RegAdminCmd("gb_reload", onAdminCmdReload, ADMFLAG_ROOT);
 	RegAdminCmd("gb_stv_record", Command_Record, ADMFLAG_KICK, "Starts a SourceTV demo");
 	RegAdminCmd("gb_stv_stoprecord", Command_StopRecord, ADMFLAG_KICK, "Stops the current SourceTV demo");
@@ -58,7 +62,6 @@ public void OnPluginStart()
 	// Core settings
 	gb_core_host = AutoExecConfig_CreateConVar("gb_core_host", "localhost", "Remote gbans host", FCVAR_NONE);
     gb_core_port = AutoExecConfig_CreateConVar("gb_core_port", "6006", "Remote gbans port", FCVAR_NONE, true, 1.0, true, 65535.0);
-	gb_core_server_name = AutoExecConfig_CreateConVar("gb_core_server_name", "", "Short hand server name", FCVAR_NONE);
 	gb_core_server_key = AutoExecConfig_CreateConVar("gb_core_server_key", "", "GBans server key used to authenticate with the service", FCVAR_NONE);
 
 	// In Game Tweaks
@@ -78,17 +81,42 @@ public void OnPluginStart()
 
 	AutoExecConfig_ExecuteFile();
 	AutoExecConfig_CleanFile();
+
+	//BuildPath(Path_SM, logFile, sizeof(logFile), "logs/gbans.log");
+
+	if (LateLoaded)
+	{
+		AccountForLateLoading();
+	}
+
+	reloadAdmins(true);
 }
 
-public void OnConfigsExecuted()
+stock void AccountForLateLoading()
 {
+	char auth[30];
+
+	for (int i = 1; i <= MaxClients; i++)
+	{
+		if (IsClientConnected(i) && !IsFakeClient(i))
+		{
+			PlayerStatus[i] = false;
+		}
+		if (IsClientInGame(i) && !IsFakeClient(i) && IsClientAuthorized(i) && GetClientAuthId(i, AuthId_Steam2, auth, sizeof(auth)))
+		{
+			checkPlayer(i);
+		}
+	}
+}
+
+public void OnConfigsExecuted() {
+
+
 	gb_stv_minplayers.AddChangeHook(OnConVarChanged);
 	gb_stv_ignorebots.AddChangeHook(OnConVarChanged);
 	gb_stv_timestart.AddChangeHook(OnConVarChanged);
 	gb_stv_timestop.AddChangeHook(OnConVarChanged);
 	gb_stv_path.AddChangeHook(OnConVarChanged);
-
-	refreshToken();
 
 	char sPath[PLATFORM_MAX_PATH];
 
@@ -134,31 +162,15 @@ public void OnMapEnd()
 	}
 }
 
-public void OnClientPutInServer(int clientId)
-{
-	switch(gPlayers[clientId].banType)
-	{
-		case BSNoComm:
-		{
-			if(!BaseComm_IsClientMuted(clientId))
-			{
-				BaseComm_SetClientMute(clientId, true);
-			}
-			if(!BaseComm_IsClientGagged(clientId))
-			{
-				BaseComm_SetClientGag(clientId, true);
-			}
-			ReplyToCommand(clientId, "You are currently muted/gag, it will expire automatically");
-			gbLog("Muted \"%L\" for an unfinished mute punishment.", clientId);
-		}
-	}
-	
-	CheckStatus();
+public void OnMapStart() {
+	reloadAdmins(true);
 }
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
 	CreateNative("GB_BanClient", Native_GB_BanClient);
+
+	LateLoaded = late;
 	
 	return APLRes_Success;
 }

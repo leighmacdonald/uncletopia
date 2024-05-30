@@ -44,13 +44,16 @@ enum GB_BanReason {
     spam = 8,
     languageUsed = 9,
     profile = 10,
-    itemDescriptions = 11
+    itemDescriptions = 11,
+    botHost = 12,
+    Evading = 13,
+    Username = 14
 }
 
 /**
  * Ban or Mute+Gag a client
  *
- * @param adminId Client idx of admin who banned, -1 for system.
+ * @param adminId Client idx of admin who banned, 0 for system.
  * @param targetId Client idx of ban target
  * @param reason Reason for the ban
  * @param duration Duration in seconds, 0 = permanent

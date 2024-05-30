@@ -53,7 +53,7 @@ public Action onCmdMod(int clientId, int argc)
 	obj.SetInt("client", clientId);
 
 	char url[1024];
-	makeURL("/api/ping_mod", url, sizeof url);
+	makeURL("/api/sm/ping_mod", url, sizeof url);
 
 	HTTPRequest request = new HTTPRequest(url);
 	addAuthHeader(request);
@@ -72,7 +72,6 @@ void onPingModRespReceived(HTTPResponse response, any clientId)
 
         return;
     } 
-
 	ReplyToCommand(clientId, "Mods have been alerted, thanks!");
 }
 
@@ -88,14 +87,6 @@ public Action onCmdHelp(int clientId, int argc)
 	ReplyToCommand(clientId, "gb_version -- Show the current version");
 	return Plugin_Handled;
 }
-
-
-public Action onAdminCmdReauth(int clientId, int argc)
-{
-	refreshToken();
-	return Plugin_Handled;
-}
-
 
 public Action onAdminCmdBan(int clientId, int argc)
 {

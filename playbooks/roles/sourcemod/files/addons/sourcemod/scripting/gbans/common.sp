@@ -38,7 +38,10 @@ stock bool isValidClient(int client)
 }
 
 stock void addAuthHeader(HTTPRequest request) {
-	request.SetHeader("Authorization", gAccessToken);
+	char serverKey[PLATFORM_MAX_PATH];
+	GetConVarString(gb_core_server_key, serverKey, sizeof serverKey);
+
+	request.SetHeader("Authorization", serverKey);
 }
 
 stock int GetRealClientCount()
