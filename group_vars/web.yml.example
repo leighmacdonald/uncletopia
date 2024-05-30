@@ -1,7 +1,6 @@
 steam_key: ZXZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ
 zerossl_key: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
-bot_detector_bot_token: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
 alertmanager:
   webhook_url: https://discord.com/api/webhooks/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -9,71 +8,21 @@ alertmanager:
     - a@gmail.com
     - b@gmail.com
 
-paypal:
-  client_id: asdf
-  secret: asdf
-  url: adsf
-
-patreon:
-  client_id: asdfgasdfasdf
-  client_secret: adfgasdf
-  access_token: asdfasdf
-  refresh_token: asdfasdfasdf
-
 gbans_web:
-  image: ghcr.io/leighmacdonald/gbans:v0.3.2
-  # steamid64
+  image: ghcr.io/leighmacdonald/gbans:v0.7.9
   owner: 0000000000000000000
-  dsn: postgresql://gbans:gbans@gbans-postgres/gbans
-  run_mode: "release"
-  cookie_key: must_change_me
-  address: https://kittyland.com
-  banned_steam_group_ids: [ ]
-    # - 000000000000000000
-  port: 6006
-  update_freq: 15s
-  network_bans_enabled: true
-  network_bans_list:
-    - name: tf2bd
-      url: https://raw.githubusercontent.com/PazerOP/tf2_bot_detector/master/staging/cfg/playerlist.official.json
-      type: tf2bd
+  external_url: https://example.com
+  http_host: 0.0.0.0
+  http_port: 6006
+  http_static_path: ./dist/
+  http_cookie_key: change_me
+  http_cors_origins:
+    - "https://gbans.localhost"
+    - "http://gbans.localhost:5173"
+    - "https://gbans.localhost:6006"
 
-  s3:
-    access_key: "xxxxxxxxxxxxxxxxxxxx"
-    secret_key: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-    endpoint: "localhost:9901"
-    external_url: "https://asset.exmaple.com"
-    ssl: false
-    region: ""
-    bucket_media: media
-    bucket_demo: demos
-
-  relay:
-    enabled: true
-    channel_ids: [000000000000000000]
-  ip2location:
-    enabled: true
-    api_key: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-  word_filter:
-    enabled: false
-    sources:
-      - https://raw.githubusercontent.com/RobertJGabriel/Google-profanity-words/master/list.txt
-  discord:
-    app_id: 000000000000000000
-    guild_id: 000000000000000000
-    mod_channel_id: 00000000000000000
-    link_id:
-    public_log_enabled: true
-    public_log_channel_id: 00000000000000000
-    token: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-    roles: [00000000000000000, 11111111111111111]
-    mod_channel_ids: [00000000000000000]
-    log_channel_id: 00000000000000000
-    public_match_log_channel_id: 111111111111111
-
-  logging:
-    srcds_log_addr: ":27115"
-    srcds_log_external_host: ""
+  database_dsn: postgresql://gbans:gbans@gbans-postgres/gbans
+  database_log_queries: false
 
 caddy:
   tls_configs:

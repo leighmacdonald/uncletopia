@@ -1,13 +1,13 @@
+/**
+ * Implements a HTTP version of the standard sourcemod  admin-sql-prefetch plugin.
+ */
 #pragma semicolon 1
 #pragma tabsize 4
 #pragma newdecls required
 
 #include "ripext"
 
-/**
- * Implements a HTTP version of the standard sourcemod  admin-sql-prefetch plugin.
- */
-
+// Are we already running admin update
 bool gQueuedAdminUpdate = false;
 
 // Naively expects to be called in the order of: overrides -> groups -> admins
@@ -19,7 +19,6 @@ public void OnRebuildAdminCache(AdminCachePart part)
     }
 
     gQueuedAdminUpdate = true;
-    gbLog("got cache part: %d", part);
     RebuildGroups();
 }
 
@@ -58,6 +57,7 @@ void onRebuildGroups(HTTPResponse response, any value) {
         group.GetString("flags", flags, sizeof(flags));
         group.GetString("name", name, sizeof(name));
         immunity = group.GetInt("immunity_level");
+
 
         GroupId grp;
 		if ((grp = FindAdmGroup(name)) == INVALID_GROUP_ID)
