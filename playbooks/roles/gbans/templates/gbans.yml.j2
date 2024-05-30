@@ -13,6 +13,7 @@ http_port: "{{ gbans_web.http_port }}"
 http_static_path: "{{ gbans_web.http_port }}"
 # Encryption key for JWT. https://numbergenerator.org/random-64-digit-hex-codes-generator is a good option.
 http_cookie_key: "{{ gbans_web.http_cookie_key }}"
+http_client_timeout: "{{ gbans_web.http_client_timeout|default(10) }}"
 # Used to let JS and cookies work properly. At a minimum, requires the same address as in
 # general.external_url.
 http_cors_origins:

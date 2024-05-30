@@ -38,7 +38,7 @@
       logging: "promtail"
       logging_jobname: "containerlogs"
     env:
-      GBANS_DATABASE_DSN: "{{ gbans_web.dsn }}"
+      GBANS_DATABASE_DSN: "{{ gbans_web.database_dsn }}"
       GBANS_GENERAL_STEAM_KEY: "{{ steam_key }}"
     ports:
       - 127.0.0.1:6006:6006
