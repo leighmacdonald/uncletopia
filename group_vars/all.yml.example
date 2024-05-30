@@ -54,7 +54,6 @@ gbans:
   gb_core_host: "https://kittyland.com"
   gb_core_port: 443
   gb_core_server_key: "{{ item.gbans_key }}"
-  gb_core_server_name: "{{ item.server_name_short }}"
   gb_stv_enable: 1
   gb_stv_finishmap: "1"
   gb_stv_ignorebots: "1"

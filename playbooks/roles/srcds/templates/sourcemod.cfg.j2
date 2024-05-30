@@ -33,7 +33,7 @@ sm_datetime_format {{ sm_datetime_format|default('%d/%m/%Y - %H:%M:%S') }}
 // 1: Protect from admins of lower access only.
 // 2: Protect from admins of equal to or lower access.
 // 3: Same as 2, except admins with no immunity can affect each other.
-sm_immunity_mode {{ sm_immunity_mode|default(0) }}
+sm_immunity_mode {{ sm_immunity_mode|default(2) }}
 
 // Sets how many seconds SourceMod should adjust time values for incorrect
 // server clocks.  This can be positive or negative and will affect every

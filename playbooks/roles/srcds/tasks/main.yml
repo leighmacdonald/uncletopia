@@ -80,6 +80,18 @@
       - libcurl4-gnutls-dev:i386
       - tmux
 
+- name: Cleanup existing sourcemod plugins dif
+  ansible.builtin.file:
+    state: absent
+    path: /home/tf2server/srcds-{{ item.server_name_short }}/tf/addons/sourcemod/plugins/
+  loop: "{{ services }}"
+
+- name: Cleanup existing sourcemod extensions dif
+  ansible.builtin.file:
+    state: absent
+    path: /home/tf2server/srcds-{{ item.server_name_short }}/tf/addons/sourcemod/extensions/
+  loop: "{{ services }}"
+
 - name: Build sourcemod
   ansible.builtin.include_role:
     name: sourcemod
@@ -135,6 +147,17 @@
   ansible.builtin.template:
     src: maplists.cfg.j2
     dest: ~/srcds-{{ item.server_name_short }}/tf/addons/sourcemod/configs/maplists.cfg
+    mode: 0655
+  tags:
+    - game_config
+  loop: "{{ services }}"
+  loop_control:
+    index_var: loop0
+
+- name: /tf/addons/sourcemod/configs/databases.cfg
+  ansible.builtin.template:
+    src: databases.cfg.j2
+    dest: ~/srcds-{{ item.server_name_short }}/tf/addons/sourcemod/configs/databases.cfg
     mode: 0655
   tags:
     - game_config

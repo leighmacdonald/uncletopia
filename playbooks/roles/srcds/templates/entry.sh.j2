@@ -1,22 +1,22 @@
 #!/bin/bash
 
-{% for name in config[item.config].plugins_disabled|default(config["default"].plugins_disabled) %}
-F=./tf/addons/sourcemod/plugins/{{ name }}
-if test -f "$F"; then
-    echo "Disabling plugin $F"
-    mv -v "$F" ./tf/addons/sourcemod/plugins/disabled/
+{% for name in config[item.config].plugins_disabled %}
+D=./tf/addons/sourcemod/plugins/{{ name }}
+if test -f "$D"; then
+    echo "Disabling plugin $D"
+    mv -v "$D" ./tf/addons/sourcemod/plugins/disabled/
 fi
 {% endfor %}
 
-{% for name in config[item.config].plugins_enabled|default(config["default"].plugins_enabled) %}
-F=./tf/addons/sourcemod/plugins/disabled/{{ name }}
-if test -f "$F"; then
-    echo "Enabling plugin $F"
-    mv -v "$F" ./tf/addons/sourcemod/plugins/
+{% for name in config[item.config].plugins_enabled %}
+E=./tf/addons/sourcemod/plugins/disabled/{{ name }}
+if test -f "$E"; then
+    echo "Enabling plugin $E"
+    mv -v "$E" ./tf/addons/sourcemod/plugins/
 fi
 {% endfor %}
 
-{% for name in config[item.config].extensions_disabled|default(config["default"].extensions_disabled) %}
+{% for name in config[item.config].extensions_disabled %}
 E=./tf/addons/sourcemod/extensions/{{ name }}
 if test -f "$E"; then
     echo "Disabling extension $E"
