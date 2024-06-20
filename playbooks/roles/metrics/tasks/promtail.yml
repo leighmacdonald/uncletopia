@@ -37,7 +37,7 @@
       - tempo_data:/tmp/tempo
     ports:
       - "127.0.0.1:9080:9080"
-      - "{{ vpn_hosts[inventory_hostname].ip }}:9080:9080"
+      - "{{ vpn_hosts[inventory_hostname].ip|default(ip) }}:9080:9080"
   tags:
     - promtail
     - metrics-client
