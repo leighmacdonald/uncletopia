@@ -48,4 +48,4 @@
     ports:
       - 443:443
       - 80:80
-      - "{{ vpn_hosts[inventory_hostname].ip }}:2019:2019"
+      - "{{ vpn_hosts[inventory_hostname].ip|default(ip) }}:2019:2019"
