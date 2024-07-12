@@ -7,6 +7,15 @@
     dest: /etc/bdapi.yml
     mode: 0775
 
+- name: Generate /etc/bdapi.key
+  become: true
+  ansible.builtin.copy:
+    content: "{{ bdapi_private_key }}"
+    dest: /etc/bdapi.key
+    mode: 0600
+    owner: tf2server
+    group: tf2
+
 - name: bdapi_cache_data volume
   docker_volume:
     name: bdapi_cache_data
@@ -43,7 +52,7 @@
 - name: bd-api-service
   docker_container:
     name: bd-api-service
-    image: ghcr.io/leighmacdonald/bd-api:master
+    image: ghcr.io/leighmacdonald/bd-api:v1.0.1
     restart: true
     recreate: true
     pull: true
@@ -54,6 +63,7 @@
     volumes:
       - bdapi_cache_data:/app/.cache
       - /etc/bdapi.yml:/app/bdapi.yml
+      - /etc/bdapi.key:/app/private.key
     ports:
       - 127.0.0.1:8888:8888
     labels:

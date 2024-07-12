@@ -1,8 +1,10 @@
 dsn: "postgresql://bdapi:bdapi@bdapi-postgres:5432/bdapi"
 run_mode: release
 private_key_path: "./private.key"
+private_key_password: "{{ bdapi_private_key_password }}"
 steam_api_key: "{{ steam_key }}"
 listen_addr: ":8888"
+logstf_scraper_enabled: true
 sourcebans_scraper_enabled: true
 enable_cache: true
 log_file_enabled: false
@@ -10,7 +12,7 @@ log_file_path: "bdapi.log"
 # One of: debug, info, warn, error, dpanic, panic, fatal
 log_level: "info"
 cache_dir: "./.cache/"
-proxies_enabled: false
+proxies_enabled: true
 proxies:
 {% for hostname, conf in vpn_hosts.items() %}
   - username: tf2server
