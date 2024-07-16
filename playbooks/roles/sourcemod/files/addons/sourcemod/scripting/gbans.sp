@@ -65,8 +65,8 @@ public void OnPluginStart()
 	gb_core_server_key = AutoExecConfig_CreateConVar("gb_core_server_key", "", "GBans server key used to authenticate with the service", FCVAR_NONE);
 
 	// In Game Tweaks
-	gb_disable_autoteam = AutoExecConfig_CreateConVar("gb_hide_connections", "1", "Dont show the disconnect message to users", FCVAR_NONE, true, 0.0, true, 1.0);
-	gb_hide_connections = AutoExecConfig_CreateConVar("gb_disable_autoteam", "1", "Dont allow the use of autoteam command", FCVAR_NONE, true, 0.0, true, 1.0);
+	gb_disable_autoteam = AutoExecConfig_CreateConVar("gb_hide_connections", "1", "Dont allow the use of autoteam command", FCVAR_NONE, true, 0.0, true, 1.0);
+	gb_hide_connections = AutoExecConfig_CreateConVar("gb_disable_autoteam", "1", "Dont show the disconnect message to users", FCVAR_NONE, true, 0.0, true, 1.0);
 
 	// STV settings
 	gb_stv_enable = AutoExecConfig_CreateConVar("gb_stv_enable", "1", "Enable SourceTV", FCVAR_NONE, true, 0.0, true, 1.0);

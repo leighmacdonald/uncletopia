@@ -262,43 +262,16 @@ void DoGameData()
         }
         LogMessage("-> Set up [PRE]  SpeakWepFire detour");
 
-        if (isWindows)
+        Handle UpdateExpression = DHookCreateFromConf(hGameConf, "CTFPlayer::UpdateExpression");
+        if (!UpdateExpression)
         {
-            // ::UpdateExpression was inlined on Windows in TF2 version 8826692
-            MemoryPatch InlinedExpressionUpdate = MemoryPatch.CreateFromConf(hGameConf, "CTFPlayer::TFPlayerThink::InlinedExpressionUpdateSkip");
-            MemoryPatch InlinedExpressionUpdateEnd = MemoryPatch.CreateFromConf(hGameConf, "CTFPlayer::TFPlayerThink::InlinedExpressionUpdateEnd");
-
-            if (!InlinedExpressionUpdateEnd.Validate())
-            {
-                SetFailState("Failed to verify CTFPlayer::TFPlayerThink::InlinedExpressionUpdateEnd.");
-            }
-            else if (!InlinedExpressionUpdate.Validate())
-            {
-                SetFailState("Failed to verify CTFPlayer::TFPlayerThink::InlinedExpressionUpdateSkip.");
-            }
-            else if (!InlinedExpressionUpdate.Enable())
-            {
-                SetFailState("Failed to enable CTFPlayer::TFPlayerThink::InlinedExpressionUpdateSkip patch.");
-            }
-            else
-            {
-                int jumpLength = view_as<int>(InlinedExpressionUpdateEnd.Address) - (view_as<int>(InlinedExpressionUpdate.Address) + 6);
-                StoreToAddress(InlinedExpressionUpdate.Address + view_as<Address>(2), jumpLength, NumberType_Int32);
-                LogMessage("-> Enabled InlinedExpressionUpdateSkip (jump length %d)", jumpLength);
-            }
+            SetFailState("Couldn't create DHOOK for UpdateExpression");
         }
-        else
+        if (!DHookEnableDetour(UpdateExpression, false /* pre */, CTFPlayer__UpdateExpression_Pre))
         {
-            Handle UpdateExpression = DHookCreateFromConf(hGameConf, "CTFPlayer::UpdateExpression");
-            if (UpdateExpression)
-            {
-                if (!DHookEnableDetour(UpdateExpression, false /* pre */, CTFPlayer__UpdateExpression_Pre))
-                {
-                    SetFailState("Couldn't set up detour for UpdateExpression");
-                }
-                LogMessage("-> Set up [PRE]  UpdateExpression detour");
-            }
+            SetFailState("Couldn't set up detour for UpdateExpression");
         }
+        LogMessage("-> Set up [PRE]  UpdateExpression detour");
     }
 
     delete hGameConf;
