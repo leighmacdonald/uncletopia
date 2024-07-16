@@ -8,12 +8,12 @@
 
     "clientprefs"
     {
-        "driver"            "sqlite"
-        "host"                "localhost"
-        "database"            "clientprefs-sqlite"
-        "user"                "root"
-        "pass"                ""
+        "driver"            "pgsql"
+        "host"                "{{ sourcemod_db_host|default("localhost") }}"
+        "database"            "{{ sourcemod_db_database|default("gbans") }}"
+        "user"                "{{ sourcemod_db_username|default("sourcemod") }}"
+        "pass"                "{{ sourcemod_db_password|default("sourcemod") }}"
         //"timeout"            "0"
-        //"port"            "0"
+        "port"            "{{ sourcemod_db_port|default(5432) }}"
     }
 }
