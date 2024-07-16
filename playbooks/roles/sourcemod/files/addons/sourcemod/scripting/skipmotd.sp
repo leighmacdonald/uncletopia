@@ -76,16 +76,16 @@ public OnPluginStart()
   // cvars are changed after server startpu, the menu will be out of
   // sync until the plugin is reloaded.
   if (CvarEnabled(enableNoMotdCvar) && !CvarEnabled(alwaysNoMotdCvar)) {
-	  SetCookiePrefabMenu(noMotdCookie, CookieMenu_OnOff_Int, "Skip MOTD");
+    SetCookiePrefabMenu(noMotdCookie, CookieMenu_OnOff_Int, "Skip MOTD");
   }
   if (CvarEnabled(enableRandomTeamCvar) && !CvarEnabled(alwaysRandomTeamCvar)) {
-  SetCookiePrefabMenu(randomTeamCookie, CookieMenu_OnOff_Int, "Auto join random team");
+    SetCookiePrefabMenu(randomTeamCookie, CookieMenu_OnOff_Int, "Auto join random team");
   }
   if (CvarEnabled(enableRandomClassCvar) && !CvarEnabled(alwaysRandomClassCvar)) {
-  SetCookiePrefabMenu(randomClassCookie, CookieMenu_OnOff_Int, "Auto join random class");
+    SetCookiePrefabMenu(randomClassCookie, CookieMenu_OnOff_Int, "Auto join random class");
   }
   if (CvarEnabled(enableRememberClassCvar) && !CvarEnabled(alwaysRememberClassCvar)) {
-	  SetCookiePrefabMenu(rememberClassCookie, CookieMenu_OnOff_Int, "Auto join latest class");
+    SetCookiePrefabMenu(rememberClassCookie, CookieMenu_OnOff_Int, "Auto join latest class");
   }
 
   // Cookie for storing the player's most recently played class.
@@ -141,13 +141,13 @@ public Action KillMOTD(Handle timer, any uid)
   if (!client) return Plugin_Handled;
 
   if ((CvarEnabled(enableNoMotdCvar) && CookieEnabled(client, noMotdCookie)) || CvarEnabled(alwaysNoMotdCvar)) {
-	  ShowVGUIPanel(client, "info", _, false);
+    ShowVGUIPanel(client, "info", _, false);
   }
 
   if ((CvarEnabled(enableRandomTeamCvar) && CookieEnabled(client, randomTeamCookie)) || CvarEnabled(alwaysRandomTeamCvar)) {
-	  FakeClientCommand(client, "jointeam auto");
+    FakeClientCommand(client, "jointeam auto");
   } else {
-	  ShowVGUIPanel(client, "team", _, true);
+    ShowVGUIPanel(client, "team", _, true);
   }
 
   if ((CvarEnabled(enableRandomClassCvar) && CookieEnabled(client, randomClassCookie)) || CvarEnabled(alwaysRandomClassCvar)) {
