@@ -26,7 +26,7 @@ sourcemod:
 	@ansible-playbook -u $(USER) -i $(HOSTS) --forks $(FORKS) $(PLAYBOOK_PATH)/sourcemod.yml
 
 srcds:
-	@ansible-playbook -u $(USER) -i $(HOSTS) --forks $(FORKS) $(PLAYBOOK_PATH)/srcds.yml --limit mtl-1.ca.uncletopia.com,waw-1.pl.uncletopia.com
+	@ansible-playbook -u $(USER) -i $(HOSTS) --forks $(FORKS) $(PLAYBOOK_PATH)/srcds.yml
 
 srcds_clean:
 	@ansible-playbook -u $(USER) -i $(HOSTS) --forks $(FORKS) $(PLAYBOOK_PATH)/srcds.yml
