@@ -52,7 +52,7 @@
 - name: bd-api-service
   docker_container:
     name: bd-api-service
-    image: ghcr.io/leighmacdonald/bd-api:v1.0.1
+    image: ghcr.io/leighmacdonald/bd-api:v1.0.5
     restart: true
     recreate: true
     pull: true
