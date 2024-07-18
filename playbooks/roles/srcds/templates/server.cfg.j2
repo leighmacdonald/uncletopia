@@ -201,3 +201,13 @@ sv_playerperfhistorycount 20
 net_maxcleartime 0.001
 tf_dropped_weapon_lifetime "{% if item.config == 'pve' %}0{% else %}30{% endif %}"
 sm_cvar sv_player_usercommand_timeout 1
+
+
+sm_nomotd {{ sm_nomotd|default(1) }}
+sm_nomotd_force {{ sm_nomotd_force|default(0) }}
+sm_nomotd_randomteam {{ sm_nomotd_randomteam|default(1) }}
+sm_nomotd_randomteam_force {{ sm_nomotd_randomteam_force|default(1) }}
+sm_nomotd_randomclass {{ sm_nomotd_randomclass|default(0) }}
+sm_nomotd_randomclass_force {{ sm_nomotd_randomclass_force|default(0) }}
+sm_nomotd_rememberclass {{ sm_nomotd_rememberclass|default(1) }}
+sm_nomotd_rememberclass_force {{ sm_nomotd_rememberclass_force|default(0) }}
