@@ -21,38 +21,6 @@
   loop_control:
     index_var: loop0
 
-- name: srcdsup cleanup
-  docker_container:
-    name: srcdsup-{{ item.server_name_short }}
-    state: absent
-  loop: "{{ services }}"
-  loop_control:
-    index_var: loop0
-
-- name: srcds cleanup
-  docker_container:
-    name: srcds-{{ item.server_name_short }}
-    state: absent
-  loop: "{{ services }}"
-  loop_control:
-    index_var: loop0
-
-- name: srcds logs cleanup
-  docker_volume:
-    name: srcds-{{ item.server_name_short }}-logs
-    state: absent
-  loop: "{{ services }}"
-  loop_control:
-    index_var: loop0
-
-- name: srcds stv cleanup
-  docker_volume:
-    name: srcds-{{ item.server_name_short }}-stv
-    state: absent
-  loop: "{{ services }}"
-  loop_control:
-    index_var: loop0
-
 - name: download
   command:
     cmd: ./steamcmd.sh +runscript tf2_ds-{{ item.server_name_short }}.txt
