@@ -2,12 +2,14 @@ dsn: "postgresql://bdapi:bdapi@bdapi-postgres:5432/bdapi"
 run_mode: release
 private_key_path: "./private.key"
 private_key_password: "{{ bdapi_private_key_password }}"
-steam_api_key: "{{ steam_key }}"
+steam_api_key:
+  - "{{ steam_key }}" #prod
+  - "{{ steam_key_alt }}" #dev
+
 listen_addr: ":8888"
 external_url: "{{ bdapi_external_url }}"
 logstf_scraper_enabled: true
 sourcebans_scraper_enabled: true
-enable_cache: true
 rgl_scraper_enabled: true
 etf2l_scraper_enabled: true
 scrape_delay: "{{ bdapi_scrape_delay }}"

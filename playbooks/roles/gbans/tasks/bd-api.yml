@@ -29,7 +29,7 @@
 - name: Create bdapi-postgres container
   docker_container:
     name: bdapi-postgres
-    image: postgres:15-bullseye
+    image: timescale/timescaledb-ha:pg15
     restart: true
     recreate: true
     pull: true
@@ -52,7 +52,7 @@
 - name: bd-api-service
   docker_container:
     name: bd-api-service
-    image: ghcr.io/leighmacdonald/bd-api:v1.0.8
+    image: ghcr.io/leighmacdonald/bd-api:v1.2.0
     restart: true
     recreate: true
     pull: true
@@ -70,3 +70,25 @@
       logging: "promtail"
       logging_jobname: "containerlogs"
 
+- name: bd-api-river
+  docker_container:
+    name: bd-api-river
+    image: ghcr.io/riverqueue/riverui:latest
+    restart: true
+    recreate: true
+    pull: true
+    restart_policy: always
+    state: started
+    networks:
+      - name: caddy_net
+    volumes:
+      - bdapi_cache_data:/app/.cache
+      - /etc/bdapi.yml:/app/bdapi.yml
+      - /etc/bdapi.key:/app/private.key
+    env:
+      DATABASE_URL: "postgresql://bdapi:bdapi@bdapi-postgres:5432/bdapi"
+    ports:
+      - 10.20.30.1:8080:8080
+    labels:
+      logging: "promtail"
+      logging_jobname: "containerlogs"
