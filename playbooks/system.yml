@@ -17,6 +17,25 @@
       ansible.builtin.apt:
         deb: https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb
 
+#    - name: xanmod-kernel
+#      block:
+#        - name: Download xanmod gpg key
+#          get_url:
+#            url: https://dl.xanmod.org/archive.key
+#            dest: /usr/share/keyrings/xanmod.gpg_armored
+#            checksum: sha256:f5f465c1abecdafb2f066046a834140d3085c227b1d53fa9232a4f338749fbc5
+#
+#        - name: De-Armor xanmod GPG key
+#          shell: gpg --dearmor < /usr/share/keyrings/xanmod.gpg_armored > /usr/share/keyrings/xanmod-archive-keyring.gpg
+#          no_log: true
+#          args:
+#            creates: /usr/share/keyrings/docker-archive-keyring.gpg
+#
+#        - name: Add xanmod apt source
+#          ansible.builtin.apt_repository:
+#            repo: "deb [signed-by=/usr/share/keyrings/xanmod-archive-keyring.gpg] http://deb.xanmod.org releases main"
+#            state: present
+
     - name: Configure cpufrequtils
       become: true
       ansible.builtin.copy:
@@ -40,6 +59,20 @@
           - cpufrequtils
           - dotnet-sdk-6.0
           - python3-netaddr
+
+    - name: Install xanmod-rt-v2
+      when: old_cpu == true
+      ansible.builtin.apt:
+        state: present
+        pkg:
+          - linux-xanmod-rt-x64v2
+
+    - name: Install xanmod-rt-v3
+      when: old_cpu == false
+      ansible.builtin.apt:
+        state: present
+        pkg:
+          - linux-xanmod-rt-x64v3
 
     - name: Create dd if it does not exist
       become: true
