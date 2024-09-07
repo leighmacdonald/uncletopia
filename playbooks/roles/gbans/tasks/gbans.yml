@@ -44,6 +44,29 @@
       - 127.0.0.1:6006:6006
       - 27115:27115/udp
 
+- name: gbans-river
+  docker_container:
+    name: gbans-river
+    image: ghcr.io/riverqueue/riverui:latest
+    restart: true
+    recreate: true
+    pull: true
+    restart_policy: always
+    state: started
+    networks:
+      - name: caddy_net
+    volumes:
+      - bdapi_cache_data:/app/.cache
+      - /etc/bdapi.yml:/app/bdapi.yml
+      - /etc/bdapi.key:/app/private.key
+    env:
+      DATABASE_URL: "{{ gbans_web.database_dsn }}"
+    ports:
+      - 10.20.30.1:8081:8080
+    labels:
+      logging: "promtail"
+      logging_jobname: "containerlogs"
+
 - name: srcds-log-fw
   become: true
   ansible.builtin.ufw:
