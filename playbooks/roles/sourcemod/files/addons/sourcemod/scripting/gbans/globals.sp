@@ -2,7 +2,7 @@
 #pragma tabsize 4
 #pragma newdecls required
 
-#define PLUGIN_VERSION "0.7.13"
+#define PLUGIN_VERSION "0.7.20"
 
 #define MAX_SCORES 256
 
