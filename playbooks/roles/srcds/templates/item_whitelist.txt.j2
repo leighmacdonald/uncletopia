@@ -4,7 +4,6 @@
 {% if found %}
 {% if item.whitelist|default("") != "" %}
     {{ whitelist[item.whitelist] }}
-{% endfor %}
 {% else %}
     "unlisted_items_default_to"                     "1"
 {% endif %}
