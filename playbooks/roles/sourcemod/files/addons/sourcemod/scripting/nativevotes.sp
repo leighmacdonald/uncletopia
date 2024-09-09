@@ -85,6 +85,7 @@ ConVar g_Cvar_VoteChat;
 ConVar g_Cvar_VoteConsole;
 ConVar g_Cvar_VoteClientConsole;
 ConVar g_Cvar_VoteDelay;
+ConVar g_Cvar_ProgressCentered;
 
 //----------------------------------------------------------------------------
 // Used to track current vote data
@@ -257,7 +258,8 @@ public void OnPluginStart()
 	g_Cvar_VoteConsole = CreateConVar("nativevotes_progress_console", "0", "Show current vote progress as console messages", FCVAR_NONE, true, 0.0, true, 1.0);
 	g_Cvar_VoteClientConsole = CreateConVar("nativevotes_progress_client_console", "0", "Show current vote progress as console messages to clients", FCVAR_NONE, true, 0.0, true, 1.0);
 	g_Cvar_VoteDelay = CreateConVar("nativevotes_vote_delay", "30", "Sets the recommended time in between public votes", FCVAR_NONE, true, 0.0);
-	
+	g_Cvar_ProgressCentered = CreateConVar("nativevotes_progress_centered", "0", "Show current vote progress centered on the screen", FCVAR_NONE, true, 0.0, true, 1.0);
+
 	Game_InitializeCvars();
 	
 	HookConVarChange(g_Cvar_VoteDelay, OnVoteDelayChange);
@@ -1014,7 +1016,11 @@ void DrawHintProgress()
 	
 	int iTimeRemaining = RoundFloat(timeRemaining);
 
-	PrintCenterTextAll("%t%s", "Vote Count", g_NumVotes, g_TotalClients, iTimeRemaining, g_LeaderList);
+	if (g_Cvar_ProgressCentered.BoolValue) {
+		PrintCenterTextAll("%t%s", "Vote Count", g_NumVotes, g_TotalClients, iTimeRemaining, g_LeaderList);
+	} else {
+		PrintHintTextToAll("%t%s", "Vote Count", g_NumVotes, g_TotalClients, iTimeRemaining, g_LeaderList);
+	}
 }
 
 void BuildVoteLeaders()

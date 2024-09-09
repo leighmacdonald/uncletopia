@@ -45,7 +45,7 @@
 #pragma semicolon 1
 #pragma newdecls required
 
-#define VERSION "1.8.0 beta 1"
+#define VERSION "1.8.0 beta 1-ut"
 
 public Plugin myinfo =
 {
@@ -78,6 +78,7 @@ ConVar g_Cvar_EndOfMapVote;
 ConVar g_Cvar_VoteDuration;
 ConVar g_Cvar_RunOff;
 ConVar g_Cvar_RunOffPercent;
+ConVar g_Cvar_CurateMaps;
 
 Handle g_VoteTimer = null;
 Handle g_RetryTimer = null;
@@ -86,6 +87,7 @@ Handle g_RetryTimer = null;
 // g_OldMapList and g_NextMapList are resolved. g_NominateList depends on the nominations implementation.
 /* Data Handles */
 ArrayList g_MapList;
+ArrayList g_CMapList; // Curated pool
 ArrayList g_NominateList;
 ArrayList g_NominateOwners;
 ArrayList g_OldMapList;
@@ -125,6 +127,7 @@ public void OnPluginStart()
 	
 	int arraySize = ByteCountToCells(PLATFORM_MAX_PATH);
 	g_MapList = new ArrayList(arraySize);
+	g_CMapList = new ArrayList(arraySize);
 	g_NominateList = new ArrayList(arraySize);
 	g_NominateOwners = new ArrayList();
 	g_OldMapList = new ArrayList(arraySize);
@@ -147,6 +150,7 @@ public void OnPluginStart()
 	g_Cvar_VoteDuration = CreateConVar("sm_mapvote_voteduration", "20", "Specifies how long the mapvote should be available for.", _, true, 5.0);
 	g_Cvar_RunOff = CreateConVar("sm_mapvote_runoff", "0", "Hold run of votes if winning choice is less than a certain margin", _, true, 0.0, true, 1.0);
 	g_Cvar_RunOffPercent = CreateConVar("sm_mapvote_runoffpercent", "50", "If winning choice has less than this percent of votes, hold a runoff", _, true, 0.0, true, 100.0);
+	g_Cvar_CurateMaps = CreateConVar("sm_mapvote_curate", "1", "Specifies whether to use the curated maplist for default map votes.", _, true, 0.0, true, 1.0);
 	
 	RegAdminCmd("sm_mapvote", Command_Mapvote, ADMFLAG_CHANGEMAP, "sm_mapvote - Forces MapChooser to attempt to run a map vote now.");
 	RegAdminCmd("sm_setnextmap", Command_SetNextmap, ADMFLAG_CHANGEMAP, "sm_setnextmap <map>");
@@ -264,6 +268,22 @@ public void OnConfigsExecuted()
 		}
 	}
 	
+	if (ReadMapList(g_CMapList,
+					 g_mapFileSerial,
+					 "mapcurated",
+					 MAPLIST_FLAG_CLEARARRAY|MAPLIST_FLAG_MAPSFOLDER)
+		!= null)
+
+	{
+		if (g_mapFileSerial == -1)
+		{
+			LogError("Unable to create a valid curated map list. Feature disabled");
+			g_Cvar_CurateMaps.SetBool(false);
+		}
+	}
+
+
+
 	CreateNextVote();
 	SetupTimeleftTimer();
 	
@@ -1285,9 +1305,16 @@ void CreateNextVote()
 	// tempMaps is a resolved map list
 	ArrayList tempMaps = new ArrayList(ByteCountToCells(PLATFORM_MAX_PATH));
 	
-	for (int i = 0; i < g_MapList.Length; i++)
+	ArrayList maps = new ArrayList();
+	if (g_Cvar_CurateMaps.IntValue == 1) {
+		maps = g_CMapList;
+	} else {
+		maps = g_MapList;
+	}
+
+	for (int i = 0; i < maps.Length; i++)
 	{
-		g_MapList.GetString(i, map, sizeof(map));
+		maps.GetString(i, map, sizeof(map));
 		if (FindMap(map, map, sizeof(map)) != FindMap_NotFound)
 		{
 			tempMaps.PushString(map);

@@ -7,6 +7,14 @@
     {
         "target"		"mapcyclefile"
     }
+
+{% if item.curated_pool|default('') != "" %}
+    "mapcurated"
+    {
+        "file"                  "addons/sourcemod/configs/curated_maplist.txt"
+    }
+
+{% endif %}
     /* Admin menu, map menu */
     "sm_map menu"
     {

@@ -100,6 +100,18 @@
   loop_control:
     index_var: loop0
 
+- name: curated_maplist.txt
+  ansible.builtin.template:
+    src: curated_maplist.txt.j2
+    dest: ~/srcds-{{ item.server_name_short }}/tf/addons/sourcemod/configs/curated_maplist.txt
+    mode: 0655
+  when: item.curated_pool != ""
+  tags:
+    - game_config
+  loop: "{{ services }}"
+  loop_control:
+    index_var: loop0
+
 - name: /tf/item_whitelist.txt
   ansible.builtin.template:
     src: item_whitelist.txt.j2

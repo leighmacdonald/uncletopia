@@ -39,7 +39,7 @@ sm_mapvote_exclude {% if item.config == "pve" %}0{% else %}{{ sm_mapvote_exclude
 // -
 // Default: "0"
 // Minimum: "0.000000"
-sm_mapvote_extend {{ sm_mapvote_extend|default(0) }}
+sm_mapvote_extend {{ sm_mapvote_extend|default(1) }}
 
 // Specifies how many maps to include in the vote.
 // -
@@ -92,3 +92,5 @@ sm_mapvote_startround "{{ sm_mapvote_startround|default(0) }}"
 // Default: "20"
 // Minimum: "5.000000"
 sm_mapvote_voteduration "{{ sm_mapvote_voteduration|default(15) }}"
+
+sm_mapvote_curate "{% if item.curated_pool|default('') == ""%}0{% else %}1{% endif %}"
