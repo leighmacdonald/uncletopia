@@ -8,23 +8,30 @@
 #include <tf_econ_data>
 #include <dhooks>
 
-#define PLUGIN_VERSION "0.7.1"
+#define PLUGIN_VERSION "0.8.0"
 
-/** Display name of the humans team */
-#define PVE_TEAM_HUMANS_NAME 	"blue"
-/** Internal game index of the bots team */
-#define PVE_TEAM_BOTS_NAME 		"red"
-/** Maximum amount of players that can be on the server in TF2 */
-#define TF_MAXPLAYERS 			101
+#define PVE_TEAM_HUMANS_NAME "blue"
+#define PVE_TEAM_BOTS_NAME "red"
 
-#define GOLDEN_PAN_DEFID 		1071 
-#define GOLDEN_PAN_CHANCE 		1
+#define UNCLE_DANE_STEAMID "STEAM_0:0:48866904"
 
-const TFTeam TFTeam_Humans = TFTeam_Blue;
-const TFTeam TFTeam_Bots = TFTeam_Red;
+#define MAX_COSMETIC_ATTRS 8
+#define GIBS_CLEANUP_PERIOD 10.0
 
-/** Maximum amount of attributes on a bot cosmetic */
-#define PVE_MAX_COSMETIC_ATTRS 8
+#define GOLDEN_PAN_DEFID 1071
+#define GOLDEN_PAN_CHANCE 1
+
+#define TFTeam_Humans TFTeam_Blue
+#define TFTeam_Bots TFTeam_Red
+
+public Plugin myinfo = 
+{
+	name = "[TF2] Engineer PVE",
+	author = "Moonly Days, Uncle Dane",
+	description = "Engineer PVE",
+	version = PLUGIN_VERSION,
+	url = "https://github.com/MoonlyDays"
+};
 
 enum struct TFAttribute
 {
@@ -43,34 +50,25 @@ ArrayList g_hBotCosmetics;
 ArrayList g_hPlayerAttributes;
 ArrayList g_hBotNames;
 
-// Weapon random choices.
 ArrayList g_hPrimaryWeapons;
 ArrayList g_hSecondaryWeapons;
 ArrayList g_hMeleeWeapons;
 
-public Plugin myinfo = 
-{
-	name = "[TF2] Uncle Dane PVE",
-	author = "Moonly Days",
-	description = "Uncle Dane PVE",
-	version = PLUGIN_VERSION,
-	url = "https://github.com/MoonlyDays"
-};
-
 // Plugin ConVars
-ConVar sm_danepve_bot_sapper_insta_remove;
-ConVar sm_danepve_respawn_bots_on_round_end;
-ConVar sm_danepve_clear_bots_building_gibs;
-ConVar sm_danepve_allow_respawnroom_build;
-ConVar sm_danepve_max_playing_humans;
-ConVar sm_danepve_max_connected_humans;
+ConVar sm_engipve_bot_sapper_insta_remove;
+ConVar sm_engipve_respawn_bots_on_round_end;
+ConVar sm_engipve_allow_respawnroom_build;
+ConVar sm_engipve_clear_gibs;
+
+ConVar tf_bot_quota;
 
 // SDK Call Handles
 Handle g_hSdkEquipWearable;
 DynamicHook gHook_HandleSwitchTeams;
 DynamicDetour gHook_PointIsWithin;
 DynamicDetour gHook_EstimateValidBuildPos;
-DynamicDetour gHook_CreateAmmoPack;
+DynamicDetour gHook_CreateObjectGibs;
+DynamicDetour gHook_DropAmmoPack;
 
 // Offset cache
 int g_nOffset_CBaseEntity_m_iTeamNum;
@@ -82,21 +80,34 @@ bool g_bIsRoundActive = false;
 float g_flRoundStartTime = 0.0;
 bool g_bLastDeathWasBot = false;
 
-#include <danepve/config.sp>
+char g_szCleanupEntities[][] = {
+	"keyframe_rope",
+	"move_rope",
+	"env_sprite",
+	"env_lightglow",
+	"env_smokestack",
+	"func_smokevolume",
+	"func_dust",
+	"func_dustmotes",
+	"point_spotlight",
+	"env_smoketrail",
+	"env_sun",
+	"tf_ragdoll"
+}
 
 public OnPluginStart()
 {
 	//-----------------------------------------------------//
 	// Create plugin ConVars
-	CreateConVar("danepve_version", PLUGIN_VERSION, "[TF2] Uncle Dane PVE Version", FCVAR_DONTRECORD);
-	sm_danepve_allow_respawnroom_build = CreateConVar("sm_danepve_allow_respawnroom_build", "1", "Can humans build in respawn rooms?");
-	sm_danepve_max_playing_humans = CreateConVar("sm_danepve_max_playing_humans", "12");
-	sm_danepve_max_connected_humans = CreateConVar("sm_danepve_max_connected_humans", "16");
-	sm_danepve_bot_sapper_insta_remove = CreateConVar("sm_danepve_bot_sapper_insta_remove", "1");
-	sm_danepve_clear_bots_building_gibs = CreateConVar("sm_danepve_clear_bots_building_gibs", "1");
-	sm_danepve_respawn_bots_on_round_end = CreateConVar("sm_danepve_respawn_bots_on_round_end", "0");
-	RegAdminCmd("sm_danepve_reload", cReload, ADMFLAG_CHANGEMAP, "Reloads Uncle Dane PVE config.");
-	RegConsoleCmd("sm_becomedanebot", cBecomeUncleDane);
+	CreateConVar("engipve_version", PLUGIN_VERSION, "[TF2] Engineer PVE Version", FCVAR_DONTRECORD);
+	sm_engipve_allow_respawnroom_build 		= CreateConVar("sm_engipve_allow_respawnroom_build", "1", "Can humans build in respawn rooms?");
+	sm_engipve_bot_sapper_insta_remove 		= CreateConVar("sm_engipve_bot_sapper_insta_remove", "1");
+	sm_engipve_respawn_bots_on_round_end 	= CreateConVar("sm_engipve_respawn_bots_on_round_end", "0");
+	sm_engipve_clear_gibs					= CreateConVar("sm_engipve_clear_gibs", "1");
+	tf_bot_quota 							= FindConVar("tf_bot_quota");
+
+	RegAdminCmd("sm_engipve_reload", cReload, ADMFLAG_CHANGEMAP, "Reloads Engineer PVE config.");
+	RegAdminCmd("sm_becomeengibot", cBecomeEngiBot, ADMFLAG_ROOT, "Switches the client to the bot team.");
 	
 	// Since 'jointeam' command is exists in most games, use AddCommandListener instead of Reg*Cmd
 	AddCommandListener(cJoinTeam, "jointeam");
@@ -116,7 +127,7 @@ public OnPluginStart()
 
 	//-----------------------------------------------------//
 	// Prepare SDK calls from Game Data
-	Handle hConf = LoadGameConfigFile("tf2.danepve");
+	Handle hConf = LoadGameConfigFile("tf2.engipve");
 	StartPrepSDKCall(SDKCall_Player);
 	PrepSDKCall_SetFromConf(hConf, SDKConf_Virtual, "CTFPlayer::EquipWearable");
 	PrepSDKCall_AddParameter(SDKType_CBaseEntity, SDKPass_Pointer);
@@ -127,14 +138,16 @@ public OnPluginStart()
 	//-----------------------------------------------------//
 	// CTFGameRules::HandleSwitchTeams
 	gHook_HandleSwitchTeams = new DynamicHook(0, HookType_GameRules, ReturnType_Void, ThisPointer_Ignore);
-	if(gHook_HandleSwitchTeams.SetFromConf(hConf, SDKConf_Virtual, "CTFGameRules::HandleSwitchTeams") == false)
+	if(gHook_HandleSwitchTeams.SetFromConf(hConf, SDKConf_Virtual, "CTFGameRules::HandleSwitchTeams") == false) {
 		SetFailState("Failed to load CTFGameRules::HandleSwitchTeams detour.");
+	}
 
 	//-----------------------------------------------------//
 	// PointIsWithin
 	gHook_PointIsWithin = new DynamicDetour(Address_Null, CallConv_THISCALL, ReturnType_Bool, ThisPointer_Address);
-	if(gHook_PointIsWithin.SetFromConf(hConf, SDKConf_Signature, "PointIsWithin") == false)
+	if(! gHook_PointIsWithin.SetFromConf(hConf, SDKConf_Signature, "PointIsWithin")) {
 		SetFailState("Failed to load PointIsWithin detour.");
+	}
 	gHook_PointIsWithin.AddParam(HookParamType_VectorPtr);
 	gHook_PointIsWithin.Enable(Hook_Pre, Detour_OnPointIsWithin);
 
@@ -142,29 +155,42 @@ public OnPluginStart()
 	// EstimateValidBuildPos
 	gHook_EstimateValidBuildPos = new DynamicDetour(Address_Null, CallConv_THISCALL, ReturnType_Bool, ThisPointer_Address);
 	gHook_EstimateValidBuildPos.SetFromConf(hConf, SDKConf_Signature, "EstimateValidBuildPos");
-	if(gHook_PointIsWithin.SetFromConf(hConf, SDKConf_Signature, "EstimateValidBuildPos") == false)
+	if(! gHook_PointIsWithin.SetFromConf(hConf, SDKConf_Signature, "EstimateValidBuildPos")) {
 		SetFailState("Failed to load EstimateValidBuildPos detour.");
+	}
 	gHook_EstimateValidBuildPos.Enable(Hook_Pre, Detour_EstimateValidBuildPos);
 	gHook_EstimateValidBuildPos.Enable(Hook_Post, Detour_EstimateValidBuildPos_Post);
 	
 	//-----------------------------------------------------//
-	// CBaseObject::CreateAmmoPack
-	gHook_CreateAmmoPack = new DynamicDetour(Address_Null, CallConv_THISCALL, ReturnType_CBaseEntity, ThisPointer_CBaseEntity);
-	if(gHook_CreateAmmoPack.SetFromConf(hConf, SDKConf_Signature, "CBaseObject::CreateAmmoPack") == false)
-		SetFailState("Failed to load CBaseObject::CreateAmmoPack detour.");
-	gHook_CreateAmmoPack.AddParam(HookParamType_CharPtr);
-	gHook_CreateAmmoPack.AddParam(HookParamType_Int);
-	gHook_CreateAmmoPack.Enable(Hook_Pre, Detour_CreateAmmoPack);
+	// CBaseObject::CreateObjectGibs
+	gHook_CreateObjectGibs = new DynamicDetour(Address_Null, CallConv_THISCALL, ReturnType_Void, ThisPointer_CBaseEntity);
+	if(! gHook_CreateObjectGibs.SetFromConf(hConf, SDKConf_Signature, "CBaseObject::CreateObjectGibs")) {
+		SetFailState("Failed to load CBaseObject::CreateObjectGibs detour.");
+	}
+	gHook_CreateObjectGibs.Enable(Hook_Pre, Detour_CreateObjectGibs);
+	
+	//-----------------------------------------------------//
+	// CBaseObject::CreateObjectGibs
+	gHook_DropAmmoPack = new DynamicDetour(Address_Null, CallConv_THISCALL, ReturnType_Void, ThisPointer_CBaseEntity);
+	if(! gHook_DropAmmoPack.SetFromConf(hConf, SDKConf_Signature, "CTFPlayer::DropAmmoPack")) {
+		SetFailState("Failed to load CTFPlayer::DropAmmoPack detour.");
+	}
+	gHook_DropAmmoPack.AddParam(HookParamType_ObjectPtr);
+	gHook_DropAmmoPack.AddParam(HookParamType_Bool);
+	gHook_DropAmmoPack.AddParam(HookParamType_Bool);
+	gHook_DropAmmoPack.Enable(Hook_Pre, Detour_DropAmmoPack);
 
+	AutoExecConfig(true, "tf_engipve");
+}
+
+public void OnConfigsExecuted()
+{
+	Config_Load();
 }
 
 public OnMapStart()
 {
 	gHook_HandleSwitchTeams.HookGamerules(Hook_Pre, CTFGameRules_HandleSwitchTeams);
-
-	//-----------------------------------------------------//
-	// Load config and setup the game
-	Config_Load();
 }
 
 public OnClientPutInServer(int client)
@@ -177,9 +203,10 @@ public OnClientPutInServer(int client)
 
 public bool OnClientConnect(int client, char[] rejectMsg, int maxlen)
 {
-	if(PVE_GetHumanCount() > sm_danepve_max_connected_humans.IntValue)
+	int maxHumans = MaxClients - tf_bot_quota.IntValue;
+	if(PVE_GetHumanCount() > maxHumans)
 	{
-		Format(rejectMsg, maxlen, "[PVE] Server is full");
+		Format(rejectMsg, maxlen, "[1000 Engis] No more human slots are available, sorry :C");
 		return false;
 	}
 
@@ -188,27 +215,249 @@ public bool OnClientConnect(int client, char[] rejectMsg, int maxlen)
 
 public OnEntityCreated(int entity, const char[] szClassname)
 {
-	if(g_bLastDeathWasBot || g_flForceClearGibsUntil > GetGameTime())
+	if((g_bIsRoundEnd && g_bLastDeathWasBot) || g_flForceClearGibsUntil > GetGameTime())
 	{
-		// Remove these entities if it was a bot
+		// Remove these entities on round end / humiliation.
 		if(	StrEqual(szClassname, "tf_ammo_pack") || 
 			StrEqual(szClassname, "tf_dropped_weapon") ||
 			StrEqual(szClassname, "tf_ragdoll"))
 		{
-			AcceptEntityInput(entity, "Kill");
+			RemoveEntity(entity);
+			return;
 		}
 	}
 
-	// No halloween allowed >:C
-	if(StrEqual(szClassname, "halloween_souls_pack"))
-	{
-		AcceptEntityInput(entity, "Kill");
+	for (int i = 0; i < sizeof(g_szCleanupEntities); i++) {
+		if (StrEqual(szClassname, g_szCleanupEntities[i])) {
+			RemoveEdict(entity);
+			return;
+		}
 	}
 
-	if(StrEqual(szClassname, "obj_attachment_sapper"))
+	if (StrEqual(szClassname, "obj_attachment_sapper"))
 	{
 		SDKHook(entity, SDKHook_OnTakeDamage, OnSapperTakeDamage);
 	}
+}
+
+//-------------------------------------------------------//
+// CONFIG
+//-------------------------------------------------------//
+
+/** Reload the plugin config */
+void Config_Load()
+{
+	// Build the path to the config file. 
+	char szCfgPath[PLATFORM_MAX_PATH];
+	BuildPath(Path_SM, szCfgPath, sizeof(szCfgPath), "configs/tf_engipve.cfg");
+
+	// Load the keyvalues.
+	KeyValues kv = new KeyValues("EngineerPVE");
+	if(kv.ImportFromFile(szCfgPath) == false)
+	{
+		SetFailState("Failed to read configs/tf_engipve.cfg");
+		return;
+	}
+
+	// Try to load bot names.
+	if(kv.JumpToKey("Names"))
+	{
+		Config_LoadNamesFromKV(kv);
+		kv.GoBack();
+	}
+
+	// Try to load bot cosmetics.
+	if(kv.JumpToKey("Cosmetics"))
+	{
+		Config_LoadCosmeticsFromKV(kv);
+		kv.GoBack();
+	}
+
+	// Try to load bot cosmetics.
+	if(kv.JumpToKey("Weapons"))
+	{
+		Config_LoadWeaponsFromKV(kv);
+		kv.GoBack();
+	}
+
+	// Try to load bot cosmetics.
+	if(kv.JumpToKey("Attributes"))
+	{
+		Config_LoadAttributesFromKV(kv);
+		kv.GoBack();
+	}
+
+	char szClassName[32];
+	kv.GetString("Class", szClassName, sizeof(szClassName));
+	FindConVar("tf_bot_force_class")		.SetString(szClassName);
+	FindConVar("tf_bot_auto_vacate")		.SetBool(false);
+	FindConVar("tf_bot_quota")				.SetInt(kv.GetNum("Count"));
+	FindConVar("mp_disable_respawn_times")	.SetBool(true);
+	FindConVar("mp_teams_unbalance_limit")	.SetInt(0);
+
+	PrintToChatAll("[EngiPVE] Config loaded. Disabling bot gibs for %.2f seconds.", GIBS_CLEANUP_PERIOD);
+	g_flForceClearGibsUntil = GetGameTime() + GIBS_CLEANUP_PERIOD;
+}
+
+/** Reload the bot names that will be on the bot team. */
+void Config_LoadNamesFromKV(KeyValues kv)
+{
+	delete g_hBotNames;
+	g_hBotNames = new ArrayList(ByteCountToCells(PLATFORM_MAX_PATH));
+	
+	if(kv.GotoFirstSubKey(false))
+	{
+		do {
+			char szName[PLATFORM_MAX_PATH];
+			kv.GetString(NULL_STRING, szName, sizeof(szName));
+			g_hBotNames.PushString(szName);
+		} while (kv.GotoNextKey(false));
+
+		kv.GoBack();
+	}
+}
+
+/** Reload the bot names that will be on the bot team. */
+void Config_LoadAttributesFromKV(KeyValues kv)
+{
+	delete g_hPlayerAttributes;
+	g_hPlayerAttributes = new ArrayList(sizeof(TFAttribute));
+	
+	if(kv.GotoFirstSubKey(false))
+	{
+		do {
+			// Read name and float value, add the pair to the attributes array.
+			TFAttribute attrib;
+			kv.GetSectionName(attrib.m_szName, sizeof(attrib.m_szName));
+			attrib.m_flValue = kv.GetFloat(NULL_STRING);
+			g_hPlayerAttributes.PushArray(attrib);
+
+		} while (kv.GotoNextKey(false));
+
+		kv.GoBack();
+	}
+}
+
+void Config_LoadItemFromKV(KeyValues kv, BotItem buffer)
+{
+	// First check inlined definition.
+	int inlineDefId = kv.GetNum(NULL_STRING, 0);
+	if(inlineDefId > 0)
+	{
+		buffer.m_iItemDefinitionIndex = inlineDefId;
+		return;
+	}
+
+	// Definition is not inlined
+	buffer.m_iItemDefinitionIndex = kv.GetNum("Index");
+
+	// Check if cosmetic definition contains attributes.
+	if(kv.JumpToKey("Attributes"))
+	{
+		// If so, create an array list.
+		buffer.m_Attributes = new ArrayList(sizeof(TFAttribute));
+
+		// Try going to the first attribute scope.
+		if(kv.GotoFirstSubKey(false))
+		{
+			do {
+				// Read name and float value, add the pair to the attributes array.
+				TFAttribute attrib;
+				kv.GetSectionName(attrib.m_szName, sizeof(attrib.m_szName));
+				attrib.m_flValue = kv.GetFloat(NULL_STRING);
+				buffer.m_Attributes.PushArray(attrib);
+
+			} while (kv.GotoNextKey(false))
+			kv.GoBack();
+		}
+		kv.GoBack();
+	}
+}
+
+/**
+ * Load bot cosmetics definitions from config.
+ */
+void Config_LoadCosmeticsFromKV(KeyValues kv)
+{
+	Config_DisposeOfBotItemArrayList(g_hBotCosmetics);
+	g_hBotCosmetics = new ArrayList(sizeof(BotItem));
+	
+	if(kv.GotoFirstSubKey(false))
+	{
+		do {
+            // Create bot cosmetic definition.
+            BotItem item;
+            Config_LoadItemFromKV(kv, item);
+            g_hBotCosmetics.PushArray(item);
+
+		} while (kv.GotoNextKey(false));
+
+		kv.GoBack();
+	}
+}
+
+/**
+ * Load bot cosmetics definitions from config.
+ */
+void Config_LoadWeaponsFromKV(KeyValues kv)
+{
+	Config_DisposeOfBotItemArrayList(g_hPrimaryWeapons);
+	Config_DisposeOfBotItemArrayList(g_hSecondaryWeapons);
+	Config_DisposeOfBotItemArrayList(g_hMeleeWeapons);
+
+	if(kv.JumpToKey("Primary"))
+	{
+		Config_LoadWeaponsFromKVToArray(kv, g_hPrimaryWeapons);
+		kv.GoBack();
+	}
+
+	if(kv.JumpToKey("Secondary"))
+	{
+		Config_LoadWeaponsFromKVToArray(kv, g_hSecondaryWeapons);
+		kv.GoBack();
+	}
+
+	if(kv.JumpToKey("Melee"))
+	{
+		Config_LoadWeaponsFromKVToArray(kv, g_hMeleeWeapons);
+		kv.GoBack();
+	}
+}
+
+/**
+ * Load bot cosmetics definitions from config.
+ */
+void Config_LoadWeaponsFromKVToArray(KeyValues kv, ArrayList& array)
+{
+	array = new ArrayList(sizeof(BotItem));
+	
+	if(kv.GotoFirstSubKey(false))
+	{
+		do {
+            // Create bot cosmetic definition.
+            BotItem item;
+            Config_LoadItemFromKV(kv, item);
+            array.PushArray(item);
+
+		} while (kv.GotoNextKey(false));
+
+		kv.GoBack();
+	}
+}
+
+void Config_DisposeOfBotItemArrayList(ArrayList array)
+{
+	if(array)
+	{
+		for(int i = 0; i < array.Length; i++)
+		{
+			BotItem item;
+			array.GetArray(i, item);
+			delete item.m_Attributes;
+		}
+	}
+	
+	delete array;
 }
 
 //-------------------------------------------------------//
@@ -216,7 +465,7 @@ public OnEntityCreated(int entity, const char[] szClassname)
 //-------------------------------------------------------//
 
 // Return the amount of connected(-ing) human players.
-public int PVE_GetHumanCount()
+int PVE_GetHumanCount()
 {
 	int count = 0;
 	for(int i = 1; i <= MaxClients; i++)
@@ -228,24 +477,8 @@ public int PVE_GetHumanCount()
 	return count;
 }
 
-// Return the amount of clients on a given team.
-public int PVE_GetClientCountOnTeam(TFTeam team)
-{
-	int count = 0;
-	for(int i = 1; i <= MaxClients; i++)
-	{
-		if(!IsClientInGame(i))
-			continue;
-
-		if (TF2_GetClientTeam(i) == team)
-			count++;
-	}
-	
-	return count;
-}
-
 // Give bot a name from the config
-public void PVE_RenameBotClient(int client)
+void PVE_RenameBotClient(int client)
 {
 	// Figure out the name of the bot.
 	// Make a static variable to store current local name index.
@@ -253,7 +486,7 @@ public void PVE_RenameBotClient(int client)
 	// Rotate the names
 	int maxNames = g_hBotNames.Length;
 	currentName++;
-	currentName %= maxNames;
+	currentName = currentName % maxNames;
 
 	char szName[PLATFORM_MAX_PATH];
 	g_hBotNames.GetString(currentName, szName, sizeof(szName));
@@ -261,7 +494,7 @@ public void PVE_RenameBotClient(int client)
 }
 
 // Equip bots with appropriate weapons
-public void PVE_EquipBotItems(int client)
+void PVE_EquipBotItems(int client)
 {
 	for(int i = 0; i < g_hBotCosmetics.Length; i++)
 	{
@@ -288,14 +521,14 @@ public void PVE_EquipBotItems(int client)
 		int specKs = GetRandomInt(2002, 2008);
 		int profKs = GetRandomInt(1, 7);
 
-		TF2Attrib_SetByName(weapon, "killstreak tier", 3.0);
-		TF2Attrib_SetByName(weapon, "killstreak effect", 		float(specKs));
-		TF2Attrib_SetByName(weapon, "killstreak idleeffect", 	float(profKs));
+		TF2Attrib_SetByName(weapon, "killstreak tier", 			3.0);
+		TF2Attrib_SetByName(weapon, "killstreak effect",		float(specKs));
+		TF2Attrib_SetByName(weapon, "killstreak idleeffect",	float(profKs));
 	}
 }
 
 // Give a bot a random weapon in slot from an array defined in ArrayList 
-public void PVE_GiveBotRandomSlotWeaponFromArrayList(int client, int slot, ArrayList array)
+void PVE_GiveBotRandomSlotWeaponFromArrayList(int client, int slot, ArrayList array)
 {
 	if(array == INVALID_HANDLE)
 		return;
@@ -342,7 +575,7 @@ public void PVE_GiveBotRandomSlotWeaponFromArrayList(int client, int slot, Array
 }
 
 // Apply attributes from config item defintion on entity.
-public void PVE_ApplyBotItemAttributesOnEntity(int entity, BotItem item)
+void PVE_ApplyBotItemAttributesOnEntity(int entity, BotItem item)
 {
 	if(item.m_Attributes)
 	{
@@ -355,13 +588,8 @@ public void PVE_ApplyBotItemAttributesOnEntity(int entity, BotItem item)
 	}
 }
 
-public bool PVE_CanMoreHumansJoin()
-{
-	return PVE_GetClientCountOnTeam(TFTeam_Humans) < sm_danepve_max_playing_humans.IntValue;
-}
-
 // Apply player attributes from config on a given client 
-public void PVE_ApplyPlayerAttributes(int client)
+void PVE_ApplyPlayerAttributes(int client)
 {
 	for(int i = 0; i < g_hPlayerAttributes.Length; i++)
 	{
@@ -372,7 +600,7 @@ public void PVE_ApplyPlayerAttributes(int client)
 }
 
 // Create and give wearable to client with a given item definition
-public int PVE_GiveWearableToClient(int client, int itemDef)
+int PVE_GiveWearableToClient(int client, int itemDef)
 {
 	int hat = CreateEntityByName("tf_wearable");
 	if(!IsValidEntity(hat))
@@ -395,14 +623,14 @@ public int PVE_GiveWearableToClient(int client, int itemDef)
 //-------------------------------------------------------//
 
 // sv_danepve_reload
-public Action cReload(int client, int args)
+Action cReload(int client, int args)
 {
 	Config_Load();
-	ReplyToCommand(client, "[SM] Uncle Dane PVE config was reloaded!");
+	ReplyToCommand(client, "[SM] Engineer PVE config was reloaded!");
 	return Plugin_Handled;
 }
 
-public Action cJoinTeam(int client, const char[] command, int argc)
+Action cJoinTeam(int client, const char[] command, int argc)
 {
 	// A human wishes to change their team.
 	char szTeamArg[11];
@@ -421,16 +649,6 @@ public Action cJoinTeam(int client, const char[] command, int argc)
 		if(TF2_GetClientTeam(client) == TFTeam_Humans)
 			return Plugin_Handled;
 
-		// Check if there is enough humans.
-		if(!PVE_CanMoreHumansJoin())
-		{
-			// If there isn't, show the message and change their team.
-			int humanCount = PVE_GetClientCountOnTeam(TFTeam_Humans);
-			PrintCenterText(client, "There are no open slots on the HUMAN team (%d/%d). Please try again later.", humanCount, humanCount);
-			ClientCommand(client, "jointeam spectator");
-			return Plugin_Handled;
-		} 
-
 		return Plugin_Continue;
 	}
 
@@ -447,27 +665,18 @@ public Action cJoinTeam(int client, const char[] command, int argc)
 	return Plugin_Handled;
 }
 
-public Action cAutoTeam(int client, const char[] command, int argc)
+Action cAutoTeam(int client, const char[] command, int argc)
 {
 	ReplyToCommand(client, "[SM] \"autoteam\" command is disabled.");
 	return Plugin_Handled;
 }
 
-#define UNCLE_DANE_STEAMID "STEAM_0:0:48866904"
 
-// sm_becomedanebot
-public Action cBecomeUncleDane(int client, int args)
+// sm_becomeengibot
+Action cBecomeEngiBot(int client, int args)
 {
-	char szSteamId[PLATFORM_MAX_PATH];
-	GetClientAuthId(client, AuthId_Steam2, szSteamId, sizeof(szSteamId));
-	if(!StrEqual(szSteamId, UNCLE_DANE_STEAMID))
-	{
-		ReplyToCommand(client, "[SM] Sorry, you are not Uncle Dane. You can't do that. :C");
-		return Plugin_Handled;
-	}
-
 	TF2_ChangeClientTeam(client, TFTeam_Bots);
-	PrintCenterText(client, "You are now an Uncle Dane bot!");
+	PrintCenterText(client, "You are now an Engineer bot!");
 	return Plugin_Handled;
 }
 
@@ -498,7 +707,7 @@ public Action player_death(Event event, const char[] name, bool dontBroadcast)
 	if(g_bIsRoundEnd)
 	{
 		// And we don't want to respawn bots during round end.
-		if(!sm_danepve_respawn_bots_on_round_end.BoolValue)
+		if(! sm_engipve_respawn_bots_on_round_end.BoolValue)
 		{
 			// Bail out.
 			return Plugin_Handled;
@@ -586,7 +795,7 @@ public Action Timer_UpdateRoundTime(Handle timer, any ent)
 //-------------------------------------------------------//
 public Action OnSapperTakeDamage(int victim, int& attacker, int& inflictor, float& damage, int& damagetype)
 {
-	if(!sm_danepve_bot_sapper_insta_remove.BoolValue)
+	if(!sm_engipve_bot_sapper_insta_remove.BoolValue)
 		return Plugin_Handled;
 
 	if(IsClientInGame(attacker))
@@ -602,31 +811,31 @@ public Action OnSapperTakeDamage(int victim, int& attacker, int& inflictor, floa
 }
 
 //-------------------------------------------------------//
-// DHook Sapper
+// DHook 
 //-------------------------------------------------------//
 
 int g_bAllowNextHumanTeamPointCheck = false;
 
-// CBaseObject::CreateAmmoPack
-MRESReturn Detour_CreateAmmoPack(int pThis, DHookReturn hReturn)
+// CBaseObject::CreateObjectGibs
+MRESReturn Detour_CreateObjectGibs(int pThis)
 {
-	if(sm_danepve_clear_bots_building_gibs.BoolValue)
-	{
-		// Clear gibs from bots buildings.
-		if(GetEntProp(pThis, Prop_Send, "m_iTeamNum") == view_as<int>(TFTeam_Bots))
-		{
-			hReturn.Value = -1;
-			return MRES_Supercede;
-		}
-	}
+	return sm_engipve_clear_gibs.BoolValue
+		? MRES_Supercede
+		: MRES_Ignored;
+}
 
-	return MRES_Ignored;
+// CBaseObject::CreateObjectGibs
+MRESReturn Detour_DropAmmoPack(int pThis, Handle hParams)
+{
+	return sm_engipve_clear_gibs.BoolValue
+		? MRES_Supercede
+		: MRES_Ignored;
 }
 
 // CBaseObject::EstimateValidBuildPos
 MRESReturn Detour_EstimateValidBuildPos(Address pThis, Handle hReturn, Handle hParams)
 {
-	if(!sm_danepve_allow_respawnroom_build.BoolValue)
+	if(! sm_engipve_allow_respawnroom_build.BoolValue)
 		return MRES_Ignored;
 
 	g_bAllowNextHumanTeamPointCheck = true;
