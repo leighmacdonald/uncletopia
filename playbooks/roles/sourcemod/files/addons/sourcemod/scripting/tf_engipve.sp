@@ -8,7 +8,7 @@
 #include <tf_econ_data>
 #include <dhooks>
 
-#define PLUGIN_VERSION "0.8.0"
+#define PLUGIN_VERSION "0.8.1"
 
 #define PVE_TEAM_HUMANS_NAME "blue"
 #define PVE_TEAM_BOTS_NAME "red"
@@ -75,10 +75,8 @@ int g_nOffset_CBaseEntity_m_iTeamNum;
 
 int g_iTeamRoundTimer;
 bool g_bIsRoundEnd = false;
-float g_flForceClearGibsUntil = 0.0;
 bool g_bIsRoundActive = false;
 float g_flRoundStartTime = 0.0;
-bool g_bLastDeathWasBot = false;
 
 char g_szCleanupEntities[][] = {
 	"keyframe_rope",
@@ -109,7 +107,6 @@ public OnPluginStart()
 	RegAdminCmd("sm_engipve_reload", cReload, ADMFLAG_CHANGEMAP, "Reloads Engineer PVE config.");
 	RegAdminCmd("sm_becomeengibot", cBecomeEngiBot, ADMFLAG_ROOT, "Switches the client to the bot team.");
 	
-	// Since 'jointeam' command is exists in most games, use AddCommandListener instead of Reg*Cmd
 	AddCommandListener(cJoinTeam, "jointeam");
 	AddCommandListener(cAutoTeam, "autoteam");
 
@@ -215,21 +212,9 @@ public bool OnClientConnect(int client, char[] rejectMsg, int maxlen)
 
 public OnEntityCreated(int entity, const char[] szClassname)
 {
-	if((g_bIsRoundEnd && g_bLastDeathWasBot) || g_flForceClearGibsUntil > GetGameTime())
-	{
-		// Remove these entities on round end / humiliation.
-		if(	StrEqual(szClassname, "tf_ammo_pack") || 
-			StrEqual(szClassname, "tf_dropped_weapon") ||
-			StrEqual(szClassname, "tf_ragdoll"))
-		{
-			RemoveEntity(entity);
-			return;
-		}
-	}
-
 	for (int i = 0; i < sizeof(g_szCleanupEntities); i++) {
 		if (StrEqual(szClassname, g_szCleanupEntities[i])) {
-			RemoveEdict(entity);
+			RemoveEntity(entity);
 			return;
 		}
 	}
@@ -294,9 +279,6 @@ void Config_Load()
 	FindConVar("tf_bot_quota")				.SetInt(kv.GetNum("Count"));
 	FindConVar("mp_disable_respawn_times")	.SetBool(true);
 	FindConVar("mp_teams_unbalance_limit")	.SetInt(0);
-
-	PrintToChatAll("[EngiPVE] Config loaded. Disabling bot gibs for %.2f seconds.", GIBS_CLEANUP_PERIOD);
-	g_flForceClearGibsUntil = GetGameTime() + GIBS_CLEANUP_PERIOD;
 }
 
 /** Reload the bot names that will be on the bot team. */
@@ -701,7 +683,6 @@ public Action player_death(Event event, const char[] name, bool dontBroadcast)
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
 	bool isBot = IsFakeClient(client);
-	g_bLastDeathWasBot = isBot;
 
 	// If we're on round end
 	if(g_bIsRoundEnd)
