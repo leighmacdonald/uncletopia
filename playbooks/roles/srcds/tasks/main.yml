@@ -200,10 +200,10 @@
   loop_control:
     index_var: loop0
 
-- name: /tf/addons/sourcemod/configs/danepve.cfg
+- name: /tf/addons/sourcemod/configs/tf_engipve.cfg
   ansible.builtin.template:
-    src: danepve.cfg.j2
-    dest: ~/srcds-{{ item.server_name_short }}/tf/addons/sourcemod/configs/danepve.cfg
+    src: tf_engipve.cfg.j2
+    dest: ~/srcds-{{ item.server_name_short }}/tf/addons/sourcemod/configs/tf_engipve.cfg
     mode: 0655
   tags:
     - game_config
