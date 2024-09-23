@@ -515,7 +515,7 @@ void PVE_EquipBotItems(int client)
 	for(int i = TFWeaponSlot_Primary; i <= TFWeaponSlot_Melee; i++)
 	{
 		int weapon = GetPlayerWeaponSlot(client, i);
-		if(!IsValidEntity(weapon))
+		if(! IsValidEntity(weapon))
 			continue;
 
 		int specKs = GetRandomInt(2002, 2008);
@@ -530,8 +530,9 @@ void PVE_EquipBotItems(int client)
 // Give a bot a random weapon in slot from an array defined in ArrayList 
 void PVE_GiveBotRandomSlotWeaponFromArrayList(int client, int slot, ArrayList array)
 {
-	if(array == INVALID_HANDLE)
+	if(array == INVALID_HANDLE) {
 		return;
+	}
 
 	int rndInt = GetRandomInt(0, array.Length - 1);
 	BotItem item;
@@ -563,9 +564,14 @@ void PVE_GiveBotRandomSlotWeaponFromArrayList(int client, int slot, ArrayList ar
 	int iWeapon = TF2Items_GiveNamedItem(client, hWeapon);
 	delete hWeapon;
 
-	if(isGoldenPan)
-	{
+	if(isGoldenPan) {
 		TF2Attrib_SetByName(iWeapon, "item style override", 0.0);
+	}
+
+	int prevWeapon = GetPlayerWeaponSlot(client, slot);
+	if(prevWeapon != -1) {
+		int accountId = GetEntProp(prevWeapon, Prop_Send, "m_iAccountID");
+		SetEntProp(iWeapon, Prop_Send, "m_iAccountID", accountId);
 	}
 
 	TF2_RemoveWeaponSlot(client, slot);
@@ -667,10 +673,9 @@ Action cJoinTeam(int client, const char[] command, int argc)
 
 Action cAutoTeam(int client, const char[] command, int argc)
 {
-	ReplyToCommand(client, "[SM] \"autoteam\" command is disabled.");
+	ClientCommand(client, "jointeam blue");
 	return Plugin_Handled;
 }
-
 
 // sm_becomeengibot
 Action cBecomeEngiBot(int client, int args)
