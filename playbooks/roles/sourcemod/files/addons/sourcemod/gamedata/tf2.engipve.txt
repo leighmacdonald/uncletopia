@@ -21,15 +21,20 @@
 			"CBaseObject::CreateObjectGibs"
 			{
 				"library"		"server"
-				"linux"			"@_ZN11CBaseObject16CreateObjectGibsEv"
+				"linux"			"@_ZN11CBaseObject16CreateObjectGibsEv.part.0"
 				"windows"		"\x55\x8B\xEC\x83\xEC\x40\x57\x8B\xF9\x89\x7D\xF8"
 			}
-			
 			"CTFPlayer::DropAmmoPack"
 			{
 				"library"		"server"
 				"linux"			"@_ZN9CTFPlayer12DropAmmoPackERK15CTakeDamageInfobb"
 				"windows"		"\x55\x8B\xEC\x83\xEC\x2C\x53\x56\x8B\xF1\xC7\x45\xFC\x00\x00\x00\x00"
+			}
+			"CTFPlayer::CreateRagdollEntity"
+			{
+				"library"		"server"
+				"linux"			"@_ZN9CTFPlayer19CreateRagdollEntityEbbbbbbbbib"
+				"windows"		"\x55\x8B\xEC\x83\xEC\x10\x53\x56\x57\x8B\xF9\x8B\x8F\x8C\x12\x00\x00"
 			}
 		}
 		

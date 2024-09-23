@@ -8,7 +8,7 @@
 #include <tf_econ_data>
 #include <dhooks>
 
-#define PLUGIN_VERSION "0.8.1"
+#define PLUGIN_VERSION "0.8.2"
 
 #define PVE_TEAM_HUMANS_NAME "blue"
 #define PVE_TEAM_BOTS_NAME "red"
@@ -69,6 +69,7 @@ DynamicDetour gHook_PointIsWithin;
 DynamicDetour gHook_EstimateValidBuildPos;
 DynamicDetour gHook_CreateObjectGibs;
 DynamicDetour gHook_DropAmmoPack;
+DynamicDetour gHook_CreateRagdollEntity;
 
 // Offset cache
 int g_nOffset_CBaseEntity_m_iTeamNum;
@@ -89,8 +90,7 @@ char g_szCleanupEntities[][] = {
 	"func_dustmotes",
 	"point_spotlight",
 	"env_smoketrail",
-	"env_sun",
-	"tf_ragdoll"
+	"env_sun"
 }
 
 public OnPluginStart()
@@ -176,6 +176,24 @@ public OnPluginStart()
 	gHook_DropAmmoPack.AddParam(HookParamType_Bool);
 	gHook_DropAmmoPack.AddParam(HookParamType_Bool);
 	gHook_DropAmmoPack.Enable(Hook_Pre, Detour_DropAmmoPack);
+	
+	//-----------------------------------------------------//
+	// CTFPlayer::CreateRagdollEntity
+	gHook_CreateRagdollEntity = new DynamicDetour(Address_Null, CallConv_THISCALL, ReturnType_Void, ThisPointer_CBaseEntity);
+	if(! gHook_CreateRagdollEntity.SetFromConf(hConf, SDKConf_Signature, "CTFPlayer::CreateRagdollEntity")) {
+		SetFailState("Failed to load CTFPlayer::CreateRagdollEntity detour.");
+	}
+	gHook_CreateRagdollEntity.AddParam(HookParamType_Bool);
+	gHook_CreateRagdollEntity.AddParam(HookParamType_Bool);
+	gHook_CreateRagdollEntity.AddParam(HookParamType_Bool);
+	gHook_CreateRagdollEntity.AddParam(HookParamType_Bool);
+	gHook_CreateRagdollEntity.AddParam(HookParamType_Bool);
+	gHook_CreateRagdollEntity.AddParam(HookParamType_Bool);
+	gHook_CreateRagdollEntity.AddParam(HookParamType_Bool);
+	gHook_CreateRagdollEntity.AddParam(HookParamType_Bool);
+	gHook_CreateRagdollEntity.AddParam(HookParamType_Int);
+	gHook_CreateRagdollEntity.AddParam(HookParamType_Bool);
+	gHook_CreateRagdollEntity.Enable(Hook_Pre, Detour_CreateRagdollEntity);
 
 	AutoExecConfig(true, "tf_engipve");
 }
@@ -811,6 +829,19 @@ MRESReturn Detour_DropAmmoPack(int pThis, Handle hParams)
 	return sm_engipve_clear_gibs.BoolValue
 		? MRES_Supercede
 		: MRES_Ignored;
+}
+
+// CTFPlayer::CreateRagdollEntity
+MRESReturn Detour_CreateRagdollEntity(int pThis, Handle hParams)
+{
+	if(sm_engipve_clear_gibs.BoolValue) {
+		TFTeam team = TF2_GetClientTeam(pThis);
+		if(team == TFTeam_Bots) {
+			return MRES_Supercede;
+		}
+	}
+	
+	return MRES_Ignored;
 }
 
 // CBaseObject::EstimateValidBuildPos
