@@ -16,9 +16,18 @@ public void OnPluginStart()
     RegConsoleCmd("sm_hidehud", cHideHud);
 }
 
+bool CanPlayerToggleHud(int client) {
+
+    if(GetClientTeam(client) <= 1) {
+        return true;
+    }
+
+    return IsPlayerAlive(client);
+}
+
 public Action cHideHud(int client, int args)
 {
-    if(! IsPlayerAlive(client)) {
+    if(! CanPlayerToggleHud(client)) {
         ReplyToCommand(client, "[SM] You must be alive to use this.");
         return Plugin_Handled;
     }
