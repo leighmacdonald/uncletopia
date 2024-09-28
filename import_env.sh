@@ -48,9 +48,23 @@ function switch_branch() {
 }
 
 function load_branch() {
-    cp -v "${1}"/hosts.yml .
-    cp -v "${1}"/host_vars/*.yml host_vars/
-    cp -v "${1}"/group_vars/*.yml group_vars/
+    ln -v "${1}"/hosts.yml hosts.yml
+
+    for fullfile in "${1}"/host_vars/*.yml; do
+        [ -e "$fullfile" ] || continue
+
+        filename=$(basename -- "$fullfile")
+
+        ln -v "$fullfile" host_vars/"$filename"
+    done
+
+    for fullfile in "${1}"/group_vars/*.yml; do
+        [ -e "$fullfile" ] || continue
+
+        filename=$(basename -- "$fullfile")
+
+        ln -v "$fullfile" group_vars/"$filename"
+    done
 }
 
 check_sanity "$ENV_PATH" "$BRANCH" || exit $?
