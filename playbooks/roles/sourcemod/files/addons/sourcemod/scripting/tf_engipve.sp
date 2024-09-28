@@ -8,7 +8,7 @@
 #include <tf_econ_data>
 #include <dhooks>
 
-#define PLUGIN_VERSION "0.8.2"
+#define PLUGIN_VERSION "0.8.5"
 
 #define PVE_TEAM_HUMANS_NAME "blue"
 #define PVE_TEAM_BOTS_NAME "red"
@@ -59,6 +59,7 @@ ConVar sm_engipve_bot_sapper_insta_remove;
 ConVar sm_engipve_respawn_bots_on_round_end;
 ConVar sm_engipve_allow_respawnroom_build;
 ConVar sm_engipve_clear_gibs;
+ConVar sm_engipve_spy_capblock_time;
 
 ConVar tf_bot_quota;
 
@@ -79,6 +80,8 @@ bool g_bIsRoundEnd = false;
 bool g_bIsRoundActive = false;
 float g_flRoundStartTime = 0.0;
 
+bool g_bSpyCapBlocking = false;
+
 char g_szCleanupEntities[][] = {
 	"keyframe_rope",
 	"move_rope",
@@ -90,7 +93,8 @@ char g_szCleanupEntities[][] = {
 	"func_dustmotes",
 	"point_spotlight",
 	"env_smoketrail",
-	"env_sun"
+	"env_sun",
+	"halloween_souls_pack"
 }
 
 public OnPluginStart()
@@ -98,11 +102,12 @@ public OnPluginStart()
 	//-----------------------------------------------------//
 	// Create plugin ConVars
 	CreateConVar("engipve_version", PLUGIN_VERSION, "[TF2] Engineer PVE Version", FCVAR_DONTRECORD);
-	sm_engipve_allow_respawnroom_build 		= CreateConVar("sm_engipve_allow_respawnroom_build", "1", "Can humans build in respawn rooms?");
-	sm_engipve_bot_sapper_insta_remove 		= CreateConVar("sm_engipve_bot_sapper_insta_remove", "1");
-	sm_engipve_respawn_bots_on_round_end 	= CreateConVar("sm_engipve_respawn_bots_on_round_end", "0");
+	sm_engipve_allow_respawnroom_build		= CreateConVar("sm_engipve_allow_respawnroom_build", "1", "Can humans build in respawn rooms?");
+	sm_engipve_bot_sapper_insta_remove		= CreateConVar("sm_engipve_bot_sapper_insta_remove", "1");
+	sm_engipve_respawn_bots_on_round_end	= CreateConVar("sm_engipve_respawn_bots_on_round_end", "0");
 	sm_engipve_clear_gibs					= CreateConVar("sm_engipve_clear_gibs", "1");
-	tf_bot_quota 							= FindConVar("tf_bot_quota");
+	sm_engipve_spy_capblock_time			= CreateConVar("sm_engipve_spy_capblock_time", "20");
+	tf_bot_quota							= FindConVar("tf_bot_quota");
 
 	RegAdminCmd("sm_engipve_reload", cReload, ADMFLAG_CHANGEMAP, "Reloads Engineer PVE config.");
 	RegAdminCmd("sm_becomeengibot", cBecomeEngiBot, ADMFLAG_ROOT, "Switches the client to the bot team.");
@@ -116,6 +121,7 @@ public OnPluginStart()
 	HookEvent("teamplay_round_start", 		teamplay_round_start);
 	HookEvent("teamplay_round_win", 		teamplay_round_win);
 	HookEvent("teamplay_setup_finished", 	teamplay_setup_finished);
+	HookEvent("teamplay_point_captured",	teamplay_point_captured);
 	HookEvent("player_death",				player_death);
 	
 	//-----------------------------------------------------//
@@ -624,6 +630,58 @@ int PVE_GiveWearableToClient(int client, int itemDef)
 	return hat;
 }
 
+void PVE_EndSpyBlocking()
+{
+	if(! g_bSpyCapBlocking) {
+		return;
+	}
+
+	g_bSpyCapBlocking = false;
+
+	for(int i = 1; i <= MaxClients; i++) {
+		if(! IsClientInGame(i)) {
+			continue;
+		}
+
+		PVE_EnableCapture(i);
+	}
+}
+
+void PVE_StartSpyBlocking()
+{
+	if(g_bSpyCapBlocking) {
+		return;
+	}
+
+	if(sm_engipve_spy_capblock_time.FloatValue <= 0) {
+		return;
+	}
+
+	g_bSpyCapBlocking = true;
+	CreateTimer(sm_engipve_spy_capblock_time.FloatValue, Timer_DisableSpyBlocking);
+
+	for(int i = 1; i <= MaxClients; i++) {
+		if(! IsClientInGame(i)) {
+			continue;
+		}
+
+		if(TF2_GetPlayerClass(i) != TFClass_Spy) {
+			continue;
+		}
+
+		PrintHintText(i, "Capturing points is not allowed for Spies for the next %.2f seconds", sm_engipve_spy_capblock_time.FloatValue);
+		PVE_DisableCapture(i);
+	}
+}
+
+void PVE_DisableCapture(int client) {
+	TF2Attrib_SetByName(client, "increase player capture value", -1.0);
+}
+
+void PVE_EnableCapture(int client) {
+	TF2Attrib_RemoveByName(client, "increase player capture value");
+}
+
 //-------------------------------------------------------//
 // Commands
 //-------------------------------------------------------//
@@ -642,32 +700,16 @@ Action cJoinTeam(int client, const char[] command, int argc)
 	char szTeamArg[11];
 	GetCmdArg(1, szTeamArg, sizeof(szTeamArg));
 
-	// Selecting red team automatically redirect to selecting blue team.
-	if(StrEqual(szTeamArg, "red", false))
-	{
-		ClientCommand(client, "jointeam blue");
-		return Plugin_Handled;
-	}
-
-	if(StrEqual(szTeamArg, "blue", false))
-	{
-		// Client is already on the blue team, do nothing.
-		if(TF2_GetClientTeam(client) == TFTeam_Humans)
-			return Plugin_Handled;
-
-		return Plugin_Continue;
-	}
-
-
 	// Whitelist spectator commands.
 	if(	StrEqual(szTeamArg, "spec", false) || 
 		StrEqual(szTeamArg, "spectate", false) || 
-		StrEqual(szTeamArg, "spectator", false))
+		StrEqual(szTeamArg, "spectator", false) ||
+		StrEqual(szTeamArg, "blue", false))
 	{
 		return Plugin_Continue;
 	}
 	
-	// Block eveything else.
+	ClientCommand(client, "jointeam blue");
 	return Plugin_Handled;
 }
 
@@ -697,6 +739,15 @@ public Action post_inventory_application(Event event, const char[] name, bool do
 	{
 		PVE_EquipBotItems(client);
 		PVE_ApplyPlayerAttributes(client);
+	} else {
+
+		if(	g_bSpyCapBlocking && 
+			TF2_GetPlayerClass(client) == TFClass_Spy
+		) {
+			PVE_DisableCapture(client);
+		} else {
+			PVE_EnableCapture(client);
+		}
 	}
 
 	return Plugin_Continue;
@@ -732,6 +783,12 @@ public Action teamplay_setup_finished(Event event, const char[] name, bool dontB
 	g_flRoundStartTime = GetGameTime();
 	g_iTeamRoundTimer = FindEntityByClassname(-1, "team_round_timer");
 
+	return Plugin_Continue;
+}
+
+public Action teamplay_point_captured(Event event, const char[] name, bool dontBroadcast)
+{
+	PVE_StartSpyBlocking();
 	return Plugin_Continue;
 }
 
@@ -771,10 +828,16 @@ public Action Timer_RespawnBot(Handle timer, any client)
 	return Plugin_Handled;
 }
 
+public Action Timer_DisableSpyBlocking(Handle timer, any client)
+{
+	PVE_EndSpyBlocking();
+	return Plugin_Handled;
+}
+
 public Action Timer_UpdateRoundTime(Handle timer, any ent)
 {
 	// Round is not active - do nothing.
-	if(!g_bIsRoundActive)
+	if(! g_bIsRoundActive)
 		return Plugin_Handled;
 
 	if(g_iTeamRoundTimer <= 0)
