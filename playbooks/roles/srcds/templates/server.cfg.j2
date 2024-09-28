@@ -187,8 +187,10 @@ sm_cvar sm_danepve_respawn_bots_on_round_end 0
 sm_cvar sm_danepve_max_playing_humans {{ item.human_count|default(16) }}
 sm_cvar sm_danepve_max_connected_humans {{ item.human_count|default(16) }}
 sm_cvar sm_danepve_clear_bots_building_gibs 1
-sm_cvar sm_gimme_chat_notice_enabled: 0
-sm_cvar sm_gimme_permanent_items_enabled: 1
+sm_cvar sm_gimme_chat_notice_enabled 0
+sm_cvar sm_gimme_permanent_items_enabled 1
+sm_cvar tf_merasmus_health_per_player 912
+sm_cvar sm_engipve_spy_capblock_time 20
 {% endif %}
 
 sm_cvar mp_waitingforplayers_time {% if item.config|default("all") == "all_plus" %}60{% else %}35{% endif %}
