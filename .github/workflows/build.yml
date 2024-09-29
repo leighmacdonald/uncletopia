@@ -11,11 +11,11 @@ jobs:
       - name: Run ansible-lint
         uses: ansible/ansible-lint@main
 #        # optional (see below):
-#        with:
-#          args: ""
-#          setup_python: "true"
-#          working_directory: ""
-#          requirements_file: ""
+        with:
+          args: "--exclude sm_plugins watcher"
+          setup_python: "true"
+          working_directory: ""
+          requirements_file: ""
 
   sourcemod:
     name: Build Plugins
@@ -29,5 +29,5 @@ jobs:
           version: "1.12.x"
 
       - name: Ensure plugin builds
-        working-directory: ./sourcemod/scripting
+        working-directory: ./playbooks/roles/sourcemod/files/addons/sourcemod/scripting
         run: ./compile.sh
