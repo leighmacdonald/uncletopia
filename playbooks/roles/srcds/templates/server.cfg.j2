@@ -15,24 +15,6 @@ sv_client_min_interp_ratio 1
 sv_client_max_interp_ratio 2
 sv_client_predict "1"
 
-{% if item.stv_enable|default(stv_enable) %}
-tv_enable 1
-tv_autorecord 0
-tv_maxclients 5
-tv_transmitall 1
-tv_delaymapchange 0
-tv_delay 0
-tv_maxrate 0
-tv_port "{{ srcds_base_port + (loop0 * 10) + 1 }}"
-tv_allow_camera_man 1
-tv_password "{{ stv_password }}"
-// Hostname
-tv_name "{{ item.name }} | STV"
-// In-game name
-tv_title "{{ stv_name }}"
-tv_snapshotrate {{ tv_snapshotrate|default(64) }}
-{% endif %}
-
 // Server Logging
 sv_logbans 1
 sv_logecho 1
@@ -109,13 +91,13 @@ sv_vote_issue_kick_allowed 1
 sv_vote_issue_scramble_teams_allowed 0
 sv_vote_kick_ban_duration 20
 
-// Vote scramble
-nano_votescramble_time 20.0
-nano_votescramble_delay 180.0
-nano_votescramble_chat_percentage 0.50
-nano_votescramble_menu_percentage 0.60
-nano_votescramble_minimum 3
-nano_votescramble_skip_second_vote 1
+{#// Vote scramble#}
+{#nano_votescramble_time 20.0#}
+{#nano_votescramble_delay 180.0#}
+{#nano_votescramble_chat_percentage 0.50#}
+{#nano_votescramble_menu_percentage 0.60#}
+{#nano_votescramble_minimum 3#}
+{#nano_votescramble_skip_second_vote 1#}
 
 // Reminders
 ut_scramble_nag_timer 300.0
@@ -147,19 +129,19 @@ sv_disable_weapon_drop_on_death 1
 {% endif %}
 
 // Classrestrict plugin
-sm_classrestrict_enabled 1
-sm_classrestrict_immunity 0
-{% for team in ["blu","red"] %}
-sm_classrestrict_{{ team }}_demomen {{ item.tf_classlimit|default(3) }}
-sm_classrestrict_{{ team }}_engineers {{ item.tf_classlimit|default(3) }}
-sm_classrestrict_{{ team }}_heavies {{ item.tf_classlimit|default(3) }}
-sm_classrestrict_{{ team }}_medics {{ item.tf_classlimit|default(3) }}
-sm_classrestrict_{{ team }}_pyros {{ item.tf_classlimit|default(3) }}
-sm_classrestrict_{{ team }}_scouts {{ item.tf_classlimit|default(3) }}
-sm_classrestrict_{{ team }}_snipers {{ item.tf_classlimit|default(3) }}
-sm_classrestrict_{{ team }}_soldiers {{ item.tf_classlimit|default(3) }}
-sm_classrestrict_{{ team }}_spies {{ item.tf_classlimit|default(3) }}
-{% endfor %}
+{#sm_classrestrict_enabled 1#}
+{#sm_classrestrict_immunity 0#}
+{#{% for team in ["blu","red"] %}#}
+{#sm_classrestrict_{{ team }}_demomen {{ item.tf_classlimit|default(3) }}#}
+{#sm_classrestrict_{{ team }}_engineers {{ item.tf_classlimit|default(3) }}#}
+{#sm_classrestrict_{{ team }}_heavies {{ item.tf_classlimit|default(3) }}#}
+{#sm_classrestrict_{{ team }}_medics {{ item.tf_classlimit|default(3) }}#}
+{#sm_classrestrict_{{ team }}_pyros {{ item.tf_classlimit|default(3) }}#}
+{#sm_classrestrict_{{ team }}_scouts {{ item.tf_classlimit|default(3) }}#}
+{#sm_classrestrict_{{ team }}_snipers {{ item.tf_classlimit|default(3) }}#}
+{#sm_classrestrict_{{ team }}_soldiers {{ item.tf_classlimit|default(3) }}#}
+{#sm_classrestrict_{{ team }}_spies {{ item.tf_classlimit|default(3) }}#}
+{#{% endfor %}#}
 
 // Built in class limit commands
 tf_classlimit {{ item.tf_classlimit|default(3) }}
@@ -195,10 +177,12 @@ sm_cvar sm_engipve_spy_capblock_time 20
 
 sm_cvar mp_waitingforplayers_time {% if item.config|default("all") == "all_plus" %}60{% else %}35{% endif %}
 
+{% if sentry_dsn != "" %}
 ce_sentry_dsn_url "{{ sentry_dsn }}"
 ce_region {{ item.sentry_ce_region|default("") }}
 ce_type {{ item.config }}
 ce_server_id "{{ item.server_name_short }}"
+{% endif %}
 
 sv_playerperfhistorycount 20
 net_maxcleartime 0.001
