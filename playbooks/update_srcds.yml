@@ -3,4 +3,3 @@
   hosts: tf2
   roles:
     - srcds
-    - tf2

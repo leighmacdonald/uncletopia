@@ -39,4 +39,3 @@
       - "{{ vpn_hosts[metrics_hostname].ip }}:3100:3100"
   tags:
     - loki
-
