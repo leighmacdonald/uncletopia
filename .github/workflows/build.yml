@@ -4,24 +4,30 @@ on: [push, pull_request]
 
 jobs:
   lint:
-    runs-on: ubuntu-20.04
+    name: Ansible Lint
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-
-#  publish:
-#    runs-on: ubuntu-20.04
-#    needs: [lint]
-#    steps:
-#      - uses: actions/checkout@v2
-#
-#      - name: Build srcds image
-#        uses: arillso/action.playbook@master
+      - uses: actions/checkout@v4
+      - name: Run ansible-lint
+        uses: ansible/ansible-lint@main
+#        # optional (see below):
 #        with:
-#          limit: localhost
-#          vault_password: ${{ secrets.VAULT_SECRET}}
-#          playbook: playbooks/srcds_github.yml
-#          inventory: hosts.yml
-#          galaxy_file: collections/requirements.yml
-#        env:
-#          ANSIBLE_HOST_KEY_CHECKING: 'false'
-#          ANSIBLE_DEPRECATION_WARNINGS: 'false'
+#          args: ""
+#          setup_python: "true"
+#          working_directory: ""
+#          requirements_file: ""
+
+  sourcemod:
+    name: Build Plugins
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup SourcePawn Compiler
+        uses: rumblefrog/setup-sp@master
+        with:
+          version: "1.12.x"
+
+      - name: Ensure plugin builds
+        working-directory: ./sourcemod/scripting
+        run: ./compile.sh

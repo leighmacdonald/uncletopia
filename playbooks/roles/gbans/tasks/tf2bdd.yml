@@ -21,4 +21,4 @@
       logging_jobname: "containerlogs"
     networks:
       - name: caddy_net
-  ignore_errors: true
+ # ignore_errors: true

@@ -30,7 +30,7 @@
   tags:
     - metrics-server
 
-#- name: mimir
+# - name: mimir
 #  import_tasks: mimir.yml
 #  tags:
 #    - metrics-server

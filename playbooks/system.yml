@@ -61,14 +61,14 @@
           - python3-netaddr
 
     - name: Install xanmod-rt-v2
-      when: old_cpu == true
+      when: old_cpu
       ansible.builtin.apt:
         state: present
         pkg:
           - linux-xanmod-rt-x64v2
 
     - name: Install xanmod-rt-v3
-      when: old_cpu == false
+      when: not old_cpu
       ansible.builtin.apt:
         state: present
         pkg:

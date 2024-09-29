@@ -4,6 +4,8 @@ exclude_paths:
   - group_vars/*
   - hosts.yml
   - .ansible-lint
+  - sm_plugins/*
+  - playbooks/roles/githubixx.ansible_role_wireguard/*
 
 skip_list:
   - schema
@@ -16,6 +18,7 @@ skip_list:
   - risky-shell-pipe
   - name[casing]
   - name[play]
+  - ignore-errors
 
 kinds:
   - tasks: "*/tasks/*.yml"

@@ -1,0 +1,9 @@
+name: Build Sourcemod
+
+on:
+  push:
+  pull_request:
+
+permissions: write-all
+
+jobs:

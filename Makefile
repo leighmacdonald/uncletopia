@@ -11,7 +11,7 @@ format:
 	@find ./roles/sourcemod/files/addons/sourcemod/scripting -regex '.*\.\(sp\)' -exec clang-format -style=file -i {} \;
 
 lint:
-	@ansible-lint
+	@ansible-lint --exclude sm_plugins watcher
 
 deps:
 	@ansible-galaxy collection install -r collections/requirements.yml

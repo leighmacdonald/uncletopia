@@ -1,6 +1,6 @@
 ---
 
-#- name: Enable rsyslog
+# - name: Enable rsyslog
 #  ansible.builtin.include_role:
 #    name: hadret.rsyslog
 

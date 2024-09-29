@@ -24,7 +24,7 @@
     restart: true
     purge_networks: true
     restart_policy: unless-stopped
-    command: [ "--config.file=/etc/mimir.yml" ]
+    command: ["--config.file=/etc/mimir.yml"]
     labels:
       logging: "promtail"
       logging_jobname: "containerlogs"

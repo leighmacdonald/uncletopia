@@ -16,7 +16,7 @@
   docker_container:
     name: tempo
     image: grafana/tempo:latest
-    command: [ "-config.file=/etc/tempo.yml" ]
+    command: ["-config.file=/etc/tempo.yml"]
     restart: true
     pull: true
     purge_networks: true
