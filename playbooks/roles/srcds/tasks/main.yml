@@ -5,29 +5,32 @@
     state: directory
     mode: "0755"
 
-- name: steamcmd
-  unarchive:
+- name: Install steamcmd
+  ansible.builtin.unarchive:
     src: https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz
     dest: ~/steamcmd
     remote_src: true
     creates: ~/steamcmd/steamcmd.sh
 
-- name: steamcmd update script
+- name: Generate steamcmd update script
   ansible.builtin.template:
     src: tf2_ds.txt.j2
     dest: ~/steamcmd/tf2_ds-{{ item.server_name_short }}.txt
-    mode: 0755
+    mode: "0755"
+    creates: ~/steamcmd/tf2_ds-{{ item.server_name_short }}.txt
   loop: "{{ services }}"
   loop_control:
     index_var: loop0
 
-- name: download
-  command:
-    cmd: ./steamcmd.sh +runscript tf2_ds-{{ item.server_name_short }}.txt
+- name: Download TF2 Base
+  ansible.builtin.command:
+    cmd: ./steamcmd.sh +runscript tf2_ds-{{ item.server_name_short }}.txt # noqa no-changed-when
     chdir: ~/steamcmd
   loop: "{{ services }}"
   loop_control:
     index_var: loop0
+  tags:
+    - game_engine
 
 - name: Install a list of packages
   become: true
@@ -77,6 +80,7 @@
   ansible.builtin.copy:
     src: "{{ role_path }}/files/navmeshes/"
     dest: /home/tf2server/srcds-{{ item.server_name_short }}/tf/maps/
+    mode: "0775"
   loop: "{{ services }}"
   when: item.config == "pve"
   # Perform the copy from the *remote* sourcemod build output
@@ -86,25 +90,25 @@
   ansible.builtin.copy:
     src: "{{ role_path }}/files/attach.sh"
     dest: /home/tf2server/srcds-{{ item.server_name_short }}/attach.sh
-    mode: 0755
+    mode: "0755"
   loop: "{{ services }}"
 
-- name: /tf/mapcycle.txt
+- name: Generate /tf/mapcycle.txt
   ansible.builtin.template:
     src: mapcycle.txt.j2
     dest: ~/srcds-{{ item.server_name_short }}/tf/mapcycle.txt
-    mode: 0655
+    mode: "0655"
   tags:
     - game_config
   loop: "{{ services }}"
   loop_control:
     index_var: loop0
 
-- name: curated_maplist.txt
+- name: Generate curated_maplist.txt
   ansible.builtin.template:
     src: curated_maplist.txt.j2
     dest: ~/srcds-{{ item.server_name_short }}/tf/addons/sourcemod/configs/curated_maplist.txt
-    mode: 0655
+    mode: "0655"
   when: item.curated_pool
   tags:
     - game_config
@@ -112,99 +116,99 @@
   loop_control:
     index_var: loop0
 
-- name: /tf/item_whitelist.txt
+- name: Generate /tf/item_whitelist.txt
   ansible.builtin.template:
     src: item_whitelist.txt.j2
     dest: ~/srcds-{{ item.server_name_short }}/tf/item_whitelist.txt
-    mode: 0655
+    mode: "0655"
   tags:
     - game_config
   loop: "{{ services }}"
   loop_control:
     index_var: loop0
 
-- name: /tf/addons/sourcemod/configs/maplists.cfg
+- name: Generate /tf/addons/sourcemod/configs/maplists.cfg
   ansible.builtin.template:
     src: maplists.cfg.j2
     dest: ~/srcds-{{ item.server_name_short }}/tf/addons/sourcemod/configs/maplists.cfg
-    mode: 0655
+    mode: "0655"
   tags:
     - game_config
   loop: "{{ services }}"
   loop_control:
     index_var: loop0
 
-- name: /tf/addons/sourcemod/configs/databases.cfg
+- name: Generate /tf/addons/sourcemod/configs/databases.cfg
   ansible.builtin.template:
     src: databases.cfg.j2
     dest: ~/srcds-{{ item.server_name_short }}/tf/addons/sourcemod/configs/databases.cfg
-    mode: 0655
+    mode: "0655"
   tags:
     - game_config
   loop: "{{ services }}"
   loop_control:
     index_var: loop0
 
-- name: /tf/cfg/autoexec.cfg
+- name: Generate /tf/cfg/autoexec.cfg
   ansible.builtin.template:
     src: autoexec.cfg.j2
     dest: ~/srcds-{{ item.server_name_short }}/tf/cfg/autoexec.cfg
-    mode: 0655
+    mode: "0655"
   tags:
     - game_config
   loop: "{{ services }}"
   loop_control:
     index_var: loop0
 
-- name: /tf/cfg/server.cfg
+- name: Generate /tf/cfg/server.cfg
   ansible.builtin.template:
     src: server.cfg.j2
     dest: ~/srcds-{{ item.server_name_short }}/tf/cfg/server.cfg
-    mode: 0655
+    mode: "0655"
   tags:
     - game_config
   loop: "{{ services }}"
   loop_control:
     index_var: loop0
 
-- name: /tf/cfg/motd.cfg
+- name: Generate /tf/cfg/motd.cfg
   ansible.builtin.template:
     src: motd.txt.j2
     dest: ~/srcds-{{ item.server_name_short }}/tf/cfg/motd.txt
-    mode: 0655
+    mode: "0655"
   tags:
     - game_config
   loop: "{{ services }}"
   loop_control:
     index_var: loop0
 
-- name: /tf/addons/sourcemod/configs/core.cfg
+- name: Generate /tf/addons/sourcemod/configs/core.cfg
   ansible.builtin.template:
     src: core.cfg.j2
     dest: ~/srcds-{{ item.server_name_short }}/tf/addons/sourcemod/configs/core.cfg
-    mode: 0655
+    mode: "0655"
   tags:
     - game_config
   loop: "{{ services }}"
   loop_control:
     index_var: loop0
 
-- name: /tf/addons/sourcemod/configs/discord.cfg
+- name: Generate /tf/addons/sourcemod/configs/discord.cfg
   ansible.builtin.template:
     src: discord.cfg.j2
     dest: ~/srcds-{{ item.server_name_short }}/tf/addons/sourcemod/configs/discord.cfg
-    mode: 0655
+    mode: "0655"
   tags:
     - game_config
   loop: "{{ services }}"
   loop_control:
     index_var: loop0
 
-- name: /tf/addons/sourcemod/configs/tf_engipve.cfg
+- name: Generate /tf/addons/sourcemod/configs/tf_engipve.cfg
   ansible.builtin.template:
     src: tf_engipve.cfg.j2
     dest: ~/srcds-{{ item.server_name_short }}/tf/addons/sourcemod/configs/tf_engipve.cfg
-    mode: 0655
+    mode: "0655"
   tags:
     - game_config
   loop: "{{ services }}"
@@ -212,77 +216,77 @@
   loop_control:
     index_var: loop0
 
-- name: /tf/cfg/sourcemod/gbans.cfg
+- name: Generate /tf/cfg/sourcemod/gbans.cfg
   ansible.builtin.template:
     src: gbans.cfg.j2
     dest: ~/srcds-{{ item.server_name_short }}/tf/cfg/sourcemod/gbans.cfg
-    mode: 0655
+    mode: "0655"
   tags:
     - game_config
   loop: "{{ services }}"
   loop_control:
     index_var: loop0
 
-- name: /tf/cfg/sourcemod/basevotes.cfg
+- name: Generate /tf/cfg/sourcemod/basevotes.cfg
   ansible.builtin.template:
     src: basevotes.cfg.j2
     dest: ~/srcds-{{ item.server_name_short }}/tf/cfg/sourcemod/basevotes.cfg
-    mode: 0655
+    mode: "0655"
   tags:
     - game_config
   loop: "{{ services }}"
   loop_control:
     index_var: loop0
 
-- name: /tf/cfg/sourcemod/funvotes.cfg
+- name: Generate /tf/cfg/sourcemod/funvotes.cfg
   ansible.builtin.template:
     src: funvotes.cfg.j2
     dest: ~/srcds-{{ item.server_name_short }}/tf/cfg/sourcemod/funvotes.cfg
-    mode: 0655
+    mode: "0655"
   tags:
     - game_config
   loop: "{{ services }}"
   loop_control:
     index_var: loop0
 
-- name: /tf/cfg/sourcemod/mapchooser.cfg
+- name: Generate /tf/cfg/sourcemod/mapchooser.cfg
   ansible.builtin.template:
     src: mapchooser.cfg.j2
     dest: ~/srcds-{{ item.server_name_short }}/tf/cfg/sourcemod/mapchooser.cfg
-    mode: 0755
+    mode: "0755"
   tags:
     - game_config
   loop: "{{ services }}"
   loop_control:
     index_var: loop0
 
-- name: /tf/cfg/sourcemod/nativevotes.cfg
+- name: Generate /tf/cfg/sourcemod/nativevotes.cfg
   ansible.builtin.template:
     src: nativevotes.cfg.j2
     dest: ~/srcds-{{ item.server_name_short }}/tf/cfg/sourcemod/nativevotes.cfg
-    mode: 0755
+    mode: "0755"
   tags:
     - game_config
   loop: "{{ services }}"
   loop_control:
     index_var: loop0
 
-- name: /tf/cfg/sourcemod/randomcycle.cfg
+- name: Generate /tf/cfg/sourcemod/randomcycle.cfg
   ansible.builtin.template:
     src: randomcycle.cfg.j2
     dest: ~/srcds-{{ item.server_name_short }}/tf/cfg/sourcemod/randomcycle.cfg
-    mode: 0755
+    mode: "0755"
   tags:
     - game_config
   loop: "{{ services }}"
   loop_control:
     index_var: loop0
 
-- name: /tf/cfg/mapconfig/gametype/pl.cfg
+- name: Generate /tf/cfg/mapconfig/gametype/pl.cfg
   ansible.builtin.template:
     src: pl.cfg.j2
     dest: ~/srcds-{{ item.server_name_short }}/tf/cfg/mapconfig/gametype/pl.cfg
-    mode: 0775
+    mode: "0775"
   tags:
     - game_config
   when: item.config == 'stopwatch'
@@ -290,11 +294,11 @@
   loop_control:
     index_var: loop0
 
-- name: /tf/cfg/mapconfig/gametype/workshop/pl.cfg
+- name: Generate /tf/cfg/mapconfig/gametype/workshop/pl.cfg
   ansible.builtin.template:
     src: pl.cfg.j2
     dest: ~/srcds-{{ item.server_name_short }}/tf/cfg/mapconfig/gametype/workshop/pl.cfg
-    mode: 0775
+    mode: "0775"
   tags:
     - game_config
   when: item.config == 'stopwatch'
@@ -302,44 +306,44 @@
   loop_control:
     index_var: loop0
 
-- name: /tf/cfg/sourcemod/rtv.cfg
+- name: Generate /tf/cfg/sourcemod/rtv.cfg
   ansible.builtin.template:
     src: rtv.cfg.j2
     dest: ~/srcds-{{ item.server_name_short }}/tf/cfg/sourcemod/rtv.cfg
-    mode: 0775
+    mode: "0775"
   tags:
     - game_config
   loop: "{{ services }}"
   loop_control:
     index_var: loop0
 
-- name: /tf/cfg/sourcemod/sourcemod.cfg
+- name: Generate /tf/cfg/sourcemod/sourcemod.cfg
   ansible.builtin.template:
     src: sourcemod.cfg.j2
     dest: ~/srcds-{{ item.server_name_short }}/tf/cfg/sourcemod/sourcemod.cfg
-    mode: 0755
+    mode: "0755"
   tags:
     - game_config
   loop: "{{ services }}"
   loop_control:
     index_var: loop0
 
-- name: /tf/cfg/sourcemod/stac.cfg
+- name: Generate /tf/cfg/sourcemod/stac.cfg
   ansible.builtin.template:
     src: stac.cfg.j2
     dest: ~/srcds-{{ item.server_name_short }}/tf/cfg/sourcemod/stac.cfg
-    mode: 0755
+    mode: "0755"
   tags:
     - game_config
   loop: "{{ services }}"
   loop_control:
     index_var: loop0
 
-- name: /tf/cfg/sourcemod/networktools.cfg
+- name: Generate /tf/cfg/sourcemod/networktools.cfg
   ansible.builtin.template:
     src: networktools.cfg.j2
     dest: ~/srcds-{{ item.server_name_short }}/tf/cfg/sourcemod/networktools.cfg
-    mode: 0755
+    mode: "0755"
   tags:
     - game_config
   loop: "{{ services }}"
@@ -347,11 +351,11 @@
   loop_control:
     index_var: loop0
 
-- name: /tf/cfg/sourcemod/discord_accelerator.cfg
+- name: Generate /tf/cfg/sourcemod/discord_accelerator.cfg
   ansible.builtin.template:
     src: discord_accelerator.cfg.j2
     dest: "~/srcds-{{ item.server_name_short }}/tf/cfg/sourcemod/discord_accelerator.cfg"
-    mode: 0755
+    mode: "0755"
   tags:
     - game_config
   loop: "{{ services }}"
@@ -362,7 +366,7 @@
   ansible.builtin.template:
     src: "entry.sh.j2"
     dest: "~/srcds-{{ item.server_name_short }}/entry.sh"
-    mode: 0775
+    mode: "0775"
   tags:
     - game_config
   loop: "{{ services }}"
@@ -373,16 +377,16 @@
   ansible.builtin.template:
     src: "stop.sh.j2"
     dest: "~/srcds-{{ item.server_name_short }}/stop.sh"
-    mode: 0775
+    mode: "0775"
   tags:
     - game_config
   loop: "{{ services }}"
   loop_control:
     index_var: loop0
 
-- name: srcds-fw-enable
+- name: Firewall SRCDS
   become: true
-  ansible.builtin.ufw:
+  community.general.ufw:
     rule: allow
     port: "{{ srcds_base_port + (loop0 * 10) }}"
     proto: any
@@ -391,9 +395,9 @@
     index_var: loop0
   when: ansible_distribution == 'Ubuntu'
 
-- name: stv-fw-enable
+- name: Firewall SourceTV
   become: true
-  ansible.builtin.ufw:
+  community.general.ufw:
     rule: allow
     port: "{{ srcds_base_port + (loop0 * 10) + 1 }}"
     proto: udp
@@ -402,9 +406,9 @@
     index_var: loop0
   when: ansible_distribution == 'Ubuntu'
 
-- name: srcds-fw-client-outbound
+- name: Firewall srcds-fw-client-outbound
   become: true
-  ansible.builtin.ufw:
+  community.general.ufw:
     rule: allow
     port: "{{ srcds_base_port + (loop0 * 10) + 2 }}"
     proto: udp
@@ -414,7 +418,7 @@
     index_var: loop0
   when: ansible_distribution == 'Ubuntu'
 
-- name: cron-srcds
+- name: Cron srcds
   become: true
   ansible.builtin.cron:
     name: "tf2-restart-{{ item.server_name_short }}"
@@ -433,31 +437,33 @@
   ansible.builtin.template:
     src: "srcds.service.j2"
     dest: "/etc/systemd/system/srcds-{{ item.server_name_short }}.service"
-    mode: 0775
+    mode: "0775"
   loop: "{{ services }}"
   loop_control:
     index_var: loop0
 
 - name: Reload systemd
   become: true
-  systemd:
+  ansible.builtin.systemd:
     daemon_reload: true
 
 - name: Reload srcds-services
   become: true
-  systemd:
+  ansible.builtin.systemd:
     name: "srcds-{{ item.server_name_short }}.service"
     enabled: true
     state: restarted
   loop: "{{ services }}"
   loop_control:
     index_var: loop0
-
+  tags:
+    - game_engine
 
 - name: Configure logrotate
   become: true
-  copy:
+  ansible.builtin.copy:
     dest: /etc/logrotate.d/srcds-{{ item.server_name_short }}
+    mode: '0755'
     content: |
       /home/{{ srcds_user }}/srcds-{{ item.server_name_short }}/tf/logs/*.log
       {
@@ -469,7 +475,7 @@
   loop_control:
     index_var: loop0
 
-- name: cron-clean-stv
+- name: Cron clean-stv
   become: true
   ansible.builtin.cron:
     name: "srcds-clean-stv-{{ item.server_name_short }}"

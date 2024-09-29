@@ -5,29 +5,29 @@
   ansible.builtin.template:
     src: bdapi.yml.j2
     dest: /etc/bdapi.yml
-    mode: 0775
+    mode: "0775"
 
 - name: Generate /etc/bdapi.key
   become: true
   ansible.builtin.copy:
     content: "{{ bdapi_private_key }}"
     dest: /etc/bdapi.key
-    mode: 0600
+    mode: "0600"
     owner: tf2server
     group: tf2
 
-- name: bdapi_cache_data volume
-  docker_volume:
+- name: Create bdapi_cache_data volume
+  community.docker.docker_volume:
     name: bdapi_cache_data
     state: present
 
 - name: Create bdapi_postgres_data volume
-  docker_volume:
+  community.docker.docker_volume:
     name: bdapi_db
     state: present
 
 - name: Create bdapi-postgres container
-  docker_container:
+  community.docker.docker_container:
     name: bdapi-postgres
     image: timescale/timescaledb-ha:pg15
     restart: true
@@ -49,8 +49,8 @@
       logging: "promtail"
       logging_jobname: "containerlogs"
 
-- name: bd-api-service
-  docker_container:
+- name: Create bd-api-service
+  community.docker.docker_container:
     name: bd-api-service
     image: ghcr.io/leighmacdonald/bd-api:v1.2.2
     restart: true
@@ -70,8 +70,8 @@
       logging: "promtail"
       logging_jobname: "containerlogs"
 
-- name: bd-api-river
-  docker_container:
+- name: Create bd-api-river
+  community.docker.docker_container:
     name: bd-api-river
     image: ghcr.io/riverqueue/riverui:latest
     restart: true

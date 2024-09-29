@@ -1,32 +1,32 @@
 ---
 
-- name: node_exporter
-  import_tasks: node_exporter.yml
+- name: Setup node_exporter
+  ansible.builtin.import_tasks: node_exporter.yml
   tags:
     - metrics-client
 
-- name: minio
-  import_tasks: minio.yml
+- name: Setup minio
+  ansible.builtin.import_tasks: minio.yml
   tags:
     - metrics-server
 
-- name: prometheus
-  import_tasks: prometheus.yml
+- name: Setup prometheus
+  ansible.builtin.import_tasks: prometheus.yml
   tags:
     - metrics-server
 
-- name: promtail
-  import_tasks: promtail.yml
+- name: Setup promtail
+  ansible.builtin.import_tasks: promtail.yml
   tags:
     - metrics-client
 
-- name: loki
-  import_tasks: loki.yml
+- name: Setup loki
+  ansible.builtin.import_tasks: loki.yml
   tags:
     - metrics-server
 
-- name: tempo
-  import_tasks: tempo.yml
+- name: Setup tempo
+  ansible.builtin.import_tasks: tempo.yml
   tags:
     - metrics-server
 
@@ -35,7 +35,7 @@
 #  tags:
 #    - metrics-server
 
-- name: grafana
-  import_tasks: grafana.yml
+- name: Setup grafana
+  ansible.builtin.import_tasks: grafana.yml
   tags:
     - metrics-server

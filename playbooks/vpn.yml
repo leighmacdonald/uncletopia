@@ -4,8 +4,8 @@
 # This does not configure network level firewalls for hosts that support it, such as ovh game firewall. These must
 # be manually configured out of band for now.
 # Adding your own desktop to the network can be done using wireguard_unmanaged_peers in group_vars/all.yml
-- hosts: all
-  name: vpn
+- name: Setup VPN
+  hosts: all
   become: true
   vars:
     ansible_python_interpreter: python3

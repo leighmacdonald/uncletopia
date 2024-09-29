@@ -1,7 +1,7 @@
 ---
 
 - name: Create node_exporter container
-  docker_container:
+  community.docker.docker_container:
     name: node_exporter
     image: prom/node-exporter:latest
     restart_policy: unless-stopped
@@ -12,7 +12,7 @@
     command:
       - "--path.rootfs=/host"
     ports:
-      - "{{ vpn_hosts[inventory_hostname].ip|default(ip) }}:9100:9100"
+      - "{{ vpn_hosts[inventory_hostname].ip | default(ip) }}:9100:9100"
     labels:
       logging: "promtail"
       logging_jobname: "containerlogs"

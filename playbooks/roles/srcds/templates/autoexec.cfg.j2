@@ -46,21 +46,3 @@ mp_idlemaxtime 3
 
 sv_visiblemaxplayers {{ item.sv_visiblemaxplayers|default(24) }}
 
-
-{% if item.stv_enable|default(stv_enable) %}
-tv_enable 1
-tv_autorecord 0
-tv_maxclients 5
-tv_transmitall 1
-tv_delaymapchange 0
-tv_delay 0
-tv_maxrate 0
-tv_port "{{ srcds_base_port + (loop0 * 10) + 1 }}"
-tv_allow_camera_man 1
-tv_password "{{ stv_password }}"
-// Hostname
-tv_name "{{ item.name }} | STV"
-// In-game name
-tv_title "{{ stv_name }}"
-tv_snapshotrate {{ tv_snapshotrate|default(64) }}
-{% endif %}

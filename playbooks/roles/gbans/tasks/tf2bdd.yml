@@ -1,7 +1,7 @@
 ---
 
-- name: tf2bdd-service
-  docker_container:
+- name: Create tf2bdd-service
+  community.docker.docker_container:
     name: tf2bdd-service
     image: leighmacdonald/tf2bdd:1.0.0
     restart: true

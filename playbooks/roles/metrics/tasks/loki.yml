@@ -5,19 +5,19 @@
   ansible.builtin.template:
     src: loki.yml.j2
     dest: /etc/loki.yml
-    mode: 0775
+    mode: "0775"
   tags:
     - loki
 
 - name: Create loki_data volume
-  docker_volume:
+  community.docker.docker_volume:
     name: loki_data
     state: present
   tags:
     - loki
 
 - name: Create loki container
-  docker_container:
+  community.docker.docker_container:
     name: loki
     image: grafana/loki:latest
     restart: true

@@ -1,88 +1,119 @@
 ---
-- hosts: tf2
+- name: Tune System
+  hosts: tf2
   become: true
-  name: 'tune'
   tasks:
-    - ansible.builtin.package:
+    - name: Install sysfsutils
+      ansible.builtin.package:
         name: sysfsutils
-        state: latest
-    - ansible.builtin.lineinfile:
+        state: latest # noqa package-latest
+
+    - name: Enable transparent_hugepage Forever
+      ansible.builtin.lineinfile:
         path: /etc/sysfs.conf
         create: true
         regexp: '^kernel\/mm\/transparent\_hugepage\/enabled'
         line: "kernel/mm/transparent_hugepage/enabled = never"
-    - ansible.builtin.shell: echo never {{ ">" }} /sys/kernel/mm/transparent_hugepage/enabled
-    - ansible.posix.sysctl:
+        mode: "0755"
+
+    - name: Enable transparent_hugepage  # noqa no-changed-when
+      ansible.builtin.command:
+        cmd: echo never {{ ">" }} /sys/kernel/mm/transparent_hugepage/enabled
+
+    - name: Set vm.swappiness
+      ansible.posix.sysctl:
         name: vm.swappiness
         value: '10'
         state: present
         reload: true
-    - ansible.posix.sysctl:
+
+    - name: Set vm.zone_reclaim_mode
+      ansible.posix.sysctl:
         name: vm.zone_reclaim_mode
         value: '0'
         state: present
         reload: true
-    - ansible.posix.sysctl:
+
+    - name: Set kernel.sched_rt_runtime_us
+      ansible.posix.sysctl:
         name: kernel.sched_rt_runtime_us
         value: '1000000'
         state: present
         reload: true
-    - ansible.posix.sysctl:
+
+    - name: Set kernel.hung_task_timeout_secs
+      ansible.posix.sysctl:
         name: kernel.hung_task_timeout_secs
         value: '600'
         state: present
         reload: true
-    - ansible.posix.sysctl:
+    - name: Set kernel.nmi_watchdog
+      ansible.posix.sysctl:
         name: kernel.nmi_watchdog
         value: '0'
         state: present
         reload: true
-    - ansible.posix.sysctl:
+    - name: Set kernel.numa_balancing
+      ansible.posix.sysctl:
         name: kernel.numa_balancing
         value: '0'
         state: present
         reload: true
-    - ansible.posix.sysctl:
+    - name: Set vm.stat_interval
+      ansible.posix.sysctl:
         name: vm.stat_interval
         value: '10'
         state: present
         reload: true
-    - ansible.posix.sysctl:
+    - name: Set vm.min_free_kbytes
+      ansible.posix.sysctl:
         name: vm.min_free_kbytes
         value: '1024000'
         state: present
         reload: true
-    - ansible.posix.sysctl:
+    - name: Set net.core.rmem_default
+      ansible.posix.sysctl:
         name: net.core.rmem_default
         value: '851968'
         state: present
         reload: true
-    - ansible.posix.sysctl:
+    - name: Set net.core.rmem_max
+      ansible.posix.sysctl:
         name: net.core.rmem_max
         value: '851968'
         state: present
         reload: true
-    - ansible.posix.sysctl:
+
+    - name: Set net.core.busy_read
+      ansible.posix.sysctl:
         name: net.core.busy_read
         value: '50'
         state: present
         reload: true
-    - ansible.posix.sysctl:
+
+    - name: Set net.core.busy_poll
+      ansible.posix.sysctl:
         name: net.core.busy_poll
         value: '50'
         state: present
         reload: true
-    - ansible.posix.sysctl:
+
+    - name: Set net.ipv4.udp_mem
+      ansible.posix.sysctl:
         name: net.ipv4.udp_mem
         value: '1445727 1927636 2891454'
         state: present
         reload: true
-    - ansible.posix.sysctl:
+
+    - name: Set net.core.netdev_max_backlog
+      ansible.posix.sysctl:
         name: net.core.netdev_max_backlog
         value: "2000"
         state: present
         reload: true
-    - ansible.builtin.service:
+
+    - name: Disable IRQBalance
+      ansible.builtin.service:
         enabled: false
         name: irqbalance
         state: stopped
@@ -103,11 +134,14 @@
     #    sysctl_set: true
     #    reload: true
 
-    - ansible.builtin.apt:
+    - name: Install Tuned
+      ansible.builtin.apt:
         update_cache: true
         cache_valid_time: 0
         state: present
         pkg:
           - tuned
 
-    - ansible.builtin.shell: tuned-adm profile latency-performance
+    - name: Tune Adm  # noqa no-changed-when
+      ansible.builtin.command:
+        cmd: tuned-adm profile latency-performance

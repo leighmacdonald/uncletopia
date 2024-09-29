@@ -1,5 +1,6 @@
 ---
-- hosts: all
+- name: System Setup
+  hosts: all
   become: true
   tasks:
     - name: Set timezone
@@ -7,7 +8,7 @@
         name: "{{ timezone }}"
 
     - name: Check if i386 is enabled
-      ansible.builtin.shell: dpkg --print-foreign-architectures | grep i386
+      ansible.builtin.shell: dpkg --print-foreign-architectures | grep i386  # noqa risky-shell-pipe
       register: result_i386_check
       changed_when: result_i386_check.rc == 1
       failed_when: result_i386_check.rc > 1
@@ -40,10 +41,11 @@
       become: true
       ansible.builtin.copy:
         dest: "/etc/default/cpufrequtils"
+        mode: '0755'
         content: |
           GOVERNOR="performance"
 
-    - name: Enable i386 architecture
+    - name: Enable i386 architecture # noqa no-changed-when
       ansible.builtin.command: dpkg --add-architecture i386
       when: result_i386_check.rc == 1
 
@@ -152,7 +154,7 @@
         enabled: false
 
     # ondemand service will force ondemand
-    - name: Disable ondemand
+    - name: Disable ondemand   # noqa ignore-errors
       become: true
       ignore_errors: true
       ansible.builtin.systemd:
@@ -161,7 +163,7 @@
         masked: true
         enabled: false
 
-    - name: Disable irqbalance
+    - name: Disable irqbalance  # noqa ignore-errors
       become: true
       ignore_errors: true
       ansible.builtin.systemd:
@@ -179,7 +181,7 @@
 
     - name: Enable UFW
       become: true
-      ansible.builtin.ufw:
+      community.general.ufw:
         state: enabled
         policy: deny
       when: ansible_distribution == 'Ubuntu'
