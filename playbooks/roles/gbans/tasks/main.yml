@@ -4,13 +4,13 @@
     name: caddy_net
 
 - name: Install postgres
-  import_tasks: postgres.yml
+  ansible.builtin.import_tasks: postgres.yml
 
 - name: Install gbans
-  import_tasks: gbans.yml
+  ansible.builtin.import_tasks: gbans.yml
 
 - name: Install tf2bdd
-  import_tasks: tf2bdd.yml
+  ansible.builtin.import_tasks: tf2bdd.yml
 
 - name: Install bd-api
-  import_tasks: bd-api.yml
+  ansible.builtin.import_tasks: bd-api.yml

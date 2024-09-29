@@ -1,6 +1,6 @@
 ---
 - name: Create gbans_postgres_data volume
-  docker_volume:
+  community.docker.docker_volume:
     name: gbans_db
     state: present
 
@@ -14,6 +14,7 @@
   ansible.builtin.copy:
     src: "postgres-ip4r.Dockerfile"
     dest: "build/postgres/Dockerfile"
+    mode: "0755"
 
 - name: Build postgres image
   community.docker.docker_image:
@@ -24,7 +25,7 @@
     source: build
 
 - name: Create gbans-postgres container
-  docker_container:
+  community.docker.docker_container:
     name: gbans-postgres
     image: postgres-gbans:latest
     restart: true
@@ -72,7 +73,7 @@
     ]
 
 - name: Create gbans-postgres_exporter container
-  docker_container:
+  community.docker.docker_container:
     name: gbans-postgres_exporter
     image: quay.io/prometheuscommunity/postgres-exporter:latest
     restart_policy: unless-stopped

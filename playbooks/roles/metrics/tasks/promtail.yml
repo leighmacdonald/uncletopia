@@ -9,13 +9,13 @@
   ansible.builtin.template:
     src: promtail.yml.j2
     dest: /etc/promtail.yml
-    mode: 0770
+    mode: "0770"
   tags:
     - promtail
     - metrics-client
 
 - name: Create promtail container
-  docker_container:
+  community.docker.docker_container:
     name: promtail
     image: grafana/promtail:latest
     restart: true
@@ -37,7 +37,7 @@
       - tempo_data:/tmp/tempo
     ports:
       - "127.0.0.1:9080:9080"
-      - "{{ vpn_hosts[inventory_hostname].ip|default(ip) }}:9080:9080"
+      - "{{ vpn_hosts[inventory_hostname].ip | default(ip) }}:9080:9080"
   tags:
     - promtail
     - metrics-client

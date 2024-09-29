@@ -198,3 +198,22 @@ sm_nomotd_randomclass {{ sm_nomotd_randomclass|default(0) }}
 sm_nomotd_randomclass_force {{ sm_nomotd_randomclass_force|default(0) }}
 sm_nomotd_rememberclass {{ sm_nomotd_rememberclass|default(1) }}
 sm_nomotd_rememberclass_force {{ sm_nomotd_rememberclass_force|default(0) }}
+
+
+{% if item.stv_enable|default(stv_enable) %}
+tv_enable 1
+tv_autorecord 0
+tv_maxclients 5
+tv_transmitall 1
+tv_delaymapchange 0
+tv_delay 0
+tv_maxrate 0
+tv_port "{{ srcds_base_port + (loop0 * 10) + 1 }}"
+tv_allow_camera_man 1
+tv_password "{{ stv_password }}"
+// Hostname
+tv_name "{{ item.name }} | STV"
+// In-game name
+tv_title "{{ stv_name }}"
+tv_snapshotrate {{ tv_snapshotrate|default(64) }}
+{% endif %}

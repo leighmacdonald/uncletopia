@@ -13,14 +13,14 @@
 
 - name: Download latest metamod
   ansible.builtin.unarchive:
-    src: "{{ metamod_download|default(\"https://mms.alliedmods.net/mmsdrop/1.12/mmsource-1.12.0-git1194-linux.tar.gz\") }}"
+    src: "{{ metamod_download | default(\"https://mms.alliedmods.net/mmsdrop/1.12/mmsource-1.12.0-git1194-linux.tar.gz\") }}"
     dest: ~/build_sourcemod/
     remote_src: true
     # creates: ~/build_sourcemod/addons/metamod
 
 - name: Download latest sourcemod
   ansible.builtin.unarchive:
-    src: "{{ sm_download|default(\"https://sm.alliedmods.net/smdrop/1.12/sourcemod-1.12.0-git7137-linux.tar.gz\") }}"
+    src: "{{ sm_download | default(\"https://sm.alliedmods.net/smdrop/1.12/sourcemod-1.12.0-git7137-linux.tar.gz\") }}"
     dest: ~/build_sourcemod/
     remote_src: true
     # creates: ~/build_sourcemod/addons/sourcemod
@@ -39,10 +39,11 @@
   ansible.builtin.copy:
     src: "{{ role_path }}/files/"
     dest: ~/build_sourcemod/
+    mode: "0775"
   tags:
     - game_config
 
-- name: Build plugins
+- name: Build plugins # noqa no-changed-when
   ansible.builtin.command:
     chdir: ~/build_sourcemod/addons/sourcemod/scripting
     cmd: bash build.sh

@@ -1,12 +1,12 @@
 ---
 
 - name: Create minio_data volume
-  docker_volume:
+  community.docker.docker_volume:
     name: minio_data
     state: present
 
 - name: Create minio_data container
-  docker_container:
+  community.docker.docker_container:
     name: minio
     image: minio/minio
     restart: true
@@ -16,8 +16,8 @@
     recreate: true
     command: server /data --console-address ":9001"
     env:
-      MINIO_ROOT_USER: "{{ minio.user|default('mimir') }}"
-      MINIO_ROOT_PASSWORD: "{{ minio.password|default('mimir') }}"
+      MINIO_ROOT_USER: "{{ minio.user | default('mimir') }}"
+      MINIO_ROOT_PASSWORD: "{{ minio.password | default('mimir') }}"
     labels:
       logging: "promtail"
       logging_jobname: "containerlogs"

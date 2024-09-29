@@ -1,7 +1,7 @@
 ---
 
 - name: Create mimir_data volume
-  docker_volume:
+  community.docker.docker_volume:
     name: mimir_data
     state: present
   tags:
@@ -12,12 +12,12 @@
   ansible.builtin.template:
     src: mimir.yml.j2
     dest: /etc/mimir.yml
-    mode: 0775
+    mode: "0775"
   tags:
     - metrics-server
 
 - name: Create mimir container
-  docker_container:
+  community.docker.docker_container:
     name: mimir
     image: grafana/mimir:latest
     pull: true

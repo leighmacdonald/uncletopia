@@ -4,7 +4,7 @@
   ansible.builtin.template:
     src: grafana.ini.j2
     dest: /etc/grafana.ini
-    mode: 0770
+    mode: "0770"
   tags:
     - grafana
 
@@ -13,7 +13,7 @@
   ansible.builtin.file:
     path: /etc/grafana/provisioning/datasources/
     state: directory
-    mode: '0777'
+    mode: "0777"
   tags:
     - grafana
 
@@ -22,7 +22,7 @@
   ansible.builtin.file:
     path: /etc/grafana/provisioning/dashboards/
     state: directory
-    mode: '0777'
+    mode: "0777"
   tags:
     - grafana
 
@@ -31,7 +31,7 @@
   ansible.builtin.template:
     src: datasources.yml.j2
     dest: /etc/grafana_datasources.yml
-    mode: 0770
+    mode: "0770"
   tags:
     - grafana
 
@@ -40,7 +40,7 @@
   ansible.builtin.template:
     src: dashboards.yml.j2
     dest: /etc/grafana_dashboards.yml
-    mode: 0770
+    mode: "0770"
   tags:
     - grafana
 
@@ -49,18 +49,19 @@
   ansible.builtin.copy:
     src: "{{ role_path }}/files/"
     dest: /etc/grafana_dashboards
+    mode: "0755"
   tags:
     - grafana
 
 - name: Create grafana_data volume
-  docker_volume:
+  community.docker.docker_volume:
     name: grafana_data
     state: present
   tags:
     - grafana
 
 - name: Create grafana_image_renderer container
-  docker_container:
+  community.docker.docker_container:
     name: grafana_image_renderer
     image: grafana/grafana-image-renderer:latest
     restart: true
@@ -78,7 +79,7 @@
     - grafana
 
 - name: Create grafana container
-  docker_container:
+  community.docker.docker_container:
     name: grafana
     image: grafana/grafana-oss:latest-ubuntu
     restart: true
