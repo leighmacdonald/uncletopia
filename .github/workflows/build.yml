@@ -30,4 +30,13 @@ jobs:
 
       - name: Ensure plugin builds
         working-directory: ./playbooks/roles/sourcemod/files/addons/sourcemod/scripting
-        run: ./compile.sh
+        run: |
+          for file in *.sp; do
+            f=${file%.*}
+            echo -e "\nCompiling $file... to ../plugins/${f}.smx"
+            spcomp -E -w234 -O2 -v2 -i include $file -o ../plugins/$f.smx
+          done
+          
+          echo "===OUT FILES==="
+          ls
+          echo version = ${{ steps.setup_sp.outputs.plugin-version }}
