@@ -8,7 +8,7 @@
 #include <tf_econ_data>
 #include <dhooks>
 
-#define PLUGIN_VERSION "0.8.5"
+#define PLUGIN_VERSION "0.8.6"
 
 #define PVE_TEAM_HUMANS_NAME "blue"
 #define PVE_TEAM_BOTS_NAME "red"
@@ -62,6 +62,7 @@ ConVar sm_engipve_clear_gibs;
 ConVar sm_engipve_spy_capblock_time;
 
 ConVar tf_bot_quota;
+ConVar tf_gamemode_payload;
 
 // SDK Call Handles
 Handle g_hSdkEquipWearable;
@@ -108,6 +109,7 @@ public OnPluginStart()
 	sm_engipve_clear_gibs					= CreateConVar("sm_engipve_clear_gibs", "1");
 	sm_engipve_spy_capblock_time			= CreateConVar("sm_engipve_spy_capblock_time", "20");
 	tf_bot_quota							= FindConVar("tf_bot_quota");
+	tf_gamemode_payload						= FindConVar("tf_gamemode_payload");
 
 	RegAdminCmd("sm_engipve_reload", cReload, ADMFLAG_CHANGEMAP, "Reloads Engineer PVE config.");
 	RegAdminCmd("sm_becomeengibot", cBecomeEngiBot, ADMFLAG_ROOT, "Switches the client to the bot team.");
@@ -788,6 +790,10 @@ public Action teamplay_setup_finished(Event event, const char[] name, bool dontB
 
 public Action teamplay_point_captured(Event event, const char[] name, bool dontBroadcast)
 {
+	if(tf_gamemode_payload.BoolValue) {
+		return Plugin_Continue;
+	}
+
 	PVE_StartSpyBlocking();
 	return Plugin_Continue;
 }
