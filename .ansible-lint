@@ -9,18 +9,5 @@ exclude_paths:
   - sm_plugins/*
   - playbooks/roles/githubixx.ansible_role_wireguard/*
 
-#skip_list:
-#  - schema
-#  - internal-error
-#  - unnamed-task
-#  - package-latest
-#  - no-changed-when
-#  - command-instead-of-shell
-#  - risky-file-permissions
-#  - risky-shell-pipe
-#  - name[casing]
-#  - name[play]
-#  - ignore-errors
-
 kinds:
   - tasks: "*/tasks/*.yml"
