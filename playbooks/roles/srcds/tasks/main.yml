@@ -76,14 +76,6 @@
   # Perform the copy from the *remote* sourcemod build output
   delegate_to: "{{ inventory_hostname }}"
 
-- name: Install PVE Map Configs
-  ansible.builtin.command:
-    cmd: "cp -rv /home/tf2server/srcds-{{ item.server_name_short }}/tf/cfg/mapconfig_pve /home/tf2server/srcds-{{ item.server_name_short }}/tf/cfg/mapconfig/"
-  loop: "{{ services }}"
-  when: item.config == "pve"
-  tags:
-    - game_config
-
 - name: Copy navmeshes /tf/maps/
   ansible.builtin.copy:
     src: "{{ role_path }}/files/navmeshes/"
@@ -358,6 +350,16 @@
   when: item.config != "pve"
   loop_control:
     index_var: loop0
+
+- name: Install PVE Map Configs
+  ansible.posix.synchronize:
+    src: /home/tf2server/build_sourcemod/cfg/mapconfig_pve/
+    dest: /home/tf2server/srcds-{{ item.server_name_short }}/tf/cfg/mapconfig/
+    recursive: true
+  loop: "{{ services }}"
+  when: item.config == "pve"
+  # Perform the copy from the *remote* sourcemod build output
+  delegate_to: "{{ inventory_hostname }}"
 
 - name: Generate /tf/cfg/sourcemod/discord_accelerator.cfg
   ansible.builtin.template:
