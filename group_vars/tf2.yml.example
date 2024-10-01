@@ -31,25 +31,25 @@ stv_name: "Level 3 Sentry"
 sm_download: "https://sm.alliedmods.net/smdrop/1.12/sourcemod-1.12.0-git7125-linux.tar.gz"
 metamod_download: "https://mms.alliedmods.net/mmsdrop/1.12/mmsource-1.12.0-git1192-linux.tar.gz"
 
-plugins_disabled: ["tf_uncledane.smx", "EdictLimiter.smx", "stopwatch.smx"]
+plugins_disabled: ["tf_engiepve.smx", "EdictLimiter.smx", "stopwatch.smx"]
 extensions_disabled: ["tf2items.autoload", "tf2items.ext.2.ep2v.so", "sourcescramble.ext.so"]
 
 config:
   default:
     extensions_disabled: ["tf2items.autoload", "tf2items.ext.2.ep2v.so", "sourcescramble.ext.so"]
-    plugins_disabled: ["sm_vprofiler.smx", "EdictLimiter.smx", "stopwatch.smx", "roundtimer.smx", "tf_uncledane.smx"]
+    plugins_disabled: ["sm_vprofiler.smx", "EdictLimiter.smx", "stopwatch.smx", "roundtimer.smx", "tf_engiepve.smx"]
   all:
-    plugins_disabled: ["sm_vprofiler.smx", "EdictLimiter.smx", "stopwatch.smx", "roundtimer.smx", "tf_uncledane.smx"]
+    plugins_disabled: ["sm_vprofiler.smx", "EdictLimiter.smx", "stopwatch.smx", "roundtimer.smx", "tf_engiepve.smx"]
   all_plus:
-    plugins_disabled: [ "sm_vprofiler.smx", "EdictLimiter.smx", "stopwatch.smx", "roundtimer.smx", "tf_uncledane.smx" ]
+    plugins_disabled: [ "sm_vprofiler.smx", "EdictLimiter.smx", "stopwatch.smx", "roundtimer.smx", "tf_engiepve.smx" ]
   5cp:
-    plugins_disabled: [ "sm_vprofiler.smx", "EdictLimiter.smx", "stopwatch.smx", "roundtimer.smx", "tf_uncledane.smx" ]
+    plugins_disabled: [ "sm_vprofiler.smx", "EdictLimiter.smx", "stopwatch.smx", "roundtimer.smx", "tf_engiepve.smx" ]
   stopwatch:
-    plugins_disabled: ["sm_vprofiler.smx", "EdictLimiter.smx", "tf_uncledane.smx"]
+    plugins_disabled: ["sm_vprofiler.smx", "EdictLimiter.smx", "tf_engiepve.smx"]
   fixed:
-    plugins_disabled: ["sm_vprofiler.smx", "EdictLimiter.smx", "roundtimer.smx", "nativevotes_rockthevote.smx", "nativevotes_nominations.smx", "nativevotes_mapchooser.smx", "tf_uncledane.smx", "nextmap.smx", "mapchooser.smx", "randomcycle.smx"]
+    plugins_disabled: ["sm_vprofiler.smx", "EdictLimiter.smx", "roundtimer.smx", "nativevotes_rockthevote.smx", "nativevotes_nominations.smx", "nativevotes_mapchooser.smx", "tf_engiepve.smx", "nextmap.smx", "mapchooser.smx", "randomcycle.smx"]
   rototion:
-    plugins_disabled: ["sm_vprofiler.smx", "EdictLimiter.smx", "stopwatch.smx", "roundtimer.smx", "tf_uncledane.smx"]
+    plugins_disabled: ["sm_vprofiler.smx", "EdictLimiter.smx", "stopwatch.smx", "roundtimer.smx", "tf_engiepve.smx"]
   pve:
     plugins_disabled: ["sm_vprofiler.smx", "roundtimer.smx", "stopwatch.smx", "reservedslots.smx", "classrestrict.smx", "networktools.smx", "votescramble.smx"]
     extensions_disabled: []

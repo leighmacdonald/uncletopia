@@ -6,6 +6,9 @@ SRC_ROOT="sm_plugins"
 STAC_ROOT="$SRC_ROOT/stac"
 STAC_BRANCH="gbans-native"
 
+PVE_ROOT="$SRC_ROOT/TF2_EngineerPVE"
+PVE_BRANCH="0.8.6"
+
 ACCEL_ROOT="$SRC_ROOT/accelerator"
 ACCEL_BRANCH="master"
 
@@ -118,4 +121,10 @@ pushd $SKIPMOTD_ROOT || exit
 git fetch --all
 git checkout $SKIPMOTD_BRANCH
 cp -rv *.sp "$SM_ROOT/scripting/"
+popd || exit
+
+pushd $PVE_ROOT || exit
+git fetch --all
+git checkout $PVE_BRANCH
+cp -rv scripting gamedata "$SM_ROOT"
 popd || exit

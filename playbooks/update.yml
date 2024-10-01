@@ -1,13 +1,15 @@
 ---
-- hosts: all
+- name: Update System
+  hosts: all
   tasks:
-  - name: Update all packages to their latest version
-    become: true
-    ansible.builtin.apt:
-      update_cache: true
-      name: "*"
-      state: latest
-    when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
-  - name: reboot the machine
-    become: true
-    ansible.builtin.reboot:
+    - name: Update all packages to their latest version
+      become: true
+      ansible.builtin.apt:
+        update_cache: true
+        name: "*"
+        state: latest # noqa package-latest
+      when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+    - name: Reboot the machine
+      become: true
+      ansible.builtin.reboot:

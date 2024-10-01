@@ -1,21 +1,13 @@
+profile: production
+
 exclude_paths:
   - .github/
   - host_vars/*
   - group_vars/*
   - hosts.yml
   - .ansible-lint
-
-skip_list:
-  - schema
-  - internal-error
-  - unnamed-task
-  - package-latest
-  - no-changed-when
-  - command-instead-of-shell
-  - risky-file-permissions
-  - risky-shell-pipe
-  - name[casing]
-  - name[play]
+  - sm_plugins/*
+  - playbooks/roles/githubixx.ansible_role_wireguard/*
 
 kinds:
   - tasks: "*/tasks/*.yml"

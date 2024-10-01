@@ -1,5 +1,12 @@
 ---
-- import_playbook: playbooks/adduser.yml
-- import_playbook: playbooks/system.yml
-- import_playbook: playbooks/web.yml
-- import_playbook: playbooks/sourcemod.yml
+- name: Add Users
+  import_playbook: playbooks/adduser.yml
+
+- name: System Settings
+  import_playbook: playbooks/system.yml
+
+- name: Web
+  import_playbook: playbooks/web.yml
+
+- name: SRCDS
+  import_playbook: playbooks/srcds.yml

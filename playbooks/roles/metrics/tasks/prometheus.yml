@@ -1,7 +1,7 @@
 ---
 
 - name: Create prometheus_data volume
-  docker_volume:
+  community.docker.docker_volume:
     name: prometheus_data
     state: present
   tags:
@@ -13,13 +13,13 @@
   ansible.builtin.template:
     src: prometheus.yml.j2
     dest: /etc/prometheus.yml
-    mode: 0775
+    mode: "0775"
   tags:
     - metrics-server
     - prometheus
 
 - name: Create prometheus container
-  docker_container:
+  community.docker.docker_container:
     name: prometheus
     image: prom/prometheus:latest
     pull: true
@@ -45,7 +45,7 @@
       - /etc/prometheus.yml:/etc/prometheus/prometheus.yml
     ports:
       - 127.0.0.1:9090:9090
-      - "{{ vpn_hosts[metrics_hostname].ip|default(ip) }}:9090:9090"
+      - "{{ vpn_hosts[metrics_hostname].ip | default(ip) }}:9090:9090"
   tags:
     - metrics-server
     - prometheus

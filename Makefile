@@ -11,7 +11,7 @@ format:
 	@find ./roles/sourcemod/files/addons/sourcemod/scripting -regex '.*\.\(sp\)' -exec clang-format -style=file -i {} \;
 
 lint:
-	@ansible-lint
+	@ansible-lint --exclude sm_plugins watcher
 
 deps:
 	@ansible-galaxy collection install -r collections/requirements.yml
@@ -27,6 +27,7 @@ sourcemod:
 
 srcds:
 	@ansible-playbook -u $(USER) -i $(HOSTS) --forks $(FORKS) $(PLAYBOOK_PATH)/srcds.yml
+
 
 srcds_clean:
 	@ansible-playbook -u $(USER) -i $(HOSTS) --forks $(FORKS) $(PLAYBOOK_PATH)/srcds.yml
@@ -53,5 +54,8 @@ ping:
 restart:
 	@ansible all -m reboot -a reboot_timeout=3600 -u $(USER) -i $(HOSTS) -b
 
+game_engine:
+	@ansible-playbook -u $(USER) -i $(HOSTS) --forks $(FORKS) --tags game_engine $(PLAYBOOK_PATH)/srcds.yml
+
 game_config:
-	ansible-playbook $(PLAYBOOK_PATH)/srcds.yml -u $(USER) -i $(HOSTS) --tags game_config --forks $(FORKS)
+	@ansible-playbook $(PLAYBOOK_PATH)/srcds.yml -u $(USER) -i $(HOSTS) --tags game_config --forks $(FORKS)

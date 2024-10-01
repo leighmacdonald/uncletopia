@@ -1,5 +1,6 @@
 ---
-- hosts: all
+- name: Add user & access
+  hosts: all
   tasks:
     - name: Apply apt upgrade
       become: true
@@ -25,39 +26,39 @@
         create_home: true
         state: present
 
-    - name: sudoers.d
+    - name: Generate sudoers.d
       become: true
       ansible.builtin.copy:
         dest: /etc/sudoers.d/devops
         content: "%tf2  ALL=(ALL)  NOPASSWD: ALL"
-        mode: 0600
+        mode: "0600"
 
-    - name: ufw allow 22
+    - name: Enable ufw allow 22
       become: true
-      ansible.builtin.ufw:
+      community.general.ufw:
         rule: allow
         port: "22"
         proto: tcp
       when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
 
-    - name: ufw limit 22
+    - name: Enable ufw limit 22
       become: true
-      ansible.builtin.ufw:
+      community.general.ufw:
         comment: TF2 Ansible
         rule: limit
         port: "22"
         proto: tcp
       when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
 
-    - name: ufw enable
+    - name: Enable ufw
       become: true
-      ansible.builtin.ufw:
+      community.general.ufw:
         state: enabled
         policy: deny
         direction: incoming
       when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
 
-    - name: ssh keys
+    - name: Create ssh keys
       become: true
       ansible.posix.authorized_key:
         user: tf2server
@@ -65,7 +66,7 @@
         key: "{{ item }}"
       loop: "{{ ssh_keys }}"
 
-    - name: etc/ssh/sshd_config
+    - name: Disable PasswordAuthentication
       become: true
       ansible.builtin.lineinfile:
         dest: /etc/ssh/sshd_config
@@ -74,7 +75,7 @@
         state: present
         backup: true
 
-    - name: systemctl restart ssh
+    - name: Restart ssh
       become: true
       ansible.builtin.lineinfile:
         dest: /etc/ssh/sshd_config
@@ -86,6 +87,8 @@
         - restart ssh
 
   handlers:
-    - name: restart ssh
+    - name: Restart ssh
       become: true
-      ansible.builtin.service: name=sshd state=restarted
+      ansible.builtin.service:
+        name: sshd
+        state: restarted

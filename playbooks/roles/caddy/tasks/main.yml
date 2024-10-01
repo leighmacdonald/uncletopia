@@ -1,16 +1,16 @@
 ---
 - name: Create caddy_data volume
-  docker_volume:
+  community.docker.docker_volume:
     name: caddy_data
     state: present
 
 - name: Create caddy_config volume
-  docker_volume:
+  community.docker.docker_volume:
     name: caddy_config
     state: present
 
-- name: gbans_demos volume
-  docker_volume:
+- name: Create gbans_demos volume
+  community.docker.docker_volume:
     name: gbans_demos
     state: present
 
@@ -19,15 +19,15 @@
   ansible.builtin.template:
     src: Caddyfile.j2
     dest: /etc/Caddyfile
-    mode: 0775
+    mode: '0775'
 
 - name: Create caddy_net network
   community.docker.docker_network:
     name: caddy_net
 
 - name: Create caddy container
-  docker_container:
-    name: caddy
+  community.docker.docker_container:
+    name: Caddy
     image: ghcr.io/iarekylew00t/caddy-cloudflare:latest
     restart: true
     recreate: true
@@ -48,4 +48,4 @@
     ports:
       - 443:443
       - 80:80
-      - "{{ vpn_hosts[inventory_hostname].ip|default(ip) }}:2019:2019"
+      - "{{ vpn_hosts[inventory_hostname].ip | default(ip) }}:2019:2019"

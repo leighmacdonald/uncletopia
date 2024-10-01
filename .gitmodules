@@ -37,3 +37,6 @@
 [submodule "sm_plugins/skipmotd"]
 	path = sm_plugins/skipmotd
 	url = https://github.com/gcommer/skipmotd
+[submodule "sm_plugins/TF2_EngineerPVE"]
+	path = sm_plugins/TF2_EngineerPVE
+	url = https://github.com/MoonlyDays/TF2_EngineerPVE.git

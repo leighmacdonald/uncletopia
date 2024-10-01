@@ -1,5 +1,6 @@
 ---
-- hosts: all
+- name: Setup metrics
+  hosts: all
   roles:
     - caddy
     - metrics

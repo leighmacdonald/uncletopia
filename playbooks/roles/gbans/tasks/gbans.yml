@@ -1,11 +1,11 @@
 ---
-- name: gbans_cache_data volume
-  docker_volume:
+- name: Create gbans_cache_data volume
+  community.docker.docker_volume:
     name: gbans_cache_data
     state: present
 
-- name: gbans assets volume
-  docker_volume:
+- name: Create gbans assets volume
+  community.docker.docker_volume:
     name: gbans_assets
     state: present
 
@@ -14,10 +14,10 @@
   ansible.builtin.template:
     src: gbans.yml.j2
     dest: /etc/gbans.yml
-    mode: 0770
+    mode: "0770"
 
-- name: gbans-service
-  docker_container:
+- name: Create gbans-service
+  community.docker.docker_container:
     name: gbans-service
     image: "{{ gbans_web.image }}"
     restart: true
@@ -44,8 +44,8 @@
       - 127.0.0.1:6006:6006
       - 27115:27115/udp
 
-- name: gbans-river
-  docker_container:
+- name: Create gbans-river
+  community.docker.docker_container:
     name: gbans-river
     image: ghcr.io/riverqueue/riverui:latest
     restart: true
@@ -67,9 +67,9 @@
       logging: "promtail"
       logging_jobname: "containerlogs"
 
-- name: srcds-log-fw
+- name: Create srcds-log-fw
   become: true
-  ansible.builtin.ufw:
+  community.general.ufw:
     rule: allow
     port: "27115"
     proto: udp
