@@ -458,18 +458,6 @@
     index_var: loop0
   when: ansible_distribution == 'Ubuntu'
 
-- name: Allow external RCON (WAN)
-  become: true
-  community.general.ufw:
-    rule: allow
-    src: "{{ hostvars[metrics_hostname].service_ip6 }}"
-    port: "{{ srcds_base_port + (loop0 * 10) }}"
-    proto: tcp
-  loop: "{{ services }}"
-  loop_control:
-    index_var: loop0
-  when: ansible_distribution == 'Ubuntu'
-
 - name: Allow RCON over VPN
   become: true
   community.general.ufw:
