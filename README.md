@@ -84,6 +84,10 @@ containers
   - bd-api
   - postgres
 
+### update.yml
+
+A helper playbook that will update all systems and reboot them if required.
+
 ### tune.yml
 
 A *optional* playbook that contains tasks that will tune the underlying OS. You *must* not run this without understanding

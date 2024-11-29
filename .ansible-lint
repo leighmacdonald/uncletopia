@@ -8,6 +8,7 @@ exclude_paths:
   - .ansible-lint
   - sm_plugins/*
   - playbooks/roles/githubixx.ansible_role_wireguard/*
+  - playbooks/roles/hadret.rsyslog/*
 
 kinds:
   - tasks: "*/tasks/*.yml"

@@ -7,8 +7,8 @@ FORKS := 20
 
 all: site
 
-format:
-	@find ./roles/sourcemod/files/addons/sourcemod/scripting -regex '.*\.\(sp\)' -exec clang-format -style=file -i {} \;
+#format:
+#	@find ./roles/sourcemod/files/addons/sourcemod/scripting -regex '.*\.\(sp\)' -exec clang-format -style=file -i {} \;
 
 lint:
 	@ansible-lint --exclude sm_plugins watcher
@@ -18,12 +18,6 @@ deps:
 
 adduser:
 	@ansible-playbook -u root -i $(HOSTS) --forks $(FORKS) $(PLAYBOOK_PATH)/adduser.yml
-
-pre:
-	@ansible-playbook -u $(USER) -i $(HOSTS) --forks $(FORKS) $(PLAYBOOK_PATH)/pre.yml
-
-sourcemod:
-	@ansible-playbook -u $(USER) -i $(HOSTS) --forks $(FORKS) $(PLAYBOOK_PATH)/sourcemod.yml
 
 srcds:
 	@ansible-playbook -u $(USER) -i $(HOSTS) --forks $(FORKS) $(PLAYBOOK_PATH)/srcds.yml
@@ -35,14 +29,10 @@ srcds_watch:
 	ansible-playbook -u $(USER) -i $(HOSTS) --forks $(FORKS) $(PLAYBOOK_PATH)/web.yml --limit metrics --tags srcds_watch
 
 vpn:
-	# This *does not work* when using --limit
 	@ansible-playbook -u $(USER) -i $(HOSTS) --forks $(FORKS) $(PLAYBOOK_PATH)/vpn.yml
 
 system:
 	@ansible-playbook -u $(USER) -i $(HOSTS) --forks $(FORKS) $(PLAYBOOK_PATH)/system.yml
-
-wg:
-	@ansible-playbook -u $(USER) -i $(HOSTS) --forks $(FORKS) $(PLAYBOOK_PATH)/wg.yml
 
 site:
 	ansible-playbook -u $(USER) -i $(HOSTS) --forks $(FORKS) site.yml
@@ -50,8 +40,8 @@ site:
 ping:
 	@ansible tf2 -m ping $(ARGS)
 
-restart:
-	@ansible all -m reboot -a reboot_timeout=3600 -u $(USER) -i $(HOSTS) -b
+update:
+	@ansible-playbook -u $(USER) -i $(HOSTS) --forks $(FORKS) $(PLAYBOOK_PATH)/update.yml
 
 game_engine:
 	@ansible-playbook -u $(USER) -i $(HOSTS) --forks $(FORKS) --tags game_engine $(PLAYBOOK_PATH)/srcds.yml
