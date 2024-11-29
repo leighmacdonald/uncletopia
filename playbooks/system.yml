@@ -113,8 +113,8 @@
         repo: deb https://download.docker.com/linux/ubuntu focal stable
         state: present
 
-    - name: Install OS Dependencies
-      when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+    - name: Install OS Dependencies (<24.04)
+      when: ansible_distribution == 'Ubuntu' and ansible_distribution_version != "24.04"
       ansible.builtin.apt:
         update_cache: true
         cache_valid_time: 0
@@ -130,7 +130,26 @@
           - containerd.io
           - python3-docker
           # Doesnt exist on newer distro versions
-          #- python3-distutils
+          - python3-distutils
+          - libc6:i386
+          - lib32stdc++6
+
+    - name: Install OS Dependencies
+      when: ansible_distribution == 'Ubuntu' and ansible_distribution_version == "24.04"
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 0
+        state: present
+        pkg:
+          - wget
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - gnupg
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+          - python3-docker
           - libc6:i386
           - lib32stdc++6
 

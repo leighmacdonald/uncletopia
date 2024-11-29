@@ -31,8 +31,28 @@
   tags:
     - game_engine
 
-- name: Install a list of packages
+- name: Install a list of packages (<24.04)
   become: true
+  when: ansible_distribution == 'Ubuntu' and ansible_distribution_version != "24.04"
+  ansible.builtin.apt:
+    pkg:
+      - lib32z1
+      - libncurses5:i386
+      - libbz2-1.0:i386
+      - lib32gcc-s1
+      - lib32stdc++6
+      - libtinfo5:i386
+      - libcurl3-gnutls:i386
+      - libsdl2-2.0-0:i386
+      - libtinfo5:i386
+      - libcurl4:i386
+      - libstdc++6:i386
+      - libcurl4-gnutls-dev:i386
+      - tmux
+
+- name: Install a list of packages (24.04)
+  become: true
+  when: ansible_distribution == 'Ubuntu' and ansible_distribution_version == "24.04"
   ansible.builtin.apt:
     pkg:
       - lib32z1
@@ -42,7 +62,6 @@
       - lib32stdc++6
       - libtinfo5:i386
       - libcurl3t64-gnutls
-      #- libcurl3-gnutls:i386 24.04
       - libsdl2-2.0-0:i386
       - libtinfo5:i386
       - libcurl4:i386

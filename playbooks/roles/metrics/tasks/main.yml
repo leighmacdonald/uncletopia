@@ -15,7 +15,7 @@
   tags:
     - metrics-server
 
-- name: mimir
+- name: Mimir
   ansible.builtin.import_tasks: mimir.yml
   tags:
     - metrics-server
