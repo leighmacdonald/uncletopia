@@ -81,10 +81,6 @@
     state: started
     networks:
       - name: caddy_net
-    volumes:
-      - bdapi_cache_data:/app/.cache
-      - /etc/bdapi.yml:/app/bdapi.yml
-      - /etc/bdapi.key:/app/private.key
     env:
       DATABASE_URL: "postgresql://bdapi:bdapi@bdapi-postgres:5432/bdapi"
     ports:

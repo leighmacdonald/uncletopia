@@ -17,7 +17,6 @@
     src: tf2_ds.txt.j2
     dest: ~/steamcmd/tf2_ds-{{ item.server_name_short }}.txt
     mode: "0755"
-    creates: ~/steamcmd/tf2_ds-{{ item.server_name_short }}.txt
   loop: "{{ services }}"
   loop_control:
     index_var: loop0
@@ -42,9 +41,9 @@
       - lib32gcc-s1
       - lib32stdc++6
       - libtinfo5:i386
-      - libcurl3-gnutls:i386
+      - libcurl3t64-gnutls
+      #- libcurl3-gnutls:i386 24.04
       - libsdl2-2.0-0:i386
-      - libncurses5:i386
       - libtinfo5:i386
       - libcurl4:i386
       - libstdc++6:i386

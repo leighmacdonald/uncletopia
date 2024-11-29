@@ -38,7 +38,7 @@ rsyslog_rules:
 log:
   file_enable: true
   net_enable: true
-  net_hosts: ["10.20.30.40:27115", "sink.kittyland.com:27115"]
+  net_hosts: ["10.20.30.40:27715", "sink.kittyland.com:27715"]
 
 metrics_host: "n.n.n.n"
 metrics_hostname_external: metrics.kittyland.com

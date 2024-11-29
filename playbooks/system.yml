@@ -62,19 +62,19 @@
           - dotnet-sdk-6.0
           - python3-netaddr
 
-    - name: Install xanmod-rt-v2
-      when: old_cpu
-      ansible.builtin.apt:
-        state: present
-        pkg:
-          - linux-xanmod-rt-x64v2
-
-    - name: Install xanmod-rt-v3
-      when: not old_cpu
-      ansible.builtin.apt:
-        state: present
-        pkg:
-          - linux-xanmod-rt-x64v3
+#    - name: Install xanmod-rt-v2
+#      when: old_cpu
+#      ansible.builtin.apt:
+#        state: present
+#        pkg:
+#          - linux-xanmod-rt-x64v2
+#
+#    - name: Install xanmod-rt-v3
+#      when: not old_cpu
+#      ansible.builtin.apt:
+#        state: present
+#        pkg:
+#          - linux-xanmod-rt-x64v3
 
     - name: Create dd if it does not exist
       become: true
@@ -129,7 +129,8 @@
           - docker-ce-cli
           - containerd.io
           - python3-docker
-          - python3-distutils
+          # Doesnt exist on newer distro versions
+          #- python3-distutils
           - libc6:i386
           - lib32stdc++6
 
@@ -141,7 +142,7 @@
     - name: Add docker group to user
       become: true
       ansible.builtin.user:
-        name: '{{ ansible_user }}'
+        name: tf2server
         groups: docker
         append: true
 
@@ -163,14 +164,14 @@
         masked: true
         enabled: false
 
-    - name: Disable irqbalance  # noqa ignore-errors
-      become: true
-      ignore_errors: true
-      ansible.builtin.systemd:
-        name: irqbalance
-        state: stopped
-        masked: true
-        enabled: false
+#    - name: Disable irqbalance  # noqa ignore-errors
+#      become: true
+#      ignore_errors: true
+#      ansible.builtin.systemd:
+#        name: irqbalance
+#        state: stopped
+#        masked: true
+#        enabled: false
 
     - name: Enable docker service
       become: true

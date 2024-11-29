@@ -15,25 +15,10 @@
   tags:
     - metrics-server
 
-- name: Setup promtail
-  ansible.builtin.import_tasks: promtail.yml
-  tags:
-    - metrics-client
-
-- name: Setup loki
-  ansible.builtin.import_tasks: loki.yml
+- name: mimir
+  ansible.builtin.import_tasks: mimir.yml
   tags:
     - metrics-server
-
-- name: Setup tempo
-  ansible.builtin.import_tasks: tempo.yml
-  tags:
-    - metrics-server
-
-# - name: mimir
-#  import_tasks: mimir.yml
-#  tags:
-#    - metrics-server
 
 - name: Setup grafana
   ansible.builtin.import_tasks: grafana.yml

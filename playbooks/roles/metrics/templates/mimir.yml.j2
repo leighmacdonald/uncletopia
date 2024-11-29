@@ -5,8 +5,8 @@ common:
     backend: s3
     s3:
       endpoint: minio:9000
-      access_key_id: {{ minio.user | default(mimir) }}
-      secret_access_key: {{ minio.password | default(mimir) }}
+      access_key_id: {{ minio.user | default("mimir") }}
+      secret_access_key: {{ minio.password | default("mimir") }}
       insecure: true
       bucket_name: mimir
 

@@ -42,7 +42,7 @@
       GBANS_GENERAL_STEAM_KEY: "{{ steam_key }}"
     ports:
       - 127.0.0.1:6006:6006
-      - 27115:27115/udp
+      - 27715:27115/udp
 
 - name: Create gbans-river
   community.docker.docker_container:
@@ -55,10 +55,6 @@
     state: started
     networks:
       - name: caddy_net
-    volumes:
-      - bdapi_cache_data:/app/.cache
-      - /etc/bdapi.yml:/app/bdapi.yml
-      - /etc/bdapi.key:/app/private.key
     env:
       DATABASE_URL: "{{ gbans_web.database_dsn }}"
     ports:
@@ -71,5 +67,5 @@
   become: true
   community.general.ufw:
     rule: allow
-    port: "27115"
+    port: "27715"
     proto: udp

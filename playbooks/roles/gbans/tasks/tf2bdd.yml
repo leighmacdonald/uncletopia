@@ -3,14 +3,14 @@
 - name: Create tf2bdd-service
   community.docker.docker_container:
     name: tf2bdd-service
-    image: leighmacdonald/tf2bdd:1.0.0
+    image: ghcr.io/leighmacdonald/tf2bdd:v1.0.5
     restart: true
     recreate: true
     pull: false
     restart_policy: always
     state: started
     volumes:
-      - /home/tf2server/.db.sqlite:/app/db.sqlite
+      - /home/tf2server/tf2bdd_db.sqlite:/app/db.sqlite
     env:
       STEAM_TOKEN: "{{ steam_key }}"
       BOT_TOKEN: "{{ bot_detector_bot_token }}"
