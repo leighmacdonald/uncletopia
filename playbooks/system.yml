@@ -94,10 +94,9 @@
           - python3-docker
           - libc6:i386
           - lib32stdc++6
-          - rsyslog-gnutls
 
     - name: Install extra OS Dependencies (<24.04)
-      when: ansible_distribution == 'Ubuntu' and ansible_distribution_version != "24.04"
+      when: ansible_distribution == 'Ubuntu' and ansible_distribution_version != '24.04'
       ansible.builtin.apt:
         update_cache: true
         cache_valid_time: 0
@@ -105,6 +104,16 @@
         pkg:
           # Doesnt exist on newer distro versions
           - python3-distutils
+
+    - name: Install ansible dependencies on metrics host
+      when: ansible_distribution == 'Ubuntu' and ansible_hostname == metrics_hostname
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 0
+        state: present
+        pkg:
+          # Doesnt exist on newer distro versions
+          - ansible-core
 
 #    - name: Install xanmod-rt-v2
 #      when: old_cpu
@@ -142,7 +151,6 @@
         path: ~/rcon
         state: directory
         mode: '0755'
-
 
     - name: Reload systemd daemon
       become: true

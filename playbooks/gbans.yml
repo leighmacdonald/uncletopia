@@ -1,6 +1,0 @@
----
-- name: Setup gbans
-  hosts: metrics
-  roles:
-    - caddy
-    - gbans

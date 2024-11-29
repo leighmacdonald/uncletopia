@@ -412,18 +412,77 @@
   loop_control:
     index_var: loop0
 
-- name: Firewall SRCDS
+- name: Allow game port
   become: true
   community.general.ufw:
     rule: allow
     port: "{{ srcds_base_port + (loop0 * 10) }}"
-    proto: any
+    proto: udp
   loop: "{{ services }}"
   loop_control:
     index_var: loop0
   when: ansible_distribution == 'Ubuntu'
 
-- name: Firewall SourceTV
+- name: Deny external RCON (VPN)
+  become: true
+  community.general.ufw:
+    rule: deny
+    port: "{{ srcds_base_port + (loop0 * 10) }}"
+    proto: tcp
+  loop: "{{ services }}"
+  loop_control:
+    index_var: loop0
+  when: ansible_distribution == 'Ubuntu'
+
+- name: Allow external RCON (WAN)
+  become: true
+  community.general.ufw:
+    rule: allow
+    src: "{{ hostvars[metrics_hostname].ip }}"
+    port: "{{ srcds_base_port + (loop0 * 10) }}"
+    proto: tcp
+  loop: "{{ services }}"
+  loop_control:
+    index_var: loop0
+  when: ansible_distribution == 'Ubuntu'
+
+- name: Allow external RCON (WAN)
+  become: true
+  community.general.ufw:
+    rule: allow
+    src: "{{ hostvars[metrics_hostname].service_ip }}"
+    port: "{{ srcds_base_port + (loop0 * 10) }}"
+    proto: tcp
+  loop: "{{ services }}"
+  loop_control:
+    index_var: loop0
+  when: ansible_distribution == 'Ubuntu'
+
+- name: Allow external RCON (WAN)
+  become: true
+  community.general.ufw:
+    rule: allow
+    src: "{{ hostvars[metrics_hostname].service_ip6 }}"
+    port: "{{ srcds_base_port + (loop0 * 10) }}"
+    proto: tcp
+  loop: "{{ services }}"
+  loop_control:
+    index_var: loop0
+  when: ansible_distribution == 'Ubuntu'
+
+- name: Allow RCON over VPN
+  become: true
+  community.general.ufw:
+    rule: allow
+    src: "{{ vpn_mask }}"
+    port: "{{ srcds_base_port + (loop0 * 10) }}"
+    proto: tcp
+  loop: "{{ services }}"
+  loop_control:
+    index_var: loop0
+  when: ansible_distribution == 'Ubuntu'
+
+- name: Allow SourceTV
   become: true
   community.general.ufw:
     rule: allow
@@ -434,7 +493,7 @@
     index_var: loop0
   when: ansible_distribution == 'Ubuntu'
 
-- name: Firewall srcds-fw-client-outbound
+- name: Allow SRCDS client outbound
   become: true
   community.general.ufw:
     rule: allow
@@ -511,7 +570,7 @@
     minute: "0"
     hour: "*"
     month: "*"
-    job: "find /home/{{ srcds_user }}/srcds-{{ item.server_name_short }}/tf/stv_demos/complete -type f -mtime +2 -delete"
+    job: "find /home/{{ srcds_user }}/srcds-{{ item.server_name_short }}/tf/stv_demos/complete -type f -mtime +12 -delete"
   loop: "{{ services }}"
   loop_control:
     index_var: loop0

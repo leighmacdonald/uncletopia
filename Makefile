@@ -28,10 +28,6 @@ sourcemod:
 srcds:
 	@ansible-playbook -u $(USER) -i $(HOSTS) --forks $(FORKS) $(PLAYBOOK_PATH)/srcds.yml
 
-
-srcds_clean:
-	@ansible-playbook -u $(USER) -i $(HOSTS) --forks $(FORKS) $(PLAYBOOK_PATH)/srcds.yml
-
 web:
 	ansible-playbook -u $(USER) -i $(HOSTS) --forks $(FORKS) $(PLAYBOOK_PATH)/web.yml --limit metrics
 
