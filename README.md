@@ -52,7 +52,7 @@ Installs base OS runtime requirements and services.
 - Set timezone
 - Enable i386 arch for steam_cmd/srcds
 - Installs apt repos and install .net, docker, rsyslog 
-- Install depotdownloader
+- Install [DepotDownloader](https://github.com/SteamRE/DepotDownloader)
 - Enable firewall in deny mode
 
 ### srcds.yml
@@ -71,18 +71,19 @@ But they may again in the future as things have improved.
 Installs all web functionality, includes all backend monitoring tooling as well. All services run under docker
 containers
 
-- Install and configure caddy web server
+- Install and configure [caddy](https://caddyserver.com/) web server
 - Setup backend metrics services
-  - node_exporter
-  - srcds_watch
-  - promtail
-  - loki
-  - mimir (w/minio storage) 
-  - prometheus
-  - grafana w/dashboards
-- Install and configure gbans and required services
-  - bd-api
-  - postgres
+  - [node_exporter](https://github.com/prometheus/node_exporter)
+  - [srcds_watch](https://github.com/leighmacdonald/srcds_watch)
+  - [promtail](https://grafana.com/docs/loki/latest/send-data/promtail/)
+  - [loki](https://grafana.com/oss/loki/)
+  - [mimir](https://grafana.com/oss/mimir/) (w/minio storage) 
+  - [prometheus](https://prometheus.io/)
+  - [grafana](https://grafana.com/) w/dashboards
+- Install and configure [gbans](https://github.com/leighmacdonald/gbans) and required services
+  - [bd-api](https://github.com/leighmacdonald/bd-api) w/[timescaledb](https://www.timescale.com/) - Not really a ut service, but is currently hosted here. You dont want this unless you know you need it.
+  - [postgres](https://www.postgresql.org/)
+  
 
 ### update.yml
 
@@ -93,30 +94,11 @@ A helper playbook that will update all systems and reboot them if required.
 A *optional* playbook that contains tasks that will tune the underlying OS. You *must* not run this without understanding
 the reprocussions of the changes. You should also adjust them accordingly to your hardware specs & needs.
 
-## Setup
+## Troubleshooting
 
-Install Ansible & Clone playbooks
+### spcomp fails to execute
 
-- `sudo apt-add-repository --yes --update ppa:ansible/ansible`
-- `apt install ansible make git git-lfs sshpass -y` [or for macOS](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html#installing-ansible-on-macos)
-- `git clone git@github.com:leighmacdonald/uncletopia`
-- `pip install rcon`
-
-## Game Update Workflow
-
-1. Watch for game update triggers via `watcher/watcher.py` using `wss://update.uncletopia.com`
-2. Trigger srcds build & upload image to docker hub.
-3. Trigger TF2 deploy.
-
-
-### Development
-
-If you are on a 64bit machine you will want 32bit libs for spcomp to execute.
+If you are on a 64bit machine you will want 32bit libs for spcomp.
 
     sudo apt get install libc6:i386 lib32stdc++6
 
-## Git pre-commit
-
-There is a pre-commit hook that you should enable to ensure you don't commit any unencrypted secret.
-
-    ln .hooks/pre-commit .git/hooks/pre-commit
