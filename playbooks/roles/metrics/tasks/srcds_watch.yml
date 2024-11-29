@@ -1,0 +1,29 @@
+---
+
+- name: Generate /etc/srcds_watch.yml
+  become: true
+  ansible.builtin.template:
+    src: srcds_watch.yml.j2
+    dest: /etc/srcds_watch.yml
+    mode: "0770"
+  tags:
+    - grafana
+    - srcds_watch
+
+- name: Create srcds_watch container
+  community.docker.docker_container:
+    name: srcds_watch
+    image: ghcr.io/leighmacdonald/srcds_watch:v1.0.0
+    restart_policy: unless-stopped
+    restart: true
+    pull: true
+    labels:
+      logging: "promtail"
+      logging_jobname: "containerlogs"
+    volumes:
+      - "/etc/srcds_watch.yml:/app/srcds_watch.yml"
+    networks:
+      - name: caddy_net
+  tags:
+    - metrics-client
+    - srcds_watch

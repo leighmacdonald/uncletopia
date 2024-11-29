@@ -46,6 +46,8 @@
     env:
       ACME_AGREE: "true"
     ports:
-      - "{{ ip_service | default(ip) }}:443:443"
-      - "{{ ip_service | default(ip) }}:80:80"
+      - "{{ service_ip | default(ip) }}:443:443"
+      - "{{ service_ip | default(ip) }}:80:80"
+      - "{{ service_ip6 }}:443:443"
+      - "{{ service_ip6 }}:80:80"
       - "{{ vpn_hosts[inventory_hostname].ip | default(ip) }}:2019:2019"

@@ -35,6 +35,9 @@ srcds_clean:
 web:
 	ansible-playbook -u $(USER) -i $(HOSTS) --forks $(FORKS) $(PLAYBOOK_PATH)/web.yml --limit metrics
 
+srcds_watch:
+	ansible-playbook -u $(USER) -i $(HOSTS) --forks $(FORKS) $(PLAYBOOK_PATH)/web.yml --limit metrics --tags srcds_watch
+
 vpn:
 	# This *does not work* when using --limit
 	@ansible-playbook -u $(USER) -i $(HOSTS) --forks $(FORKS) $(PLAYBOOK_PATH)/vpn.yml

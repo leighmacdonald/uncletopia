@@ -58,7 +58,7 @@
       }
     ]
   },
-  "description": "Displays metrics collected using srcds_exporter.",
+  "description": "Displays metrics collected using srcds_watch.",
   "editable": true,
   "fiscalYearStartMonth": 0,
   "gnetId": 16528,

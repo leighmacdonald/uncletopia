@@ -55,11 +55,7 @@ scrape_configs:
 
   - job_name: 'srcds'
     static_configs:
-{% for hostname, conf in vpn_hosts.items() %}
-      - targets: ['{{ conf.dns }}:8877']
-        labels:
-          instance: {{ hostname }}
-{% endfor %}
+    - targets: ['srcds_watch:8877']
 
 {#    http_sd_configs:#}
 {#      - url: '{{ service_discovery.prometheus }}'#}
@@ -67,7 +63,7 @@ scrape_configs:
 #  - job_name: srcds
 #    scrape_interval: 60s
 #    static_configs:
-#      - targets: ['gbans-srcds_exporter:9137']
+#      - targets: ['srcds_watch:9137']
 #
 #  - job_name: srcds-proxy
 #    scrape_interval: 10s

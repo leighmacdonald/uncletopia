@@ -1,7 +1,11 @@
 {
         acme_ca https://acme.zerossl.com/v2/DV90
         email {{ acme_email }}
+        servers {
+                metrics
+        }
 }
+
 {% for name, value in tls_configs.items() %}
 ({{ name }}) {
         tls {

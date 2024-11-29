@@ -4,6 +4,11 @@
   ansible.builtin.import_tasks: node_exporter.yml
   tags:
     - metrics-client
+    -
+- name: Setup srcds_watch
+  ansible.builtin.import_tasks: srcds_watch.yml
+  tags:
+    - srcds_watch
 
 - name: Setup minio
   ansible.builtin.import_tasks: minio.yml
