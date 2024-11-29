@@ -58,7 +58,7 @@
     env:
       DATABASE_URL: "{{ gbans_web.database_dsn }}"
     ports:
-      - 127.0.0.1:8081:8080
+      - "{{ vpn_hosts[inventory_hostname].ip }}:8081:8080"
     labels:
       logging: "promtail"
       logging_jobname: "containerlogs"
@@ -67,7 +67,6 @@
   become: true
   community.general.ufw:
     interface_in: "wg0"
-    interface_out: "wg0"
     rule: allow
     port: "27715"
     proto: udp

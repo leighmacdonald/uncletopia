@@ -1,8 +1,5 @@
 ---
 
-# - name: Enable rsyslog
-#  ansible.builtin.include_role:
-#    name: hadret.rsyslog
 
 - name: Generate /etc/promtail.yml
   become: true

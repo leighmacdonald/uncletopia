@@ -4,16 +4,23 @@
   ansible.builtin.import_tasks: node_exporter.yml
   tags:
     - metrics-client
-    -
+
 - name: Setup srcds_watch
   ansible.builtin.import_tasks: srcds_watch.yml
   tags:
     - srcds_watch
+    - metrics-server
 
 - name: Setup minio
   ansible.builtin.import_tasks: minio.yml
   tags:
     - metrics-server
+
+- name: Setup promtail
+  ansible.builtin.import_tasks: promtail.yml
+  tags:
+    - metrics-server
+    - promtail
 
 - name: Setup prometheus
   ansible.builtin.import_tasks: prometheus.yml

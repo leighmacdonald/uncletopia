@@ -45,9 +45,31 @@
         content: |
           GOVERNOR="performance"
 
+    - name: Download docker gpg key
+      become: true
+      become_user: root
+      ansible.builtin.apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: Add specified repository into sources list
+      become: true
+      become_user: root
+      ansible.builtin.apt_repository:
+        repo: deb https://download.docker.com/linux/ubuntu focal stable
+        state: present
+
     - name: Enable i386 architecture # noqa no-changed-when
       ansible.builtin.command: dpkg --add-architecture i386
       when: result_i386_check.rc == 1
+
+    - name: Setup rsyslog
+      become: true
+      ansible.builtin.import_role:
+        name: hadret.rsyslog
+      tags:
+        - promtail
+        - rsyslog
 
     - name: Install gpg & dd dependencies
       when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
@@ -61,6 +83,28 @@
           - cpufrequtils
           - dotnet-sdk-6.0
           - python3-netaddr
+          - wget
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - gnupg
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+          - python3-docker
+          - libc6:i386
+          - lib32stdc++6
+          - rsyslog-gnutls
+
+    - name: Install extra OS Dependencies (<24.04)
+      when: ansible_distribution == 'Ubuntu' and ansible_distribution_version != "24.04"
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 0
+        state: present
+        pkg:
+          # Doesnt exist on newer distro versions
+          - python3-distutils
 
 #    - name: Install xanmod-rt-v2
 #      when: old_cpu
@@ -99,59 +143,6 @@
         state: directory
         mode: '0755'
 
-    - name: Download docker gpg key
-      become: true
-      become_user: root
-      ansible.builtin.apt_key:
-        url: https://download.docker.com/linux/ubuntu/gpg
-        state: present
-
-    - name: Add specified repository into sources list
-      become: true
-      become_user: root
-      ansible.builtin.apt_repository:
-        repo: deb https://download.docker.com/linux/ubuntu focal stable
-        state: present
-
-    - name: Install OS Dependencies (<24.04)
-      when: ansible_distribution == 'Ubuntu' and ansible_distribution_version != "24.04"
-      ansible.builtin.apt:
-        update_cache: true
-        cache_valid_time: 0
-        state: present
-        pkg:
-          - wget
-          - apt-transport-https
-          - ca-certificates
-          - curl
-          - gnupg
-          - docker-ce
-          - docker-ce-cli
-          - containerd.io
-          - python3-docker
-          # Doesnt exist on newer distro versions
-          - python3-distutils
-          - libc6:i386
-          - lib32stdc++6
-
-    - name: Install OS Dependencies
-      when: ansible_distribution == 'Ubuntu' and ansible_distribution_version == "24.04"
-      ansible.builtin.apt:
-        update_cache: true
-        cache_valid_time: 0
-        state: present
-        pkg:
-          - wget
-          - apt-transport-https
-          - ca-certificates
-          - curl
-          - gnupg
-          - docker-ce
-          - docker-ce-cli
-          - containerd.io
-          - python3-docker
-          - libc6:i386
-          - lib32stdc++6
 
     - name: Reload systemd daemon
       become: true

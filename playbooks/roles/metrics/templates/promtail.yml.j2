@@ -9,7 +9,6 @@ clients:
   - url: {{ vpn_hosts[metrics_hostname].dns }}:3100/api/prom/push
 
 scrape_configs:
-
   - job_name: docker
     docker_sd_configs:
       - host: unix:///var/run/docker.sock
