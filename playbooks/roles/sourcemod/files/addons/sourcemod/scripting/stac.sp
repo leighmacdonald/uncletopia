@@ -56,7 +56,7 @@
 #pragma semicolon 1
 #pragma newdecls required
 
-#define PLUGIN_VERSION  "6.1.6"
+#define PLUGIN_VERSION  "6.2.0"
 
 #define UPDATE_URL      "https://raw.githubusercontent.com/sapphonie/StAC-tf2/master/updatefile.txt"
 
@@ -138,8 +138,6 @@ public void OnPluginStart()
 
     // hook real player disconnects
     HookEvent("player_disconnect", ePlayerDisconnect);
-    // grab player name changes
-    HookEvent("player_changename", ePlayerChangedName, EventHookMode_Pre);
     // grab player cheevs
     HookEvent("achievement_earned", ePlayerAchievement, EventHookMode_Post);
 
@@ -282,12 +280,6 @@ void StopIncompatPlugins()
             SetFailState("[StAC] Refusing to load with malicious plugins.");
             return;
         }
-        else if (StrContains(plName, "SMAC", false) != -1) /* SMAC */
-        {
-            delete plugini;
-            SetFailState("[StAC] Refusing to load with SMAC. SMAC is outdated and is actively harmful to server performance as well as StAC's operation. Uninstall SMAC and try again.");
-            return;
-        }
         else if
         (
                StrContains(plName, "Backtrack Patch",       false)  != -1 /* JTanz backtrack fix */
@@ -306,6 +298,13 @@ void StopIncompatPlugins()
     }
     delete plugini;
 
+    if
+    (
+            LibraryExists("smac") 
+        &&  GetFeatureStatus(FeatureType_Capability, "SMAC_Ban"))
+    {
+        SetFailState("[StAC] Refusing to load with SMAC. SMAC is outdated and is actively harmful to server performance as well as StAC's operation. Uninstall SMAC and try again.");
+    }
 }
 
 
