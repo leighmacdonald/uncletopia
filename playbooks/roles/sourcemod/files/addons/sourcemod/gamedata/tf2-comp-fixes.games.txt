@@ -284,18 +284,35 @@
 			// contains string "item_whitelist"
 			"CEconItemSystem::ReloadWhitelist" {
 				"linux" "@_ZN15CEconItemSystem15ReloadWhitelistEv"
-				"windows" "\x55\x8B\xEC\x83\xEC\x0C\x53\x56\x57\x8B\xD9\xC6\x45\x2A\x01"
+				"windows" "\x55\x8B\xEC\x83\xEC\x08\x53\x56\x57\x8B\xD9\xC6\x45\xFF\x01\x6A\x20\x89\x5D\xF8\xC6\x45\xFE\x00\xE8"
 			}
-
+			// contains string "ChargeLevelDegradeThink"
+			//
+			// xrefs:
+			//         sub_105F7510+C1         push offset aChargeleveldeg; 'ChargeLevelDegradeThink'
+			// ------> sub_105F77B0+4A9        push offset aChargeleveldeg; 'ChargeLevelDegradeThink' <----
+			//         sub_105F7CCO+B          push offset aChargeleveldeg; 'ChargeLevelDegradeThink'
+			//
+			// psuedocode, this is near the end of the function:
+			//
+			//  [...]
+			//
+			//      if ( *v39 > 0.0 )
+			//        sub_102006E0(sub_105F7510, *(float *)(dword_10A2DE48 + 12) + 0.1, "ChargeLevelDegradeThink"); // <----
+			//    }
+			//  }
+			//  result = sub_106F5ABC(a3, 0, &CTFWeaponBase `RTTI Type Descriptor', &CTFStickBomb `RTTI Type Descriptor', 0);
+			//
 			"CTFDroppedWeapon::InitDroppedWeapon" {
 				"linux" "@_ZN16CTFDroppedWeapon17InitDroppedWeaponEP9CTFPlayerP13CTFWeaponBasebb"
-				"windows" "\x55\x8B\xEC\x83\xEC\x24\x56\x57\x8B\xF9\x8B\x4D\x08"
+				"windows" "\x55\x8B\xEC\x83\xEC\x30\x56\x57\x8B\xF9\x8B\x4D\x08"
 			}
 
 			// contains string "BumperCar.JumpLand"
+			// multiple xrefs, it's the function that isn't just a bunch of strings
 			"CTFGameMovement::SetGroundEntity" {
 				"linux" "@_ZN15CTFGameMovement15SetGroundEntityEP10CGameTrace"
-				"windows" "\x55\x8B\xEC\x56\x8B\xF1\x57\x6A\x52"
+				"windows" "\x55\x8B\xEC\x83\xEC\x0C\x56\x8B\xF1\x57\x8B\x7D\x08\x6A\x52"
 			}
 
 			// contains string "uber_on_damage_taken"
@@ -303,13 +320,11 @@
 				"linux" "@_ZN12CTFGameRules29ApplyOnDamageAliveModifyRulesERK15CTakeDamageInfoP11CBaseEntityRNS_20DamageModifyExtras_tE"
 				"windows" "\x55\x8B\xEC\x81\xEC\xD4\x00\x00\x00\x53\x8B\x5D\x0C"
 			}
-
 			// contains string "cancel_falling_damage"
 			"CTFGameRules::FlPlayerFallDamage" {
-				"linux" "@_ZN12CTFGameRules18FlPlayerFallDamageEP11CBasePlayer"
-				"windows" "\x55\x8B\xEC\x51\x53\x56\x8B\x75\x08\x8B\xD9\x85\xF6\x0F\x84\x2A\x2A\x2A\x2A"
+			    "linux" "@_ZN12CTFGameRules18FlPlayerFallDamageEP11CBasePlayer"
+			    "windows" "\x55\x8B\xEC\x51\x53\x56\x8B\x75\x08\x8B\xD9\x57\x85\xF6\x0F\x84\x2A\x2A\x2A\x2A\x8B\x06"
 			}
-
 			// contains string "halloween_souls_pack"
 			"CTFGameRules::DropHalloweenSoulPack" {
 				"linux" "@_ZN12CTFGameRules21DropHalloweenSoulPackEiRK6VectorP11CBaseEntityi"
@@ -323,13 +338,13 @@
 			// contains string "mult_player_aiming_movespeed"
 			"CTFPlayer::TeamFortress_CalculateMaxSpeed" {
 				"linux" "@_ZNK9CTFPlayer30TeamFortress_CalculateMaxSpeedEb"
-				"windows" "\x55\x8B\xEC\x83\xEC\x18\x83\x3D\x2A\x2A\x2A\x2A\x00\x56"
+				"windows" "\x55\x8B\xEC\x83\xEC\x18\x56\x8B\xF1\x8B\x0D\x2A\x2A\x2A\x2A"
 			}
 
-			// contains string "projectile_spread_angle"
+			// contains string "Fire bomb at %f %f %f"
 			"CTFWeaponBaseGun::FirePipeBomb" {
 				"linux" "@_ZN16CTFWeaponBaseGun12FirePipeBombEP9CTFPlayeri"
-				"windows" "\x53\x8B\xDC\x83\xEC\x08\x83\xE4\xF0\x83\xC4\x04\x55\x8B\x6B\x04\x89\x6C\x24\x04\x8B\xEC\x81\xEC\x58\x01\x00\x00\x56\x8B\xF1\x57\x8B\x06"
+				"windows" "\x53\x8B\xDC\x83\xEC\x08\x83\xE4\xF0\x83\xC4\x04\x55\x8B\x6B\x04\x89\x6C\x24\x04\x8B\xEC\x81\xEC\x68\x01\x00\x00\x56\x8B\xF1"
 			}
 
 			"GEconItemSchema" {

@@ -14,7 +14,21 @@ void FixPostPauseState_Setup() {
     CreateBoolConVar("sm_fix_post_pause_state", WhenConVarChange);
 }
 
-void FixPostPauseState_OnMapStart() { g_paused = false; }
+void FixPostPauseState_OnGameFrame()
+{
+    static float lastGameTime = -1.0;
+    float flCurrentGameTime = GetGameTime();
+
+    if (flCurrentGameTime == lastGameTime)
+    {
+        g_paused = true;
+    }
+    else
+    {
+        g_paused = false;
+        lastGameTime = flCurrentGameTime;
+    }
+}
 
 static void WhenConVarChange(ConVar cvar, const char[] before, const char[] after) {
     if (cvar.BoolValue == TruthyConVar(before)) {
@@ -68,8 +82,6 @@ static Action WhenPause(int author, const char[] command, int argc) {
                      client, g_medigun[client], medigun);
         }
     }
-
-    g_paused = !g_paused;
 
     return Plugin_Continue;
 }
