@@ -13,7 +13,7 @@
 - name: Create srcds_watch container
   community.docker.docker_container:
     name: srcds_watch
-    image: ghcr.io/leighmacdonald/srcds_watch:v1.0.0
+    image: ghcr.io/leighmacdonald/srcds_watch:v1.0.1
     restart_policy: unless-stopped
     restart: true
     pull: true
