@@ -1,10 +1,5 @@
 ---
 
-- name: Setup node_exporter
-  ansible.builtin.import_tasks: node_exporter.yml
-  tags:
-    - metrics-client
-
 - name: Setup srcds_watch
   ansible.builtin.import_tasks: srcds_watch.yml
   tags:

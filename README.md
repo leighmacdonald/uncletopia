@@ -102,3 +102,15 @@ If you are on a 64bit machine you will want 32bit libs for spcomp.
 
     sudo apt get install libc6:i386 lib32stdc++6
 
+
+## Manual Setup Steps
+
+There is a few steps that are not entirely automated as of yet. These are generally going to be one time setup type of steps.
+
+These will eventually get automated, but are quite low priority.
+
+### Configure minio
+
+- Create buckets: mimir-ruler, mimir-alertmanager, mimir-blocks
+- Create a user with readwrite access polict to the created buckets.
+- Generate access keys. Set minio.mimir_access_key and minio.mimir_secret_key. Rerun `make web` to finish deployment.

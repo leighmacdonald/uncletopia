@@ -41,7 +41,7 @@ ping:
 	@ansible tf2 -m ping $(ARGS)
 
 update:
-	@ansible-playbook -u $(USER) -i $(HOSTS) --forks $(FORKS) $(PLAYBOOK_PATH)/update.yml
+	@ansible-playbook -u $(USER) -i $(HOSTS) --forks $(FORKS) $(PLAYBOOK_PATH)/update.yml --limit sao-1.br.uncletopia.com
 
 game_engine:
 	@ansible-playbook -u $(USER) -i $(HOSTS) --forks $(FORKS) --tags game_engine $(PLAYBOOK_PATH)/srcds.yml

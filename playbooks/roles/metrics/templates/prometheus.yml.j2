@@ -2,10 +2,10 @@ global:
   scrape_interval:     15s # By default, scrape targets every 15 seconds.
 
 # Send to remote mimir storage
-#remote_write:
-#  - url: http://mimir:9009/api/v1/push
-#    headers:
-#      X-Scope-OrgID: "ut"
+remote_write:
+  - url: http://mimir:9009/api/v1/push
+    headers:
+      X-Scope-OrgID: "ut"
 
 scrape_configs:
   - job_name: 'prometheus'
@@ -37,18 +37,14 @@ scrape_configs:
           instance: {{ hostname }}
 {% endfor %}
 
-{#  - job_name: 'docker'#}
-{#    static_configs:#}
-{#{% for hostname, conf in vpn_hosts.items() %}#}
-{#      - targets: ['{{ conf.dns }}:9323']#}
-{#        labels:#}
-{#          instance: {{ hostname }}#}
-{#{% endfor %}#}
+  - job_name: 'docker'
+    static_configs:
+      - targets: ['{{ vpn_hosts[metrics_hostname].ip }}:9323']
 
   - job_name: 'node'
     static_configs:
 {% for hostname, conf in vpn_hosts.items() %}
-      - targets: ['{{ conf.dns }}:9100']
+      - targets: ['{{ conf.ip }}:9100']
         labels:
           instance: {{ hostname }}
 {% endfor %}
@@ -57,20 +53,12 @@ scrape_configs:
     static_configs:
     - targets: ['srcds_watch:8877']
 
-{#    http_sd_configs:#}
-{#      - url: '{{ service_discovery.prometheus }}'#}
-
-#  - job_name: srcds
-#    scrape_interval: 60s
-#    static_configs:
-#      - targets: ['srcds_watch:9137']
-#
 #  - job_name: srcds-proxy
 #    scrape_interval: 10s
 #    metrics_path: /metrics
 #    static_configs:
 #      - targets: ['proxy:9000']
-#
+
   - job_name: postgres
     scrape_interval: 15s
     static_configs:

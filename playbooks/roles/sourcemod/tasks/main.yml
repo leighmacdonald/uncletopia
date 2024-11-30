@@ -13,7 +13,7 @@
 
 - name: Download latest metamod
   ansible.builtin.unarchive:
-    src: "{{ metamod_download | default(\"https://mms.alliedmods.net/mmsdrop/2.0/mmsource-2.0.0-git1315-linux.tar.gz\") }}"
+    src: "{{ metamod_download | default(\"https://mms.alliedmods.net/mmsdrop/1.12/mmsource-1.12.0-git1194-linux.tar.gz\") }}"
     dest: ~/build_sourcemod/
     remote_src: true
     # creates: ~/build_sourcemod/addons/metamod
@@ -49,3 +49,9 @@
     cmd: bash build.sh
   tags:
     - game_config
+#TICE:  relation "sm_cookies" already exists, skipping
+#NOTICE:  relation "sm_cookie_cache" already exists, skipping
+#NOTICE:  relation "sm_cookie_cache" already exists, skipping
+#L 11/30/2024 - 22:49:16: [CLIENTPREFS] Failed to create function add_or_update_cookie: ERROR:  must be owner of function add_or_update_cookie
+#
+#  [StAC]

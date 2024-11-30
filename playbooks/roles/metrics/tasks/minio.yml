@@ -17,14 +17,16 @@
     command: server /data --console-address ":9001"
     env:
       MINIO_ROOT_USER: "{{ minio.user | default('mimir') }}"
-      MINIO_ROOT_PASSWORD: "{{ minio.password | default('mimir') }}"
+      MINIO_ROOT_PASSWORD: "{{ minio.password | default('mimirmimir') }}"
     labels:
       logging: "promtail"
       logging_jobname: "containerlogs"
     networks:
       - name: caddy_net
     volumes:
-      - minio-data:/data
+      - minio_data:/data
     ports:
       - "127.0.0.1:9001:9001"
       - "{{ vpn_hosts[inventory_hostname].ip }}:9001:9001"
+      - "127.0.0.1:9000:9000"
+      - "{{ vpn_hosts[inventory_hostname].ip }}:9000:9000"

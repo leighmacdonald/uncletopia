@@ -1,12 +1,13 @@
-target: all,alertmanager,overrides-exporter
+multitenancy_enabled: false
+{#target: all,alertmanager,overrides-exporter#}
 
 common:
   storage:
     backend: s3
     s3:
       endpoint: minio:9000
-      access_key_id: {{ minio.user | default("mimir") }}
-      secret_access_key: {{ minio.password | default("mimir") }}
+      access_key_id: "{{ minio.mimir_access_key | default("mimir") }}"
+      secret_access_key: "{{ minio.mimir_secret_key | default("mimirmimir") }}"
       insecure: true
       bucket_name: mimir
 
@@ -24,12 +25,12 @@ alertmanager_storage:
 ruler_storage:
   s3:
     bucket_name: mimir-ruler
-#
+
 memberlist:
   join_members: [ localhost:7946 ]
 
 compactor:
-  data_dir: /data/mimir/compactor
+  data_dir: /tmp/mimir/compactor
   sharding_ring:
     kvstore:
       store: memberlist
@@ -39,12 +40,9 @@ distributor:
     instance_addr: 127.0.0.1
     kvstore:
       store: memberlist
-#
+
 ingester:
   ring:
-    instance_addr: 127.0.0.1
-    kvstore:
-      store: memberlist
     replication_factor: 1
 
 server:

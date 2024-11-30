@@ -19,14 +19,14 @@ datasources:
     version: 2
     editable: false
 
-  - name: Prometheus
+  - name: mimir
     type: prometheus
-    uid: prometheus
+    uid: mimir
     access: proxy
-    url: http://prometheus:9090
+    url: http://mimir:9009/prometheus
     jsonData:
       httpMethod: POST
-      manageAlerts: false
+      manageAlerts: true
       prometheusType: Prometheus
       prometheusVersion: 2.40.0
 
