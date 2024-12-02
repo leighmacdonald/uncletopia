@@ -3,19 +3,41 @@ global:
 
 # Send to remote mimir storage
 remote_write:
-  - url: http://mimir:9009/api/v1/push
+  - url: http://mimir:{{ mimir.port|default(9009) }}/api/v1/push
     headers:
       X-Scope-OrgID: "ut"
 
 scrape_configs:
+  - job_name: minio-job
+    metrics_path: /minio/v2/metrics/cluster
+    scheme: http
+    static_configs:
+      - targets: ['minio:{{ minio.port_api|default(9000) }}']
+
+  - job_name: minio-job-node
+    metrics_path: /minio/v2/metrics/node
+    scheme: http
+    static_configs:
+      - targets: ['minio:{{ minio.port_api|default(9000) }}']
+
+  - job_name: minio-job-bucket
+    metrics_path: /minio/v2/metrics/bucket
+    scheme: http
+    static_configs:
+      - targets: ['minio:{{ minio.port_api|default(9000) }}']
+
   - job_name: 'prometheus'
     honor_labels: true
     static_configs:
       - targets: ['localhost:9090']
+        labels:
+          instance: {{ metrics_hostname }}
 
   - job_name: 'grafana'
     static_configs:
-    - targets: ['grafana:3000']
+    - targets: ['grafana:{{ grafana.port|default(3000) }}']
+      labels:
+        instance: {{ metrics_hostname }}
 
 {#  - job_name: wireguard#}
 {#    static_configs:#}
@@ -24,34 +46,39 @@ scrape_configs:
   - job_name: caddy
     static_configs:
       - targets: ['caddy:2019']
+        labels:
+          instance: {{ metrics_hostname }}
 
-  - job_name: grafana_metrics
+  - job_name: loki
+    scrape_interval: 15s
     static_configs:
-      - targets: ['grafana:3000']
+      - targets: ['{{ vpn_hosts[inventory_hostname].dns }}:{{ loki.port|default(3100) }}']
+        labels:
+          instance: {{ metrics_hostname }}
 
   - job_name: 'promtail'
     static_configs:
-{% for hostname, conf in vpn_hosts.items() %}
-      - targets: ['{{ conf.dns }}:9080']
+      - targets: ['promtail:{{ promtail.port|default(9080) }}']
         labels:
-          instance: {{ hostname }}
-{% endfor %}
+          instance: {{ metrics_hostname }}
 
   - job_name: 'docker'
     static_configs:
-      - targets: ['{{ vpn_hosts[metrics_hostname].ip }}:9323']
+      - targets: ['{{ vpn_hosts[metrics_hostname].dns }}:9323']
+        labels:
+          instance: {{ metrics_hostname }}
 
   - job_name: 'node'
     static_configs:
 {% for hostname, conf in vpn_hosts.items() %}
-      - targets: ['{{ conf.ip }}:9100']
+      - targets: ['{{ conf.ip }}:{{ node_exporter.port|default(9100) }}']
         labels:
           instance: {{ hostname }}
 {% endfor %}
 
   - job_name: 'srcds'
     static_configs:
-    - targets: ['srcds_watch:8877']
+      - targets: ['srcds_watch:{{ srcds_watch.port|default(8899) }}']
 
 #  - job_name: srcds-proxy
 #    scrape_interval: 10s
@@ -63,9 +90,13 @@ scrape_configs:
     scrape_interval: 15s
     static_configs:
       - targets: ['gbans-postgres_exporter:9187']
+        labels:
+          instance: {{ metrics_hostname }}
 
   - job_name: gbans
     scrape_interval: 15s
     metrics_path: /metrics
     static_configs:
-      - targets: ['gbans-service:6006']
+      - targets: ['gbans-service:{{ gbans_web.http_port|default(6006) }}']
+        labels:
+          instance: {{ metrics_hostname }}

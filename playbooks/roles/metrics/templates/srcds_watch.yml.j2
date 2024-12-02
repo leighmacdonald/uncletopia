@@ -1,14 +1,14 @@
 ---
 
-listen_host: 0.0.0.0
-listen_port: 8877
+listen_host: {{ srcds_watch.port|default("0.0.0.0") }}
+listen_port: {{ srcds_watch.port|default(8877) }}
 
 targets:
 {% for hostname in groups['all'] %}
 {% for item in hostvars[hostname].services %}
   - name: "{{ item.server_name_short }}"
     host: "{{ hostname }}"
-    port: {{ 27015 + (loop.index0 * 10) }}
+    port: {{ srcds_base_port + (loop.index0 * 10) }}
     password: "{{ item.srcds_rcon_password }}"
 {% endfor %}
 {% endfor %}

@@ -1,0 +1,51 @@
+---
+
+
+- name: Generate /etc/loki.yml
+  become: true
+  ansible.builtin.template:
+    src: "loki.yml.j2"
+    dest: "/etc/loki.yml"
+    mode: "0775"
+  tags:
+    - loki
+
+- name: Create loki_data volume
+  community.docker.docker_volume:
+    name: loki_data
+    state: present
+  tags:
+    - loki
+
+- name: Create loki container
+  community.docker.docker_container:
+    name: loki
+    image: grafana/loki:latest
+    restart: true
+    pull: true
+    purge_networks: true
+    restart_policy: unless-stopped
+    recreate: true
+    command: ["-config.file=/etc/loki.yml"]
+    labels:
+      logging: "promtail"
+      logging_jobname: "containerlogs"
+    networks:
+      - name: caddy_net
+    volumes:
+      - /etc/loki.yml:/etc/loki.yml
+      - loki_data:/loki
+    ports:
+      - "127.0.0.1:{{ loki.port }}:3100"
+      - "{{ vpn_hosts[inventory_hostname].ip }}:{{ loki.port }}:3100"
+  tags:
+    - loki
+  when: inventory_hostname == metrics_hostname
+
+- name: Allow loki firewall
+  become: true
+  community.general.ufw:
+    interface_in: "wg0"
+    rule: allow
+    port: "{{ loki.port }}"
+    proto: tcp

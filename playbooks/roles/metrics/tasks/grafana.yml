@@ -99,6 +99,6 @@
       - /etc/grafana_dashboards:/etc/grafana_dashboards
       - grafana_data:/var/lib/grafana
     ports:
-      - 127.0.0.1:3000:3000
+      - "127.0.0.1:{{ grafana.port | default(3000) }}:3000"
   tags:
     - grafana

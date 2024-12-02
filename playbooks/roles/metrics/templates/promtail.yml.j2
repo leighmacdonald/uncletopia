@@ -1,12 +1,13 @@
 server:
-  http_listen_port: 9080
+  http_listen_port: {{ promtail.port|default(9080) }}
   grpc_listen_port: 0
 
-positions:
-  filename: /tmp/positions.yaml
+{#positions:#}
+{#  filename: /tmp/positions.yaml#}
 
 clients:
-  - url: {{ vpn_hosts[metrics_hostname].dns }}:3100/api/prom/push
+  - url: "http://{{ vpn_hosts[metrics_hostname].ip }}:{{ loki.port|default(3100) }}/loki/api/v1/push"
+    tenant_id: ut
 
 scrape_configs:
   - job_name: docker
@@ -43,7 +44,8 @@ scrape_configs:
 
   - job_name: syslog
     syslog:
-      listen_address: 0.0.0.0:1514
+      listen_address: "0.0.0.0:{{ syslog.port|default(1514) }}"
+      listen_protocol: udp
       labels:
         job: syslog
     relabel_configs:

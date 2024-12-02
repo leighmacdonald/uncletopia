@@ -14,10 +14,11 @@
     purge_networks: true
     restart_policy: unless-stopped
     recreate: true
-    command: server /data --console-address ":9001"
+    command: server /data --console-address ":{{ minio.port_webui }}"
     env:
       MINIO_ROOT_USER: "{{ minio.user | default('mimir') }}"
       MINIO_ROOT_PASSWORD: "{{ minio.password | default('mimirmimir') }}"
+      MINIO_PROMETHEUS_AUTH_TYPE: "public"
     labels:
       logging: "promtail"
       logging_jobname: "containerlogs"
@@ -26,7 +27,7 @@
     volumes:
       - minio_data:/data
     ports:
-      - "127.0.0.1:9001:9001"
-      - "{{ vpn_hosts[inventory_hostname].ip }}:9001:9001"
-      - "127.0.0.1:9000:9000"
-      - "{{ vpn_hosts[inventory_hostname].ip }}:9000:9000"
+      - "127.0.0.1:{{ minio.port_webui }}:9001"
+      - "{{ vpn_hosts[inventory_hostname].ip }}:{{ minio.port_webui }}:9001"
+      - "127.0.0.1:{{ minio.port_api }}:9000"
+      - "{{ vpn_hosts[inventory_hostname].ip }}:{{ minio.port_api }}:9000"

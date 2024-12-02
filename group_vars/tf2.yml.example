@@ -21,6 +21,16 @@ sv_tags: "kittyland,nodogs"
 sv_pure: 1
 start_map: "pl_badwater"
 
+log:
+  file_enable: true
+  net_enable: true
+  net_hosts: ["10.20.30.1:27715", "sink.kittyland.com:27715"]
+
+sourcemod_db_host: "10.20.30.1"
+sourcemod_db_port: 5432
+sourcemod_db_username: "sourcemod"
+sourcemod_db_password: "sourcemod"
+
 # https://crash.limetech.org/
 mini_dump_steamid: 00000000000000000
 
@@ -28,31 +38,57 @@ stv_enable: true
 stv_password: "your_global_stv_password"
 stv_name: "Level 3 Sentry"
 
+# When true allocate 2 threads to the game process instead of one.
+enable_threads: true
+
 sm_download: "https://sm.alliedmods.net/smdrop/1.12/sourcemod-1.12.0-git7125-linux.tar.gz"
 metamod_download: "https://mms.alliedmods.net/mmsdrop/1.12/mmsource-1.12.0-git1192-linux.tar.gz"
 
 plugins_disabled: ["tf_engiepve.smx", "EdictLimiter.smx", "stopwatch.smx"]
 extensions_disabled: ["tf2items.autoload", "tf2items.ext.2.ep2v.so", "sourcescramble.ext.so"]
 
+sentry_dsn: "https://xxxxxxxxx@sentry.kittyland.com/7"
+
 config:
-  default:
-    extensions_disabled: ["tf2items.autoload", "tf2items.ext.2.ep2v.so", "sourcescramble.ext.so"]
-    plugins_disabled: ["sm_vprofiler.smx", "EdictLimiter.smx", "stopwatch.smx", "roundtimer.smx", "tf_engiepve.smx"]
+  #  default:
+  #    extensions_disabled: ["tf2items.autoload", "tf2items.ext.2.ep2v.so", "sourcescramble.ext.so"]
+  #    plugins_enabled: []
+  #    plugins_disabled: ["admin-sql-prefetch.smx", "admin-flatfile.smx", "sm_vprofiler.smx", "EdictLimiter.smx", "stopwatch.smx", "roundtimer.smx", "tf_uncledane.smx"]
   all:
-    plugins_disabled: ["sm_vprofiler.smx", "EdictLimiter.smx", "stopwatch.smx", "roundtimer.smx", "tf_engiepve.smx"]
+    extensions_disabled: [ "tf2items.autoload", "tf2items.ext.2.ep2v.so", "sourcescramble.ext.so" ]
+    plugins_enabled: [ ]
+    plugins_disabled: [ "admin-sql-prefetch.smx", "admin-flatfile.smx", "sm_vprofiler.smx", "EdictLimiter.smx", "stopwatch.smx", "roundtimer.smx", "tf_uncledane.smx", "gimmie.smx", "tf2attributes.smx" ]
+
   all_plus:
-    plugins_disabled: [ "sm_vprofiler.smx", "EdictLimiter.smx", "stopwatch.smx", "roundtimer.smx", "tf_engiepve.smx" ]
+    extensions_disabled: [ "tf2items.autoload", "tf2items.ext.2.ep2v.so", "sourcescramble.ext.so" ]
+    plugins_enabled: [ ]
+    plugins_disabled: [ "admin-sql-prefetch.smx", "admin-flatfile.smx", "sm_vprofiler.smx", "EdictLimiter.smx", "stopwatch.smx", "roundtimer.smx", "tf_uncledane.smx", "gimmie.smx", "tf2attributes.smx"  ]
+
   5cp:
-    plugins_disabled: [ "sm_vprofiler.smx", "EdictLimiter.smx", "stopwatch.smx", "roundtimer.smx", "tf_engiepve.smx" ]
+    extensions_disabled: [ "tf2items.autoload", "tf2items.ext.2.ep2v.so", "sourcescramble.ext.so" ]
+    plugins_enabled: [ ]
+    plugins_disabled: [ "admin-sql-prefetch.smx", "admin-flatfile.smx", "sm_vprofiler.smx", "EdictLimiter.smx", "stopwatch.smx", "roundtimer.smx", "tf_uncledane.smx", "gimmie.smx", "tf2attributes.smx"  ]
+
   stopwatch:
-    plugins_disabled: ["sm_vprofiler.smx", "EdictLimiter.smx", "tf_engiepve.smx"]
+    extensions_disabled: [ "tf2items.autoload", "tf2items.ext.2.ep2v.so", "sourcescramble.ext.so" ]
+    plugins_enabled: [ ]
+    plugins_disabled: [ "enablewhitelist.smx", "admin-sql-prefetch.smx", "admin-flatfile.smx", "sm_vprofiler.smx", "EdictLimiter.smx", "roundtimer.smx", "tf_uncledane.smx", "gimmie.smx", "tf2attributes.smx"  ]
+
   fixed:
-    plugins_disabled: ["sm_vprofiler.smx", "EdictLimiter.smx", "roundtimer.smx", "nativevotes_rockthevote.smx", "nativevotes_nominations.smx", "nativevotes_mapchooser.smx", "tf_engiepve.smx", "nextmap.smx", "mapchooser.smx", "randomcycle.smx"]
+    extensions_disabled: [ "tf2items.autoload", "tf2items.ext.2.ep2v.so", "sourcescramble.ext.so" ]
+    plugins_enabled: [ ]
+    plugins_disabled: ["admin-flatfile.smx", "sm_vprofiler.smx", "EdictLimiter.smx", "roundtimer.smx", "stopwatch.smx", "nativevotes_rockthevote.smx", "nativevotes_nominations.smx", "nativevotes_mapchooser.smx", "tf_uncledane.smx", "nextmap.smx", "mapchooser.smx", "randomcycle.smx", "gimmie.smx", "tf2attributes.smx" ]
+
   rototion:
-    plugins_disabled: ["sm_vprofiler.smx", "EdictLimiter.smx", "stopwatch.smx", "roundtimer.smx", "tf_engiepve.smx"]
+    extensions_disabled: [ "tf2items.autoload", "tf2items.ext.2.ep2v.so", "sourcescramble.ext.so" ]
+    plugins_enabled: [ ]
+    plugins_disabled: [ "admin-sql-prefetch.smx", "admin-flatfile.smx", "sm_vprofiler.smx", "EdictLimiter.smx", "stopwatch.smx", "roundtimer.smx", "tf_uncledane.smx", "gimmie.smx", "tf2attributes.smx"  ]
+
   pve:
-    plugins_disabled: ["sm_vprofiler.smx", "roundtimer.smx", "stopwatch.smx", "reservedslots.smx", "classrestrict.smx", "networktools.smx", "votescramble.smx"]
     extensions_disabled: []
+    plugins_enabled: [ ]
+    plugins_disabled: [ "empty-restarter.smx", "admin-sql-prefetch.smx", "admin-flatfile.smx", "sm_vprofiler.smx", "stopwatch.smx", "roundtimer.smx", "reservedslots.smx", "classrestrict.smx", "NetworkTools.smx", "votescramble.smx"]
+
 
 item_whitelist:
   #"unlisted_items_default_to": 1
@@ -61,10 +97,16 @@ item_whitelist:
   #"Photo Badge": 0
 
 pve:
+  bot_count: "{{ item.bot_count|default(20) }}"
+  human_count: "{{ item.human_count|default(12) }}"
   bot_attrs:
-    metal regen: 5000
-    maxammo metal increased: 25
+    metal regen: 500
+    maxammo metal increased: 2.5
+    # 125 + 60 = 185
+    max health additive bonus: 60
+    mod teleporter cost: 20
   names:
+    - Uncle Frames
     - Uncle Brain
     - Uncle Lane
     - Uncle Rain
@@ -75,184 +117,448 @@ pve:
     - Uncle Vain
     - Uncle Train
     - Uncle Stain
-    - Uncle Plane
+    - Uncle Bens
     - Uncle Insane
-    - Uncle Urethane
-    - Uncle Novocain
-    - Uncle Hurricane
+    - Uncle Buck
+    - Uncle Leo
+    - Uncle Fester
     - Uncle Pain
+    - Uncle Fred
+    - Uncle Whole Grain
+    - Uncle Oscar
+    - Uncle Phil
+    - Uncle Jesse
+    - Uncle Lame
+    - Uncle Flame
+    - Uncle Same
+    - Uncle Cocaine
+    - Uncle Buster
+    - Uncle Frank
+    - Uncle Funkle
+    - Uncle Remus
+    - Uncle Tom
+    - Uncle Bobby
+    - Uncle Joe
+    - Uncle Junior
+    - Uncle Elroy
+    - Uncle Owen
+    - Uncle Dursley
+    - Uncle Al
+    - Uncle Aeroplane
+    - Uncle G-Man
+    - Uncle Red Shirt
+    - Uncle Lazer
+    - Uncle Drain
+    - Uncle Rain
+    - Uncle Feign
+    - Uncle Arcane
+    - Uncle Propane
+    - Uncle Claim
+    - Uncle Plain
+    - Uncle Ukraine
+    - Uncle Explain
+    - Uncle Strange
+    - Uncle Lil Wayne
 
 # Params to generate /tf/addons/sourcemod/configs/admin_overrides.cfg
 admin_overrides:
   - [ "admin_allspec_flag", "b" ]
 
 discord:
-  stac_webhook: "https://discord.com/api/webhooks/xxxxxxxxxxxxxxxxxxxxxxxxxx"
-  crash_webhook: "https://discord.com/api/webhooks/xxxxxxxxxxxxxxxxxxxxxxxxx"
+  stac_webhook: "https://discord.com/api/webhooks/xxxxxxxxxxxx/xxxxxxxxxxxx"
+  crash_webhook: "https://discord.com/api/webhooks/xxxxxxxxxxxx/xxxxxxxxxxxx"
 
 motd: |
-  Your multi
-  line
-  motd
-  text message
+  Welcome to Uncletopia! If you enjoyed your time here, remember to add this server to your favorites via the server browser!
+  This is Uncle Dane's custom community server. The experience on Uncletopia is intended to be very similar to TF2 Casual Mode, with a few quality-of-life changes. If you’d like to learn more, please visit -- UNCLETOPIA.COM -- You can easily connect with the Uncletopia community, give feedback, report players, and access other resources by joining the official Uncletopia Discord at -- UNCLETOPIA.COM/DISCORD --
+  If teams are unbalanced, type !scramble in chat to vote to scramble the teams. If you would like to change the current map, you can nominate a map with !nominate and rock the vote with !rtv. There is a no-tolerance policy against slurs and toxicity. Thanks for playing!
 
 motd_pve: |
-  asdf
-
+  Welcome to ONE THOUSAND UNCLES. There are up to 24 players on the BLU team. There are a lot of Uncles on the RED team. There will be an unsettling amount of sentry guns ahead. The army of Uncles will never stop building them -  forever - until you can manage to win. Good luck.
+  
+  
+  COMMANDS: !nominate - !rtv - !hidehud - !motd
 
 map_rotation:
-  default:
+  pve:
     - cp_altitude
+    - cp_brew
+    - cp_egypt_final
     - cp_dustbowl
+    - cp_gorge
+    - cp_hardwood_final
+    - cp_mercenarypark
     - cp_mountainlab
-    - cp_process_final
-    - cp_snakewater_final1
-    - cp_sunshine
-    - koth_cascade
+    - cp_mossrock
+    - cp_overgrown
     - koth_highpass
-    - koth_lakeside_final
-    - koth_viaduct
+    - koth_lakeside_event
+    - koth_sawmill
+    - koth_viaduct_event
     - pl_badwater
     - pl_barnblitz
     - pl_borneo
+    - pl_cashworks
+    - pl_chilly
+    - pl_emerge
     - pl_frontier_final
+    - pl_hoodoo_final
+    - pl_odyssey
+    - pl_phoenix
     - pl_pier
+    - pl_thundermountain
     - pl_snowycoast
     - pl_swiftwater_final1
     - pl_upward
+    - pl_venice
+
+  pve_curated:
+    - cp_altitude
+    - cp_dustbowl
+    - pl_badwater
+    - pl_barnblitz
+    - pl_snowycoast
+    - pl_swiftwater_final1
+    - pl_upward
+
+
+  rototion:
+    - cp_altitude
+    - cp_gorge
+    - workshop/cp_logjam.ugc454812035
+    - cp_process_final
+    - cp_reckoner
+    - cp_snakewater_final1
+    - cp_steel
+    - cp_sunshine
+    - workshop/koth_bagel.ugc2514036946
+    - koth_cascade
+    - koth_highpass
+    - workshop/koth_jamram.ugc2964065613
+    - koth_lakeside_final
+    - workshop/koth_product.ugc454272353
+    - workshop/pl_prowater_b12.ugc1913022980
+    - workshop/pl_barnblitz_pro.ugc582280235
+    - pl_borneo
+    - pl_cashworks
+    - workshop/pl_fifthcurve_rc1.ugc648227046
+    - pl_phoenix
+    - pl_pier
+    - workshop/pl_shoreleave.ugc1238849347
+    - workshop/pl_summercoast_rc8e.ugc1761528829
+    - pl_swiftwater_final1
+    - pl_upward
+    - workshop/pl_vigil.ugc1266210012
+
+  rototion_curated:
+    - cp_altitude
+    - cp_process_final
+    - cp_snakewater_final1
+    - cp_sunshine
+    - workshop/koth_bagel.ugc2514036946
+    - koth_cascade
+    - koth_highpass
+    - workshop/koth_product.ugc454272353
+    - workshop/pl_prowater_b12.ugc1913022980
+    - workshop/pl_barnblitz_pro.ugc582280235
+    - pl_borneo
+    - pl_phoenix
+    - pl_pier
+    - pl_swiftwater_final1
+    - pl_upward
+
+  fixed:
+    # AD -> KOTH -> 5CP  -> PL -> Repeat
+    - cp_altitude
+    - koth_cascade
+    - cp_process_final
+    - pl_badwater
+
+    - cp_dustbowl
+    - koth_highpass
+    - cp_gullywash_final1
+    - pl_barnblitz
+
+    - cp_mercenarypark
+    - koth_lakeside_final
+    - cp_metalworks
+    - pl_borneo
+
+    - cp_steel
+    - koth_viaduct
+    - cp_snakewater_final1
+    - pl_snowycoast
+
+    - cp_gorge
+    - koth_harvest_final
+    - cp_sunshine
+    - pl_pier
+
+    - cp_mossrock
+    - koth_lazarus
+    - cp_granary
+    - pl_swiftwater_final1
+
+    - cp_egypt_final
+    - workshop/koth_bagel.ugc2514036946
+    - cp_5gorge
+    - pl_upward
+
+  5cp:
+    - cp_5gorge
+    - cp_badlands
+    - workshop/cp_caldera.ugc2834196889
+    - workshop/cp_coilblaze.ugc1272700588
+    - cp_coldfront
+    - workshop/cp_croissant.ugc458840209
+    - cp_fastlane
+    - cp_foundry
+    - cp_freight_final1
+    - workshop/cp_glassworks.ugc454118349
+    - cp_granary
+    - cp_gullywash_final1
+    - workshop/cp_logjam.ugc454812035
+    - cp_metalworks
+    - cp_process_final
+    - workshop/cp_propaganda.ugc1603743849
+    - cp_reckoner
+    - cp_snakewater_final1
+    - workshop/cp_sultry.ugc2775471508
+    - cp_sunshine
+    - cp_vanguard
+    - workshop/cp_villa.ugc2113052569
+    - cp_well
+    - cp_yukon_final
+
+  5cp_curated:
+    - cp_5gorge
+    - cp_badlands
+    - cp_coldfront
+    - workshop/cp_croissant.ugc458840209
+    - cp_foundry
+    - cp_granary
+    - cp_gullywash_final1
+    - cp_metalworks
+    - cp_process_final
+    - cp_reckoner
+    - cp_snakewater_final1
+    - cp_sunshine
+
 
   stopwatch:
     - cp_gullywash_final1
     - cp_metalworks
     - cp_process_final
+    - cp_reckoner
     - cp_snakewater_final1
     - cp_sunshine
     - workshop/koth_bagel.ugc2514036946
     - koth_highpass
     - koth_lakeside_final
     - workshop/koth_product.ugc454272353
-    - workshop/koth_ramjam_rc1.ugc459778887
+    - workshop/koth_jamram.ugc2964065613
     - workshop/koth_clearcut_b15.ugc2107050255
     - workshop/cp_process_f11.ugc2302948105
-    - workshop/cp_reckoner.ugc674719999
+    - cp_reckoner
     - workshop/koth_ashville.ugc2130459942
     - workshop/pl_barnblitz_pro.ugc582280235
     - workshop/pl_badwater_pro_v12.ugc2142942074
-    - workshop/pl_snowycoast_pro.ugc1761528829
+    - workshop/pl_summercoast_rc8e.ugc1761528829
     - workshop/pl_vigil.ugc1266210012
+    - pl_cashworks
     - pl_swiftwater_final1
     - pl_upward
+    - pl_venice
     - pl_borneo
+    - pl_selbyen
     - cp_granary
 
-  community:
-    # ad
-    - workshop/cp_bruhstbowl_b5.ugc2878604990
-    - workshop/cp_fulgur_rc2a.ugc2068252300
-    - workshop/cp_glacier_rc6.ugc2905735376
-    - workshop/cp_snowbase_b18.ugc2081770490
-    - workshop/cp_hazyfort_rc6.ugc1365963729
-    # cp
-    - workshop/cp_alloy.ugc592805587
-    - workshop/cp_croissant.ugc458840209
-    - workshop/cp_glassworks.ugc454118349
-    - workshop/cp_indulge.ugc528106646
-    - workshop/cp_propaganda.ugc1603743849
-    - workshop/cp_mannbase.ugc1900737467
-    - workshop/cp_kalinka.ugc1272700588
-    # koth
-    - workshop/koth_trenchfoot.ugc731436616
-    - workshop/koth_kemptown.ugc767410655
-    # pl
-    - workshop/pl_cashworks.ugc2904065412
-    - workshop/pl_boundary.ugc456799153
-    - workshop/pl_divulgence.ugc2884808746
-    - workshop/pl_emerge.ugc888027758
-    - workshop/pl_corrode.ugc546577989
-    - workshop/pl_shoreleave.ugc1238849347
-    - workshop/pl_badwater_pro_v12.ugc2142942074
-    - workshop/pl_highwood.ugc1769496557
-    # 1st batch
-    - workshop/cp_caldera.ugc2834196889
-    - workshop/cp_logjam.ugc454812035
-    - workshop/cp_overgrown.ugc503939302
-    - workshop/cp_reckoner.ugc674719999
-    - workshop/cp_sulphur.ugc619869471
-    - workshop/cp_villa.ugc2113052569
-    - workshop/koth_ashville.ugc2130459942
-    - workshop/koth_bagel.ugc2514036946
-    - workshop/koth_product.ugc454272353
-    - workshop/koth_ramjam_rc1.ugc459778887
-    - workshop/koth_slaughter.ugc1712845210
-    - workshop/koth_synthetic.ugc1549817316
-    - workshop/pl_barnblitz_pro.ugc582280235
-    - workshop/pl_cactus_canyon_redux.ugc2579644293
-    - workshop/pl_fifthcurve_rc1.ugc648227046
-    - workshop/pl_eruption.ugc2807898013
-    - workshop/pl_vigil.ugc1266210012
-    - workshop/rd_asteroid_redux.ugc2154902912
-
-  nopl:
-    # ad
-    - cp_altitude
-    - cp_dustbowl
-    - cp_egypt_final
-    - cp_gorge
-    - cp_gravelpit
-    - cp_junction_final
-    - cp_mercenarypark
-    - cp_mossrock
-    - cp_mountainlab
-    - cp_steel
-    # 5cp
-    - cp_5gorge
-    - cp_badlands
-    - cp_coldfront
-    - cp_fastlane
-    - cp_foundry
-    - cp_freight_final1
-    - cp_granary
+  stopwatch_curated:
     - cp_gullywash_final1
     - cp_metalworks
-    - cp_powerhouse
     - cp_process_final
     - cp_snakewater_final1
     - cp_sunshine
+    - workshop/koth_bagel.ugc2514036946
+    - koth_highpass
+    - koth_lakeside_final
+    - workshop/koth_product.ugc454272353
+    - workshop/cp_process_f11.ugc2302948105
+    - workshop/pl_barnblitz_pro.ugc582280235
+    - workshop/pl_badwater_pro_v12.ugc2142942074
+    - workshop/pl_summercoast_rc8e.ugc1761528829
+    - pl_cashworks
+    - pl_swiftwater_final1
+    - pl_upward
+    - pl_borneo
+
+  all_plus:
+    # ad
+    - cp_altitude
+    - cp_brew
+    - cp_dustbowl
+    - cp_egypt_final
+    - workshop/cp_fulgur_rc2a.ugc2068252300
+    - workshop/cp_glacier_rc6.ugc2905735376
+    - cp_gorge
+    - cp_gravelpit
+    - workshop/cp_hazyfort_rc6.ugc1365963729
+    - cp_junction_final
+    - workshop/cp_osiris.ugc2646201685
+    - cp_mercenarypark
+    - cp_mossrock
+    - cp_mountainlab
+    - workshop/cp_overgrown_rc8.ugc503939302
+    - workshop/cp_snowbase_b18.ugc2081770490
+    - cp_snowplow
+    - cp_steel
+
+    # pd
+    - pd_atom_smash
+    - pd_galleria
+    - workshop/pd_salvador_b2.ugc3238383880
+    - pd_selbyen
+    - pd_watergate
+
+    # 5cp
+    - cp_5gorge
+    - workshop/cp_alloy.ugc592805587
+    - cp_badlands
+    - cp_canaveral_5cp
+    - workshop/cp_caldera.ugc2834196889
+    - workshop/cp_coilblaze.ugc1272700588
+    - cp_coldfront
+    - workshop/cp_croissant.ugc458840209
+    - cp_fastlane
+    - cp_foundry
+    - cp_freight_final1
+    - workshop/cp_glassworks.ugc454118349
+    - cp_granary
+    - cp_gullywash_final1
+    - cp_hadal
+    - workshop/cp_indulge.ugc528106646
+    - workshop/cp_logjam.ugc454812035
+    - cp_metalworks
+    - cp_overgrown
+    - cp_powerhouse
+    - cp_process_final
+    - workshop/cp_propaganda.ugc1603743849
+    - workshop/cp_reckoner.ugc674719999
+    - cp_snakewater_final1
+    - cp_sulfur
+    - workshop/cp_sultry.ugc2775471508
+    - cp_sunshine
     - cp_vanguard
+    - workshop/cp_villa.ugc2113052569
     - cp_well
     - cp_yukon_final
+
     # 3cp?
     - cp_standin_final
+
+    # tc
+    - tc_hydro
+
     # koth
+    - workshop/koth_ashville.ugc2130459942
     - koth_badlands
+    - workshop/koth_bagel.ugc2514036946
+    - koth_brazil
+    - koth_cachoeira
+    - koth_cascade
+    - workshop/koth_gamma.ugc2964782550
+    - workshop/koth_hangar.ugc484062492
+    - workshop/koth_kemptown.ugc767410655
+    - koth_harvest_final
     - koth_highpass
     - koth_king
+    - workshop/koth_jamram.ugc2964065613
     - koth_lakeside_final
-    - koth_harvest_final
-    - koth_suijin
-    - koth_viaduct
-    - koth_cascade
-    - koth_brazil
     - koth_lazarus
-    - koth_sawmill
+    - workshop/koth_logwash.ugc2968862976
+    - koth_megaton
     - koth_nucleus
-    - koth_harvest_final
+    - workshop/koth_product.ugc454272353
+    - workshop/koth_slaughter.ugc1712845210
+    - workshop/koth_soot.ugc2969540689
+    - workshop/koth_synthetic.ugc1549817316
+    - workshop/koth_relic.ugc2965301326
+    - workshop/koth_rotunda.ugc2964421291
+    - koth_sawmill
+    - workshop/koth_camp_saxton_b1.ugc2967708872
+    - koth_suijin
+    - workshop/koth_trenchfoot.ugc731436616
+    - workshop/koth_valor_rc1.ugc3070057072
+    - koth_viaduct
+
+    # payload
+    - pl_badwater
+    - pl_barnblitz
+    - pl_borneo
+    - workshop/pl_boundary.ugc456799153
+    - workshop/pl_cactus_canyon_redux.ugc2579644293
+    - pl_camber
+    - pl_cashworks
+    - workshop/pl_corrode.ugc546577989
+    - workshop/pl_divulgence.ugc2884808746
+    - pl_embargo
+    - pl_emerge
+    - pl_enclosure_final
+    - workshop/pl_eruption.ugc2969573312
+    - workshop/pl_extinction.ugc2961457712
+    - workshop/pl_fifthcurve_rc1.ugc648227046
+    - pl_frontier_final
+    - pl_goldrush
+    - workshop/pl_highwood.ugc1769496557
+    - pl_hoodoo_final
+    - workshop/pl_jinn.ugc2964570577
+    - workshop/pl_oasis.ugc1366095901
+    - pl_odyssey
+    - workshop/pl_outback.ugc2954098899
+    - workshop/pl_patagonia_b6.ugc3236427113
+    - workshop/pl_pathway.ugc2966816176
+    - pl_phoenix
+    - pl_pier
+    - workshop/pl_rocksalt.ugc2969676944
+    - workshop/pl_shoreleave.ugc1238849347
+    - pl_snowycoast
+    - workshop/pl_stallberg.ugc1849111469
+    - pl_swiftwater_final1
+    - pl_thundermountain
+    - pl_upward
+    - workshop/pl_vigil.ugc1266210012
+    - workshop/pl_vineyard.ugc2811632094
+
     # payload (evil version)
     - plr_bananabay
+    - plr_hacksaw
     - plr_hightower
     - plr_nightfall_final
     - plr_pipeline
+
     # ctf
     - ctf_2fort
+    - ctf_applejack
     - ctf_doublecross
+    - workshop/ctf_favela_b14.ugc3237977497
+    - ctf_haarp
     - ctf_landfall
+    - workshop/ctf_monkeynaut_b5.ugc3236271388
     - ctf_sawmill
     - ctf_turbine
     - ctf_well
 
   all:
+    # pd
+    - pd_atom_smash
+    - pd_galleria
+    - pd_selbyen
+    - pd_watergate
+
     # ad
     - cp_altitude
+    - cp_brew
+    - cp_canaveral_5cp
     - cp_dustbowl
     - cp_egypt_final
     - cp_gorge
@@ -261,7 +567,11 @@ map_rotation:
     - cp_mercenarypark
     - cp_mossrock
     - cp_mountainlab
+    - cp_overgrown
+    - cp_reckoner
     - cp_steel
+    - cp_sulfur
+
     # 5cp
     - cp_5gorge
     - cp_badlands
@@ -271,18 +581,23 @@ map_rotation:
     - cp_freight_final1
     - cp_granary
     - cp_gullywash_final1
+    - cp_hadal
+    - cp_hardwood_final
     - cp_metalworks
     - cp_powerhouse
     - cp_process_final
     - cp_snakewater_final1
+    - cp_sulfur
     - cp_sunshine
     - cp_vanguard
     - cp_well
     - cp_yukon_final
     # 3cp?
     - cp_standin_final
+    - cp_snowplow
     # koth
     - koth_badlands
+    - koth_cachoeira
     - koth_highpass
     - koth_king
     - koth_lakeside_final
@@ -292,32 +607,607 @@ map_rotation:
     - koth_cascade
     - koth_brazil
     - koth_lazarus
+    - koth_megaton
+    - koth_rotunda
     - koth_sawmill
+    - koth_sharkbay
+    - koth_snowtower
     - koth_nucleus
     - koth_harvest_final
+
+    # tc
+    - tc_hydro
+
     # payload
     - pl_badwater
     - pl_barnblitz
     - pl_borneo
+    - pl_cashworks
+    - pl_camber
+    - pl_emerge
+    - pl_embargo
     - pl_enclosure_final
     - pl_frontier_final
     - pl_goldrush
     - pl_hoodoo_final
+    - pl_odyssey
+    - pl_phoenix
     - pl_pier
+    - pl_rumford_event
     - pl_snowycoast
     - pl_swiftwater_final1
     - pl_thundermountain
     - pl_upward
+    - pl_venice
+
     # payload (evil version)
     - plr_bananabay
+    - plr_hacksaw
     - plr_hightower
     - plr_nightfall_final
     - plr_pipeline
+
     # ctf
     - ctf_2fort
+    - ctf_applejack
     - ctf_doublecross
+    - ctf_haarp
     - ctf_landfall
+    - ctf_pelican_peak
     - ctf_sawmill
     - ctf_turbine
+    - ctf_turbine_winter
     - ctf_well
-    - pl_rumford_event
+
+  all_curated:
+    # ad
+    - cp_altitude
+    - cp_mercenarypark
+
+    # 5cp
+    - cp_powerhouse
+    - cp_process_final
+    - cp_snakewater_final1
+    - cp_sunshine
+    - koth_highpass
+    - koth_viaduct
+    - koth_harvest_final
+
+    # payload
+    - pl_badwater
+    - pl_barnblitz
+    - pl_borneo
+    - pl_frontier_final
+    - pl_phoenix
+    - pl_pier
+    - pl_snowycoast
+    - pl_swiftwater_final1
+    - pl_upward
+
+
+whitelist:
+  pve: |
+    "unlisted_items_default_to"		"0"
+    
+    //---------------- Allowed weapons (Total: 133) -----------------\\
+    #______________________ Multiple classes _______________________\\
+    "Panic Attack Shotgun"						"1"
+    "The B.A.S.E. Jumper"						"1"
+    "The Half-Zatoichi"						"1"
+    "The Pain Train"						"1"
+    "The Reserve Shooter"						"1"
+    #____________________________ Scout ____________________________\\
+    "Baby Face's Blaster"						"1"
+    "Bonk! Atomic Punch"						"1"
+    "Crit-a-Cola"							"1"
+    "Mad Milk"							"1"
+    "Pretty Boy's Pocket Pistol"					"1"
+    "Sun-on-a-Stick"						"1"
+    "The Atomizer"							"1"
+    "The Back Scatter"						"1"
+    "The Boston Basher"						"1"
+    "The Candy Cane"						"1"
+    "The Fan O'War"							"1"
+    "The Flying Guillotine"						"1"
+    "The Force-a-Nature"						"1"
+    "The Sandman"							"1"
+    "The Shortstop"							"1"
+    "The Soda Popper"						"1"
+    "The Winger"							"1"
+    "The Wrap Assassin"						"1"
+    #___________________________ Soldier ___________________________\\
+    "Rocket Jumper"							"1"
+    "The Air Strike"						"1"
+    "The Battalion's Backup"					"1"
+    "The Beggar's Bazooka"						"1"
+    "The Black Box"							"1"
+    "The Buff Banner"						"1"
+    "The Concheror"							"1"
+    "The Cow Mangler 5000"						"1"
+    "The Direct Hit"						"1"
+    "The Disciplinary Action"					"1"
+    "The Equalizer"							"1"
+    "The Escape Plan"						"1"
+    "The Gunboats"							"1"
+    "The Liberty Launcher"						"1"
+    "The Mantreads"							"1"
+    "The Market Gardener"						"1"
+    "The Righteous Bison"						"1"
+    #____________________________ Pyro _____________________________\\
+    "Sharpened Volcano Fragment"					"1"
+    "The Axtinguisher"						"1"
+    "The Backburner"						"1"
+    "The Back Scratcher"						"1"
+    "The Degreaser"							"1"
+    "The Detonator"							"1"
+    "The Dragon's Fury"						"1"
+    "The Flare Gun"							"1"
+    "The Gas Passer"						"1"
+    "The Homewrecker"						"1"
+    "The Hot Hand"							"1"
+    "The Manmelter"							"1"
+    "The Neon Annihilator"						"1"
+    "The Phlogistinator"						"1"
+    "The Powerjack"							"1"
+    "The Scorch Shot"						"1"
+    "The Thermal Thruster"						"1"
+    "The Third Degree"						"1"
+    #___________________________ Demoman ___________________________\\
+    "Ali Baba's Wee Booties"					"1"
+    "Stickybomb Jumper"						"1"
+    "The Chargin' Targe"						"1"
+    "The Claidheamohmor"						"1"
+    "The Eyelander"							"1"
+    "The Iron Bomber"						"1"
+    "The Loch-n-Load"						"1"
+    "The Loose Cannon"						"1"
+    "The Persian Persuader"						"1"
+    "The Quickiebomb Launcher"					"1"
+    "The Scotsman's Skullcutter"					"1"
+    "The Scottish Resistance"					"1"
+    "The Splendid Screen"						"1"
+    "The Tide Turner"						"1"
+    "The Ullapool Caber"						"1"
+    #____________________________ Heavy ____________________________\\
+    "Fists of Steel"						"1"
+    "Gloves of Running Urgently"					"1"
+    "Natascha"							"1"
+    "The Brass Beast"						"1"
+    "The Buffalo Steak Sandvich"					"1"
+    "The Dalokohs Bar"						"1"
+    "The Eviction Notice"						"1"
+    "The Family Business"						"1"
+    "The Holiday Punch"						"1"
+    "The Huo Long Heatmaker"					"1"
+    "The Killing Gloves of Boxing"					"1"
+    "The Sandvich"							"1"
+    "The Second Banana"						"1"
+    "Tomislav"							"1"
+    "Warrior's Spirit"						"1"
+    #__________________________ Engineer ___________________________\\
+    "The Eureka Effect"						"1"
+    "The Frontier Justice"						"1"
+    "The Gunslinger"						"1"
+    "The Jag"							"1"
+    "The Pomson 6000"						"1"
+    "The Rescue Ranger"						"1"
+    "The Short Circuit"						"1"
+    "The Southern Hospitality"					"1"
+    "The Widowmaker"						"1"
+    "The Wrangler"							"1"
+    #____________________________ Medic ____________________________\\
+    "The Amputator"							"1"
+    "The Blutsauger"						"1"
+    "The Crusader's Crossbow"					"1"
+    "The Kritzkrieg"						"1"
+    "The Overdose"							"1"
+    "The Quick-Fix"							"1"
+    "The Solemn Vow"						"1"
+    "The Ubersaw"							"1"
+    "The Vaccinator"						"1"
+    "The Vita-Saw"							"1"
+    #___________________________ Sniper ____________________________\\
+    "Darwin's Danger Shield"					"1"
+    "Jarate"							"1"
+    "The Bazaar Bargain"						"1"
+    "The Bushwacka"							"1"
+    "The Classic"							"1"
+    "The Cleaner's Carbine"						"1"
+    "The Cozy Camper"						"1"
+    "The Hitman's Heatmaker"					"1"
+    "The Huntsman"							"1"
+    "The Machina"							"1"
+    "The Razorback"							"1"
+    "The Shahanshah"						"1"
+    "The Sydney Sleeper"						"1"
+    "The Tribalman's Shiv"						"1"
+    #_____________________________ Spy _____________________________\\
+    "Conniver's Kunai"						"1"
+    "L'Etranger"							"1"
+    "The Ambassador"						"1"
+    "The Big Earner"						"1"
+    "The Cloak and Dagger"						"1"
+    "The Dead Ringer"						"1"
+    "The Diamondback"						"1"
+    "The Enforcer"							"1"
+    "The Red-Tape Recorder"						"1"
+    "The Spy-cicle"							"1"
+    "Your Eternal Reward"						"1"
+
+    //------------- Allowed weapon reskins (Total: 45) --------------\\
+    #_________________________ All classes _________________________\\
+    "Gold Frying Pan"                        "1"
+    "Saxxy"                                "1"
+    #______________________ Multiple classes _______________________\\
+    "Frying Pan"                            "1"
+    "Memory Maker"                            "1"
+    "Necro Smasher"                            "1"
+    "The Bat Outta Hell"                        "1"
+    "The C.A.P.P.E.R"                        "1"
+    "The Conscientious Objector"                    "1"
+    "The Crossing Guard"                        "1"
+    "The Freedom Staff"                        "1"
+    "The Ham Shank"                            "1"
+    "TTG Max Pistol"                        "1"
+    "TTG Max Pistol - Poker Night"                    "1"
+    #____________________________ Scout ____________________________\\
+    "Batsaber"                            "1"
+    "Festive Holy Mackerel"                        "1"
+    "Mutated Milk"                            "1"
+    "The Holy Mackerel"                        "1"
+    "Three-Rune Blade"                        "1"
+    "Unarmed Combat"                        "1"
+    #___________________________ Soldier ___________________________\\
+    "The Original"                            "1"
+    #____________________________ Pyro _____________________________\\
+    "The Maul"                            "1"
+    "The Nostromo Napalmer"                        "1"
+    "The Postal Pummeler"                        "1"
+    #___________________________ Demoman ___________________________\\
+    "Nessie's Nine Iron"                        "1"
+    "The Bootlegger"                        "1"
+    "The Horseless Headless Horseman's Headtaker"            "1"
+    "The Scottish Handshake"                    "1"
+    #____________________________ Heavy ____________________________\\
+    "Apoco-Fists"                            "1"
+    "Fishcake"                            "1"
+    "Iron Curtain"                            "1"
+    "The Bread Bite"                        "1"
+    #__________________________ Engineer ___________________________\\
+    "Golden Wrench"                            "1"
+    "The Giger Counter"                        "1"
+    #___________________________ Sniper ____________________________\\
+    "Shooting Star"                            "1"
+    "The AWPer Hand"                        "1"
+    "The Fortified Compound"                    "1"
+    "The Self-Aware Beauty Mark"                    "1"
+    #_____________________________ Spy _____________________________\\
+    "The Ap-Sap"                            "1"
+    "The Black Rose"                        "1"
+    "The Quackenbirdt"                        "1"
+    "The Sharp Dresser"                        "1"
+    "The Snack Attack"                        "1"
+    "The Wanga Prick"                        "1"
+    "TTG Sam Revolver"                        "1"
+    "TTG Watch"                            "1"
+
+    //------------------ Gifting items (Total: 33) ------------------\\
+    "Companion Square Promo Package"                "1"
+    "Gift - 1 Duck Token"                        "1"
+    "Gift - 1 EOTL Key"                        "1"
+    "Gift - 1 Player"                        "1"
+    "Gift - 1 RoboKey 2013"                        "1"
+    "Gift - 1 SummerKey 2013"                    "1"
+    "Gift - 23 Duck Tokens"                        "1"
+    "Gift - 23 EOTL Keys"                        "1"
+    "Gift - 23 RoboKeys 2013"                    "1"
+    "Gift - 23 SummerKeys 2013"                    "1"
+    "Gift - 24 Players"                        "1"
+    "Halloween Contract Package"                    "1"
+    "Halloween Giveaway Cauldron 2014 (Achievement)"        "1"
+    "Halloween Giveaway Cauldron 2014 (Base)"            "1"
+    "Halloween Giveaway Package 2011 (Cauldron)"            "1"
+    "Manniversary Giveaway Package"                    "1"
+    "Pallet of Crates"                        "1"
+    "Portal 2 Soundtrack Promo Package"                "1"
+    "Random Droppable Paints Package"                "1"
+    "Sandvich Promo Package"                    "1"
+    "Self Gift - Mutated Bread Box"                    "1"
+    "Self Gift - Stocking Stuffer 2013"                "1"
+    "Self Gift - Stocking Stuffer 2017"                "1"
+    "Self Gift - Stocking Stuffer 2018"                "1"
+    "Self Gift - Stocking Stuffer 2019"                "1"
+    "Self Gift - Stocking Stuffer 2020"                "1"
+    "Self Gift - Stocking Stuffer 2021"                "1"
+    "Self Gift - Stocking Stuffer 2022"                "1"
+    "Self Gift - Stocking Stuffer 2023"                "1"
+    "Steam Translation Package"                    "1"
+    "Store Purchase Promotion Package"                "1"
+    "Team Fortress 2 Soundtrack Promo Package"            "1"
+    "Team Fortress 2 Soundtrack Promo Package Untradable"        "1"
+
+    //---------------------- Other (Total: 24) ----------------------\\
+    #_________________________ All classes _________________________\\
+    "Basic Spellbook"                        "1"
+    "Duck Badge"                            "1"
+    "Halloween Spellbook"                        "1"
+    "Secret Diary"                            "1"
+    "TF_WEAPON_GRAPPLINGHOOK"                    "1"
+    "TF_WEAPON_SPELLBOOK"                        "1"
+    "CheatDetectedHonesty"                        "1"
+    "CheatDetectedMajor"                        "1"
+    "CheatDetectedMinor"                        "1"
+    "July 2013 Claim Check"                        "1"
+    "Keyless Cosmetic Crate Demoman"                "1"
+    "Keyless Cosmetic Crate Engineer"                "1"
+    "Keyless Cosmetic Crate Heavy"                    "1"
+    "Keyless Cosmetic Crate Medic"                    "1"
+    "Keyless Cosmetic Crate MultiClass"                "1"
+    "Keyless Cosmetic Crate Pyro"                    "1"
+    "Keyless Cosmetic Crate Scout"                    "1"
+    "Keyless Cosmetic Crate Sniper"                    "1"
+    "Keyless Cosmetic Crate Soldier"                "1"
+    "Keyless Cosmetic Crate Spy"                    "1"
+    "Pile Of Ash"                            "1"
+    "Pile Of Curses"                        "1"
+    "Summer Adventure Pack"                        "1"
+    "Summer Starter Kit"                        "1"
+
+    //--------------- Stock weapon skins (Total: 158) ---------------\\
+    #______________________ Multiple classes _______________________\\
+    "concealedkiller_pistol_redrockroscoe"                "1"
+    "concealedkiller_shotgun_backwoodsboomstick"            "1"
+    "craftsmann_pistol_homemadeheater"                "1"
+    "craftsmann_shotgun_rusticruiner"                "1"
+    "gentlemanne_pistol_dressedtokill"                "1"
+    "gentlemanne_shotgun_coffinnail"                "1"
+    "gentlemanne_shotgun_dressedtokill"                "1"
+    "harvest_pistol_macabreweb"                    "1"
+    "harvest_pistol_nutcracker"                    "1"
+    "harvest_shotgun_autumn"                    "1"
+    "powerhouse_pistol_blackdahlia"                    "1"
+    "powerhouse_pistol_sandstonespecial"                "1"
+    "powerhouse_shotgun_lightningrod"                "1"
+    "pyroland_pistol_bluemew"                    "1"
+    "pyroland_pistol_braincandy"                    "1"
+    "pyroland_pistol_shottohell"                    "1"
+    "pyroland_shotgun_flowerpower"                    "1"
+    "teufort_pistol_hickoryholepuncher"                "1"
+    "teufort_pistol_localhero"                    "1"
+    "teufort_shotgun_civicduty"                    "1"
+    "warbird_pistol_blitzkrieg"                    "1"
+    "warbird_shotgun_redbear"                    "1"
+    #____________________________ Scout ____________________________\\
+    "concealedkiller_scattergun_nightterror"            "1"
+    "craftsmann_scattergun_backcountryblaster"            "1"
+    "craftsmann_scattergun_countrycrusher"                "1"
+    "craftsmann_scattergun_tartantorpedo"                "1"
+    "gentlemanne_scattergun_coffinnail"                "1"
+    "harvest_scattergun_macabreweb"                    "1"
+    "harvest_scattergun_nutcracker"                    "1"
+    "powerhouse_scattergun_currentevent"                "1"
+    "pyroland_scattergun_bluemew"                    "1"
+    "pyroland_scattergun_flowerpower"                "1"
+    "pyroland_scattergun_shottohell"                "1"
+    "teufort_scattergun_sprucedeuce"                "1"
+    "warbird_scattergun_corsair"                    "1"
+    "warbird_scattergun_killerbee"                    "1"
+    #___________________________ Soldier ___________________________\\
+    "concealedkiller_rocketlauncher_sandcannon"            "1"
+    "concealedkiller_rocketlauncher_woodlandwarrior"        "1"
+    "craftsmann_rocketlauncher_americanpastoral"            "1"
+    "gentlemanne_rocketlauncher_coffinnail"                "1"
+    "gentlemanne_rocketlauncher_highrollers"            "1"
+    "harvest_rocketlauncher_autumn"                    "1"
+    "powerhouse_rocketlauncher_aquamarine"                "1"
+    "powerhouse_rocketlauncher_shellshocker"            "1"
+    "pyroland_rocketlauncher_bluemew"                "1"
+    "pyroland_rocketlauncher_braincandy"                "1"
+    "teufort_rocketlauncher_smalltownbringdown"            "1"
+    "warbird_rocketlauncher_warhawk"                "1"
+    #____________________________ Pyro _____________________________\\
+    "concealedkiller_flamethrower_forestfire"            "1"
+    "craftsmann_flamethrower_barnburner"                "1"
+    "gentlemanne_flamethrower_coffinnail"                "1"
+    "harvest_flamethrower_autumn"                    "1"
+    "harvest_flamethrower_nutcracker"                "1"
+    "harvest_flamethrower_pumpkinpatch"                "1"
+    "powerhouse_flamethrower_flashfryer"                "1"
+    "powerhouse_flamethrower_turbinetorcher"            "1"
+    "pyroland_flamethrower_balloonicorn"                "1"
+    "pyroland_flamethrower_rainbow"                    "1"
+    "teufort_flamethrower_bovineblazemaker"                "1"
+    "teufort_flamethrower_earthskyandfire"                "1"
+    "warbird_flamethrower_warhawk"                    "1"
+    #___________________________ Demoman ___________________________\\
+    "concealedkiller_stickybomblauncher_carpetbomber"        "1"
+    "concealedkiller_stickybomblauncher_suddenflurry"        "1"
+    "craftsmann_stickybomblauncher_blastedbombardier"        "1"
+    "gentlemanne_grenadelauncher_coffinnail"            "1"
+    "gentlemanne_grenadelauncher_topshelf"                "1"
+    "gentlemanne_stickybomblauncher_coffinnail"            "1"
+    "gentlemanne_stickybomblauncher_dressedtokill"            "1"
+    "harvest_grenadelauncher_autumn"                "1"
+    "harvest_grenadelauncher_macabreweb"                "1"
+    "harvest_stickybomblauncher_autumn"                "1"
+    "harvest_stickybomblauncher_macabreweb"                "1"
+    "harvest_stickybomblauncher_pumpkinpatch"            "1"
+    "powerhouse_stickybomblauncher_liquidasset"            "1"
+    "powerhouse_stickybomblauncher_pinkelephant"            "1"
+    "pyroland_grenadelauncher_rainbow"                "1"
+    "pyroland_grenadelauncher_sweetdreams"                "1"
+    "pyroland_stickybomblauncher_sweetdreams"            "1"
+    "teufort_stickybomblauncher_rooftopwrangler"            "1"
+    "warbird_grenadelauncher_butcherbird"                "1"
+    "warbird_grenadelauncher_warhawk"                "1"
+    "warbird_stickybomblauncher_blitzkrieg"                "1"
+    #____________________________ Heavy ____________________________\\
+    "concealedkiller_minigun_kingofthejungle"            "1"
+    "craftsmann_minigun_antiqueannihilator"                "1"
+    "craftsmann_minigun_ironwood"                    "1"
+    "gentlemanne_minigun_coffinnail"                "1"
+    "gentlemanne_minigun_dressedtokill"                "1"
+    "gentlemanne_minigun_topshelf"                    "1"
+    "harvest_minigun_macabreweb"                    "1"
+    "harvest_minigun_nutcracker"                    "1"
+    "harvest_minigun_pumpkinpatch"                    "1"
+    "powerhouse_minigun_brickhouse"                    "1"
+    "pyroland_minigun_braincandy"                    "1"
+    "pyroland_minigun_mistercuddles"                "1"
+    "teufort_minigun_citizenpain"                    "1"
+    "teufort_minigun_warroom"                    "1"
+    "warbird_minigun_butcherbird"                    "1"
+    #__________________________ Engineer ___________________________\\
+    "gentlemanne_wrench_dressedtokill"                "1"
+    "gentlemanne_wrench_topshelf"                    "1"
+    "harvest_wrench_autumn"                        "1"
+    "harvest_wrench_boneyard"                    "1"
+    "harvest_wrench_nutcracker"                    "1"
+    "pyroland_wrench_torquedtohell"                    "1"
+    "warbird_wrench_airwolf"                    "1"
+    #____________________________ Medic ____________________________\\
+    "concealedkiller_medigun_maskedmender"                "1"
+    "concealedkiller_medigun_wrappedreviver"            "1"
+    "craftsmann_medigun_reclaimedreanimator"            "1"
+    "gentlemanne_medigun_coffinnail"                "1"
+    "gentlemanne_medigun_dressedtokill"                "1"
+    "gentlemanne_medigun_highrollers"                "1"
+    "harvest_medigun_wildwood"                    "1"
+    "powerhouse_medigun_sparkoflife"                "1"
+    "pyroland_medigun_flowerpower"                    "1"
+    "teufort_medigun_civilservant"                    "1"
+    "warbird_medigun_blitzkrieg"                    "1"
+    "warbird_medigun_corsair"                    "1"
+    #___________________________ Sniper ____________________________\\
+    "concealedkiller_smg_woodsywidowmaker"                "1"
+    "concealedkiller_sniperrifle_nightowl"                "1"
+    "concealedkiller_sniperrifle_purplerange"            "1"
+    "craftsmann_smg_plaidpotshotter"                "1"
+    "craftsmann_sniperrifle_lumberfromdownunder"            "1"
+    "craftsmann_sniperrifle_shotinthedark"                "1"
+    "gentlemanne_smg_highrollers"                    "1"
+    "gentlemanne_sniperrifle_coffinnail"                "1"
+    "gentlemanne_sniperrifle_dressedtokill"                "1"
+    "harvest_smg_wildwood"                        "1"
+    "harvest_sniperrifle_boneyard"                    "1"
+    "harvest_sniperrifle_pumpkinpatch"                "1"
+    "harvest_sniperrifle_wildwood"                    "1"
+    "powerhouse_smg_lowprofile"                    "1"
+    "powerhouse_sniperrifle_thunderbolt"                "1"
+    "pyroland_smg_bluemew"                        "1"
+    "pyroland_sniperrifle_balloonicorn"                "1"
+    "pyroland_sniperrifle_rainbow"                    "1"
+    "teufort_smg_teamsprayer"                    "1"
+    "teufort_smg_treadplatetormenter"                "1"
+    "teufort_sniperrifle_bogtrotter"                "1"
+    "warbird_smg_blitzkrieg"                    "1"
+    "warbird_sniperrifle_airwolf"                    "1"
+    #_____________________________ Spy _____________________________\\
+    "concealedkiller_revolver_psychedelicslugger"            "1"
+    "craftsmann_revolver_oldcountry"                "1"
+    "gentlemanne_knife_dressedtokill"                "1"
+    "gentlemanne_knife_topshelf"                    "1"
+    "gentlemanne_revolver_coffinnail"                "1"
+    "gentlemanne_revolver_topshelf"                    "1"
+    "harvest_knife_boneyard"                    "1"
+    "harvest_revolver_boneyard"                    "1"
+    "harvest_revolver_macabreweb"                    "1"
+    "harvest_revolver_wildwood"                    "1"
+    "powerhouse_revolver_deadreckoner"                "1"
+    "pyroland_knife_bluemew"                    "1"
+    "pyroland_knife_braincandy"                    "1"
+    "pyroland_knife_stabbedtohell"                    "1"
+    "pyroland_revolver_flowerpower"                    "1"
+    "teufort_revolver_mayor"                    "1"
+    "warbird_knife_airwolf"                        "1"
+    "warbird_knife_blitzkrieg"                    "1"
+    "warbird_revolver_blitzkrieg"                    "1"
+
+    //------------------ Stock weapons (Total: 25) ------------------\\
+    "Upgradeable TF_WEAPON_PISTOL"                    "1"
+    "Upgradeable TF_WEAPON_SHOTGUN_PRIMARY"                "1"
+    "Upgradeable TF_WEAPON_BAT"                    "1"
+    "Upgradeable TF_WEAPON_SCATTERGUN"                "1"
+    "Upgradeable TF_WEAPON_ROCKETLAUNCHER"                "1"
+    "Upgradeable TF_WEAPON_SHOVEL"                    "1"
+    "Upgradeable TF_WEAPON_FIREAXE"                    "1"
+    "Upgradeable TF_WEAPON_FLAMETHROWER"                "1"
+    "Upgradeable TF_WEAPON_BOTTLE"                    "1"
+    "Upgradeable TF_WEAPON_GRENADELAUNCHER"                "1"
+    "Upgradeable TF_WEAPON_PIPEBOMBLAUNCHER"            "1"
+    "Upgradeable TF_WEAPON_FISTS"                    "1"
+    "Upgradeable TF_WEAPON_MINIGUN"                    "1"
+    "Upgradeable TF_WEAPON_PDA_ENGINEER_BUILD"            "1"
+    "Upgradeable TF_WEAPON_WRENCH"                    "1"
+    "Upgradeable TF_WEAPON_BONESAW"                    "1"
+    "Upgradeable TF_WEAPON_MEDIGUN"                    "1"
+    "Upgradeable TF_WEAPON_SYRINGEGUN_MEDIC"            "1"
+    "Upgradeable TF_WEAPON_CLUB"                    "1"
+    "Upgradeable TF_WEAPON_SMG"                    "1"
+    "Upgradeable TF_WEAPON_SNIPERRIFLE"                "1"
+    "Upgradeable TF_WEAPON_BUILDER_SPY"                "1"
+    "Upgradeable TF_WEAPON_INVIS"                    "1"
+    "Upgradeable TF_WEAPON_KNIFE"                    "1"
+    "Upgradeable TF_WEAPON_REVOLVER"                "1"
+
+    //--------------------- Taunts (Total: 44) ----------------------\\
+    #_________________________ All classes _________________________\\
+    "Laugh Taunt"                            "1"
+    "Replay Taunt"                            "1"
+    "Taunt: Burstchester"                        "1"
+    "Taunt: Cheers!"                        "1"
+    "Taunt: Killer Joke"                        "1"
+    "Taunt: Mourning Mercs"                        "1"
+    "Taunt: Second Rate Sorcery"                    "1"
+    "Taunt: The Scaredy-cat!"                    "1"
+    "Taunt: Unleashed Rage"                        "1"
+    "Taunt: Yeti Punch"                        "1"
+    "Taunt: Yeti Smash"                        "1"
+    "The Shred Alert"                        "1"
+    #____________________________ Scout ____________________________\\
+    "Battin' a Thousand Taunt"                    "1"
+    "Deep Fried Desire Taunt"                    "1"
+    "Taunt: Foul Play"                        "1"
+    "Taunt: The Boston Breakdance"                    "1"
+    "Taunt: The Killer Signature"                    "1"
+    "Taunt: The Trackman's Touchdown"                "1"
+    #___________________________ Soldier ___________________________\\
+    "Fresh Brewed Victory Taunt"                    "1"
+    "Taunt: Can It!"                        "1"
+    "Taunt: Soldier's Requiem"                    "1"
+    "Taunt: Star-Spangled Strategy"                    "1"
+    "Taunt: The Fubar Fanfare"                    "1"
+    "Taunt: The Profane Puppeteer"                    "1"
+    #____________________________ Pyro _____________________________\\
+    "Party Trick Taunt"                        "1"
+    "Taunt: Cremator's Condolences"                    "1"
+    "Taunt: The Headcase"                        "1"
+    #___________________________ Demoman ___________________________\\
+    "Oblooterated Taunt"                        "1"
+    "Spent Well Spirits Taunt"                    "1"
+    "Taunt: Roar O'War"                        "1"
+    "Taunt: True Scotsman's Call"                    "1"
+    #____________________________ Heavy ____________________________\\
+    "Taunt: The Proletariat Showoff"                "1"
+    #__________________________ Engineer ___________________________\\
+    "Taunt: Texas Twirl 'Em"                    "1"
+    #____________________________ Medic ____________________________\\
+    "Meet the Medic Heroic Taunt"                    "1"
+    "Results Are In Taunt"                        "1"
+    "Taunt: Borrowed Bones"                        "1"
+    "Taunt: Doctor's Defibrillators"                "1"
+    "Taunt: The Head Doctor"                    "1"
+    #___________________________ Sniper ____________________________\\
+    "I See You Taunt"                        "1"
+    "Taunt: Most Wanted"                        "1"
+    "Taunt: Straight Shooter Tutor"                    "1"
+    "Taunt: The Killer Solo"                    "1"
+    #_____________________________ Spy _____________________________\\
+    "Buy A Life Taunt"                        "1"
+    "Taunt: Disco Fever"                        "1"
+
+    //--------- Usable action items/MvM canteens (Total: 4) ---------\\
+    "Battery Canteens"                        "1"
+    "Default Power Up Canteen (MvM)"                "1"
+    "Duel MiniGame"                            "1"
+    "Power Up Canteen (MvM)"                    "1"

@@ -6,13 +6,19 @@ common:
     backend: s3
     s3:
       endpoint: minio:9000
-      access_key_id: "{{ minio.mimir_access_key | default("mimir") }}"
-      secret_access_key: "{{ minio.mimir_secret_key | default("mimirmimir") }}"
+      access_key_id: "{{ minio.mimir.access_key | default("mimir") }}"
+      secret_access_key: "{{ minio.mimir.secret_key | default("mimirmimir") }}"
       insecure: true
       bucket_name: mimir
 
 usage_stats:
   enabled: false
+
+limits:
+{% if mimir.compactor_blocks_retention_period|default("") != "" %}
+  # Delete from storage metrics data older than 1 year.
+  compactor_blocks_retention_period: {{ mimir.compactor_blocks_retention_period }}
+{% endif %}
 
 blocks_storage:
   s3:

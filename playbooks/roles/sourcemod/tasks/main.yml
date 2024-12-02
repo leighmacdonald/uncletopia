@@ -49,9 +49,3 @@
     cmd: bash build.sh
   tags:
     - game_config
-#TICE:  relation "sm_cookies" already exists, skipping
-#NOTICE:  relation "sm_cookie_cache" already exists, skipping
-#NOTICE:  relation "sm_cookie_cache" already exists, skipping
-#L 11/30/2024 - 22:49:16: [CLIENTPREFS] Failed to create function add_or_update_cookie: ERROR:  must be owner of function add_or_update_cookie
-#
-#  [StAC]

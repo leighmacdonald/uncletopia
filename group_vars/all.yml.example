@@ -1,5 +1,4 @@
-# Use custom performance kernel, can be problemtatic on some hardware configs
-perf_kernel: true
+old_cpu: true
 
 ssh_keys:
   - "ssh-rsa xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx== name"
@@ -8,37 +7,17 @@ minio:
   user: mimir
   password: change_me
 
-smtp:
-  # tls required
-  enabled: false
-  host: smtp.host.com
-  port: 587
-  username:
-  password:
-  from_addr: alert@kittyland.com
-  from_name: Alerts
-  identity: kittyland.com
 
+vpn_mask: 10.20.30.0/24
 vpn_hosts:
   host-1.kittyland.com:
     ip: 10.0.0.1
     dns: host-1.internal.kittyland.com
   host-2.kittyland.com:
     ip: 10.0.0.2
-    dns: dns: host-2.internal.kittyland.com
-
-rsyslog_rules:
-  - rule_name: "remote-udp"
-    priority: 99
-    ruleset: |
-      module(load="omfwd")
-      action(type="omfwd" target="metrics.kittyland.com" port="514" protocol="udp")
-    state: "present"
-
-log:
-  file_enable: true
-  net_enable: true
-  net_hosts: ["10.20.30.40:27715", "sink.kittyland.com:27715"]
+    dns: host-2.internal.kittyland.com
+vpn_hosts_extra:
+  your_username: 10.20.30.5
 
 metrics_host: "n.n.n.n"
 metrics_hostname_external: metrics.kittyland.com
@@ -96,3 +75,11 @@ wireguard_unmanaged_peers:
     allowed_ips: 10.20.30.100/32
     # endpoint: ""
     persistent_keepalive: 30
+
+rsyslog_rules:
+  - rule_name: "remote-udp"
+    priority: 99
+    ruleset: |
+      module(load="omfwd")
+      action(type="omfwd" target="metrics.kittyland.com" port="514" protocol="udp")
+    state: "present"

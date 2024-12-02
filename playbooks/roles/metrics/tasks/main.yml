@@ -6,10 +6,11 @@
     - srcds_watch
     - metrics-server
 
-- name: Setup minio
-  ansible.builtin.import_tasks: minio.yml
+- name: Setup loki
+  ansible.builtin.import_tasks: loki.yml
   tags:
     - metrics-server
+    - loki
 
 - name: Setup promtail
   ansible.builtin.import_tasks: promtail.yml

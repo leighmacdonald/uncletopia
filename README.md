@@ -113,4 +113,4 @@ These will eventually get automated, but are quite low priority.
 
 - Create buckets: mimir-ruler, mimir-alertmanager, mimir-blocks
 - Create a user with readwrite access polict to the created buckets.
-- Generate access keys. Set minio.mimir_access_key and minio.mimir_secret_key. Rerun `make web` to finish deployment.
+- Generate access keys. Set minio.mimir.access_key and minio.mimir.secret_key. Rerun `make web` to finish deployment.

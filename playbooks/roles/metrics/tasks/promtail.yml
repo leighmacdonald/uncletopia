@@ -31,10 +31,26 @@
       - /var/log/journal/:/var/log/journal/
       - /run/log/journal/:/run/log/journal/
       - /var/run/docker.sock:/var/run/docker.sock
-      - tempo_data:/tmp/tempo
     ports:
-      - "127.0.0.1:9080:9080"
-      - "{{ vpn_hosts[inventory_hostname].ip | default(ip) }}:9080:9080"
+      - "127.0.0.1:{{ promtail.port }}:9080"
+      - "{{ vpn_hosts[inventory_hostname].ip | default(ip) }}:{{ promtail.port }}:9080"
+      - "{{ vpn_hosts[inventory_hostname].ip | default(ip) }}:{{ syslog.port }}:1514/udp"
   tags:
     - promtail
     - metrics-client
+
+- name: Allow promtail syslog port
+  become: true
+  community.general.ufw:
+    interface_in: "wg0"
+    rule: allow
+    port: "{{ syslog.port }}"
+    proto: udp
+
+- name: Allow promtail port
+  become: true
+  community.general.ufw:
+    interface_in: "wg0"
+    rule: allow
+    port: "{{ promtail.port }}"
+    proto: tcp

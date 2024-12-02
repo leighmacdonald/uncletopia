@@ -23,7 +23,7 @@
     volumes:
       - "/etc/srcds_watch.yml:/app/srcds_watch.yml"
     ports:
-      - 127.0.0.1:8877:8877
+      - "127.0.0.1:{{ srcds_watch.port | default(8877) }}:8877"
     networks:
       - name: caddy_net
   tags:
