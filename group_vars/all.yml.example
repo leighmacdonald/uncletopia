@@ -3,11 +3,6 @@ old_cpu: true
 ssh_keys:
   - "ssh-rsa xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx== name"
 
-minio:
-  user: mimir
-  password: change_me
-
-
 vpn_mask: 10.20.30.0/24
 vpn_hosts:
   host-1.kittyland.com:

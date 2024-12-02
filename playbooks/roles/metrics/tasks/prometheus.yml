@@ -34,9 +34,6 @@
       # required for tempo to directly write to prom
       - --web.enable-remote-write-receiver
       - --enable-feature=exemplar-storage
-      # Agent mode disabled local disk storage. We send to mimir for long term storage
-      # so this would be redundant.
-      # - --enable-feature=agent
     recreate: true
     networks:
       - name: caddy_net

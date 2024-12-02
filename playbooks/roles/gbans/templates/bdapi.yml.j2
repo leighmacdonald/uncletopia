@@ -5,7 +5,8 @@ private_key_password: "{{ bdapi_private_key_password }}"
 steam_api_key:
   - "{{ steam_key }}" #prod
   - "{{ steam_key_alt }}" #dev
-
+encryption_key: {{ bdapi_encryption_key }}
+http_secret: {{ bdapi_http_secret }}
 listen_addr: ":8888"
 external_url: "{{ bdapi_external_url }}"
 logstf_scraper_enabled: true

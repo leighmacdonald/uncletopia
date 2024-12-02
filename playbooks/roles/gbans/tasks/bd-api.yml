@@ -52,7 +52,7 @@
 - name: Create bd-api-service
   community.docker.docker_container:
     name: bd-api-service
-    image: ghcr.io/leighmacdonald/bd-api:v1.2.2
+    image: ghcr.io/leighmacdonald/bd-api:v1.2.3
     restart: true
     recreate: true
     pull: true
@@ -84,7 +84,23 @@
     env:
       DATABASE_URL: "postgresql://bdapi:bdapi@bdapi-postgres:5432/bdapi"
     ports:
-      - 10.20.30.1:8080:8080
+      - "{{ vpn_hosts[metrics_hostname].ip }}:8080:8080"
     labels:
       logging: "promtail"
       logging_jobname: "containerlogs"
+
+
+- name: Create bd-api-postgres_exporter container
+  community.docker.docker_container:
+    name: bd-api-postgres_exporter
+    image: quay.io/prometheuscommunity/postgres-exporter:latest
+    restart_policy: unless-stopped
+    comparisons:
+      networks: strict
+    networks:
+      - name: caddy_net
+    pull: true
+    env:
+      DATA_SOURCE_NAME: postgresql://bdapi:bdapi@bdapi-postgres:5432/bdapi?sslmode=disable
+    ports:
+      - 127.0.0.1:9188:9187

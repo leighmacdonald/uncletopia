@@ -77,7 +77,6 @@ containers
   - [srcds_watch](https://github.com/leighmacdonald/srcds_watch)
   - [promtail](https://grafana.com/docs/loki/latest/send-data/promtail/)
   - [loki](https://grafana.com/oss/loki/)
-  - [mimir](https://grafana.com/oss/mimir/) (w/minio storage) 
   - [prometheus](https://prometheus.io/)
   - [grafana](https://grafana.com/) w/dashboards
 - Install and configure [gbans](https://github.com/leighmacdonald/gbans) and required services
@@ -108,9 +107,3 @@ If you are on a 64bit machine you will want 32bit libs for spcomp.
 There is a few steps that are not entirely automated as of yet. These are generally going to be one time setup type of steps.
 
 These will eventually get automated, but are quite low priority.
-
-### Configure minio
-
-- Create buckets: mimir-ruler, mimir-alertmanager, mimir-blocks
-- Create a user with readwrite access polict to the created buckets.
-- Generate access keys. Set minio.mimir.access_key and minio.mimir.secret_key. Rerun `make web` to finish deployment.

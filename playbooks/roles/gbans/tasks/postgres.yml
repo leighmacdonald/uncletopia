@@ -72,7 +72,7 @@
       "-c", "max_parallel_maintenance_workers=4"
     ]
 
-- name: Create gbans-postgres_exporter container
+- name: Create gbans-postgres_exporter container (gbans)
   community.docker.docker_container:
     name: gbans-postgres_exporter
     image: quay.io/prometheuscommunity/postgres-exporter:latest

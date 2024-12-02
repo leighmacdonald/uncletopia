@@ -19,11 +19,6 @@ node_exporter:
 prometheus:
   port: 9090
 
-mimir:
-  port: 9009
-  # Uncomment to set a data retention period. Data is kept indefinitely otherwise
-  # compactor_blocks_retention_period: 1y
-
 loki:
   port: 3100
 
@@ -54,26 +49,6 @@ gbans_web:
     - "http://kittyland.com:5173"
   database_dsn: postgresql://gbans:gbans@gbans-postgres/gbans
   database_log_queries: false
-
-minio:
-  port_api: 9000
-  port_webui: 9001
-  # This is automatically created during provisioning.
-  user: your_admin_user
-  password: your_admin_password
-  # These must be manually created
-  # Loki storage user & key
-  loki:
-    user: loki
-    password: loki_password
-    access_key: xxx
-    secret_key: xxx
-  # Mimir storage user & key
-  mimir:
-    user: mimir
-    password: mimir_password
-    access_key: xxx
-    secret_key: xxx
 
 tls_configs:
   your_site_name: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx

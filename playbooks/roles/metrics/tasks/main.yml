@@ -23,10 +23,6 @@
   tags:
     - metrics-server
 
-- name: Mimir
-  ansible.builtin.import_tasks: mimir.yml
-  tags:
-    - metrics-server
 
 - name: Setup grafana
   ansible.builtin.import_tasks: grafana.yml
