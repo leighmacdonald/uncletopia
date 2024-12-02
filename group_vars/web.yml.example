@@ -76,7 +76,7 @@ minio:
     secret_key: xxx
 
 tls_configs:
-  your_site_name: DlQbQKL6LbKxVyQ9PhTEm1w6SW3WbvfRlLOFAvT_
+  your_site_name: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
 caddy:
   tls_configs:
