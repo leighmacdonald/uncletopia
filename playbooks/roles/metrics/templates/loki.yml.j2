@@ -10,38 +10,49 @@ limits_config:
   retention_period: 744h
   max_query_length: 0h
 
-
 server:
   http_listen_port: {{ loki.port }}
+  grpc_listen_port: 9096
+  log_level: debug
+  grpc_server_max_concurrent_streams: 1000
+
 
 common:
-  instance_addr: localhost
+  instance_addr: 127.0.0.1
+  path_prefix: /loki
+  storage:
+    filesystem:
+      chunks_directory: /loki/chunks
+      rules_directory: /loki/rules
+  replication_factor: 1
   ring:
-    instance_addr: localhost
     kvstore:
       store: inmemory
-  replication_factor: 1
-  path_prefix: /loki
+
+query_range:
+  results_cache:
+    cache:
+      embedded_cache:
+        enabled: true
+        max_size_mb: 100
 
 schema_config:
   configs:
-    - from: 2020-05-15
+    - from: 2020-10-24
       store: tsdb
-      object_store: s3
+      object_store: filesystem
       schema: v13
       index:
         prefix: index_
         period: 24h
 
-ingester_client:
-  remote_timeout: 10s
+pattern_ingester:
+  enabled: true
+  metric_aggregation:
+    loki_address: localhost:3100
 
-storage_config:
-  tsdb_shipper:
-    active_index_directory: /loki/index
-    cache_location: /loki/index_cache
-    cache_ttl: 168h         # Can be increased for faster performance over longer query periods, uses more disk space
-  aws:
-    s3: s3://{{ minio.loki.access_key }}:{{ minio.loki.secret_key }}@{{ vpn_hosts[metrics_hostname].dns }}:{{ minio.port_api }}/
-    bucketnames: loki1
-    s3forcepathstyle: true
+ruler:
+  alertmanager_url: http://localhost:9093
+
+frontend:
+  encoding: protobuf

@@ -2,14 +2,14 @@ apiVersion: 1
 prune: true
 
 deleteDatasources:
-  - name: "PostgresSQL (gbans)"
+  - name: "PostgresSQL"
     uid: gbans-postgres
   - name: "PostgresSQL (bd-api)"
     uid: bdapi
   - name: "Prometheus"
 
 datasources:
-  - name: "PostgresSQL (gbans)"
+  - name: "PostgresSQL"
     type: postgres
     url: gbans-postgres:5432
     access: proxy
@@ -28,6 +28,30 @@ datasources:
     version: 2
     editable: true
 
+  # P8E80F9AEF21F6940
+  - name: Loki
+    type: loki
+    access: proxy
+    url: "http://loki:{{ loki.port }}"
+    uid: loki
+    jsonData:
+      timeout: 60
+      maxLines: 1000
+  # P7647F508D5F54FCB
+  - name: Alertmanager
+    type: alertmanager
+    url: http://alertmanager:9093
+    access: proxy
+    uid: alertmanager
+    jsonData:
+      # Valid options for implementation include mimir, cortex and prometheus
+      implementation: prometheus
+      # Whether or not Grafana should send alert instances to this Alertmanager
+      handleGrafanaManagedAlerts: true
+    # optionally
+    basicAuth: false
+
+  # P4349FF6A225D1394
   - name: "PostgresSQL (bd-api)"
     type: postgres
     url: bdapi-postgres:5432
@@ -45,21 +69,24 @@ datasources:
     secureJsonData:
       password: bdapi
     version: 2
-    editable: true
+    editable: false
 
-{#  - name: "Prometheus"#}
-{#    type: prometheus#}
-{#    access: proxy#}
-{#    # Access mode - proxy (server in the UI) or direct (browser in the UI).#}
-{#    url: http://prometheus:9090#}
-{#    jsonData:#}
-{#      httpMethod: POST#}
-{#      manageAlerts: true#}
-{#      prometheusType: Prometheus#}
-{#      prometheusVersion: 2.44.0#}
-{#      cacheLevel: 'High'#}
-{#      disableRecordingRules: false#}
-{#      incrementalQueryOverlapWindow: 10m#}
+  # PBFA97CFB590B2093
+  - name: "prometheus"
+    type: prometheus
+    access: proxy
+    # Access mode - proxy (server in the UI) or direct (browser in the UI).
+    url: "http://prometheus:{{ prometheus.port }}"
+    isDefault: true
+    uid: prometheus
+    jsonData:
+      httpMethod: POST
+      manageAlerts: true
+      prometheusType: Prometheus
+      prometheusVersion: 2.44.0
+      cacheLevel: 'High'
+      disableRecordingRules: false
+      incrementalQueryOverlapWindow: 10m
 {#      exemplarTraceIdDestinations:#}
 {#        # Field with internal link pointing to data source in Grafana.#}
 {#        # datasourceUid value can be anything, but it should be unique across all defined data source uids.#}

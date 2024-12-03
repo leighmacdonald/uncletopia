@@ -46,3 +46,40 @@
   tags:
     - metrics-server
     - prometheus
+
+
+- name: Generate /etc/alertmanager.yml
+  become: true
+  ansible.builtin.template:
+    src: alertmanager.yml.j2
+    dest: /etc/alertmanager.yml
+    mode: "0775"
+  tags:
+    - metrics-server
+    - prometheus
+
+- name: Create alertmanager container
+  community.docker.docker_container:
+    name: alertmanager
+    image: quay.io/prometheus/alertmanager:latest
+    pull: true
+    restart: true
+    purge_networks: true
+    restart_policy: unless-stopped
+    labels:
+      logging: "promtail"
+      logging_jobname: "containerlogs"
+    command:
+      - --config.file=/etc/alertmanager.yml
+      - --cluster.listen-address=
+    recreate: true
+    networks:
+      - name: caddy_net
+    volumes:
+      - /etc/alertmanager.yml:/etc/alertmanager.yml
+    ports:
+      - "127.0.0.1:{{ alertmanager.port | default(9093) }}:9093"
+      - "{{ vpn_hosts[metrics_hostname].ip | default(ip) }}:{{ alertmanager.port | default(9093) }}:9093"
+  tags:
+    - metrics-server
+    - prometheus

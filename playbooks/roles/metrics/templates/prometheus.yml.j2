@@ -1,6 +1,12 @@
 global:
   scrape_interval:     15s # By default, scrape targets every 15 seconds.
 
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          - "alertmanager:{{ alertmanager.port }}"
+
 scrape_configs:
   - job_name: 'prometheus'
     honor_labels: true
@@ -67,14 +73,6 @@ scrape_configs:
     scrape_interval: 15s
     static_configs:
       - targets: ['gbans-postgres_exporter:9187', 'bd-api-postgres_exporter:9188']
-        labels:
-          instance: {{ metrics_hostname }}
-    metrics_path: /probe
-    relabel_configs:
-      - source_labels: [ __address__ ]
-        target_label: __param_target
-      - source_labels: [ __param_target ]
-        target_label: instance
 
   - job_name: gbans
     scrape_interval: 15s
