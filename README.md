@@ -45,6 +45,8 @@ Creates the user used for running the services. This only should be ran once. A 
 Setups a P2P wireguard based vpn network. These playbooks and services are designed to listen and otherwise use internal vpn network traffic
 everywhere possible. This is not strictly required, but not using a vpn is 100% untested/unsupported and will required fixing things yourself.
 
+Note: This required the `python3-netaddr` package to be installed on the *ansible controller host*.
+
 ### system.yml
 
 Installs base OS runtime requirements and services.
