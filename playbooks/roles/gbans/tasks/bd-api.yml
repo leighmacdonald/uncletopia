@@ -52,7 +52,7 @@
 - name: Create bd-api-service
   community.docker.docker_container:
     name: bd-api-service
-    image: ghcr.io/leighmacdonald/bd-api:v1.2.3
+    image: ghcr.io/leighmacdonald/bd-api:v1.2.4
     restart: true
     recreate: true
     pull: true
