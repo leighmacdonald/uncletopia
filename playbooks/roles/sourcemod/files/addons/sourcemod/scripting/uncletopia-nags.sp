@@ -57,8 +57,28 @@ public void OnMapStart() {
     g_longMapTimer = CreateTimer(RTV_TIMER, LongMapAlert);
 }
 
+stock bool IsBotMatch()
+{
+
+    int bots = 0;
+    for (int client = 1; client <= MaxClients; client++) {
+        if (client <= 0 || client > MaxClients) {
+            continue;
+        }
+
+        if (IsFakeClient(client)) {
+            bots++;
+            if (bots > 2) {
+                return true;
+            } 
+        }
+    }
+
+	return false;
+}
+
 public void Event_RoundStart(Event event, const char[] name, bool dontBroadcast) {
-    if (g_alertToScramble) {
+    if (g_alertToScramble && !IsBotMatch()) {
         MC_PrintToChatAll("{red}Teams may be unbalanced.{default} Remember: You can type {red}!scramble{default} in chat to vote to scramble the teams.");
     }
 
