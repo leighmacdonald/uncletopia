@@ -390,6 +390,13 @@
   loop_control:
     index_var: loop0
 
+- name: Disable stripper for non-1ku
+  ansible.builtin.file:
+    path: /home/tf2server/srcds-{{ item.server_name_short }}/tf/addons/metamod/stripper.vdf
+    state: absent
+  loop: "{{ services }}"
+  when: item.config != "pve"
+
 - name: Generate /entry.sh
   ansible.builtin.template:
     src: "entry.sh.j2"
