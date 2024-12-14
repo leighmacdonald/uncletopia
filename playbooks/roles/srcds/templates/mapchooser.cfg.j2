@@ -33,7 +33,7 @@ sm_mapvote_endvote "{{ sm_mapvote_endvote|default(1) }}"
 // -
 // Default: "5"
 // Minimum: "0.000000"
-sm_mapvote_exclude {% if item.config == "pve" %}0{% else %}{{ sm_mapvote_exclude|default(8) }}{% endif %}
+sm_mapvote_exclude {% if item.config == "pve" %}3{% else %}{{ sm_mapvote_exclude|default(8) }}{% endif %}
 
 // Number of extensions allowed each map.
 // -
