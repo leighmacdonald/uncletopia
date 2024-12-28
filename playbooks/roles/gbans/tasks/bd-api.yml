@@ -33,7 +33,8 @@
     restart: true
     recreate: true
     pull: true
-    purge_networks: true
+    comparisons:
+      networks: strict
     restart_policy: unless-stopped
     volumes:
       - bdapi_db:/var/lib/postgresql/data

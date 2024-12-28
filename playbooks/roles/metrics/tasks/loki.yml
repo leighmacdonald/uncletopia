@@ -23,7 +23,8 @@
     image: grafana/loki:latest
     restart: true
     pull: true
-    purge_networks: true
+    comparisons:
+      networks: strict
     restart_policy: unless-stopped
     recreate: true
     command: ["-config.file=/etc/loki.yml"]

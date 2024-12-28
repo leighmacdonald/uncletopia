@@ -31,7 +31,8 @@
     image: ghcr.io/iarekylew00t/caddy-cloudflare:latest
     restart: true
     recreate: true
-    purge_networks: true
+    comparisons:
+      networks: strict
     restart_policy: always
     networks:
       - name: caddy_net

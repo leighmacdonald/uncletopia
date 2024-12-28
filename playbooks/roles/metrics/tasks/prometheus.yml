@@ -24,7 +24,8 @@
     image: prom/prometheus:latest
     pull: true
     restart: true
-    purge_networks: true
+    comparisons:
+      networks: strict
     restart_policy: unless-stopped
     labels:
       logging: "promtail"
@@ -64,7 +65,8 @@
     image: quay.io/prometheus/alertmanager:latest
     pull: true
     restart: true
-    purge_networks: true
+    comparisons:
+      networks: strict
     restart_policy: unless-stopped
     labels:
       logging: "promtail"

@@ -85,7 +85,8 @@
     restart: true
     recreate: true
     restart_policy: unless-stopped
-    purge_networks: true
+    comparisons:
+      networks: strict
     networks:
       - name: caddy_net
     labels:
