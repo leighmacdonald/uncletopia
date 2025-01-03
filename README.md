@@ -25,6 +25,12 @@ The sourcemod role is responsible for configuring the [metamod](https://www.sour
 automatically download the latest metamod and source versions and fully rebuild the entire plugin tree to ensure 
 compatibility.
 
+Note that all plugins which to not comply with sourcemods newer syntax `newdecls` have had their source updated with `#pragma newdecls required` and all subsequent 
+required changes.
+
+There is no pre-existing compiled plugins, you will need to compile anything you need yourself if you use any of these. We compile all plugins during
+the deployment stage.
+
 ### srcds
 
 srcds is responsible for downloading and configuring each games docker instance. We 

@@ -66,7 +66,7 @@ stock bool IsBotMatch()
             continue;
         }
 
-        if (IsFakeClient(client)) {
+        if (IsClientInGame(client) && IsFakeClient(client)) {
             bots++;
             if (bots > 2) {
                 return true;
