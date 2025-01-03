@@ -77,8 +77,8 @@ void RegisterCvars( )
     g_Cvar_MinPlayersKick = CreateConVar("sm_minplayerskick", "16", "Minimum amount of connected clients needed to kick AFK clients.");
     g_Cvar_AdminsImmune = CreateConVar("sm_adminsimmune", "1", "Admins immune to being kicked? [0 = FALSE, 1 = TRUE]");
     g_Cvar_MoveSpec = CreateConVar("sm_movespec", "0", "Move AFK clients to spec before kicking them? [0 = FALSE, 1 = TRUE]");
-    g_Cvar_TimeToMove = CreateConVar("sm_timetomove", "60.0", "Time in seconds before moving an AFK player.");
-    g_Cvar_TimeToKick = CreateConVar("sm_timetokick", "180.0", "Time in seconds before kicking an AFK player.");
+    g_Cvar_TimeToMove = CreateConVar("sm_timetomove", "300.0", "Time in seconds before moving an AFK player.");
+    g_Cvar_TimeToKick = CreateConVar("sm_timetokick", "300.0", "Time in seconds before kicking an AFK player.");
 }
 
 public void OnMapStart( )
