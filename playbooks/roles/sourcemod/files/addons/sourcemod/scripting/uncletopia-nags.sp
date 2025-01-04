@@ -59,7 +59,6 @@ public void OnMapStart() {
 
 stock bool IsBotMatch()
 {
-
     int bots = 0;
     for (int client = 1; client <= MaxClients; client++) {
         if (client <= 0 || client > MaxClients) {
@@ -89,6 +88,7 @@ public void Event_RoundStart(Event event, const char[] name, bool dontBroadcast)
 
     PrintToChatAll("NOTICE: Be aware there are fake Uncletopia servers");
     PrintToChatAll("Please visit uncletopia.com/servers for a list of safe servers.");
+    PrintToChatAll("If you cannot connect to item servers, please try 'retry' in your console");
 
     CleanupTimer(g_teamImbalanceTimer);
 
