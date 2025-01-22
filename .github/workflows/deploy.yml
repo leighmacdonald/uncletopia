@@ -1,0 +1,16 @@
+#name: Ansible files & Deployment
+#
+#on:
+#  push:
+#    paths:
+#      - 'playbooks/**'
+#
+#  pull_request:
+#    paths:
+#      - 'playbooks/**'
+#
+#jobs:
+#  ansible-lint:
+#    uses: ansible/ansible-content-actions/.github/workflows/ansible_lint.yaml@main
+#    with:
+#      args: '-p playbooks'
