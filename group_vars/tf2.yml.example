@@ -2,8 +2,6 @@
 srcds_user: "tf2server"
 srcds_homedir: "/home/tf2server"
 srcds_steam_app: "tf"
-srcds_steam_app_dir: "/home/tf2server/tf-dedicated"
-srcds_steam_app_id: 232250
 srcds_base_port: 27015
 srcds_tv_port: 27020
 srcds_max_players: 32
@@ -167,6 +165,7 @@ admin_overrides:
 discord:
   stac_webhook: "https://discord.com/api/webhooks/xxxxxxxxxxxx/xxxxxxxxxxxx"
   crash_webhook: "https://discord.com/api/webhooks/xxxxxxxxxxxx/xxxxxxxxxxxx"
+  calladmin_webhook: "https://discord.com/api/webhooks/xxxxxxxxxxxx/xxxxxxxxxxxx"
 
 motd: |
   Welcome to Uncletopia! If you enjoyed your time here, remember to add this server to your favorites via the server browser!

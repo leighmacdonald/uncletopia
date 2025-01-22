@@ -1,11 +1,5 @@
 ---
 
-- name: Setup srcds_watch
-  ansible.builtin.import_tasks: srcds_watch.yml
-  tags:
-    - srcds_watch
-    - metrics-server
-
 - name: Setup loki
   ansible.builtin.import_tasks: loki.yml
   tags:
