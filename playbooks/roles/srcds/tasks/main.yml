@@ -551,6 +551,7 @@
       {
         daily
         missingok
+        notifempty
         rotate 7
       }
   loop: "{{ services }}"
