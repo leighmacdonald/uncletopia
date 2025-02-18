@@ -72,7 +72,7 @@ public void OnPluginStart( )
 void RegisterCvars( )
 {
     CreateConVar("sm_afk_version", VERSION, "Current version of the AFK Manager", FCVAR_REPLICATED|FCVAR_NOTIFY|FCVAR_DONTRECORD);
-    g_Cvar_Enabled = CreateConVar("sm_afkenable", "1", "Is the AFK manager enabled or disabled? [0 = FALSE, 1 = TRUE]");
+    g_Cvar_Enabled = CreateConVar("sm_afkenable", "0", "Is the AFK manager enabled or disabled? [0 = FALSE, 1 = TRUE]");
     g_Cvar_MinPlayersMove = CreateConVar("sm_minplayersmove", "16", "Minimum amount of connected clients needed to move AFK clients to spec.");
     g_Cvar_MinPlayersKick = CreateConVar("sm_minplayerskick", "16", "Minimum amount of connected clients needed to kick AFK clients.");
     g_Cvar_AdminsImmune = CreateConVar("sm_adminsimmune", "1", "Admins immune to being kicked? [0 = FALSE, 1 = TRUE]");
