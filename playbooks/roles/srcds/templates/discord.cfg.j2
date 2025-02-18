@@ -10,7 +10,7 @@
     }
     "calladmin"
     {
-        "url"   "{{ discord.calladmin_webhook }}"
+        "url"   "{{ discord.calladmin_webhook|default(discord.stac_webhook) }}"
     }
     "sourcebans"
     {
