@@ -43,6 +43,16 @@
   tags:
     - game_config
 
+- name: Perms spcomp
+  ansible.builtin.file:
+    dest: ~/build_sourcemod/addons/sourcemod/scripting/spcomp
+    mode: "a+x"
+
+- name: Perms compile.sh
+  ansible.builtin.file:
+    dest: ~/build_sourcemod/addons/sourcemod/scripting/compile.sh
+    mode: "a+x"
+
 - name: Build plugins # noqa no-changed-when
   ansible.builtin.command:
     chdir: ~/build_sourcemod/addons/sourcemod/scripting
