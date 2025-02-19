@@ -127,7 +127,7 @@
                 "windows"
                 {
                     "signature" "sv"
-                    "read" "13"
+                    "read" "10"
                 }
             }
         }
@@ -158,14 +158,14 @@
             {
                 "library"   "engine"
                 "linux"     "@sv"
-                "windows"   "\x83\x3D\x2A\x2A\x2A\x2A\x02\x7D\x2A\x33\xC0\xC3"
+                "windows"   "\x83\x3D\x2A\x2A\x2A\x2A\x02\x7C\x2A\xB9\x2A\x2A\x2A\x2A"
             }
 
             // blocking facial flexes
             "CTFPlayer::SpeakWeaponFire"
             {
                 "library"   "server"
-                "windows"   "\x55\x8B\xEC\x8B\x45\x08\x81\xEC\x04\x01\x00\x00"
+                "windows"   "\x55\x8B\xEC\x8B\x15\x2A\x2A\x2A\x2A\x81\xEC\x04\x01\x00\x00"
                 "linux"     "@_ZN9CTFPlayer15SpeakWeaponFireEi"
             }
 
@@ -173,13 +173,18 @@
             "CTFPlayer::UpdateExpression"
             {
                 "library"   "server"
-                "windows"   "\x55\x8B\xEC\x81\xEC\x08\x01\x00\x00\x8D\x85\xF8\xFE\xFF\xFF\x56\x68\x04\x01\x00\x00"
                 "linux"     "@_ZN9CTFPlayer16UpdateExpressionEv"
+            }
+            "CTFPlayer::TFPlayerThink"
+            {
+                // UpdateExpression is inlined as of 8826692
+                "library"   "server"
+                "windows"   "\x53\x8B\xDC\x83\xEC\x08\x83\xE4\xF0\x83\xC4\x04\x55\x8B\x6B\x04\x89\x6C\x24\x04\x8B\xEC\x81\xEC\x78\x02\x00\x00\x56\x57\x8B\xF9\x8B\x8F\xB0\x22\x00\x00"
             }
             "CTFPlayer::CreateFeignDeathRagdoll"
             {
                 "library"   "server"
-                "windows"   "\x55\x8B\xEC\x83\xEC\x10\x53\x8B\xD9\x56\x89\x5D\xFC"
+                "windows"   "\x55\x8B\xEC\x83\xEC\x40\x53\x56\x57\x8B\xF9\x8B\x8F\x24\x24\x00\x00"
                 "linux"     "@_ZN9CTFPlayer23CreateFeignDeathRagdollERK15CTakeDamageInfobbb"
             }
 
@@ -192,17 +197,41 @@
                 "linux"
                 {
                     // always try to alloc a new ent, regardless of FreeTime
-                    "offset"    "0224h"
-                    "verify"    "\x0F\x86\x2A\x2A\x2A\x2A"
+                    "offset"    "1D6h"
+                    "verify"    "\x77\x78"
                     "patch"     "\x90\x90\x90\x90\x90\x90"
                 }
                 "windows"
                 {
-                    "offset"    "0EEh"
+                    "offset"    "1D2h"
                     // ja
-                    "verify"    "\x77\x1B"
+                    "verify"    "\x77\x25"
                     // unconditional jmp
-                    "patch"     "\xEB\x1B"
+                    "patch"     "\xEB\x25"
+                    "preserve"  "\x00\xFF"
+                }
+            }
+            "CTFPlayer::TFPlayerThink::InlinedExpressionUpdateSkip"
+            {
+                "windows"
+                {
+                    "signature"     "CTFPlayer::TFPlayerThink"
+                    "offset"        "A40h"
+                    "verify"        "\x50\x6A\x02\x8B\xCF"
+                    // fix the stack (pop previously pushed 104h to ecx) then patch JMP to end of expression update (InlinedExpressionUpdateEnd-(InlinedExpressionUpdateSkip+6))
+                    "patch"         "\x59\xE9\x00\x00\x00\x00"
+                }
+            }
+            "CTFPlayer::TFPlayerThink::InlinedExpressionUpdateEnd"
+            {
+                "windows"
+                {
+                    // location after the inlined call to UpdateExpression
+                    // we only use this for getting the patch address and performing validation; it's not applied
+                    "signature"     "CTFPlayer::TFPlayerThink"
+                    "offset"        "BA9h"
+                    "verify"        "\x6A\x07\x8D"
+                    "patch"         "\x00"
                 }
             }
         }
