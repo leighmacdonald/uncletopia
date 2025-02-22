@@ -170,6 +170,7 @@
 
     - name: Disable irqbalance
       become: true
+      ignore_errors: true
       ansible.builtin.systemd:
         name: irqbalance
         state: stopped

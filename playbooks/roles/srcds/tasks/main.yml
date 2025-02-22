@@ -50,6 +50,9 @@
       - libcurl4-gnutls-dev:i386
       - tmux
 
+
+# TODO echo "deb http://security.ubuntu.com/ubuntu focal-security main universe" > /etc/apt/sources.list.d/ubuntu-focal-sources.list
+# Required for libncurses5:i386
 - name: Install a list of packages (24.04)
   become: true
   when: ansible_distribution == 'Ubuntu' and ansible_distribution_version == "24.04"
@@ -443,6 +446,7 @@
 
 - name: Allow external RCON (WAN)
   become: true
+  ignore_errors: true
   community.general.ufw:
     rule: allow
     src: "{{ hostvars[metrics_hostname].ip }}"
@@ -455,6 +459,7 @@
 
 - name: Allow external RCON (WAN)
   become: true
+  ignore_errors: true
   community.general.ufw:
     rule: allow
     src: "{{ hostvars[metrics_hostname].service_ip }}"
@@ -467,6 +472,7 @@
 
 - name: Allow RCON over VPN
   become: true
+  ignore_errors: true
   community.general.ufw:
     rule: allow
     src: "{{ vpn_mask }}"
