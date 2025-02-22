@@ -31,6 +31,18 @@
   tags:
     - game_engine
 
+- name: Make steam folder
+  ansible.builtin.file:
+    path: "~/.steam/sdk32"
+    state: 'present'
+    mode: '0755'
+
+- name: Symlink steamclient.so
+  ansible.builtin.file:
+    src: '~/steamcmd/linux32/steamclient.so'
+    dest: "~/.steam/sdk32/steamclient.so"
+    state: link
+
 - name: Install a list of packages (<24.04)
   become: true
   when: ansible_distribution == 'Ubuntu' and ansible_distribution_version != "24.04"
