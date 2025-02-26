@@ -1,0 +1,42 @@
+---
+
+- name: Generate /etc/tf2bdd.yml
+  become: true
+  ansible.builtin.template:
+    src: tf2bdd.yml.j2
+    dest: /etc/tf2bdd.yml
+    mode: "0775"
+
+- name: Create tf2bdd-service
+  community.docker.docker_container:
+    name: tf2bdd-service
+    image: ghcr.io/leighmacdonald/tf2bdd:v1.0.5
+    restart: true
+    recreate: true
+    pull: false
+    restart_policy: always
+    state: started
+    volumes:
+      - /home/tf2server/tf2bdd.sqlite:/app/db.sqlite
+      - /etc/tf2bdd.yml:/app/tf2bdd.yml
+    env:
+      STEAM_TOKEN: "{{ steam_key }}"
+      BOT_TOKEN: "{{ bot_detector_bot_token }}"
+    ports:
+      - 127.0.0.1:8899:8899
+    networks:
+      - name: caddy_net
+
+- name: Generate /trusted.conf
+  ansible.builtin.template:
+    src: trusted.conf.j2
+    dest: trusted.conf
+    mode: "0770"
+
+- name: Install caddy config
+  community.docker.docker_container_copy_into:
+    container: Caddy
+    path: trusted.conf
+    container_path: /etc/caddy/conf.d/trusted.conf
+  notify:
+    - restart caddy

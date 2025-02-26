@@ -1,0 +1,43 @@
+# tf2bdd master config file.
+# Uncommented lines have no default values and must be set. Defaults are otherwise shown commented out.
+
+# Your steam API key. Used to resolve vanity names.
+# https://steamcommunity.com/dev/apikey
+tf2bdd_steam_key: "xxxxxxxxxx"
+
+# Path to the sqlite database.
+tf2bdd_database_path: "/app/db.sqlite"
+
+# Discord bot can be created @ https://discord.com/developers/applications
+# Public client ID of your bot. Used to identify it and generate the invite link.
+tf2bdd_discord_client_id: "xxxxxxxxxxxxxx"
+# Your private bot token used to authenticate it.
+tf2bdd_discord_bot_token: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+# A list of discord role ids allowed to interact with the non read-only commands
+# Enable developer mode: User Settings -> Advanced -> Developer Mode
+# Then go to: Server Settings -> Roles -> Right click a role -> Copy Role ID
+# Example: discord_roles: [123456789, 234567890]
+tf2bdd_discord_roles: []
+
+# The URL that people can reach your server through, for example if you have a reverse proxy
+# server in-front of the app (recommended). This is used to generate the correct update_url.
+# This must include the scheme prefix and port if using a non-standard one eg: https://example.com
+tf2bdd_external_url: "https://example.com"
+
+# IP/Address to listen on, leave empty for any.
+tf2bdd_listen_host: "0.0.0.0"
+# Port to listen on.
+tf2bdd_listen_port: 8899
+
+# Name of your list.
+tf2bdd_list_title: "@Trusted"
+# Description of your list.
+tf2bdd_list_description: "List of users marked by the trusted role in tf2bd discord"
+# List of names of people who contribute to the list.
+tf2bdd_list_authors: ["myself"]
+
+# Used to filter out matches that dont have at least one of the listed attributes
+# If empty, all known results are returned.
+# For example, If you only wanted to export players with the "cheaters" or "bot" tag and not people
+# that are marked "suspicious", you would use ["cheaters", "bot"]
+tf2bdd_exported_attrs: ["cheater", "bot"]

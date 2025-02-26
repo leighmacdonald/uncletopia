@@ -1,0 +1,7 @@
+---
+
+- name: "@trusted discord bot"
+  hosts: tf2bdd
+  roles:
+    - caddy
+    - tf2bdd

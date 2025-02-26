@@ -1,0 +1,5 @@
+{{ caddy.hosts.trusted.dns }} {
+    reverse_proxy /* {{ caddy.hosts.trusted.address }}
+
+    import {{ caddy.hosts.trusted.tls_name }}
+}
