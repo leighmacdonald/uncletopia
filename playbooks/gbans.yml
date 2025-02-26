@@ -1,0 +1,7 @@
+---
+
+- name: "gbans game mangement service"
+  hosts: metrics
+  roles:
+    - caddy
+    - gbans

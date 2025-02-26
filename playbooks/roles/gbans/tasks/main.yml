@@ -1,16 +1,7 @@
 ---
-- name: Create caddy_net network
-  community.docker.docker_network:
-    name: caddy_net
 
 - name: Install postgres
   ansible.builtin.import_tasks: postgres.yml
 
 - name: Install gbans
   ansible.builtin.import_tasks: gbans.yml
-
-- name: Install tf2bdd
-  ansible.builtin.import_tasks: tf2bdd.yml
-
-- name: Install bd-api
-  ansible.builtin.import_tasks: bd-api.yml

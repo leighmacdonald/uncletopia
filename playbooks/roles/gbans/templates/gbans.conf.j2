@@ -1,0 +1,5 @@
+{{ caddy.hosts.gbans.dns }} {
+    reverse_proxy /* {{ caddy.hosts.gbans.address }}
+
+    import {{ caddy.hosts.gbans.tls_name }}
+}
