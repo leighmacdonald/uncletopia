@@ -9,16 +9,18 @@
     name: caddy_config
     state: present
 
-- name: Create gbans_demos volume
-  community.docker.docker_volume:
-    name: gbans_demos
-    state: present
+- name: Generate /etc/caddy/conf.d
+  become: true
+  ansible.builtin.file:
+    path: /etc/caddy/conf.d
+    state: directory
+    mode: '0775'
 
-- name: Generate /etc/Caddyfile
+- name: Generate /etc/caddy/Caddyfile
   become: true
   ansible.builtin.template:
     src: Caddyfile.j2
-    dest: /etc/Caddyfile
+    dest: /etc/caddy/Caddyfile
     mode: '0775'
 
 - name: Create caddy_net network
@@ -37,13 +39,15 @@
     networks:
       - name: caddy_net
     pull: true
+    capabilities:
+      - NET_ADMIN
     labels:
       logging: "promtail"
       logging_jobname: "containerlogs"
     volumes:
       - caddy_data:/data
       - caddy_config:/config
-      - /etc/Caddyfile:/etc/caddy/Caddyfile
+      - /etc/caddy:/etc/caddy
     env:
       ACME_AGREE: "true"
     ports:
