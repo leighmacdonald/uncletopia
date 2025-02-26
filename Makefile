@@ -46,5 +46,8 @@ game_engine:
 game_config:
 	@ansible-playbook $(PLAYBOOK_PATH)/srcds.yml -u $(USER) -i $(HOSTS) --tags game_config --forks $(FORKS)
 
+sentry:
+	@ansible-playbook -u $(USER) -i prod.hosts --forks $(FORKS) $(PLAYBOOK_PATH)/sentry.yml
+
 srcds-test:
 	@ansible-playbook -u $(USER) -i dev.hosts --forks $(FORKS) $(PLAYBOOK_PATH)/srcds.yml
