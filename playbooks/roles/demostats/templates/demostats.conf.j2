@@ -1,0 +1,5 @@
+{{ caddy.hosts.demostats.dns }} {
+    reverse_proxy /* {{ caddy.hosts.demostats.address }}
+
+    import {{ caddy.hosts.demostats.tls_name }}
+}

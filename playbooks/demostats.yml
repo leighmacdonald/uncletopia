@@ -1,0 +1,7 @@
+---
+
+- name: tf2_demostats instance
+  hosts: demostats
+  roles:
+    - caddy
+    - demostats

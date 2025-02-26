@@ -1,7 +1,7 @@
 {{ caddy.hosts.uncledane.dns }} {
-reverse_proxy /* {{ caddy.hosts.uncledane.address }}
+    reverse_proxy /* {{ caddy.hosts.uncledane.address }}
 
-import {{ caddy.hosts.uncledane.tls_name }}
+    import {{ caddy.hosts.uncledane.tls_name }}
 }
 
 www.{{ caddy.hosts.uncledane.dns }} {

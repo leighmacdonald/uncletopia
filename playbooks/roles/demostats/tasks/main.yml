@@ -1,0 +1,33 @@
+- name: Create tf2_demostats
+  community.docker.docker_container:
+    name: tf2_demostats
+    image: "{{ demoparser.image|default('ghcr.io/leighmacdonald/tf2_demostats:latest') }}"
+    restart: true
+    recreate: true
+    pull: true
+    restart_policy: always
+    state: started
+    comparisons:
+      networks: strict
+    networks:
+      - name: caddy_net
+    labels:
+      logging: "promtail"
+      logging_jobname: "containerlogs"
+    ports:
+      - 127.0.0.1:8811:8811
+
+
+- name: Generate /demostats.conf
+  ansible.builtin.template:
+    src: demostats.conf.j2
+    dest: demostats.conf
+    mode: "0770"
+
+- name: Copy caddy config
+  community.docker.docker_container_copy_into:
+    container: Caddy
+    path: demostats.conf
+    container_path: /etc/caddy/conf.d/demostats.conf
+  notify:
+    - restart caddy
