@@ -1,0 +1,19 @@
+{{ caddy.hosts.sentry.dns }} {
+    reverse_proxy {{ caddy.hosts.sentry.address }} {
+        health_uri /_health/
+        health_status 2xx
+        header_up Host {upstream_hostport}
+    }
+
+    header {
+        # Delete "Server" header
+        -Server
+    }
+
+    import {{ caddy.hosts.sentry.tls_name }}
+
+    # To expose only ingest endpoint publicly, add the named matcher below before `reverse_proxy` directive
+    # @ingest_endpoint {
+    #     path_regexp /api/[1-9]\d+/(envelope|minidump|security|store|unreal)/
+    # }
+}

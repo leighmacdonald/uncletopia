@@ -1,0 +1,5 @@
+sentry_secret_key: 'xxxxxxxxx'
+sentry_discord_app_id: ""
+sentry_discord_public_key: ""
+sentry_discord_client_secret: ""
+sentry_discord_bot_token: ""

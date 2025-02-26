@@ -1,0 +1,54 @@
+---
+
+- name: Checkout sentry
+  ansible.builtin.git:
+    repo: 'https://github.com/getsentry/self-hosted.git'
+    dest: ~/sentry
+    version: 25.2.0
+
+# NOTE: These should be kept up to date if the checked out version above changes.
+- name: Generate sentry.conf
+  ansible.builtin.template:
+    src: config.conf.j2
+    dest: ~/sentry/sentry/sentry.conf
+    mode: "0775"
+
+- name: Generate sentry.conf.py
+  ansible.builtin.template:
+    src: sentry.conf.py.j2
+    dest: ~/sentry/sentry/sentry.conf.py
+    mode: "0775"
+
+# Create user: docker compose run --rm web createuser
+- name: Run install.sh # noqa no-changed-when
+  ansible.builtin.command: ./install.sh --skip-user-creation --no-report-self-hosted-issues
+  args:
+    chdir: ~/sentry
+
+- name: Run `docker-compose up` again
+  community.docker.docker_compose_v2:
+    project_src: ~/sentry
+    build: never
+    wait: true
+  register: output
+
+- name: Join caddy_net network
+  community.docker.docker_network:
+    name: caddy_net
+    connected:
+      - sentry-self-hosted-nginx-1
+    appends: true
+
+- name: Generate /sentry.conf
+  ansible.builtin.template:
+    src: sentry.conf.j2
+    dest: sentry.conf
+    mode: "0770"
+
+- name: Copy caddy config
+  community.docker.docker_container_copy_into:
+    container: Caddy
+    path: sentry.conf
+    container_path: /etc/caddy/conf.d/sentry.conf
+  notify:
+    - restart caddy
