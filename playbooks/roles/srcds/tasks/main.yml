@@ -34,7 +34,7 @@
 - name: Make steam folder
   ansible.builtin.file:
     path: "~/.steam/sdk32"
-    state: 'present'
+    state: 'directory'
     mode: '0755'
 
 - name: Symlink steamclient.so
