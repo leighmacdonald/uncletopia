@@ -103,3 +103,17 @@
       - "127.0.0.1:{{ grafana.port | default(3000) }}:3000"
   tags:
     - grafana
+
+- name: Generate /grafana.conf
+  ansible.builtin.template:
+    src: grafana.conf.j2
+    dest: grafana.conf
+    mode: "0770"
+
+- name: Copy caddy config
+  community.docker.docker_container_copy_into:
+    container: Caddy
+    path: grafana.conf
+    container_path: /etc/caddy/conf.d/grafana.conf
+  notify:
+    - restart caddy

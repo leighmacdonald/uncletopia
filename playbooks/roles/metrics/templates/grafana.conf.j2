@@ -1,0 +1,5 @@
+{{ caddy.hosts.grafana.dns }} {
+    reverse_proxy /* {{ caddy.hosts.grafana.address }}
+
+    import {{ caddy.hosts.grafana.tls_name }}
+}
