@@ -168,7 +168,7 @@
         groups: docker
         append: true
 
-    - name: Disable irqbalance
+    - name: Disable irqbalance # noqa: ignore-errors
       become: true
       ignore_errors: true
       ansible.builtin.systemd:

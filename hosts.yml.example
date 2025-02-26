@@ -1,37 +1,26 @@
-all:
-  children:
-    vpn:
-      children:
-#        development:
-#          children:
-#            tf2:
-#              hosts:
-#                localhost:
-        staging:
-          children:
-            tf2:
-              hosts:
-                test-[1:3].kittyland.com:
-        production:
-          children:
-            metrics:
-              hosts:
-                web-1.kittyland.com:
-            web:
-              hosts:
-                web-1.kittyland.com:
-            tf2:
-              children:
-                na:
-                  children:
-                    nae:
-                      hosts:
-                        atl-1.kittyland.com:
-                        nyc-1.kittyland.com:
-                    nac:
-                      hosts:
-                        chi-[1:2].kittyland.com:
-                eu:
-                  hosts:
-                    lon-1.kittyland.com:
-                    frk-1.kittyland.com:
+[metrics]
+metrics.example.com
+
+[web]
+example.com
+
+[tf2]
+tf2.example.com
+
+[tf2bdd]
+tf2bdd.example.com
+
+[sentry]
+sentry.example.com
+
+[gbans]
+gbans.example.com
+
+[uncledane]
+uncledane.example.com
+
+[demostats]
+demostats.example.com
+
+[bdapi]
+bdapi.example.com

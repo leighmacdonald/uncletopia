@@ -1,0 +1,9 @@
+- name: Restart srcds
+  ansible.builtin.systemd:
+    name: "srcds-{{ item.server_name_short }}"
+    state: restarted
+  listen: restart srcds
+  become: true
+  loop: "{{ services }}"
+  loop_control:
+    index_var: loop0

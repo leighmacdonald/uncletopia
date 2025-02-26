@@ -456,7 +456,7 @@
     index_var: loop0
   when: ansible_distribution == 'Ubuntu'
 
-- name: Allow external RCON (WAN)
+- name: Allow external RCON (WAN) # noqa: ignore-errors
   become: true
   ignore_errors: true
   community.general.ufw:
@@ -469,7 +469,7 @@
     index_var: loop0
   when: ansible_distribution == 'Ubuntu'
 
-- name: Allow external RCON (WAN)
+- name: Allow external RCON (WAN) # noqa: ignore-errors
   become: true
   ignore_errors: true
   community.general.ufw:
@@ -482,7 +482,7 @@
     index_var: loop0
   when: ansible_distribution == 'Ubuntu'
 
-- name: Allow RCON over VPN
+- name: Allow RCON over VPN # noqa: ignore-errors
   become: true
   ignore_errors: true
   community.general.ufw:
@@ -546,16 +546,8 @@
   become: true
   ansible.builtin.systemd:
     daemon_reload: true
-
-- name: Reload srcds-services
-  become: true
-  ansible.builtin.systemd:
-    name: "srcds-{{ item.server_name_short }}.service"
-    enabled: true
-    state: restarted
-  loop: "{{ services }}"
-  loop_control:
-    index_var: loop0
+  notify:
+    - restart srcds
   tags:
     - game_engine
 
