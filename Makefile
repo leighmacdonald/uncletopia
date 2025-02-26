@@ -1,6 +1,6 @@
 .PHONY: all pre system deploy
 
-PLAYBOOK_PATH := ./playbooks
+PLAYBOOK_PATH := ./
 HOSTS := hosts.yml
 USER := tf2server
 FORKS := 20

@@ -1,0 +1,197 @@
+---
+# Copyright (C) 2018-2024 Robert Wimmer
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+- name: Gather instance facts
+  ansible.builtin.setup:
+
+- name: Include tasks depending on OS
+  ansible.builtin.include_tasks:
+    file: "{{ item }}"
+    apply:
+      tags:
+        - wg-install
+  with_first_found:
+    - "setup-{{ ansible_distribution | lower }}-{{ ansible_distribution_major_version }}.yml"
+    - "setup-{{ ansible_distribution | lower }}-{{ ansible_distribution_version }}.yml"
+    - "setup-{{ ansible_distribution | lower }}-{{ ansible_distribution_release }}.yml"
+    - "setup-{{ ansible_distribution | lower }}.yml"
+    - "setup-{{ ansible_os_family | lower }}.yml"
+  tags:
+    - wg-install
+
+- name: Enable WireGuard kernel module
+  community.general.modprobe:
+    name: wireguard
+    state: present
+  register: wireguard__register_module_enabled
+  until: wireguard__register_module_enabled is succeeded
+  retries: 10
+  delay: 10
+  failed_when: wireguard__register_module_enabled is failure
+  tags:
+    - wg-install
+    - wg-install-kernel-module
+  when:
+    - not ansible_os_family == 'Darwin'
+    - wireguard_install_kernel_module
+
+- name: Set default for WireGuard interface restart behavior
+  ansible.builtin.set_fact:
+    wireguard__restart_interface: >-
+      {%- if wireguard_interface_restart -%}
+      true
+      {%- else -%}
+      false
+      {%- endif %}
+  tags:
+    - wg-config
+    - skip_ansible_lint
+
+- name: Make sure wg syncconf option is available
+  when:
+    - not wireguard_interface_restart
+    - not wireguard_ubuntu_use_netplan
+  tags:
+    - wg-config
+  block:
+    - name: Get available wg subcommands
+      ansible.builtin.command: "wg --help"
+      register: wireguard__register_subcommands
+      changed_when: false
+      check_mode: false
+
+    - name: Check if wg syncconf subcommand is available
+      ansible.builtin.set_fact:
+        wireguard__syncconf_avail: "{{ 'syncconf:' in wireguard__register_subcommands.stdout }}"
+
+    - name: Wg syncconf subcommand available
+      ansible.builtin.debug:
+        var: wireguard__syncconf_avail
+
+    - name: Fall back to interface restart if wg syncconf is not available
+      when:
+        - not wireguard__syncconf_avail
+      ansible.builtin.set_fact:
+        wireguard__restart_interface: true
+
+- name: Final decision on WireGuard interface restart method
+  ansible.builtin.debug:
+    msg: >-
+      {%- if wireguard__restart_interface -%}
+      'restart'
+      {%- else -%}
+      'syncconf'
+      {%- endif %}
+  tags:
+    - skip_ansible_lint
+    - wg-config
+
+- name: Register if config/private key already exists on target host
+  ansible.builtin.stat:
+    path: "{{ wireguard_remote_directory }}/{{ wireguard_conf_filename }}"
+  register: wireguard__register_config_file
+  tags:
+    - wg-generate-keys
+    - wg-config
+
+- name: WireGuard private key handling for new keys
+  when:
+    - not wireguard__register_config_file.stat.exists
+    - wireguard_private_key is not defined
+  block:
+    - name: Generate WireGuard private key
+      ansible.builtin.command: "wg genkey"
+      register: wireguard__register_private_key
+      changed_when: false
+      no_log: '{{ ansible_verbosity < 3 }}'
+      check_mode: false
+      tags:
+        - wg-generate-keys
+
+    - name: Set private key fact
+      ansible.builtin.set_fact:
+        wireguard_private_key: "{{ wireguard__register_private_key.stdout }}"
+      no_log: '{{ ansible_verbosity < 3 }}'
+      tags:
+        - wg-generate-keys
+
+- name: WireGuard private key handling for existing keys
+  when:
+    - wireguard__register_config_file.stat.exists
+    - wireguard_private_key is not defined
+  block:
+    - name: Read WireGuard config file
+      ansible.builtin.slurp:
+        src: "{{ wireguard_remote_directory }}/{{ wireguard_conf_filename }}"
+      register: wireguard__register_config
+      no_log: '{{ ansible_verbosity < 3 }}'
+      tags:
+        - wg-config
+
+    - name: Set private key fact
+      ansible.builtin.set_fact:
+        wireguard_private_key: >-
+          {{ wireguard__register_config['content'] | b64decode |
+             regex_findall(wireguard_ubuntu_use_netplan |
+             ternary('key:\s*(.*)$', 'PrivateKey\s*=\s*(.*)$'), multiline=True) |
+             first }}
+      no_log: '{{ ansible_verbosity < 3 }}'
+      tags:
+        - wg-config
+
+- name: Derive WireGuard public key
+  ansible.builtin.command: "wg pubkey"
+  args:
+    stdin: "{{ wireguard_private_key }}"
+  register: wireguard__register_public_key
+  changed_when: false
+  check_mode: false
+  no_log: '{{ ansible_verbosity < 3 }}'
+  tags:
+    - wg-config
+
+- name: Set public key fact
+  ansible.builtin.set_fact:
+    wireguard__fact_public_key: "{{ wireguard__register_public_key.stdout }}"
+  tags:
+    - wg-config
+
+- name: Create WireGuard configuration directory
+  ansible.builtin.file:
+    dest: "{{ wireguard_remote_directory }}"
+    state: directory
+    mode: "0700"
+  tags:
+    - wg-config
+  when: not wireguard_ubuntu_use_netplan
+
+- name: Generate WireGuard configuration file
+  ansible.builtin.template:
+    src: "etc/{{ 'wireguard/wg.conf.j2' if not wireguard_ubuntu_use_netplan else 'netplan/wg.yaml.j2' }}"
+    dest: "{{ wireguard_remote_directory }}/{{ wireguard_conf_filename }}"
+    owner: "{{ wireguard_conf_owner }}"
+    group: "{{ wireguard_conf_group }}"
+    mode: "{{ wireguard_conf_mode }}"
+    backup: "{{ wireguard_conf_backup }}"
+  no_log: '{{ ansible_verbosity < 3 }}'
+  tags:
+    - wg-config
+  notify:
+    - "reconfigure {{ 'wireguard' if not wireguard_ubuntu_use_netplan else 'netplan' }}"
+
+- name: Ensure legacy reload-module-on-update is absent
+  ansible.builtin.file:
+    dest: "{{ wireguard_remote_directory }}/.reload-module-on-update"
+    state: absent
+  tags:
+    - wg-config
+
+- name: Start and enable WireGuard service
+  ansible.builtin.service:
+    name: "wg-quick@{{ wireguard_interface }}"
+    state: "{{ wireguard_service_state }}"
+    enabled: "{{ wireguard_service_enabled }}"
+  when:
+    - not ansible_os_family == 'Darwin'
+    - not wireguard_ubuntu_use_netplan

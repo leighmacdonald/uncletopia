@@ -11,7 +11,7 @@ Installs the [bd-api](https://github.com/leighmacdonald/bd-api) service.
 
 ### caddy
 
-The [caddy](https://caddyserver.com/) role configured the frontend http server that exposes all the internal services such as the 
+The [caddy](https://caddyserver.com/) role configures the frontend http proxy that exposes all the internal services such as the 
 gbans website and grafana.
 
 ### demostats

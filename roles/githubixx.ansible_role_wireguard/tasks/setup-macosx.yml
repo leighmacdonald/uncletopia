@@ -1,0 +1,14 @@
+---
+# Copyright (C) 2020-2024 Ruben Di Battista
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+- name: (MacOS) Install wireguard package
+  ansible.builtin.package:
+    name: wireguard-go
+    state: present
+  become: true
+
+- name: (MacOS) Install wireguard-tools package
+  ansible.builtin.package:
+    name: wireguard-tools
+    state: present

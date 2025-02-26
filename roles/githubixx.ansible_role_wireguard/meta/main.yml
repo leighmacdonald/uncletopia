@@ -1,0 +1,41 @@
+---
+# Copyright (C) 2018-2024 Robert Wimmer
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+galaxy_info:
+  author: Robert Wimmer
+  description: Installs Wireguard incl. systemd integration
+  license: GPL-3.0-or-later
+  min_ansible_version: "2.11"
+  namespace: githubixx
+  role_name: ansible_role_wireguard
+  platforms:
+    - name: ArchLinux
+    - name: Ubuntu
+      versions:
+        - "focal"
+        - "jammy"
+        - "noble"
+    - name: Debian
+      versions:
+        - "bullseye"
+        - "bookworm"
+    - name: EL
+      versions:
+        - "7"
+        - "8"
+        - "9"
+    - name: Fedora
+      versions:
+        - "39"
+        - "40"
+    - name: opensuse
+      versions:
+        - "15.5"
+        - "15.6"
+  galaxy_tags:
+    - networking
+    - security
+    - linux
+    - vpn
+    - wireguard

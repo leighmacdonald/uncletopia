@@ -1,0 +1,23 @@
+---
+# Copyright (C) 2021-2024 Robert Wimmer
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+- name: (AlmaLinux 8) Install EPEL & ELRepo repository
+  ansible.builtin.package:
+    name:
+      - epel-release
+      - elrepo-release
+    update_cache: "{{ wireguard_update_cache }}"
+
+- name: (AlmaLinux 8) Ensure WireGuard DKMS package is removed
+  ansible.builtin.package:
+    name:
+      - "wireguard-dkms"
+    state: absent
+
+- name: (AlmaLinux 8) Install WireGuard packages
+  ansible.builtin.package:
+    name:
+      - "kmod-wireguard"
+      - "wireguard-tools"
+    state: present
