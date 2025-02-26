@@ -90,7 +90,6 @@
       logging: "promtail"
       logging_jobname: "containerlogs"
 
-
 - name: Create bd-api-postgres_exporter container
   community.docker.docker_container:
     name: bd-api-postgres_exporter
@@ -105,3 +104,17 @@
       DATA_SOURCE_NAME: postgresql://bdapi:bdapi@bdapi-postgres:5432/bdapi?sslmode=disable
     ports:
       - 127.0.0.1:9188:9187
+
+- name: Generate /bdapi.conf
+  ansible.builtin.template:
+    src: bdapi.conf.j2
+    dest: bdapi.conf
+    mode: "0770"
+
+- name: Install caddy config
+  community.docker.docker_container_copy_into:
+    container: Caddy
+    path: bdapi.conf
+    container_path: /etc/caddy/conf.d/bdapi.conf
+  notify:
+    - restart caddy

@@ -1,0 +1,14 @@
+bdapi_external_url: "https://example.com"
+bdapi_encryption_key: xxxxxxxxx
+bdapi_http_secret: yyyyyyyyyyyyy
+bdapi_scrape_delay: 1500
+bdapi_private_key_password: xxxxxxxxxxxxxx
+bdapi_private_key: |
+  -----BEGIN RSA PRIVATE KEY-----
+  Proc-Type: 4,ENCRYPTED
+  DEK-Info: DES-EDE3-CBC,946918F7A33CE9B4
+  
+  xxxxxxxxxxxxxxxxxxxxxx
+
+
+  -----END RSA PRIVATE KEY-----

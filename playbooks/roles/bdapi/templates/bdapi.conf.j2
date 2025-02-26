@@ -1,0 +1,5 @@
+{{ caddy.hosts.bdapi.dns }} {
+    reverse_proxy /* {{ caddy.hosts.bdapi.address }}
+
+    import {{ caddy.hosts.bdapi.tls_name }}
+}

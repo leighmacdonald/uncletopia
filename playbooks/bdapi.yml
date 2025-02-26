@@ -1,0 +1,7 @@
+---
+
+- name: "bdapi data proxy service"
+  hosts: bdapi
+  roles:
+    - caddy
+    - bdapi
