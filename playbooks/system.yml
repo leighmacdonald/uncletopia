@@ -98,6 +98,7 @@
           - python3-docker
           - libc6:i386
           - lib32stdc++6
+          - docker-buildx-plugin
 
     - name: Install extra OS Dependencies (<24.04)
       when: ansible_distribution == 'Ubuntu' and ansible_distribution_version != '24.04'

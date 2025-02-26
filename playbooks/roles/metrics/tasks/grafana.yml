@@ -112,7 +112,7 @@
 
 - name: Copy caddy config
   community.docker.docker_container_copy_into:
-    container: Caddy
+    container: caddy
     path: grafana.conf
     container_path: /etc/caddy/conf.d/grafana.conf
   notify:

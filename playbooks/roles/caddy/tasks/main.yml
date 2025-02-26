@@ -27,10 +27,29 @@
   community.docker.docker_network:
     name: caddy_net
 
+- name: Make caddy dir
+  ansible.builtin.file:
+    path: ~/caddy
+    state: directory
+    mode: '0755'
+
+- name: Copy file with owner and permissions
+  ansible.builtin.copy:
+    src: Dockerfile
+    dest: ~/caddy/Dockerfile
+    mode: '0644'
+
+- name: Build image and with build args
+  community.docker.docker_image:
+    name: caddy-ut:latest
+    build:
+      path: ~/caddy
+    source: build
+
 - name: Create caddy container
   community.docker.docker_container:
-    name: Caddy
-    image: ghcr.io/iarekylew00t/caddy-cloudflare:latest
+    name: caddy
+    image: caddy-ut:latest
     restart: true
     recreate: true
     comparisons:
@@ -38,7 +57,7 @@
     restart_policy: always
     networks:
       - name: caddy_net
-    pull: true
+    pull: false
     capabilities:
       - NET_ADMIN
     labels:

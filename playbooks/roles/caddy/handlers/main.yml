@@ -1,5 +1,5 @@
 - name: Restart caddy
   listen: restart caddy
   community.docker.docker_container:
-    container: Caddy
+    container: caddy
     command: caddy reload --config /etc/caddy/Caddyfile --adapter caddyfile

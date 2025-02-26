@@ -113,7 +113,7 @@
 
 - name: Install caddy config
   community.docker.docker_container_copy_into:
-    container: Caddy
+    container: caddy
     path: bdapi.conf
     container_path: /etc/caddy/conf.d/bdapi.conf
   notify:

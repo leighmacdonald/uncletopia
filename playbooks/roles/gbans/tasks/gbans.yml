@@ -80,7 +80,7 @@
 
 - name: Copy caddy config
   community.docker.docker_container_copy_into:
-    container: Caddy
+    container: caddy
     path: gbans.conf
     container_path: /etc/caddy/conf.d/gbans.conf
   notify:

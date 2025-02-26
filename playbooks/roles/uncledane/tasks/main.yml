@@ -45,7 +45,7 @@
 
 - name: Copy caddy config
   community.docker.docker_container_copy_into:
-    container: Caddy
+    container: caddy
     path: uncledane.conf
     container_path: /etc/caddy/conf.d/uncledane.conf
   notify:
