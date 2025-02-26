@@ -1,5 +1,5 @@
-- name: restart caddy
-  ansible.builtin.docker_container:
-    name: Caddy
-    restart: true
-  when: inventory_hostname == metrics_hostname
+- name: Restart caddy
+  listen: restart caddy
+  community.docker.docker_container:
+    container: Caddy
+    command: caddy reload --config /etc/caddy/Caddyfile --adapter caddyfile

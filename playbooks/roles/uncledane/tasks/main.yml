@@ -1,11 +1,11 @@
-- name: checkout project
+- name: Checkout project
   ansible.builtin.git:
     repo: 'https://github.com/leighmacdonald/uncledane-web.git'
     dest: ~/uncledane-web
     version: master
 
 - name: Generate config.yaml
-  become: yes
+  become: true
   ansible.builtin.template:
     src: config.yaml.j2
     dest: /etc/uncledane.yaml

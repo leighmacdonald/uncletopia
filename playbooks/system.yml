@@ -5,7 +5,7 @@
   tasks:
     - name: Set a hostname
       ansible.builtin.hostname:
-        name: "{{ inventory_hostname}}"
+        name: "{{ inventory_hostname }}"
 
     - name: Set timezone
       community.general.timezone:

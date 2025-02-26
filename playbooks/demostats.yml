@@ -1,6 +1,6 @@
 ---
 
-- name: tf2_demostats instance
+- name: "Playbook for tf2_demostats"
   hosts: demostats
   roles:
     - caddy

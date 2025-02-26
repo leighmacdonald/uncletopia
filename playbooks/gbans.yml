@@ -1,6 +1,6 @@
 ---
 
-- name: "gbans game mangement service"
+- name: "Playbook for gbans game mangement service"
   hosts: metrics
   roles:
     - caddy

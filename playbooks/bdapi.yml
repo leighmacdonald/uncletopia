@@ -1,6 +1,6 @@
 ---
 
-- name: "bdapi data proxy service"
+- name: "Playbook for bdapi data proxy service"
   hosts: bdapi
   roles:
     - caddy
