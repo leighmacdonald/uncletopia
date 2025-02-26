@@ -1,12 +1,12 @@
 ---
 - name: Add Users
-  import_playbook: playbooks/adduser.yml
+  import_playbook: adduser.yml
 
 - name: System Settings
-  import_playbook: playbooks/system.yml
+  import_playbook: system.yml
 
 - name: Web
-  import_playbook: playbooks/web.yml
+  import_playbook: web.yml
 
 - name: SRCDS
-  import_playbook: playbooks/srcds.yml
+  import_playbook: srcds.yml
