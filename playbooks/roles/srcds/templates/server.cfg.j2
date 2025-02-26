@@ -29,7 +29,7 @@ logaddress_add {{ host }}
 {% endfor %}
 {% endif %}
 
-sv_rcon_whitelist_address {{ metrics_host }}
+sv_rcon_whitelist_address {{ metrics_host|default("") }}
 
 tf_medieval 0
 tf_medieval_autorp 0

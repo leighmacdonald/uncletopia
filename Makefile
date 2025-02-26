@@ -25,9 +25,6 @@ srcds:
 web:
 	ansible-playbook -u $(USER) -i $(HOSTS) --forks $(FORKS) $(PLAYBOOK_PATH)/web.yml --limit metrics
 
-srcds_watch:
-	ansible-playbook -u $(USER) -i $(HOSTS) --forks $(FORKS) $(PLAYBOOK_PATH)/web.yml --limit metrics --tags srcds_watch
-
 vpn:
 	@ansible-playbook -u $(USER) -i $(HOSTS) --forks $(FORKS) $(PLAYBOOK_PATH)/vpn.yml
 
@@ -48,3 +45,6 @@ game_engine:
 
 game_config:
 	@ansible-playbook $(PLAYBOOK_PATH)/srcds.yml -u $(USER) -i $(HOSTS) --tags game_config --forks $(FORKS)
+
+srcds-test:
+	@ansible-playbook -u $(USER) -i dev.hosts --forks $(FORKS) $(PLAYBOOK_PATH)/srcds.yml

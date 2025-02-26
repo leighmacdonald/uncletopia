@@ -15,7 +15,7 @@ BRANCH=$2
 function clean_existing() {
   rm -v group_vars/*.yml
   rm -v host_vars/*.yml
-  rm -v hosts.yml
+  rm -v ./*.hosts
 }
 
 function check_sanity() {
@@ -48,7 +48,13 @@ function switch_branch() {
 }
 
 function load_branch() {
-    ln -v "${1}"/hosts.yml hosts.yml
+    for fullfile in "${1}"/*.hosts; do
+        [ -e "$fullfile" ] || continue
+
+        filename=$(basename -- "$fullfile")
+
+        ln -v "$fullfile" "$filename"
+    done
 
     for fullfile in "${1}"/host_vars/*.yml; do
         [ -e "$fullfile" ] || continue
