@@ -1,0 +1,9 @@
+{{ caddy.hosts.uncledane.dns }} {
+reverse_proxy /* {{ caddy.hosts.uncledane.address }}
+
+import {{ caddy.hosts.uncledane.tls_name }}
+}
+
+www.{{ caddy.hosts.uncledane.dns }} {
+    redir https://{{ caddy.hosts.uncledane.dns }}{uri}
+}

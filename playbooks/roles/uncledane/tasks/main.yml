@@ -1,0 +1,52 @@
+- name: checkout project
+  ansible.builtin.git:
+    repo: 'https://github.com/leighmacdonald/uncledane-web.git'
+    dest: ~/uncledane-web
+    version: master
+
+- name: Generate config.yaml
+  become: yes
+  ansible.builtin.template:
+    src: config.yaml.j2
+    dest: /etc/uncledane.yaml
+    mode: "0775"
+
+
+- name: Build image and with build args
+  community.docker.docker_image:
+    name: uncledane-web:latest
+    build:
+      path: ~/uncledane-web
+    source: build
+
+- name: Create uncledane-web
+  community.docker.docker_container:
+    name: uncledane-web
+    image: "uncledane-web:latest"
+    restart: true
+    recreate: true
+    pull: false
+    restart_policy: always
+    state: started
+    comparisons:
+      networks: strict
+    networks:
+      - name: caddy_net
+    volumes:
+      - /etc/uncledane.yaml:/app/config.yaml
+    ports:
+      - 127.0.0.1:8003:8003
+
+- name: Generate /uncledane.conf
+  ansible.builtin.template:
+    src: uncledane.conf.j2
+    dest: uncledane.conf
+    mode: "0770"
+
+- name: Copy caddy config
+  community.docker.docker_container_copy_into:
+    container: Caddy
+    path: uncledane.conf
+    container_path: /etc/caddy/conf.d/uncledane.conf
+  notify:
+    - restart caddy

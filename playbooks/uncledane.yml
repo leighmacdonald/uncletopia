@@ -1,0 +1,7 @@
+---
+
+- name: "uncledane.com"
+  hosts: uncledane
+  roles:
+    - caddy
+    - uncledane
