@@ -3,3 +3,7 @@ collections:
   - community.general
   - community.docker
   - ansible.posix
+
+roles:
+  - name: hadret.rsyslog
+  - name: githubixx.ansible_role_wireguard
