@@ -183,9 +183,11 @@ sm_cvar mp_waitingforplayers_time {% if item.config|default("all") == "all_plus"
 
 {% if sentry_dsn != "" %}
 ce_sentry_dsn_url "{{ sentry_dsn }}"
-ce_region {{ item.sentry_ce_region|default("") }}
+ce_environment {{ sentry_ce_environment|default("production") }}
+ce_region {{ sentry_ce_region|default("world") }}
 ce_type {{ item.config }}
-ce_server_id "{{ item.server_name_short }}"
+ce_server_index {{ loop0 + 1 }}"
+ce_logreaderwaittime 120
 {% endif %}
 
 sv_playerperfhistorycount 20
@@ -220,4 +222,10 @@ tv_name "{{ item.name }} | STV"
 // In-game name
 tv_title "{{ stv_name }}"
 tv_snapshotrate {{ tv_snapshotrate|default(64) }}
+{% endif %}
+
+{% if item.config|default("") == "247_badwater" %}
+mp_timelimit 0
+mp_winlimit 0
+mp_maxrounds 0
 {% endif %}

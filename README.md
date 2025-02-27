@@ -108,4 +108,4 @@ There is a few steps that are not entirely automated yet. These are generally go
 These will eventually get automated, but are quite low priority.
 
 - (One time) Create sentry admin user
-  - ssh {{ caddy.hosts.sentry.dns }} && cd ~/sentry && docker compose run --rm web createuser
+  - ssh {{ caddy.hosts.sentry.dns }} -C "cd ~/sentry && docker compose run --rm web createuser"
