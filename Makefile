@@ -65,3 +65,6 @@ sentry:
 
 srcds-test:
 	@ansible-playbook -u $(USER) -i $(HOSTS_DEV) --forks $(FORKS) $(PLAYBOOK_PATH)/srcds.yml
+
+rcon-test:
+	ansible-playbook -u $(USER) -i $(HOSTS_DEV) --forks $(FORKS) $(PLAYBOOK_PATH)/hello.yml --limit srcds-test.uncletopia.com

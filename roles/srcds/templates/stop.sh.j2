@@ -1,14 +1,17 @@
 #!/usr/bin/env bash
 {% if restart_notice|default(true) %}
-tmux -S ./tmux.sock send -t "srcds" "sm_csay server restart in 60 seconds" ENTER
+tmux -S ./tmux.sock send -t "{{ item.server_name_short }}" "sm_csay Server restart in 60 seconds" ENTER
 sleep 30
-tmux -S ./tmux.sock send -t "srcds" "sm_csay server restart in 30 seconds" ENTER
+tmux -S ./tmux.sock send -t "{{ item.server_name_short }}" "sm_csay Server restart in 30 seconds" ENTER
 sleep 27
-tmux -S ./tmux.sock send -t "srcds" "sm_csay server restart in 3 seconds" ENTER
+tmux -S ./tmux.sock send -t "{{ item.server_name_short }}" "sm_csay Server restart in 3 seconds" ENTER
 sleep 1
-tmux -S ./tmux.sock send -t "srcds" "sm_csay server restart in 2 seconds" ENTER
+tmux -S ./tmux.sock send -t "{{ item.server_name_short }}" "sm_csay Server restart in 2 seconds" ENTER
 sleep 1
-tmux -S ./tmux.sock send -t "srcds" "sm_csay server restart in 1 seconds" ENTER
+tmux -S ./tmux.sock send -t "{{ item.server_name_short }}" "sm_csay Server restart in 1 seconds" ENTER
 sleep 1
 {% endif %}
-tmux -S ./tmux.sock send -t "srcds" "exit" ENTER
+
+tmux -S ./tmux.sock send -t "{{ item.server_name_short }}" "exit" ENTER
+sleep 1
+tmux -S ./tmux.sock kill-session -t "{{ item.server_name_short }}"

@@ -546,10 +546,16 @@
   become: true
   ansible.builtin.systemd:
     daemon_reload: true
-  notify:
-    - restart srcds
   tags:
     - game_engine
+
+- name: Restart srcds
+  ansible.builtin.systemd:
+    name: "srcds-{{ item.server_name_short }}"
+    state: restarted
+  loop: "{{ services }}"
+  loop_control:
+    index_var: loop0
 
 - name: Configure logrotate
   become: true
