@@ -86,6 +86,12 @@ A helper playbook that will update all systems and reboot them if required.
 An *optional* playbook that contains tasks that will tune the underlying OS. You *must* not run this without understanding
 the repercussions of the changes. You should also adjust them accordingly to your hardware specs & needs.
 
+## Requirements
+
+To install the required additional collections and roles you can use the provided requirements.yml file.
+
+    ansible-galaxy install -r requirements.yml
+
 ## Troubleshooting
 
 ### spcomp fails to execute
@@ -100,3 +106,6 @@ If you are on a 64bit machine you will want 32bit libs for spcomp.
 There is a few steps that are not entirely automated yet. These are generally going to be one time setup type of steps.
 
 These will eventually get automated, but are quite low priority.
+
+- (One time) Create sentry admin user
+  - ssh {{ caddy.hosts.sentry.dns }} && cd ~/sentry && docker compose run --rm web createuser
