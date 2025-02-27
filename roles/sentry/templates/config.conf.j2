@@ -128,8 +128,8 @@ transaction-events.force-disable-internal-project: true
 
 # Refer to https://develop.sentry.dev/integrations/discord/
 {% if sentry_discord_app_id != "" %}
-discord.application-id: "{{ sentry_discord_app_id }}"
-discord.public-key: "{{ sentry_discord_public_key }}"
-discord.client-secret: "{{ sentry_discord_client_secret }}"
-discord.bot-token: "{{ sentry_discord_bot_token }}"
+discord.application-id: '{{ sentry_discord_app_id }}'
+discord.public-key: '{{ sentry_discord_public_key }}'
+discord.client-secret: '{{ sentry_discord_client_secret }}'
+discord.bot-token: '{{ sentry_discord_bot_token }}'
 {% endif %}
