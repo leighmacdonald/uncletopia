@@ -5,7 +5,9 @@ configuring and administering the uncletopia server cluster.
 
 ## Roles
 
-### bd-api (optional)
+
+
+### bd-api
 
 Installs the [bd-api](https://github.com/leighmacdonald/bd-api) service.
 
@@ -24,10 +26,17 @@ web service for processing incoming demos.
 The gbans roles downloads and configures the [gbans](https://github.com/leighmacdonald/gbans) (and postgres) docker instances. gbans is a tools that provides 
 centralized bans, appeals and other simple community components.
 
-### metrics (optional)
+### metrics
 
 The metrics role is responsible for configuring the grafana monitoring stack. Installs the grafana web service 
 and associated backend agents loki, prometheus and promtail.
+
+### sentry (self-hosted)
+
+This role is responsible for setting up the [sentry.io self-hosted] error tracking/tracing/instrumentation. This is fairly 
+high resource usage, so be careful if you are going to use this. You can attempt to try running this in 
+[errors only](https://develop.sentry.dev/self-hosted/experimental/errors-only/) mode if you wanted to attempt to use it on
+a lower capacity machine.
 
 ### sourcemod (+metamod)
 
@@ -52,6 +61,15 @@ But they may again in the future as things have improved.
 - Builds *all* sourcemod plugins from source. This is done to help reduce bitrot and ensure correctness.
 - Configures the services specific plugins and extensions.
 
+### tf2bdd
+
+Installs an instance of [tf2bdd](https://github.com/leighmacdonald/tf2bdd), which is used to manage bot a detector list 
+via discord.
+
+### uncledane
+
+Handles building and running the [uncledane.com](https://uncletdane.com) [src](https://github.com/leighmacdonald/uncledane-web) website. 
+
 ## Playbooks
 
 These are largely in the order they should be executed in except for, adduser.yml, which must be run first. 
@@ -73,8 +91,7 @@ Installs base OS runtime requirements and services.
 
 - Set timezone
 - Enable i386 arch for steam_cmd/srcds
-- Installs apt repos and install .net, docker, rsyslog 
-- Install [DepotDownloader](https://github.com/SteamRE/DepotDownloader)
+- Installs apt repos and install docker, rsyslog
 - Enable firewall in deny mode
 
 ### update.yml
