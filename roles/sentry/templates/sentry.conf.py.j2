@@ -383,7 +383,12 @@ CSRF_TRUSTED_ORIGINS = ["https://{{ caddy.hosts.sentry.dns }}", "http://127.0.0.
 # to keep the old assets, set `SETUP_JS_SDK_KEEP_OLD_ASSETS` environment variable to any value on
 # your `.env` or `.env.custom` file. The files should only be a few KBs, and this might be useful
 # if you're using it directly like a CDN instead of using the loader script.
+
+{% if sentry_external_url|default("") == "" %}
 JS_SDK_LOADER_DEFAULT_SDK_URL = "https://browser.sentry-cdn.com/%s/bundle%s.min.js"
+{% else %}
+JS_SDK_LOADER_DEFAULT_SDK_URL = "{{ sentry_external_url }}/js-sdk/%s/bundle%s.min.js"
+{% endif %}
 
 #####################
 # Insights Settings #

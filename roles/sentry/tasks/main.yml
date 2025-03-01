@@ -9,14 +9,20 @@
 # NOTE: These should be kept up to date if the checked out version above changes.
 - name: Generate sentry.conf
   ansible.builtin.template:
-    src: config.conf.j2
-    dest: ~/sentry/sentry/sentry.conf
+    src: config.yml.j2
+    dest: ~/sentry/sentry/config.yml
     mode: "0775"
 
 - name: Generate sentry.conf.py
   ansible.builtin.template:
     src: sentry.conf.py.j2
     dest: ~/sentry/sentry/sentry.conf.py
+    mode: "0775"
+
+- name: Copy env.local
+  ansible.builtin.copy:
+    content: "SETUP_JS_SDK_ASSETS=1 \n"
+    dest: ~/sentry/.env.local
     mode: "0775"
 
 # Create user: docker compose run --rm web createuser

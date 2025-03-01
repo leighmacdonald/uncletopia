@@ -3,3 +3,12 @@ sentry_discord_app_id: ""
 sentry_discord_public_key: ""
 sentry_discord_client_secret: ""
 sentry_discord_bot_token: ""
+sentry_external_url: ""
+sentry_github_app_id: 0
+sentry_github_name: ""
+sentry_github_client_id: ""
+sentry_github_client_secret: ""
+sentry_github_webhook_secret: ""
+sentry_github_private_key: |
+  private
+  key

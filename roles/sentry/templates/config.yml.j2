@@ -93,21 +93,20 @@ transaction-events.force-disable-internal-project: true
 ######################
 
 # Refer to https://develop.sentry.dev/integrations/github/ for setup instructions.
+{% if sentry_github_app_id|default(0) > 0 %}
+github-login.extended-permissions: ['repo']
+github-app.id: {{ sentry_github_app_id }}
+github-app.name: {{ sentry_github_name }}
+github-app.webhook-secret: {{ sentry_github_webhook_secret }} # Use only if configured in GitHub
+github-app.client-id: {{ sentry_github_client_id }}
+github-app.client-secret: {{ sentry_github_client_secret }}
 
-# github-login.extended-permissions: ['repo']
-# github-app.id: GITHUB_APP_ID
-# github-app.name: 'GITHUB_APP_NAME'
-# github-app.webhook-secret: 'GITHUB_WEBHOOK_SECRET' # Use only if configured in GitHub
-# github-app.client-id: 'GITHUB_CLIENT_ID'
-# github-app.client-secret: 'GITHUB_CLIENT_SECRET'
-# github-app.private-key: |
-#   -----BEGIN RSA PRIVATE KEY-----
-#   privatekeyprivatekeyprivatekeyprivatekey
-#   privatekeyprivatekeyprivatekeyprivatekey
-#   privatekeyprivatekeyprivatekeyprivatekey
-#   privatekeyprivatekeyprivatekeyprivatekey
-#   privatekeyprivatekeyprivatekeyprivatekey
-#   -----END RSA PRIVATE KEY-----
+{% set key = sentry_github_private_key.split("\n") %}
+github-app.private-key: |
+{% for line in key %}
+  {{ line }}
+{%  endfor %}
+{% endif %}
 
 #####################
 # Slack Integration #
