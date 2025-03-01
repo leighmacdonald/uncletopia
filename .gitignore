@@ -17,3 +17,4 @@ group_vars/*
 roles/cloudalchemy.*
 /*.hosts
 *.dll
+/.ansible/
