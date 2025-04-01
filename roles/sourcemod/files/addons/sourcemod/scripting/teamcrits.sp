@@ -16,8 +16,8 @@ public Plugin myinfo = {
 };
 
 public void OnPluginStart() {
-	cvarBluEnabled = CreateConVar("sm_crits_red", "1", "Enable crits for red team", FCVAR_NOTIFY, true, 0.0, true, 1.0);
-	cvarRedEnabled = CreateConVar("sm_crits_blu", "0", "Enable crits for blu team", FCVAR_NOTIFY, true, 0.0, true, 1.0);
+	cvarRedEnabled = CreateConVar("sm_crits_red", "1", "Enable crits for red team", FCVAR_NOTIFY, true, 0.0, true, 1.0);
+	cvarBluEnabled = CreateConVar("sm_crits_blu", "0", "Enable crits for blu team", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 }
 
 public Action TF2_CalcIsAttackCritical(int client, int weapon, char[] weaponname, bool &result) {
