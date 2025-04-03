@@ -61,14 +61,20 @@
       - libstdc++6:i386
       - libcurl4-gnutls-dev:i386
       - tmux
-
-
-# TODO echo "deb http://security.ubuntu.com/ubuntu focal-security main universe" > /etc/apt/sources.list.d/ubuntu-focal-sources.list
+      -
 # Required for libncurses5:i386
+- name: Add specified repository into sources list
+  become: true
+  when: ansible_distribution == 'Ubuntu' and ansible_distribution_version == "24.04"
+  ansible.builtin.apt_repository:
+    repo: deb https://security.ubuntu.com/ubuntu focal-security main universe
+    state: present
+
 - name: Install a list of packages (24.04)
   become: true
   when: ansible_distribution == 'Ubuntu' and ansible_distribution_version == "24.04"
   ansible.builtin.apt:
+    update_cache: true
     pkg:
       - lib32z1
       - libncurses5:i386
@@ -549,10 +555,14 @@
   tags:
     - game_engine
 
-- name: Restart srcds
+- name: Enable srcds
+  become: true
   ansible.builtin.systemd:
     name: "srcds-{{ item.server_name_short }}"
+    enabled: true
+    force: true
     state: restarted
+    no_block: true
   loop: "{{ services }}"
   loop_control:
     index_var: loop0
