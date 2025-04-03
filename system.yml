@@ -224,7 +224,7 @@
         command:
           - "--path.rootfs=/host"
         ports:
-          - "{{ wireguard_address | default(ip) }}:9100:9100"
+          - "{{ wireguard_address_ip | default(ip) }}:9100:9100"
         labels:
           logging: "promtail"
           logging_jobname: "containerlogs"
