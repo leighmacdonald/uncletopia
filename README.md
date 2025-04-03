@@ -5,7 +5,8 @@ configuring and administering the uncletopia server cluster.
 
 ## Roles
 
-
+There is several roles that can be installed. Some are just additional tools that are hosted by us (bd-api, tf2bdd, uncledane) 
+and are not required at all. 
 
 ### bd-api
 
@@ -14,7 +15,7 @@ Installs the [bd-api](https://github.com/leighmacdonald/bd-api) service.
 ### caddy
 
 The [caddy](https://caddyserver.com/) role configures the frontend http proxy that exposes all the internal services such as the 
-gbans website and grafana.
+gbans website, grafana and sentry.
 
 ### demostats
 
@@ -24,7 +25,7 @@ web service for processing incoming demos.
 ### gbans
 
 The gbans roles downloads and configures the [gbans](https://github.com/leighmacdonald/gbans) (and postgres) docker instances. gbans is a tools that provides 
-centralized bans, appeals and other simple community components.
+centralized bans, appeals and other simple community components. This role expects the demostats role as well.
 
 ### metrics
 
@@ -36,7 +37,8 @@ and associated backend agents loki, prometheus and promtail.
 This role is responsible for setting up the [sentry.io self-hosted] error tracking/tracing/instrumentation. This is fairly 
 high resource usage, so be careful if you are going to use this. You can attempt to try running this in 
 [errors only](https://develop.sentry.dev/self-hosted/experimental/errors-only/) mode if you wanted to attempt to use it on
-a lower capacity machine.
+a lower capacity machine. If you are small scale you should probably just stick to the free hosted tier at sentry.io, it should
+be more than sufficient.
 
 ### sourcemod (+metamod)
 

@@ -45,25 +45,6 @@
       - 127.0.0.1:6006:6006
       - 27715:27715/udp
 
-- name: Create gbans-river
-  community.docker.docker_container:
-    name: gbans-river
-    image: ghcr.io/riverqueue/riverui:latest
-    restart: true
-    recreate: true
-    pull: true
-    restart_policy: always
-    state: started
-    networks:
-      - name: caddy_net
-    env:
-      DATABASE_URL: "{{ gbans_web.database_dsn }}"
-    ports:
-      - "{{ vpn_hosts[inventory_hostname].ip }}:8081:8080"
-    labels:
-      logging: "promtail"
-      logging_jobname: "containerlogs"
-
 - name: Create srcds-log-fw
   become: true
   community.general.ufw:

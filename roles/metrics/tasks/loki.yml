@@ -38,7 +38,7 @@
       - loki_data:/loki
     ports:
       - "127.0.0.1:{{ loki.port }}:3100"
-      - "{{ vpn_hosts[inventory_hostname].ip }}:{{ loki.port }}:3100"
+      - "{{ metrics_hostname_ip }}:{{ loki.port }}:3100"
   tags:
     - loki
   when: inventory_hostname == metrics_hostname

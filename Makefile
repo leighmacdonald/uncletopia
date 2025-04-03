@@ -63,6 +63,6 @@ tf2bdd:
 sentry:
 	@ansible-playbook -u $(USER) -i $(HOSTS_PROD) --forks $(FORKS) $(PLAYBOOK_PATH)/sentry.yml
 
-\srcds-test:
+srcds-test:
 	@ansible-playbook -u $(USER) -i $(HOSTS_DEV) --forks $(FORKS) $(PLAYBOOK_PATH)/srcds.yml
 

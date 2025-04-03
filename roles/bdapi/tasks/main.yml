@@ -85,7 +85,7 @@
     env:
       DATABASE_URL: "postgresql://bdapi:bdapi@bdapi-postgres:5432/bdapi"
     ports:
-      - "{{ vpn_hosts[metrics_hostname].ip }}:8080:8080"
+      - "{{ metrics_hostname_ip }}:8080:8080"
     labels:
       logging: "promtail"
       logging_jobname: "containerlogs"

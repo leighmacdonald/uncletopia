@@ -46,7 +46,7 @@
       POSTGRES_HOST_AUTH_METHOD: md5
     ports:
       - 127.0.0.1:5432:5432
-      - "{{ vpn_hosts[inventory_hostname].ip }}:5432:5432"
+      - "{{ metrics_hostname_ip }}:5432:5432"
     labels:
       logging: "promtail"
       logging_jobname: "containerlogs"

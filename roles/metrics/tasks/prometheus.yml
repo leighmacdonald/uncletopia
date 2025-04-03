@@ -43,7 +43,7 @@
       - /etc/prometheus.yml:/etc/prometheus/prometheus.yml
     ports:
       - "127.0.0.1:{{ prometheus.port | default(9090) }}:9090"
-      - "{{ vpn_hosts[metrics_hostname].ip | default(ip) }}:{{ prometheus.port | default(9090) }}:9090"
+      - "{{ metrics_hostname_ip | default(ip) }}:{{ prometheus.port | default(9090) }}:9090"
   tags:
     - metrics-server
     - prometheus
@@ -81,7 +81,7 @@
       - /etc/alertmanager.yml:/etc/alertmanager.yml
     ports:
       - "127.0.0.1:{{ alertmanager.port | default(9093) }}:9093"
-      - "{{ vpn_hosts[metrics_hostname].ip | default(ip) }}:{{ alertmanager.port | default(9093) }}:9093"
+      - "{{ metrics_hostname_ip | default(ip) }}:{{ alertmanager.port | default(9093) }}:9093"
   tags:
     - metrics-server
     - prometheus

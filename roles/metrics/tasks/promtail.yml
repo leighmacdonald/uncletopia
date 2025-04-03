@@ -1,6 +1,5 @@
 ---
 
-
 - name: Generate /etc/promtail.yml
   become: true
   ansible.builtin.template:
@@ -33,8 +32,8 @@
       - /var/run/docker.sock:/var/run/docker.sock
     ports:
       - "127.0.0.1:{{ promtail.port }}:9080"
-      - "{{ vpn_hosts[inventory_hostname].ip | default(ip) }}:{{ promtail.port }}:9080"
-      - "{{ vpn_hosts[inventory_hostname].ip | default(ip) }}:{{ syslog.port }}:1514/udp"
+      - "{{ metrics_hostname_ip | default(ip) }}:{{ promtail.port }}:9080"
+      - "{{ metrics_hostname_ip | default(ip) }}:{{ syslog.port }}:1514/udp"
   tags:
     - promtail
     - metrics-client
