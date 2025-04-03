@@ -7,3 +7,5 @@ collections:
 roles:
   - name: hadret.rsyslog
   - name: githubixx.ansible_role_wireguard
+    src: https://github.com/githubixx/ansible-role-wireguard.git
+    version: 17.1.0
