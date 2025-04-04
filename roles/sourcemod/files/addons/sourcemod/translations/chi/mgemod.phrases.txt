@@ -1,0 +1,215 @@
+// colors:
+// player names - {lightgreen}
+// arena name - {greeen}
+// info/tip - {olive}
+// numbers - {green}
+
+"Phrases"
+{
+    "MenuTitle" //No colors here.
+    {
+        "chi"           "加入竞技场……"
+    }
+    "MenuRemove" //No colors here.
+    {
+        "chi"           "退出队列"
+    }
+    "HPLeft"
+    {
+        "#format"       "{1:i}"
+        "chi"           "{green}[MGE]{default} 您的对手还剩 {green}{1}{default} 生命值。"
+    }
+    "Adv"
+    {
+        "chi"           "{olive}键入 {default}!add{olive} 打开菜单并加入竞技场，键入 {default}!mgehelp {olive}查看帮助。"
+    }
+    "JoinsArena"
+    {
+        "#format"       "{1:s},{2:i},{3:s}"
+        "chi"           "{lightgreen}{1}（{2}）{default}加入了竞技场：{green}{3}"
+    }
+    "JoinsArenaNoStats"
+    {
+        "#format"       "{1:s},{2:s}"
+        "chi"           "{lightgreen}{1} {default}加入了竞技场：{green}{2}"
+    }
+    "ChoseArena"
+    {
+        "#format"       "{1:s}"
+        "chi"           "您选择了竞技场：{green}{1}"
+    }
+    "NextInLine"
+    {
+        "chi"           "您排在{green}下一位{default}上场。"
+    }
+    "InLine"
+    {
+        "#format"       "{1:i}"
+        "chi"           "您排在队列中第 {green}{1}{default} 位。"
+    }
+    "GainedPoints"
+    {
+        "#format"       "{1:i}"
+        "chi"           "您得到了 {green}{1}{default} 分。"
+    }
+    "LostPoints"
+    {
+        "#format"       "{1:i}"
+        "chi"           "您丢掉了 {green}{1}{default} 分。"
+    }
+    "MyRank"
+    {
+        "#format"       "{1:i},{2:i},{3:i}"
+        "chi"           "您的排名：{green}{1}{default}。胜场数：{green}{2}{default}，负场数：{green}{3}{default}。"
+    }
+    "MyRankNoRating"
+    {
+        "#format"       "{1:i},{2:i}"
+        "chi"           "您的胜场数：{green}{1}{default}，负场数：{green}{2}{default}。"
+    }
+    "ClassIsNotAllowed"
+    {
+        "chi"           "{olive}不允许使用该职业。"
+    }
+    "LowRating"
+    {
+        "#format"       "{1:i},{2:i}"
+        "chi"           "Your rating {green}{1}{default} is too low, minimum is {green}{2}"
+    }
+    "HighRating"
+    {
+        "#format"       "{1:i},{2:i}"
+        "chi"           "Your rating {green}{1}{default} is too high, maximum is {green}{2}"
+    }
+    "XdefeatsY"
+    {
+        "#format"       "{1:s},{2:i},{3:s},{4:i},{5:i},{6:s}"
+        "chi"           "{lightgreen}{1}{default} (Score:{2}) 打败了 {lightgreen}{3}{default}（得分：{4}）in duel to {green}{5}{default}（竞技场：{green}{6}）"
+    }
+    "XdefeatsYearly"
+    {
+        "#format"       "{1:s},{2:i},{3:s},{4:i},{5:s}"
+        "chi"           "{lightgreen}{1}{default} (Score:{2}) 打败了 {lightgreen}{3}{default}（Score:{4}）（竞技场：{green}{5}）"
+    }
+    "SpecRemove"
+    {
+        "chi"           "{olive}对决时不能进入观察员。您已被移出队列。"
+    }
+    "ClassChangePoint"
+    {
+        "chi"           "{olive}您在对决中更换了职业，因此罚您一分。"
+    }
+    "ClassChangePointOpponent"
+    {
+        "chi"           "{olive}您的对手在对决中更换了职业，因此罚他一分。"
+    }
+    "Welcome1"
+    {
+        "#format"       "{1:s}"
+        "chi"           "{olive}欢迎来玩 MGE，插件版本：{lightgreen}{1}"
+    }
+    "Welcome2"
+    {
+        "chi"           "{olive}地图作者{default}：{lightgreen}Swaty{default}、{lightgreen}CB"
+    }
+    "Welcome3"
+    {
+        "chi"           "{olive}插件作者{default}：{lightgreen}Lange、Cprice{default}，汉化：{lightgreen}888"
+    }
+    "Top5Title" //No colors here.
+    {
+        "chi"           "最顶尖的五名玩家"
+    }
+    "top5error"
+    {
+        "chi"           "[MGE] 数据库中尚无玩家数据。"
+    }
+    "bballdunk"
+    {
+        "#format"       "{1:s}"
+        "chi"           "{lightgreen}您{default}在 {lightgreen}{1}{default} 成功投篮！"
+    }
+    "Cmd_MGECmds"
+    {
+        "chi"           "[MGE] 帮助：命令简介"
+    }
+    "Cmd_SeeConsole"
+    {
+        "chi"           "[MGE] 请查看控制台输出。"
+    }
+    "Cmd_MGEMod"
+    {
+        "chi"           "[MGE] mgemod\t - 主菜单"
+    }
+    "Cmd_Add"
+    {
+        "chi"           "[MGE] add\t - 格式:add <竞技场号/竞技场名称> - 加入指定竞技场"
+    }
+    "Cmd_Remove"
+    {
+        "chi"           "[MGE] remove\t - 退出当前竞技场。"
+    }
+    "Cmd_First"
+    {
+        "chi"           "[MGE] first\t - 加入首个可用的竞技场。"
+    }
+    "Cmd_Top5"
+    {
+        "chi"           "[MGE] top5\t - 显示总排名前五的玩家列表。"
+    }
+    "Cmd_Rank"
+    {
+        "chi"           "[MGE] rank\t - 格式：rank <玩家名称> - 显示指定玩家的排名。"
+    }
+    "Cmd_HitBlip"
+    {
+        "chi"           "[MGE] hitblip - 开启或关闭命中声音。"
+    }
+    "Cmd_Hud"
+    {
+        "chi"           "[MGE] hud\t - 开启或关闭 HUD 文本信息。"
+    }
+    "Cmd_Handicap"
+    {
+        "chi"           "[MGE] handicap - 开启让步，可以减少您的最大生命值。键入“!handicap off”可以关闭。"
+    }
+    "NoClassChange"
+    {
+        "chi"           "{olive}当前您不能更换职业。"
+    }
+    "DatabaseDown"
+    {
+        "#format"       "{1:i}"
+        "chi"           "Database connection failed, disabling stats.\nA reconnect will be attempted in {1} minutes."
+    }
+    "StatsRestored"
+    {
+        "chi"           "Database connection restored, refreshing stats...\nStats restored."
+    }
+    "StatsRestoredDown"
+    {
+        "chi"           "Database is up, but stats are administratively down."
+    }
+    "MustJoinArena"
+    {
+        "chi"           "{olive}您必须先加入一个竞技场！"
+    }
+    "NoCurrentHandicap"
+    {
+        "#format"       "{1:i}"
+        "chi"           "{olive}您目前还没有开启让步呢。"
+    }
+    "CurrentHandicap"
+    {
+        "#format"       "{1:i}"
+        "chi"           "{olive}您当前的让步方案：{lightgreen}{1} {olive}最大生命值。"
+    }
+    "InvalidHandicap"
+    {
+        "chi"           "{olive}您设定的让步方案无效。让步已关闭。"
+    }
+    "HandicapDisabled"
+    {
+        "chi"           "{olive}让步已关闭。"
+    }
+}

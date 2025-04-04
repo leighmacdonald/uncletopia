@@ -1,0 +1,215 @@
+// colors:
+// player names - {lightgreen}
+// arena name - {greeen}
+// info/tip - {olive}
+// numbers - {green}
+
+"Phrases"
+{
+	"MenuTitle" //No colors here.
+	{
+		"de"			"Arena betreten..."
+	}
+	"MenuRemove" //No colors here.
+	{
+		"de"			"Aus Warteschlange entfernen"
+	}
+	"HPLeft"
+	{
+		"#format"		"{1:i}"
+		"de"			"{green}[MGE]{default} Dein Gegner überlebte mit {green}{1}{default} HP."
+	}
+	"Adv"
+	{
+		"de"			"{olive}Um eine Arena zu betreten, schreibe {default}!add\n{olive}Für eine Liste aller Befehle, schreibe {default}!mgehelp"
+	}
+	"JoinsArena"
+	{
+		"#format"		"{1:s},{2:i},{3:s}"
+		"de"			"{lightgreen}{1} ({2}) {default}betritt Arena {green}{3}."
+	}
+	"JoinsArenaNoStats"
+	{
+		"#format"		"{1:s},{2:s}"
+		"de"			"{lightgreen}{1} {default}betritt Arena {green}{2}."
+	}
+	"ChoseArena"
+	{
+		"#format"		"{1:s}"
+		"de"			"Du hast Arena {green}{1} {default} gewählt."
+	}
+	"NextInLine"
+	{
+		"de"			"Du bist als {green}Nächster{default} an der Reihe."
+	}
+	"InLine"
+	{
+		"#format"		"{1:i}"
+		"de"			"Du bist {green}{1}{default} in der Reihe."
+	}
+	"GainedPoints"
+	{
+		"#format"		"{1:i}"
+		"de"			"Du hast {green}{1}{default} Punkte erhalten."
+	}
+	"LostPoints"
+	{
+		"#format"		"{1:i}"
+		"de"			"Du hast {green}{1}{default} Punkte verloren."
+	}
+	"MyRank"
+	{
+		"#format"		"{1:i},{2:i},{3:i}"
+		"de"			"Deine Wertung: {green}{1}{default}. Siege: {green}{2}{default} , Niederlagen: {green}{3}{default}"
+	}
+	"MyRankNoRating"
+	{
+		"#format"		"{1:i},{2:i}"
+		"de"			"{green}{1}{default} Siege und {green}{2}{default} Niederlagen."
+	}
+	"ClassIsNotAllowed"
+	{
+		"de"			"{olive}Diese Klasse ist nicht erlaubt!"
+	}
+	"LowRating"
+	{
+		"#format"		"{1:i},{2:i}"
+		"de"			"Deine Wertung {green}{1}{default} ist zu gering, Minimum ist {green}{2}"
+	}
+	"HighRating"
+	{
+		"#format"		"{1:i},{2:i}"
+		"de"			"Deine Wertung {green}{1}{default} ist zu hoch, Maximum ist {green}{2}"
+	}
+	"XdefeatsY"
+	{
+		"#format"		"{1:s},{2:i},{3:s},{4:i},{5:i},{6:s}"
+		"de"			"{lightgreen}{1}{default} (Punkte:{2}) besiegt {lightgreen}{3}{default} (Punkte:{4}) in einem Duell bis {green}{5}{default} auf {green}{6}"
+	}
+	"XdefeatsYearly"
+	{
+		"#format"		"{1:s},{2:i},{3:s},{4:i},{5:s}"
+		"de"			"{lightgreen}{1}{default} (Punkte:{2}) besiegt {lightgreen}{3}{default} (Punkte:{4}) in einem Duell auf {green}{5}"
+	}
+	"SpecRemove"
+	{
+		"de"			"{olive}Wechseln zu Spec im Kampf nicht möglich, entfernt aus Warteschlange."
+	}
+	"ClassChangePoint"
+	{
+		"de"			"{olive}Du hast deine Klasse während des Kampfes gewechselt, dein Gegner erhält einen Punkt."
+	}
+	"ClassChangePointOpponent"
+	{
+		"de"			"{olive}Dein Gegner hat die Klasse während des Kampfes gewechselt, du erhältst einen Punkt."
+	}
+	"Welcome1"
+	{
+		"#format"		"{1:s}"
+		"de"			"{olive}Willkommen auf MGE version {lightgreen}{1}"
+	}
+	"Welcome2"
+	{
+		"de"			"{olive}Map von{default}: {lightgreen}Swaty, Jstn7477 {default}und {lightgreen}CB"
+	}
+	"Welcome3"
+	{
+		"de"			"{olive}Plugin von{default}: {lightgreen}Lange{default} und {lightgreen}Cprice{default}, basierend auf {lightgreen}kAmmomod"
+	}
+	"Top5Title" //No colors here.
+	{
+		"de"			"Top 5 Spieler"
+	}
+	"top5error"
+	{
+		"de"			"[MGE] Noch nicht genügend Spieler in der Datenbank."
+	}
+	"bballdunk"
+	{
+		"#format"		"{1:s}"
+		"de"			"{lightgreen}Du hast {default}gedunked gegen {lightgreen}{1}{default}!"
+	}
+	"Cmd_MGECmds"
+	{
+		"de"			"[MGE] Help: Befehl-Infos"
+	}
+	"Cmd_SeeConsole"
+	{
+		"de"			"[MGE] Siehe Konsole für Ausgabe."
+	}
+	"Cmd_MGEMod"
+	{
+		"de"			"[MGE] mgemod\t - Menü"
+	}
+	"Cmd_Add"
+	{
+		"de"			"[MGE] add\t - Verwendung: add <Arena-Nummer/Arena-Name>. Sich zu einer Arena hinzufügen."
+	}
+	"Cmd_Remove"
+	{
+		"de"			"[MGE] remove\t - Sich von aktueller Arena entfernen."
+	}
+	"Cmd_First"
+	{
+		"de"			"[MGE] first\t - Erste verfügbare Arena betreten."
+	}
+	"Cmd_Top5"
+	{
+		"de"			"[MGE] top5\t - Top 5 Spieler anzeigen."
+	}
+	"Cmd_Rank"
+	{
+		"de"			"[MGE] rank\t - Verwendung: rank <Spielername>. Spieler-Platzierung anzeigen."
+	}
+	"Cmd_HitBlip"
+	{
+		"de"			"[MGE] hitblip - An- / Ausschalten des Hitblips."
+	}
+	"Cmd_Hud"
+	{
+		"de"			"[MGE] hud - An- / Ausschalten des Text-HUDs."
+	}
+		"Cmd_Handicap"
+	{
+		"de"			"[MGE] handicap - Setzt deine maxmimale HP herab. Schreibe '!handicap off' um es zu deaktvieren."
+	}
+	"NoClassChange"
+	{
+		"de"			"{olive}Klasse wechseln jetzt nicht möglich."
+	}
+	"DatabaseDown"
+	{
+		"#format"		"{1:i}"
+		"de"			"Datenbankverbindung fehlgeschlagen, Statistiken sind deaktiviert.\n Wiederherstellung der Verbindung wird versucht in {1} Minuten."
+	}
+	"StatsRestored"
+	{
+		"de"			"Datenbankverbindung wiederhergestellt, aktualisiere Statistiken...\nStatistiken wiederhergestellt."
+	}
+	"StatsRestoredDown"
+	{
+		"de"			"Datenbank ist online, Statistiken sind jedoch deaktiviert."
+	}
+		"MustJoinArena"
+	{
+		"de"			"{olive}Du musst in einer Arena sein, um das zu tun."
+	}
+	"NoCurrentHandicap"
+	{
+		"#format"		"{1:i}"
+		"de"			"{olive}Du hast momentan kein Handicap eingestellt."
+	}
+	"CurrentHandicap"
+	{
+		"#format"		"{1:i}"
+		"de"			"{olive}Dein Handicap beträgt momentan {lightgreen}{1} {olive} HP."
+	}
+	"InvalidHandicap"
+	{
+		"de"			"{olive}Dein gewünschtes Handicap ist ungültig. Handicap wird deaktiviert."
+	}
+	"HandicapDisabled"
+	{
+		"de"			"{olive}Handicap deaktiviert."
+	}
+}

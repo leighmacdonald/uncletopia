@@ -1,0 +1,211 @@
+// colors:
+// player names - {lightgreen}
+// arena name - {greeen}
+// info/tip - {olive}
+// numbers - {green}
+
+"Phrases"
+{
+	"MenuTitle" //no colors here
+	{
+		"ru"			"Выберите арену..."
+	}
+	"MenuRemove" //no colors here
+	{
+		"ru"			"Удалиться с арены"
+	}
+	"HPLeft"
+	{
+		"#format"		"{1:i}"
+		"ru"			"{green}[MGE]{default} У вашего оппонента осталось {green}{1}{default} жизней."
+	}
+	"Adv"
+	{
+		"ru"			"{olive}Для того чтобы зайти на арену напишите в чате {default}!add или /add"
+	}
+	"JoinsArena"
+	{
+		"#format"		"{1:s},{2:i},{3:s}"
+		"ru"			"{lightgreen}{1} ({2}) {default}заходит на арену {green}{3}."
+	}
+	"JoinsArenaNoStats"
+	{
+		"#format"		"{1:s},{2:s}"
+		"ru"			"{lightgreen}{1} {default}заходит на арену {green}{2}."
+	}
+	"ChoseArena"
+	{
+		"#format"		"{1:s}"
+		"ru"			"Вы выбрали арену {green}{1}."
+	}
+	"NextInLine"
+	{
+		"ru"			"Вы {green}следующий{default} в очереди."
+	}
+	"InLine"
+	{
+		"#format"		"{1:i}"
+		"ru"			"Вы {green}{1}{default} в очереди."
+	}
+	"GainedPoints"
+	{
+		"#format"		"{1:i}"
+		"ru"			"Вы получили {green}{1}{default} очков."
+	}
+	"LostPoints"
+	{
+		"#format"		"{1:i}"
+		"ru"			"Вы потеряли {green}{1}{default} очков."
+	}
+	"MyRank"
+	{
+		"#format"		"{1:i},{2:i}"
+		"ru"			"Ваш рейтинг равен {green}{1}{default}. Побед: {green}{2}{default} , Поражений: {green}{3}{default}"
+	}
+	"MyRankNoRating"
+	{
+		"#format"		"{1:i},{2:i}"
+		"en"			"У вас {green}{1}{default} побед и {green}{2}{default} поражений."
+	}
+	"ClassIsNotAllowed"
+	{
+		"ru"			"{olive}Этот класс не разрешен!"
+	}
+	"LowRating"
+	{
+		"#format"		"{1:i},{2:i}"
+		"ru"			"Ваш рейтинг {green}{1}{default} слишком мал. Необходимо {green}{2}+"
+	}
+	"HighRating"
+	{
+		"#format"		"{1:i},{2:i}"
+		"ru"			"Ваш рейтинг {green}{1}{default} слишком велик. Максимально допустимый {green}{2}"
+	}
+	"XdefeatsY"
+	{
+		"#format"		"{1:s},{2:i},{3:s},{4:i},{5:i},{6:s}"
+		"ru"			"{lightgreen}{1}{default} (Score:{2}) победил {lightgreen}{3}{default} (Счет:{4}) в дуели до {green}{5}{default} на арене {green}{6}"
+	}
+	"XdefeatsYearly"
+	{
+		"#format"		"{1:s},{2:i},{3:s},{4:i},{5:s}"
+		"ru"			"{lightgreen}{1}{default} (Счет:{2}) победил {lightgreen}{3}{default} (Счет:{4}) в дуели до {green}{5}"
+	}
+	"SpecRemove"
+	{
+		"ru"			"{olive}Нельзя перейти в наблюдатели когда вы на арене, вы удаляетесь с арены."
+	}
+	"ClassChangePoint"
+	{
+		"ru"			"{olive}Вы поменяли класс во время битвы. Оппонент получает одно очко."
+	}
+	"ClassChangePointOpponent"
+	{
+		"ru"			"{olive}Ваш оппонент поменял класс во время битвы. Вы получаете одно очко."
+	}
+	"Welcome1"
+	{
+		"#format"		"{1:s}"
+		"ru"			"{olive}Добро пожаловать на MGE версия {lightgreen}{1}"
+	}
+	"Welcome2"
+	{
+		"ru"			"{olive}Карта создана{default}: {lightgreen}Swaty, Jstn7477 {default}и {lightgreen}CB"
+	}
+	"Welcome3"
+	{
+		"ru"			"{olive}Плагин от{default}: {lightgreen}Lange{default} & {lightgreen}Cprice{default}, созданный на основе {lightgreen}kAmmomod"
+	}
+	"Top5Title" //No colors here.
+	{
+		"ru"			"Пятерка лучших"
+	}
+	"top5error"
+	{
+		"ru"			"[MGE] Еще не набралось достаточное количество игроов."
+	}
+	"bballdunk"
+	{
+		"#format"		"{1:s}"
+		"ru"			"{lightgreen}Вы {default}одержали победу над {lightgreen}{1}{default}!"
+	}
+	"Cmd_MGECmds"
+	{
+		"ru"			"[MGE] ПОМОЩЬ: Информация о командах"
+	}
+	"Cmd_SeeConsole"
+	{
+		"ru"			"[MGE] Смотри в консоли."
+	}
+	"Cmd_MGEMod"
+	{
+		"ru"			"[MGE] mgemod\t - Меню"
+	}
+	"Cmd_Add"
+	{
+		"ru"			"[MGE] add\t - Используйте: add <номер арены/имя арены>. Зайти на арену."
+	}
+	"Cmd_Remove"
+	{
+		"ru"			"[MGE] remove\t - Удалиться с арены."
+	}
+	"Cmd_First"
+	{
+		"ru"			"[MGE] first\t - Присоединиться к любой свободной арене."
+	}
+	"Cmd_Top5"
+	{
+		"ru"			"[MGE] top5\t - Показать пятерку лучших игроков."
+	}
+	"Cmd_Rank"
+	{
+		"ru"			"[MGE] rank\t - Используйте: rank <имя игрока>. Посмотреть статистику игрока."
+	}
+	"Cmd_HitBlip"
+	{
+		"ru"			"[MGE] hitblip - Включить\отключить звук при попадании."
+	}
+	"NoClassChange"
+	{
+		"ru"			"{olive}Вы не можете сменить класс прямо сейчас."
+	}
+	"DatabaseDown"
+	{
+		"#format"		"{1:i}"
+		"ru"			"Не удается присоедниться к базе данных, отключаю статистику.\nПовторная попытка подключения будет через {1} минут."
+	}
+	"DatabaseRestored"
+	{
+		"ru"			"Соединение с базой данных восстановлено, обновление статистики..."
+	}
+	"StatsRestored"
+	{
+		"ru"			"Соединение с базой данных восстановлено, обновление статистики...\nСтатистика возвращена."
+	}
+	"StatsRestoredDown"
+	{
+		"ru"			"База данных восстановлена, но статистика выключена."
+	}
+	"MustJoinArena"
+	{
+		"ru"			"{olive}Чтобы выполнить данную команду вы обязаны зайти на арену."
+	}
+	"NoCurrentHandicap"
+	{
+		"#format"		"{1:i}"
+		"ru"			"{olive}На данный момент у вас отключен лимит максимального здоровья."
+	}
+	"CurrentHandicap"
+	{
+		"#format"		"{1:i}"
+		"ru"			"{olive}Ваше максимальное здоровье равно {lightgreen}{1} хп."
+	}
+	"InvalidHandicap"
+	{
+		"ru"			"{olive}Вы выбрали недопустимое значение для максимального здоровья."
+	}
+	"HandicapDisabled"
+	{
+		"ru"			"{olive}Лимит здоровья отключен."
+	}
+}
