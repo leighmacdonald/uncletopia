@@ -43,3 +43,6 @@
 [submodule "playbooks/roles/hadret.rsyslog"]
 	path = playbooks/roles/hadret.rsyslog
 	url = https://github.com/hadret/ansible-role-rsyslog
+[submodule "sm_plugins/mge"]
+	path = sm_plugins/mge
+	url = https://github.com/leighmacdonald/MGEMod.git

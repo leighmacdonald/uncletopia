@@ -186,7 +186,7 @@
 			"CTFGameRules::HandleSwitchTeams"
 			{
 				"windows"	"168"
-				"linux"		"170"
+				"linux"		"169"
 			}
 		}
 		

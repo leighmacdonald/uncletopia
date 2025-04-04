@@ -1,10 +1,13 @@
 #!/bin/env bash
-ROOT=$(pwd)/playbooks
+ROOT=$(pwd)
 SM_ROOT=$ROOT/roles/sourcemod/files/addons/sourcemod
 SRC_ROOT="sm_plugins"
 
 STAC_ROOT="$SRC_ROOT/stac"
 STAC_BRANCH="gbans-native"
+
+MGE_ROOT="$SRC_ROOT/mge"
+MGE_BRANCH="pg"
 
 PVE_ROOT="$SRC_ROOT/TF2_EngineerPVE"
 PVE_BRANCH="master"
@@ -47,7 +50,17 @@ git fetch --all
 git checkout $STAC_BRANCH
 git pull
 for d in 'scripting' 'extensions' 'gamedata' 'translations'; do
-  cp -rv $d "$SM_ROOT"
+  cp -rv $d "$SM_ROOT" || exit
+done
+popd || exit
+
+pushd $MGE_ROOT/addons/sourcemod || exit
+git fetch --all
+git checkout $MGE_BRANCH
+git pull
+for d in 'scripting' 'configs' 'translations'; do
+  echo cp -rv $d "$MGE_ROOT"
+  cp -rv $d "$SM_ROOT" || exit
 done
 popd || exit
 

@@ -732,7 +732,6 @@ void StacNotify(int userid, const char[] prefmtedstring, int detections = 0)
 
     // empty fields for spacing
     JSON_Object spacerField = new JSON_Object();
-    spacerField.EnableOrderedKeys();
     spacerField.SetString("name",   " ");
     spacerField.SetString("value",  " ");
     spacerField.SetBool  ("inline", false);
@@ -769,7 +768,6 @@ void StacNotify(int userid, const char[] prefmtedstring, int detections = 0)
         json_escape_string(ClName, sizeof(ClName));
 
         nameField = new JSON_Object();
-        nameField.EnableOrderedKeys();
         nameField.SetString("name", "Player");
         nameField.SetString("value", ClName);
         nameField.SetBool("inline", true);
@@ -791,7 +789,6 @@ void StacNotify(int userid, const char[] prefmtedstring, int detections = 0)
         }
 
         steamIDfield = new JSON_Object();
-        steamIDfield.EnableOrderedKeys();
         steamIDfield.SetString("name", "SteamID");
         steamIDfield.SetString("value", steamid);
         steamIDfield.SetBool  ("inline", true);
@@ -800,7 +797,6 @@ void StacNotify(int userid, const char[] prefmtedstring, int detections = 0)
 
     // detection / notify fields
     JSON_Object detectOrMsgfield = new JSON_Object();
-    detectOrMsgfield.EnableOrderedKeys();
     if (!userid)
     {
         detectOrMsgfield.SetString("name", "Message");
@@ -822,7 +818,6 @@ void StacNotify(int userid, const char[] prefmtedstring, int detections = 0)
     if (detections)
     {
         detectNumfield = new JSON_Object();
-        detectNumfield.EnableOrderedKeys();
         detectNumfield.SetString("name", "Detection #");
         detectNumfield.SetInt("value", detections);
         detectNumfield.SetBool("inline", true);
@@ -834,14 +829,12 @@ void StacNotify(int userid, const char[] prefmtedstring, int detections = 0)
     GetConVarString(FindConVar("hostname"), hostname, sizeof(hostname));
 
     JSON_Object hostname_field = new JSON_Object();
-    hostname_field.EnableOrderedKeys();
     hostname_field.SetString("name", "Hostname");
     hostname_field.SetString("value", hostname);
     hostname_field.SetBool  ("inline", true);
 
     // server IP - steam:///connect ??
     JSON_Object serverip_field = new JSON_Object();
-    serverip_field.EnableOrderedKeys();
     serverip_field.SetString("name", "Server IP");
     serverip_field.SetString("value", hostipandport);
     serverip_field.SetBool  ("inline", true);
@@ -852,14 +845,12 @@ void StacNotify(int userid, const char[] prefmtedstring, int detections = 0)
 
 
     JSON_Object demoname_field = new JSON_Object();
-    demoname_field.EnableOrderedKeys();
     demoname_field.SetString("name", "Demo name");
     demoname_field.SetString("value", demoname);
     demoname_field.SetBool  ("inline", true);
 
 
     JSON_Object demotick_field = new JSON_Object();
-    demotick_field.EnableOrderedKeys();
     demotick_field.SetString("name", "Demo tick");
     demotick_field.SetInt   ("value", demotick);
     demotick_field.SetBool  ("inline", true);
@@ -896,14 +887,12 @@ void StacNotify(int userid, const char[] prefmtedstring, int detections = 0)
     }
 
     JSON_Object gametime_field = new JSON_Object();
-    gametime_field.EnableOrderedKeys();
     gametime_field.SetString("name", "Approx server uptime");
     gametime_field.SetString("value", tickedTimeStr);
     gametime_field.SetBool  ("inline", true);
 
 
     JSON_Object servertick_field = new JSON_Object();
-    servertick_field.EnableOrderedKeys();
     servertick_field.SetString("name", "Server tick");
     servertick_field.SetInt   ("value", servertick);
     servertick_field.SetBool  ("inline", true);
@@ -927,14 +916,12 @@ void StacNotify(int userid, const char[] prefmtedstring, int detections = 0)
 
 
     JSON_Object discordtimestamp_field = new JSON_Object();
-    discordtimestamp_field.EnableOrderedKeys();
     discordtimestamp_field.SetString("name", "Discord Timestamp");
     discordtimestamp_field.SetString("value", discordTimestamp);
     discordtimestamp_field.SetBool  ("inline", true);
 
 
     JSON_Object unixtimestamp_field = new JSON_Object();
-    unixtimestamp_field.EnableOrderedKeys();
     unixtimestamp_field.SetString("name", "Unix Timestamp");
     unixtimestamp_field.SetInt   ("value", unixTimestamp);
     unixtimestamp_field.SetBool  ("inline", true);
@@ -990,7 +977,6 @@ void StacNotify(int userid, const char[] prefmtedstring, int detections = 0)
 
 
         viewangle_field = new JSON_Object();
-        viewangle_field.EnableOrderedKeys();
         viewangle_field.SetString("name", "viewangle history");
         viewangle_field.SetString("value", viewangleHistoryBuf);
         viewangle_field.SetBool  ("inline", false);
@@ -1019,7 +1005,6 @@ void StacNotify(int userid, const char[] prefmtedstring, int detections = 0)
         );
 
         clpos_field = new JSON_Object();
-        clpos_field.EnableOrderedKeys();
         clpos_field.SetString("name", "eye position history");
         clpos_field.SetString("value", eyeposBuf);
         clpos_field.SetBool  ("inline", false);
@@ -1048,7 +1033,6 @@ void StacNotify(int userid, const char[] prefmtedstring, int detections = 0)
         );
 
         cmdnum_field = new JSON_Object();
-        cmdnum_field.EnableOrderedKeys();
         cmdnum_field.SetString("name", "cmdnum history");
         cmdnum_field.SetString("value", cmdnumBuf);
         cmdnum_field.SetBool  ("inline", true);
@@ -1078,7 +1062,6 @@ void StacNotify(int userid, const char[] prefmtedstring, int detections = 0)
 
 
         tickcount_field = new JSON_Object();
-        tickcount_field.EnableOrderedKeys();
         tickcount_field.SetString("name", "tickcount history");
         tickcount_field.SetString("value", tickcountBuf);
         tickcount_field.SetBool  ("inline", true);
@@ -1109,7 +1092,6 @@ void StacNotify(int userid, const char[] prefmtedstring, int detections = 0)
 
 
         buttons_field = new JSON_Object();
-        buttons_field.EnableOrderedKeys();
         buttons_field.SetString("name", "buttons history");
         buttons_field.SetString("value", buttonsBuf);
         buttons_field.SetBool  ("inline", true);
@@ -1144,7 +1126,6 @@ void StacNotify(int userid, const char[] prefmtedstring, int detections = 0)
         );
 
         netinfo_field = new JSON_Object();
-        netinfo_field.EnableOrderedKeys();
         netinfo_field.SetString("name", "network info");
         netinfo_field.SetString("value", netinfoBuf);
         netinfo_field.SetBool  ("inline", false);
@@ -1191,7 +1172,6 @@ void StacNotify(int userid, const char[] prefmtedstring, int detections = 0)
 
     // embeds header info
     JSON_Object embedsFields = new JSON_Object();
-    embedsFields.EnableOrderedKeys();
 
     embedsFields.SetObject("fields", fieldArray);
     char notifType[64];
@@ -1218,7 +1198,6 @@ void StacNotify(int userid, const char[] prefmtedstring, int detections = 0)
 
     // root
     JSON_Object rootEmbeds = new JSON_Object();
-    rootEmbeds.EnableOrderedKeys();
     rootEmbeds.SetObject("embeds", finalArr);
     rootEmbeds.SetString("avatar_url", "https://i.imgur.com/RKRaLPl.png");
     rootEmbeds.Encode(output, sizeof(output));
