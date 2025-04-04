@@ -61,7 +61,7 @@
       - libstdc++6:i386
       - libcurl4-gnutls-dev:i386
       - tmux
-      -
+
 # Required for libncurses5:i386
 - name: Add specified repository into sources list
   become: true
