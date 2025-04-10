@@ -1,9 +1,8 @@
 function GiveBotsCriticals()
 {
-	local MAX_CLIENTS = MaxClients().tointeger()
-	for (local i = 1; i <= MAX_CLIENTS; i++)
+	local player = -1
+	while (player = Entities.FindByClassname(player, "player"))
 	{
-		local player = PlayerInstanceFromIndex(i)
 		if (player.IsFakeClient())
 		{
 			player.AddCondEx(Constants.ETFCond.TF_COND_CRITBOOSTED, 0.98, null)
@@ -13,10 +12,9 @@ function GiveBotsCriticals()
 
 function GiveBotsUber()
 {
-	local MAX_CLIENTS = MaxClients().tointeger()
-	for (local i = 1; i <= MAX_CLIENTS; i++)
+	local player = -1
+	while (player = Entities.FindByClassname(player, "player"))
 	{
-		local player = PlayerInstanceFromIndex(i)
 		if (player.IsFakeClient())
 		{
 			player.AddCondEx(Constants.ETFCond.TF_COND_CRITBOOSTED, 0.98, null)
