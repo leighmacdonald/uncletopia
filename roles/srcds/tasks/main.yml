@@ -407,6 +407,8 @@
     recursive: true
   loop: "{{ services }}"
   when: item.config == "pve"
+  tags:
+    - game_config
   # Perform the copy from the *remote* sourcemod build output
   delegate_to: "{{ inventory_hostname }}"
 
@@ -425,6 +427,8 @@
   ansible.builtin.file:
     path: /home/tf2server/srcds-{{ item.server_name_short }}/tf/addons/metamod/stripper.vdf
     state: absent
+  tags:
+    - game_config
   loop: "{{ services }}"
   when: item.config != "pve"
 

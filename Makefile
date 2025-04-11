@@ -46,7 +46,7 @@ game_engine:
 	@ansible-playbook -u $(USER) -i $(HOSTS_PROD) --forks $(FORKS) --tags game_engine $(PLAYBOOK_PATH)/srcds.yml
 
 game_config:
-	@ansible-playbook $(PLAYBOOK_PATH)/srcds.yml -u $(USER) -i $(HOSTS_PROD) --tags game_config --forks $(FORKS)
+	@ansible-playbook -u $(USER) -i $(HOSTS_PROD) --forks $(FORKS) --tags game_config $(PLAYBOOK_PATH)/srcds.yml
 
 uncledane:
 	@ansible-playbook -u $(USER) -i $(HOSTS_PROD) --forks $(FORKS) $(PLAYBOOK_PATH)/uncledane.yml
