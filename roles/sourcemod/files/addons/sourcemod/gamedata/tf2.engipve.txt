@@ -179,13 +179,13 @@
 		{
 			"CTFPlayer::EquipWearable"
 			{
-				"windows"	"438"
-				"linux"		"439"
+				"windows"	"439"
+				"linux"		"440"
 			}
 			
 			"CTFGameRules::HandleSwitchTeams"
 			{
-				"windows"	"168"
+				"windows"	"169"
 				"linux"		"170"
 			}
 		}
