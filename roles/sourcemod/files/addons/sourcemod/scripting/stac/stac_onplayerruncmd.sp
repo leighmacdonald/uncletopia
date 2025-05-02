@@ -91,11 +91,13 @@ public Action OnPlayerRunCmd
 
     // Don't allow clients to have both left and right turns active
     // Legit clients can do this
+/* Note from the future: I don't care! This doesn't do anything! Why is this here?
+-sappho 3/9/25
     if (buttons & IN_LEFT && buttons & IN_RIGHT)
     {
         buttons &= ~( IN_LEFT | IN_RIGHT );
     }
-
+*/
     return Plugin_Continue;
 }
 
@@ -315,12 +317,17 @@ stock void PlayerRunCmd
 
     if
     (
-        // make sure client isnt using a spin bind
+    /*
+        make sure client isnt using a spin bind
         ( buttons & IN_LEFT | buttons & IN_RIGHT )
+
+        Note from the future - this probably doesn't cause any actual false detections anymore, so we can probably remove it and be fine.
+        -sappho 3/9/25
+    */
         // make sure we're not lagging and that cmdnum is saneish
-        || IsUserLagging(cl, /* checkcmdnum = */ true)
+        IsUserLagging(cl, /* checkcmdnum = */ true)
     )
-    // if any of these things are true, don't check angles etc
+    // if we're lagging, don't check angles.
     {
         return;
     }

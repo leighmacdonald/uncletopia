@@ -2367,11 +2367,12 @@ static void TF2CSGO_DisplayVote(NativeVote vote, int[] clients, int num_clients)
 
 	if (!isTF2SDKModHack)
 	{
+		int holder = vote.Initiator;
 		// required to allow the initiator to vote on their own issue
 		// ValveSoftware/Source-1-Games#3934
-		if (sv_vote_holder_may_vote_no && vote.Initiator <= MaxClients)
+		if (sv_vote_holder_may_vote_no && holder <= MaxClients && IsClientConnected(holder))
 		{
-			sv_vote_holder_may_vote_no.ReplicateToClient(vote.Initiator, "1");
+			sv_vote_holder_may_vote_no.ReplicateToClient(holder, "1");
 		}
 	}
 

@@ -32,8 +32,6 @@ char miscVars[][] =
     "mat_wireframe",
     //must be == 0
     "mat_fillrate",
-    //must be == 0
-    "mat_fullbright",
     //must be == 1
     "r_drawparticles",
 
@@ -83,6 +81,8 @@ char cheatVars[][] =
     "crash",
     // cathook uses this to "spoof" windows
     "windows_speaker_config",
+    // Amalgam uses this in the Src (https://github.com/rei-2/Amalgam/blob/master/Amalgam/src/Features/Commands/Commands.cpp)
+    "getcvar",
 };
 
 
@@ -132,7 +132,6 @@ public void ConVarCheck(QueryCookie cookie, int cl, ConVarQueryResult result, co
     */
 
     // sv_cheats
-    // you know what this does and what it should be. 0.
     else if (StrEqual(cvarName, "sv_cheats"))
     {
         // if we're ignoring sv_cheats being on, obviously don't check this cvar
@@ -270,8 +269,15 @@ public void ConVarCheck(QueryCookie cookie, int cl, ConVarQueryResult result, co
     else if (StrEqual(cvarName, "host_timescale"))
     {
         // floatcmpreal is just a ==
-        // if the values don't match, whack 'em
-        if ( !floatcmpreal(StringToFloat(cvarValue), host_timescale.FloatValue) )
+        // only bother if server timescale == 1.0
+        if
+        (
+            // host_timescale value == 1
+            floatcmpreal(host_timescale.FloatValue, 1.0, 0.01)
+            &&
+            // client host_timescale cvar != 1
+            !floatcmpreal(StringToFloat(cvarValue), 1.0, 0.01)
+        )
         {
             oobVarsNotify(userid, cvarName, cvarValue);
             if (stac_ban_for_misccheats.BoolValue)
@@ -298,20 +304,6 @@ public void ConVarCheck(QueryCookie cookie, int cl, ConVarQueryResult result, co
     // mat_fillrate (cheat cvar! should NEVER not be 0)
     // AKA "ASUS wallhack"
     else if (StrEqual(cvarName, "mat_fillrate"))
-    {
-        if (StringToInt(cvarValue) != 0)
-        {
-            oobVarsNotify(userid, cvarName, cvarValue);
-            if (stac_ban_for_misccheats.BoolValue)
-            {
-                oobVarBan(userid);
-            }
-        }
-    }
-
-    // mat_fullbright (cheat cvar! should NEVER not be 0)
-    // see-thru smoke when 2
-    else if (StrEqual(cvarName, "mat_fullbright"))
     {
         if (StringToInt(cvarValue) != 0)
         {

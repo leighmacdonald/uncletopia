@@ -6,7 +6,8 @@
 #pragma newdecls required
 
 // For json
-#pragma dynamic 8192 * 4
+// if you have to make this any bigger there's probably an evil bug in json parsing code somewhere -sappho
+#pragma dynamic 8192 * 8
 
 #include <sourcemod>
 #include <regex>
@@ -56,7 +57,7 @@
 #pragma semicolon 1
 #pragma newdecls required
 
-#define PLUGIN_VERSION  "6.3.1"
+#define PLUGIN_VERSION  "6.3.6"
 
 #define UPDATE_URL      "https://raw.githubusercontent.com/sapphonie/StAC-tf2/master/updatefile.txt"
 
@@ -75,6 +76,8 @@ public Plugin myinfo =
 #include "stac/stac_globals.sp"
 // misc funcs used around the plugin
 #include "stac/stac_stocks.sp"
+// Notification forward
+#include "stac/stac_notify.sp"
 // stac cvars
 #include "stac/stac_cvars.sp"
 // admin commands
@@ -95,6 +98,7 @@ public Plugin myinfo =
 #include "stac/stac_memory.sp"
 // if it ain't broke, don't fix it. jtanz has written a great backtrack patch.
 #include "stac/jay_backtrack_patch.sp"
+
 
 /********** PLUGIN LOAD & UNLOAD **********/
 
@@ -207,6 +211,12 @@ public void OnPluginEnd()
     OnMapEnd();
 }
 
+public APLRes AskPluginLoad2(Handle plugin, bool late, char[] error, int err_max)
+{
+    RegPluginLibrary("stac");
+
+    return APLRes_Success;
+}
 
 /********** ONGAMEFRAME **********/
 

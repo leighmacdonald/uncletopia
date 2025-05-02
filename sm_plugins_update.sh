@@ -1,5 +1,5 @@
 #!/bin/env bash
-ROOT=$(pwd)/playbooks
+ROOT=$(pwd)
 SM_ROOT=$ROOT/roles/sourcemod/files/addons/sourcemod
 SRC_ROOT="sm_plugins"
 
@@ -20,7 +20,7 @@ DISCORD_ROOT="$SRC_ROOT/discord"
 DISCORD_BRANCH="master"
 
 COMPFIXES_ROOT="$SRC_ROOT/tf2-comp-fixes"
-COMPFIXES_BRANCH="v1.16.17"
+COMPFIXES_BRANCH="v1.16.19"
 
 EDICT_LIMITER_ROOT="$SRC_ROOT/edict-limiter"
 EDICT_LIMITER_BRANCH="v3.1.1"

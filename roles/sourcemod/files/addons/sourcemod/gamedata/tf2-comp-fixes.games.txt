@@ -234,33 +234,33 @@
 
 		"Offsets" {
 			"CBaseCombatWeapon::Deploy" {
-				"linux" "267"
-				"windows" "261"
+				"linux" "268"
+				"windows" "262"
 			}
 
 			"CBaseProjectile::CanCollideWithTeammates" {
-				"linux" "230"
-				"windows" "229"
+				"linux" "231"
+				"windows" "230"
 			}
 
 			"CTeamplayRoundBasedRules::RestartTournament" {
-				"linux" "213"
-				"windows" "211"
+				"linux" "214"
+				"windows" "212"
 			}
 
 			"CTeamplayRules::SetWinningTeam" {
-				"linux" "165"
-				"windows" "164"
+				"linux" "166"
+				"windows" "165"
 			}
 
 			"CTFFlameThrower::DeflectEntity" {
-				"linux" "428"
-				"windows" "421"
+				"linux" "430"
+				"windows" "423"
 			}
 
 			"CTFWeaponBase::SecondaryAttack" {
-				"linux" "293"
-				"windows" "287"
+				"linux" "294"
+				"windows" "288"
 			}
 		}
 
@@ -305,14 +305,14 @@
 			//
 			"CTFDroppedWeapon::InitDroppedWeapon" {
 				"linux" "@_ZN16CTFDroppedWeapon17InitDroppedWeaponEP9CTFPlayerP13CTFWeaponBasebb"
-				"windows" "\x55\x8B\xEC\x83\xEC\x30\x56\x57\x8B\xF9\x8B\x4D\x08"
+				"windows" "\x55\x8B\xEC\x83\xEC\x24\x56\x57\x8B\xF9\x8B\x4D\x08"
 			}
 
 			// contains string "BumperCar.JumpLand"
 			// multiple xrefs, it's the function that isn't just a bunch of strings
 			"CTFGameMovement::SetGroundEntity" {
 				"linux" "@_ZN15CTFGameMovement15SetGroundEntityEP10CGameTrace"
-				"windows" "\x55\x8B\xEC\x83\xEC\x0C\x56\x8B\xF1\x57\x8B\x7D\x08\x6A\x52"
+				"windows" "\x55\x8B\xEC\x56\x8B\xF1\x57\x8B\x7D\x2A\x6A\x52"
 			}
 
 			// contains string "uber_on_damage_taken"
