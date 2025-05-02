@@ -22,7 +22,7 @@
 - name: Create uncledane-web
   community.docker.docker_container:
     name: uncledane-web
-    image: "uncledane-web:latest"
+    image: "ghcr.io/leighmacdonald/uncledane-web:latest"
     restart: true
     recreate: true
     pull: false
@@ -33,7 +33,8 @@
     networks:
       - name: caddy_net
     volumes:
-      - /etc/uncledane.yaml:/app/config.yaml
+      - /home/tf2server/uncledane-web/config.yaml:/app/config.yaml
+      - /home/tf2server/uncledane-videos:/app/frontend/dist/videos
     ports:
       - 127.0.0.1:8003:8003
 
