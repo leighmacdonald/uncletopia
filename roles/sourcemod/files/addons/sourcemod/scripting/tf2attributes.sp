@@ -1130,7 +1130,6 @@ static bool IsNetworkedRuntimeAttribute(Address pDefType) {
 /**
  * Unloads the attribute in a given CEconItemAttribute instance.
  */
-#pragma unused UnloadAttributeValue
 static void UnloadAttributeValue(Address pAttrDef, Address pEconItemAttribute) {
 	Address pDefType = DereferencePointer(pAttrDef + view_as<Address>(0x08));
 	Address pAttributeValue = pEconItemAttribute + view_as<Address>(0x08);
