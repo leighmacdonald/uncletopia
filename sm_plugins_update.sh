@@ -1,5 +1,5 @@
 #!/bin/env bash
-ROOT=$(pwd)
+ROOT=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 SM_ROOT=$ROOT/roles/sourcemod/files/addons/sourcemod
 SRC_ROOT="sm_plugins"
 
@@ -40,7 +40,24 @@ NATIVEVOTES_BRANCH="master"
 SKIPMOTD_ROOT="$SRC_ROOT/skipmotd"
 SKIPMOTD_BRANCH="master"
 
+MGE_ROOT="$SRC_ROOT/mge"
+MGE_BRANCH="pg"
+
 # git submodule update --init --recursive
+
+pushd $MGE_ROOT || exit
+git fetch --all
+git checkout $MGE_BRANCH
+git pull
+for d in 'configs' 'scripting' 'translations'; do
+  cp -rv addons/sourcemod/$d "$SM_ROOT"
+done
+
+cp -rv maps/* "$ROOT"/roles/srcds/files/maps
+popd || exit
+
+exit
+
 
 pushd $STAC_ROOT || exit
 git fetch --all
