@@ -7,7 +7,7 @@
 
 #define PLUGIN_NAME		"[TF2] TF2Attributes"
 #define PLUGIN_AUTHOR		"FlaminSarge"
-#define PLUGIN_VERSION		"1.7.3"
+#define PLUGIN_VERSION		"1.7.5"
 #define PLUGIN_CONTACT		"http://forums.alliedmods.net/showthread.php?t=210221"
 #define PLUGIN_DESCRIPTION	"Functions to add/get attributes for TF2 players/items"
 
@@ -126,6 +126,12 @@ public void OnPluginStart() {
 	Handle hGameConf = LoadGameConfigFile("tf2.attributes");
 	if (!hGameConf) {
 		SetFailState("Could not locate gamedata file tf2.attributes.txt for TF2Attributes, pausing plugin");
+	}
+	
+	char pluginFailMessage[256];
+	if (GameConfGetKeyValue(hGameConf, "PluginFailMessage", pluginFailMessage,
+			sizeof(pluginFailMessage)) && pluginFailMessage[0]) {
+		SetFailState(pluginFailMessage);
 	}
 	
 	StartPrepSDKCall(SDKCall_Raw);

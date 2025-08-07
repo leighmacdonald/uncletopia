@@ -7,7 +7,7 @@ STAC_ROOT="$SRC_ROOT/stac"
 STAC_BRANCH="gbans-native"
 
 PVE_ROOT="$SRC_ROOT/TF2_EngineerPVE"
-PVE_BRANCH="master"
+PVE_BRANCH="0.9.0"
 
 ACCEL_ROOT="$SRC_ROOT/accelerator"
 ACCEL_BRANCH="master"
@@ -29,10 +29,10 @@ ECON_DATA_ROOT="$SRC_ROOT/tf2_econ_data"
 ECON_DATA_BRANCH="0.19.1.2"
 
 ATTRIBUTES_ROOT="$SRC_ROOT/tf2attributes"
-ATTRIBUTES_BRANCH="v1.7.3.3"
+ATTRIBUTES_BRANCH="v1.7.5"
 
 CENTERPROJECTILES_ROOT="$SRC_ROOT/tf2centerprojectiles"
-CENTERPROJECTILES_BRANCH="v8.0"
+CENTERPROJECTILES_BRANCH="main"
 
 NATIVEVOTES_ROOT="$SRC_ROOT/nativevotes"
 NATIVEVOTES_BRANCH="master"
@@ -47,7 +47,7 @@ git fetch --all
 git checkout $STAC_BRANCH
 git pull
 for d in 'scripting' 'extensions' 'gamedata' 'translations'; do
-  cp -rv $d "$SM_ROOT"
+	cp -rv $d "$SM_ROOT"
 done
 popd || exit
 
@@ -72,8 +72,8 @@ git checkout $DISCORD_BRANCH
 git pull
 cp -rv scripting/* "$SM_ROOT/scripting"
 rm "$SM_ROOT/scripting/discord_calladmin.sp" \
-  "$SM_ROOT/scripting/discord_sourcebans.sp" \
-  "$SM_ROOT/scripting/discord_sourcecomms.sp"
+	"$SM_ROOT/scripting/discord_sourcebans.sp" \
+	"$SM_ROOT/scripting/discord_sourcecomms.sp"
 popd || exit
 
 pushd $COMPFIXES_ROOT || exit
@@ -113,8 +113,8 @@ git checkout $NATIVEVOTES_BRANCH
 git pull
 cp -rv addons/sourcemod/* "$SM_ROOT/"
 rm "$SM_ROOT/scripting/nativevotes_votemanager_test.sp" \
-  "$SM_ROOT/scripting/nativevotes_votetest.sp" \
-  "$SM_ROOT/scripting/csgo_votestart_test.sp"
+	"$SM_ROOT/scripting/nativevotes_votetest.sp" \
+	"$SM_ROOT/scripting/csgo_votestart_test.sp"
 popd || exit
 
 pushd $SKIPMOTD_ROOT || exit
