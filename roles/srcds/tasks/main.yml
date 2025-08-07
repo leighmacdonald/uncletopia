@@ -158,7 +158,7 @@
     src: curated_maplist.txt.j2
     dest: ~/srcds-{{ item.server_name_short }}/tf/addons/sourcemod/configs/curated_maplist.txt
     mode: "0655"
-  when: item.curated_pool
+  when: item.curated_pool != ""
   tags:
     - game_config
   loop: "{{ services }}"
@@ -481,33 +481,6 @@
   ignore_errors: true
   community.general.ufw:
     rule: allow
-    src: "{{ hostvars[metrics_hostname].ip }}"
-    port: "{{ srcds_base_port + (loop0 * 10) }}"
-    proto: tcp
-  loop: "{{ services }}"
-  loop_control:
-    index_var: loop0
-  when: ansible_distribution == 'Ubuntu'
-
-- name: Allow external RCON (WAN) # noqa: ignore-errors
-  become: true
-  ignore_errors: true
-  community.general.ufw:
-    rule: allow
-    src: "{{ hostvars[metrics_hostname].service_ip }}"
-    port: "{{ srcds_base_port + (loop0 * 10) }}"
-    proto: tcp
-  loop: "{{ services }}"
-  loop_control:
-    index_var: loop0
-  when: ansible_distribution == 'Ubuntu'
-
-- name: Allow RCON over VPN # noqa: ignore-errors
-  become: true
-  ignore_errors: true
-  community.general.ufw:
-    rule: allow
-    src: "{{ vpn_mask }}"
     port: "{{ srcds_base_port + (loop0 * 10) }}"
     proto: tcp
   loop: "{{ services }}"
