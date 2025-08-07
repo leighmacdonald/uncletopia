@@ -1,7 +1,0 @@
----
-
-- name: "Playbook for bdapi data proxy service"
-  hosts: bdapi
-  roles:
-    - caddy
-    - bdapi
