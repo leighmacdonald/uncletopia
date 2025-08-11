@@ -36,7 +36,7 @@
     project_src: ~/sentry
     build: never
     wait: true
-  register: output
+  register: sentry_output
 
 - name: Join caddy_net network
   community.docker.docker_network:
