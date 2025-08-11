@@ -40,7 +40,18 @@ NATIVEVOTES_BRANCH="master"
 SKIPMOTD_ROOT="$SRC_ROOT/skipmotd"
 SKIPMOTD_BRANCH="master"
 
+HALLOWEENCOSMETICS_ROOT="$SRC_ROOT/HalloweenCosmeticEnabler"
+HALLOWEENCOSMETICS_BRANCH="master"
+
 # git submodule update --init --recursive
+
+pushd $HALLOWEENCOSMETICS_ROOT || exit
+git fetch --all
+git checkout $HALLOWEENCOSMETICS_BRANCH
+git pull
+cp -rv addons/sourcemod/* "$SM_ROOT/"
+popd || exit
+
 
 pushd $STAC_ROOT || exit
 git fetch --all
