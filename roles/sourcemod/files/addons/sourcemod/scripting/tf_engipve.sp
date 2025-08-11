@@ -6,9 +6,10 @@
 #include <tf2_stocks>
 #include <tf2items>
 #include <tf_econ_data>
+#include <sourcescramble>
 #include <dhooks>
 
-#define PLUGIN_VERSION       "0.9.0"
+#define PLUGIN_VERSION       "0.9.1"
 
 #define PVE_TEAM_HUMANS_NAME "blue"
 #define PVE_TEAM_BOTS_NAME   "red"
@@ -83,10 +84,12 @@ DynamicDetour g_DetourEstimateValidBuildPos;
 DynamicDetour g_DetourCreateObjectGibs;
 DynamicDetour g_DetourDropAmmoPack;
 DynamicDetour g_DetourCreateRagdollEntity;
+DynamicDetour g_DetourComputeIncursionDistance;
 
 //-----------------------------------------------------//
 // Memory Patches
 //-----------------------------------------------------//
+
 int           g_nOffset_CBaseEntity_m_iTeamNum;
 
 // Reference to the team_round_timer entity to modify its' time value.
@@ -181,6 +184,10 @@ public OnPluginStart()
     g_DetourCreateRagdollEntity = DynamicDetour.FromConf(conf, "CTFPlayer::DropAmmoPack");
     g_DetourCreateRagdollEntity.Enable(Hook_Pre, Detour_CreateRagdollEntity);
 
+    g_DetourComputeIncursionDistance = DynamicDetour.FromConf(conf, "CTFNavMesh::ComputeIncursionDistances");
+    g_DetourComputeIncursionDistance.Enable(Hook_Pre, CTFNavMesh_ComputeIncursionDistance);
+    g_DetourComputeIncursionDistance.Enable(Hook_Post, CTFNavMesh_ComputeIncursionDistance_Post);
+
     //-----------------------------------------------------//
     // COMMANDS
     //-----------------------------------------------------//
@@ -201,8 +208,10 @@ public void OnConfigsExecuted()
 public OnMapStart()
 {
     g_HookHandleSwitchTeams.HookGamerules(Hook_Pre, CTFGameRules_HandleSwitchTeams);
-
     g_bIsRoundActive = false;
+
+    char szMap[32];
+    GetCurrentMap(szMap, sizeof(szMap));
 }
 
 public OnClientPutInServer(int client)
@@ -297,6 +306,7 @@ void Config_Load()
     FindConVar("tf_bot_difficulty").SetInt(kv.GetNum("Difficulty"));
     FindConVar("mp_disable_respawn_times").SetBool(true);
     FindConVar("mp_teams_unbalance_limit").SetInt(0);
+    FindConVar("tf_bot_max_teleport_entrance_travel").SetInt(-1);
 }
 
 /** Reload the bot names that will be on the bot team. */
@@ -508,7 +518,8 @@ void PVE_EquipBotItems(int client)
         g_hBotCosmetics.GetArray(i, cosmetic);
 
         int hat = PVE_GiveWearableToClient(client, cosmetic.m_iItemDefinitionIndex);
-        if (hat <= 0) {
+        if (hat <= 0)
+        {
             continue;
         }
 
@@ -619,7 +630,8 @@ void PVE_ApplyPlayerAttributes(int client)
 int PVE_GiveWearableToClient(int client, int itemDef)
 {
     int hat = CreateEntityByName("tf_wearable");
-    if (!IsValidEntity(hat)) {
+    if (!IsValidEntity(hat))
+    {
         return -1;
     }
 
@@ -855,10 +867,14 @@ public Action Timer_UpdateRoundTime(Handle timer, any ent)
 {
     // Round is not active - do nothing.
     if (!g_bIsRoundActive)
+    {
         return Plugin_Handled;
+    }
 
     if (g_eTeamRoundTimer <= 0)
+    {
         return Plugin_Handled;
+    }
 
     float curTime    = GetGameTime();
     float startTime  = g_flRoundStartTime;
@@ -971,4 +987,49 @@ public MRESReturn CTFGameRules_HandleSwitchTeams(int pThis, Handle hParams)
 {
     PrintToChatAll("Team switching is disabled.");
     return MRES_Supercede;
+}
+
+// void CTFNavMesh::ComputeIncursionDistance( void );
+public MRESReturn CTFNavMesh_ComputeIncursionDistance()
+{
+    PerformEnclosureFixes(true);
+    return MRES_Ignored;
+}
+
+// void CTFNavMesh::ComputeIncursionDistance( void );
+public MRESReturn CTFNavMesh_ComputeIncursionDistance_Post()
+{
+    PerformEnclosureFixes(false);
+    return MRES_Ignored;
+}
+
+void PerformEnclosureFixes(bool apply)
+{
+    char szMap[32];
+    GetCurrentMap(szMap, sizeof(szMap));
+    const float upOffset = 48.0;
+
+    if (!StrEqual(szMap, "pl_enclosure_final"))
+    {
+        return;
+    }
+
+    int point = -1;
+    while ((point = FindEntityByClassname(point, "info_player_teamspawn")) != -1)
+    {
+        char szName[32];
+        GetEntPropString(point, Prop_Data, "m_iszRoundBlueSpawn", szName, sizeof(szName));
+        int teamNum  = GetEntProp(point, Prop_Send, "m_iTeamNum");
+        int disabled = GetEntProp(point, Prop_Data, "m_bDisabled");
+
+        if (!(!disabled && teamNum == 3 && StrEqual(szName, "mspl_round_2")))
+        {
+            continue;
+        }
+
+        float vecPos[3];
+        GetEntPropVector(point, Prop_Data, "m_vecAbsOrigin", vecPos);
+        vecPos[2] += apply ? upOffset : -upOffset;
+        SetEntPropVector(point, Prop_Data, "m_vecAbsOrigin", vecPos);
+    }
 }

@@ -7,7 +7,7 @@ STAC_ROOT="$SRC_ROOT/stac"
 STAC_BRANCH="gbans-native"
 
 PVE_ROOT="$SRC_ROOT/TF2_EngineerPVE"
-PVE_BRANCH="0.9.0"
+PVE_BRANCH="0.9.1"
 
 ACCEL_ROOT="$SRC_ROOT/accelerator"
 ACCEL_BRANCH="master"
