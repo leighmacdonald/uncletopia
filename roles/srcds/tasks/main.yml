@@ -34,12 +34,12 @@
 - name: Make steam folder
   ansible.builtin.file:
     path: "~/.steam/sdk32"
-    state: 'directory'
-    mode: '0755'
+    state: "directory"
+    mode: "0755"
 
 - name: Symlink steamclient.so
   ansible.builtin.file:
-    src: '~/steamcmd/linux32/steamclient.so'
+    src: "~/steamcmd/linux32/steamclient.so"
     dest: "~/.steam/sdk32/steamclient.so"
     state: link
 
@@ -558,14 +558,17 @@
   become: true
   ansible.builtin.copy:
     dest: /etc/logrotate.d/srcds-{{ item.server_name_short }}
-    mode: '0755'
+    mode: "0755"
     content: |
-      /home/{{ srcds_user }}/srcds-{{ item.server_name_short }}/tf/logs/*.log
+      /home/{{ srcds_user }}/srcds-{{ item.server_name_short }}/tf/logs/*.lo*
       {
         daily
         missingok
+        compress
+        delaycompress
+        maxage 3
         notifempty
-        rotate 7
+        rotate 1
       }
   loop: "{{ services }}"
   loop_control:
