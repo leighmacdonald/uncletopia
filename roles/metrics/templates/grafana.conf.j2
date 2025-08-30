@@ -1,5 +1,5 @@
-{{ caddy.hosts.grafana.dns }} {
-    reverse_proxy /* {{ caddy.hosts.grafana.address }}
+{{ caddy.hosts.metrics.dns }} {
+    reverse_proxy /* {{ caddy.hosts.metrics.address }}
 
-    import {{ caddy.hosts.grafana.tls_name }}
+    import {{ caddy.hosts.metrics.tls_name }}
 }

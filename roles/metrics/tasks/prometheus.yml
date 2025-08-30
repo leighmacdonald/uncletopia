@@ -1,5 +1,4 @@
 ---
-
 - name: Create prometheus_data volume
   community.docker.docker_volume:
     name: prometheus_data
@@ -47,7 +46,6 @@
   tags:
     - metrics-server
     - prometheus
-
 
 - name: Generate /etc/alertmanager.yml
   become: true

@@ -6,7 +6,7 @@ server:
 {#  filename: /tmp/positions.yaml#}
 
 clients:
-  - url: "http://{{ vpn_hosts[metrics_hostname].ip }}:{{ loki.port|default(3100) }}/loki/api/v1/push"
+  - url: "http://{{ metrics_hostname }}:{{ loki.port|default(3100) }}/loki/api/v1/push"
     tenant_id: ut
 
 scrape_configs:
