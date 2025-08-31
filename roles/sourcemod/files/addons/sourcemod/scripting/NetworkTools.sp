@@ -75,33 +75,33 @@ public void OnPluginStart()
 {
 	CreateConVar("sm_nt_verison", PLUGIN_VERSION, PLUGIN_DESCRIPTION, FCVAR_SPONLY|FCVAR_UNLOGGED|FCVAR_DONTRECORD|FCVAR_REPLICATED|FCVAR_NOTIFY);
 	Handle hRandom; // I HATE Handles.
-	
+
 	HookConVarChange((hRandom = CreateConVar("nt_enabled",				"1",	"Should I even be running?", _, true, 0.0, true, 1.0)),												OnEnabledChange);
 	g_bEnabled = GetConVarBool(hRandom);
-	HookConVarChange((hRandom = CreateConVar("nt_minplayercount",		"12",	"How many players need to be ingame for any check to occur.", _, true, 0.0)),						OnMinPlayChange);
+	HookConVarChange((hRandom = CreateConVar("nt_minplayercount",		"16",	"How many players need to be ingame for any check to occur.", _, true, 0.0)),						OnMinPlayChange);
 	g_iMinPCount = GetConVarInt(hRandom);
 	HookConVarChange((hRandom = CreateConVar("nt_checkrate",			"30",	"How many seconds between each check.", _, true, 0.0)),												OnCheckRateChange);
 	g_iCheckRate = GetConVarInt(hRandom);
-	
-	HookConVarChange((hRandom = CreateConVar("nt_logenabled",			"0",	"Should I be logging kicks?", _, true, 0.0, true, 1.0)),											OnLoggingChange);
+
+	HookConVarChange((hRandom = CreateConVar("nt_logenabled",			"1",	"Should I be logging kicks?", _, true, 0.0, true, 1.0)),											OnLoggingChange);
 	g_bLoggingEnabled = GetConVarBool(hRandom);
 	HookConVarChange((hRandom = CreateConVar("nt_logformatext",			"%Y_%m_%d",	"Log Filename Format.")),																		OnExtLogFormatChange);
 	GetConVarString(hRandom, g_sLogTimeString[0], sizeof(g_sLogTimeString[]));
 	HookConVarChange((hRandom = CreateConVar("nt_logformatint",			"%x",	"Internal File logging format.")),																	OnIntLogFormatChange);
 	GetConVarString(hRandom, g_sLogTimeString[1], sizeof(g_sLogTimeString[]));
-	
+
 	HookConVarChange((hRandom = CreateConVar("nt_kickvocalize",			"1",	"Should Kick Messages be Printed to Chat?", _, true, 0.0, true, 1.0)), 								OnKickMessageChange);
 	g_bKickVocalize = GetConVarBool(hRandom);
 	HookConVarChange((hRandom = CreateConVar("nt_warningvocalize",		"1",	"Warn the player that he has an impending kick comming up.", _, true, 0.0, true, 1.0)),				OnWarningMessageChange);
 	g_bWarningVocalize = GetConVarBool(hRandom);
-	
+
 	HookConVarChange((hRandom = CreateConVar("nt_choke_enable",			"1",	"Should this plugin be checking Clients for Choke?", _, true, 0.0, true, 1.0)),						OnChokeEnableChange);
 	g_bChokeEnabled = GetConVarBool(hRandom);
 	HookConVarChange((hRandom = CreateConVar("nt_choke_addition",		"30",	"How high should I be increasing the Choke Kick value?", _, true, 0.0)),							OnChokeAdditionChange);
 	g_iChokeAddition = GetConVarInt(hRandom);
-	HookConVarChange((hRandom = CreateConVar("nt_choke_threashold", 	"6",	"How many checks until a client is kicked for High Choke.", _, true, 0.0)),							OnChokeThreasholdChange);
+	HookConVarChange((hRandom = CreateConVar("nt_choke_threashold", 	"10",	"How many checks until a client is kicked for High Choke.", _, true, 0.0)),							OnChokeThreasholdChange);
 	g_iChokeThreashold = GetConVarInt(hRandom);
-	
+
 	HookConVarChange((hRandom = CreateConVar("nt_latency_enable",		"1",	"Should this plugin be checking Client Latencies?", _, true, 0.0, true, 1.0)),						OnLatencyEnableChange);
 	g_bLatencyEnabled = GetConVarBool(hRandom);
 	HookConVarChange((hRandom = CreateConVar("nt_latency_addition",		"250",	"How high should I be increasing the Latency Kick value?", _, true, 0.0)),							OnLatencyAdditionChange);
@@ -110,17 +110,17 @@ public void OnPluginStart()
 	g_iLatencyThreashold = GetConVarInt(hRandom);
 	HookConVarChange((hRandom = CreateConVar("nt_liammethod",			"0",	"Are we using Liam's method from HPK-Lite for getting client latency?", _, true, 0.0, true, 1.0)),	OnLiamMethodChange);
 	g_bLiamMethod = GetConVarBool(hRandom);
-	
+
 	HookConVarChange((hRandom = CreateConVar("nt_loss_enable",			"1",	"Should this plugin be checking Clients for Loss?", _, true, 0.0, true, 1.0)),						OnLossEnableChange);
 	g_bLossEnabled = GetConVarBool(hRandom);
 	HookConVarChange((hRandom = CreateConVar("nt_loss_addition",		"15",	"How high should I be increasing the Loss Kick value?", _, true, 0.0)),								OnLossAdditionChange);
 	g_iLossAddition = GetConVarInt(hRandom);
 	HookConVarChange((hRandom = CreateConVar("nt_loss_threashold",		"6",	"How many checks until a client is kicked for High Loss.", _, true, 0.0)),							OnLossThreasholdChange);
 	g_iLossThreashold = GetConVarInt(hRandom);
-	
+
 	RegAdminCmd("nt_display",		DisplayInformation,	ADMFLAG_RESERVATION,	"Display stored client information.");
 	RegAdminCmd("nt_toggle",		ToggleImmune,		ADMFLAG_ROOT,			"Toggles whether or not this plugin is active on a specific client.");
-	
+
 	AutoExecConfig(true, "networktools");
 
 	if((hRandom = FindConVar("sv_mincmdrate")) != INVALID_HANDLE)
@@ -142,9 +142,9 @@ public void OnPluginStart()
 	{
 		LogError("Warning. Missing sv_maxcmdrate.");
 	}
-	
+
 	CloseHandle(hRandom); // I HATE Handles.
-	
+
 	BuildPath(Path_SM, g_sBasePath, sizeof(g_sBasePath), "");
 }
 
@@ -183,16 +183,16 @@ public void OnMapEnd()
 /* Commands */
 public Action DisplayInformation(int client, int args)
 {
-	if(args < 1) { 
+	if(args < 1) {
 		ReplyToCommand(client, "%s\nPlugin Enabled: \x04%i\x03\nPlugin Kicking: \x04%i\x03\nMin Player Count: \x04%i\x03\nKick Vocalization: \x04%i\x03\nLogging Enabled: \x04%i\x03\nFile Logging Format: \x04%s\x03\nInternal File Logging Format: \x04%s\x03", defPluginPrefix, g_bEnabled, PlayerCountIsCorrect(), g_iMinPCount, g_bKickVocalize, g_bLoggingEnabled, g_sLogTimeString[0], g_sLogTimeString[1]);
 		ReplyToCommand(client, "\x03Choke Enabled: \x04%i\x03\nChoke Limit: \x04%i\x03\nChoke Slide: \x04%i\x03\nLatency Enabled: \x04%i\x03\nLatency Limit: \x04%i\x03\nLatency Slide: \x04%i\x03\nLoss Enabled: \x04%i\x03\nLoss Limit: \x04%i\x03\nLoss Slide: \x04%i\x03", g_bChokeEnabled, g_iLimit[0], g_iChokeAddition, g_bLatencyEnabled, g_iLimit[1], g_iLatencyAddition, g_bLossEnabled, g_iLimit[2], g_iLossAddition);
 		return Plugin_Handled;
 	}
-	
+
 	char Arg[128];
 	char sClientChecking[4];
 	GetCmdArgString(Arg, sizeof(Arg));
-	
+
 	int iTarget_list[MAXPLAYERS+1];
 	char iTarget_name[MAXPLAYERS+1];
 	bool iTarget_ml;
@@ -241,7 +241,7 @@ public Action ToggleImmune(int client, int args)
 	char ArgString[128];
 	GetCmdArgString(ArgString, sizeof(ArgString));
 
-	int  iTarget_list[MAXPLAYERS+1]; 
+	int  iTarget_list[MAXPLAYERS+1];
 	char iTarget_name[MAXPLAYERS+1];
 	bool iTarget_ml;
 	int ListSize = ProcessTargetString(ArgString, client, iTarget_list, MAXPLAYERS, COMMAND_FILTER_NO_BOTS, iTarget_name, sizeof(iTarget_name), iTarget_ml);

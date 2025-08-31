@@ -55,7 +55,7 @@ public void OnPluginStart( )
 	{
         g_IsSynergy = true;
 	}
-	
+
     if (g_IsLateLoad == true)
     {
         if (FindEntityByClassname(MaxClients + 1, "tf_arena_logic") == INVALID_ENT_REFERENCE)
@@ -133,9 +133,9 @@ public Action Event_ArenaRoundStart(Handle event, const char[] name, bool dontBr
 public Action Event_PlayerTeam(Handle event, const char[] name, bool dontBroadcast)
 {
     int client = GetClientOfUserId(GetEventInt(event, "userid"));
-    
+
     if(!g_IsSynergy)
-    {        
+    {
         if(GetEventInt(event, "team") > 1)
         {
             g_TimeAFK[client] = 0;
@@ -235,7 +235,7 @@ void HandleAFKClient(int client)
 
     if (g_IsSynergy == false
 		&& f_MoveSpec == 1
-		&& g_TimeAFK[client] < f_KickTime 
+		&& g_TimeAFK[client] < f_KickTime
 		&& g_TimeAFK[client] >= f_SpecTime)
     {
         if(f_Team == 2 || f_Team == 3)
@@ -243,7 +243,7 @@ void HandleAFKClient(int client)
             PrintToChatAll("%s was moved to spectate for being AFK.", f_Name);
             LogAction(0, -1, "\"%L\" was moved to spectate for being AFK too long.", client);
             ChangeClientTeam(client, 1);
-			
+
             if (g_IsTF2Arena == true)
             {
                 SetEntProp(client, Prop_Send, "m_bArenaSpectator", true);
@@ -251,7 +251,7 @@ void HandleAFKClient(int client)
         }
         return;
     }
-	
+
     // added to do a last final check. Maybe they moved during the timer update and max count?
     CheckForAFK(client);
 
@@ -277,9 +277,9 @@ bool GetPlayerEye(int client, float pos[3])
     float vOrigin[3];
 	GetClientEyePosition(client,vOrigin);
 	GetClientEyeAngles(client, vAngles);
-	
+
 	Handle trace = TR_TraceRayFilterEx(vOrigin, vAngles, MASK_SHOT, RayType_Infinite, TraceEntityFilterPlayer);
-	
+
 	if(TR_DidHit(trace))
 	{
 	 	//This is the first function i ever saw that anything comes before the handle
@@ -310,7 +310,7 @@ bool IsAdmin(int client) {
     }
 
     AdminId admin = GetUserAdmin(client);
-    
+
 #if _DEBUG
     decl String:name[MAX_NAME_LENGTH];
 
