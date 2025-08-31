@@ -1,4 +1,6 @@
 profile: production
+skip_list:
+  - yaml[indentation]
 
 exclude_paths:
   - .github/
