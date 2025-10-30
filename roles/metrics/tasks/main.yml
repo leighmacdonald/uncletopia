@@ -1,22 +1,8 @@
 ---
-
-- name: Setup loki
-  ansible.builtin.import_tasks: loki.yml
-  tags:
-    - metrics-server
-    - loki
-
-- name: Setup promtail
-  ansible.builtin.import_tasks: promtail.yml
-  tags:
-    - metrics-server
-    - promtail
-
 - name: Setup prometheus
   ansible.builtin.import_tasks: prometheus.yml
   tags:
     - metrics-server
-
 
 - name: Setup grafana
   ansible.builtin.import_tasks: grafana.yml

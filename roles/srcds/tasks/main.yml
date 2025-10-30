@@ -465,7 +465,7 @@
     index_var: loop0
   when: ansible_distribution == 'Ubuntu'
 
-- name: Deny external RCON (VPN)
+- name: Deny RCON (WAN)
   become: true
   community.general.ufw:
     rule: deny
@@ -476,13 +476,14 @@
     index_var: loop0
   when: ansible_distribution == 'Ubuntu'
 
-- name: Allow external RCON (WAN) # noqa: ignore-errors
+- name: Allow RCON (VPN) # noqa: ignore-errors
   become: true
   ignore_errors: true
   community.general.ufw:
     rule: allow
     port: "{{ srcds_base_port + (loop0 * 10) }}"
     proto: tcp
+    src: "{{ vpn_mask }}"
   loop: "{{ services }}"
   loop_control:
     index_var: loop0
@@ -553,6 +554,8 @@
   loop: "{{ services }}"
   loop_control:
     index_var: loop0
+  tags:
+    - game_engine
 
 - name: Configure logrotate
   become: true

@@ -11,12 +11,8 @@
       networks: strict
     networks:
       - name: caddy_net
-    labels:
-      logging: "promtail"
-      logging_jobname: "containerlogs"
     ports:
       - 127.0.0.1:8811:8811
-
 
 - name: Generate /demostats.conf
   ansible.builtin.template:

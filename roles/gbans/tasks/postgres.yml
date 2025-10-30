@@ -47,9 +47,6 @@
     ports:
       - 127.0.0.1:5432:5432
       - "{{ metrics_ip }}:5432:5432"
-    labels:
-      logging: "promtail"
-      logging_jobname: "containerlogs"
     command: [
         "postgres",
         # md5 is unfortunately required because sourcemod uses pg 9.6 which does not support scram encryption type

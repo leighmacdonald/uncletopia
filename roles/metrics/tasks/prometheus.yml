@@ -26,9 +26,6 @@
     comparisons:
       networks: strict
     restart_policy: unless-stopped
-    labels:
-      logging: "promtail"
-      logging_jobname: "containerlogs"
     command:
       - --config.file=/etc/prometheus/prometheus.yml
       # required for tempo to directly write to prom
@@ -41,8 +38,8 @@
       - prometheus_data:/prometheus
       - /etc/prometheus.yml:/etc/prometheus/prometheus.yml
     ports:
-      - "127.0.0.1:{{ prometheus.port | default(9090) }}:9090"
-      - "{{ metrics_hostname_ip | default(ip) }}:{{ prometheus.port | default(9090) }}:9090"
+      - "127.0.0.1:9090:9090"
+      - "{{ metrics_ip }}:9090:9090"
   tags:
     - metrics-server
     - prometheus
@@ -66,9 +63,6 @@
     comparisons:
       networks: strict
     restart_policy: unless-stopped
-    labels:
-      logging: "promtail"
-      logging_jobname: "containerlogs"
     command:
       - --config.file=/etc/alertmanager.yml
       - --cluster.listen-address=
@@ -78,8 +72,8 @@
     volumes:
       - /etc/alertmanager.yml:/etc/alertmanager.yml
     ports:
-      - "127.0.0.1:{{ alertmanager.port | default(9093) }}:9093"
-      - "{{ metrics_hostname_ip | default(ip) }}:{{ alertmanager.port | default(9093) }}:9093"
+      - "127.0.0.1:9093:9093"
+      - "{{ metrics_ip }}:9093:9093"
   tags:
     - metrics-server
     - prometheus

@@ -1,5 +1,4 @@
 ---
-
 - name: Create gbans_cache_data volume
   community.docker.docker_volume:
     name: gbans_cache_data
@@ -35,9 +34,6 @@
       - gbans_assets:/app/assets
       - gbans_cache_data:/app/.cache
       - /etc/gbans.yml:/app/gbans.yml
-    labels:
-      logging: "promtail"
-      logging_jobname: "containerlogs"
     env:
       GBANS_DATABASE_DSN: "{{ gbans_web.database_dsn }}"
       GBANS_GENERAL_STEAM_KEY: "{{ steam_key }}"

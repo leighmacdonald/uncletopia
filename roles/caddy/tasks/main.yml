@@ -14,14 +14,14 @@
   ansible.builtin.file:
     path: /etc/caddy/conf.d
     state: directory
-    mode: '0775'
+    mode: "0775"
 
 - name: Generate /etc/caddy/Caddyfile
   become: true
   ansible.builtin.template:
     src: Caddyfile.j2
     dest: /etc/caddy/Caddyfile
-    mode: '0775'
+    mode: "0775"
 
 - name: Create caddy_net network
   community.docker.docker_network:
@@ -31,13 +31,13 @@
   ansible.builtin.file:
     path: ~/caddy
     state: directory
-    mode: '0755'
+    mode: "0755"
 
 - name: Copy file with owner and permissions
   ansible.builtin.copy:
     src: Dockerfile
     dest: ~/caddy/Dockerfile
-    mode: '0644'
+    mode: "0644"
 
 - name: Build image and with build args
   community.docker.docker_image:
@@ -60,9 +60,6 @@
     pull: false
     capabilities:
       - NET_ADMIN
-    labels:
-      logging: "promtail"
-      logging_jobname: "containerlogs"
     volumes:
       - caddy_data:/data
       - caddy_config:/config

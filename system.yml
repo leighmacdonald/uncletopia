@@ -12,7 +12,7 @@
         name: "{{ timezone }}"
 
     - name: Check if i386 is enabled
-      ansible.builtin.shell: dpkg --print-foreign-architectures | grep i386  # noqa risky-shell-pipe
+      ansible.builtin.shell: dpkg --print-foreign-architectures | grep i386 # noqa risky-shell-pipe
       register: result_i386_check
       changed_when: result_i386_check.rc == 1
       failed_when: result_i386_check.rc > 1
@@ -22,30 +22,30 @@
       ansible.builtin.apt:
         deb: https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb
 
-#    - name: xanmod-kernel
-#      block:
-#        - name: Download xanmod gpg key
-#          get_url:
-#            url: https://dl.xanmod.org/archive.key
-#            dest: /usr/share/keyrings/xanmod.gpg_armored
-#            checksum: sha256:f5f465c1abecdafb2f066046a834140d3085c227b1d53fa9232a4f338749fbc5
-#
-#        - name: De-Armor xanmod GPG key
-#          shell: gpg --dearmor < /usr/share/keyrings/xanmod.gpg_armored > /usr/share/keyrings/xanmod-archive-keyring.gpg
-#          no_log: true
-#          args:
-#            creates: /usr/share/keyrings/docker-archive-keyring.gpg
-#
-#        - name: Add xanmod apt source
-#          ansible.builtin.apt_repository:
-#            repo: "deb [signed-by=/usr/share/keyrings/xanmod-archive-keyring.gpg] http://deb.xanmod.org releases main"
-#            state: present
+    #    - name: xanmod-kernel
+    #      block:
+    #        - name: Download xanmod gpg key
+    #          get_url:
+    #            url: https://dl.xanmod.org/archive.key
+    #            dest: /usr/share/keyrings/xanmod.gpg_armored
+    #            checksum: sha256:f5f465c1abecdafb2f066046a834140d3085c227b1d53fa9232a4f338749fbc5
+    #
+    #        - name: De-Armor xanmod GPG key
+    #          shell: gpg --dearmor < /usr/share/keyrings/xanmod.gpg_armored > /usr/share/keyrings/xanmod-archive-keyring.gpg
+    #          no_log: true
+    #          args:
+    #            creates: /usr/share/keyrings/docker-archive-keyring.gpg
+    #
+    #        - name: Add xanmod apt source
+    #          ansible.builtin.apt_repository:
+    #            repo: "deb [signed-by=/usr/share/keyrings/xanmod-archive-keyring.gpg] http://deb.xanmod.org releases main"
+    #            state: present
 
     - name: Configure cpufrequtils
       become: true
       ansible.builtin.copy:
         dest: "/etc/default/cpufrequtils"
-        mode: '0755'
+        mode: "0755"
         content: |
           GOVERNOR="performance"
 
@@ -67,13 +67,13 @@
       ansible.builtin.command: dpkg --add-architecture i386
       when: result_i386_check.rc == 1
 
-#    - name: Setup rsyslog
-#      #become: true
-#      ansible.builtin.import_role:
-#        name: hadret.rsyslog
-#      tags:
-#        - promtail
-#        - rsyslog
+    #    - name: Setup rsyslog
+    #      #become: true
+    #      ansible.builtin.import_role:
+    #        name: hadret.rsyslog
+    #      tags:
+    #        - promtail
+    #        - rsyslog
 
     - name: Install gpg & dd dependencies
       when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
@@ -121,19 +121,19 @@
           # Doesnt exist on newer distro versions
           - ansible-core
 
-#    - name: Install xanmod-rt-v2
-#      when: old_cpu
-#      ansible.builtin.apt:
-#        state: present
-#        pkg:
-#          - linux-xanmod-rt-x64v2
-#
-#    - name: Install xanmod-rt-v3
-#      when: not old_cpu
-#      ansible.builtin.apt:
-#        state: present
-#        pkg:
-#          - linux-xanmod-rt-x64v3
+    #    - name: Install xanmod-rt-v2
+    #      when: old_cpu
+    #      ansible.builtin.apt:
+    #        state: present
+    #        pkg:
+    #          - linux-xanmod-rt-x64v2
+    #
+    #    - name: Install xanmod-rt-v3
+    #      when: not old_cpu
+    #      ansible.builtin.apt:
+    #        state: present
+    #        pkg:
+    #          - linux-xanmod-rt-x64v3
 
     - name: Create dd if it does not exist
       become: true
@@ -141,7 +141,7 @@
       ansible.builtin.file:
         path: ~/dd
         state: directory
-        mode: '0755'
+        mode: "0755"
 
     - name: Get dd
       become: true
@@ -156,7 +156,7 @@
       ansible.builtin.file:
         path: ~/rcon
         state: directory
-        mode: '0755'
+        mode: "0755"
 
     - name: Reload systemd daemon
       become: true
@@ -180,7 +180,7 @@
         enabled: false
 
     # ondemand service will force ondemand
-    - name: Disable ondemand   # noqa ignore-errors
+    - name: Disable ondemand # noqa ignore-errors
       become: true
       ignore_errors: true
       ansible.builtin.systemd:
@@ -189,14 +189,14 @@
         masked: true
         enabled: false
 
-#    - name: Disable irqbalance  # noqa ignore-errors
-#      become: true
-#      ignore_errors: true
-#      ansible.builtin.systemd:
-#        name: irqbalance
-#        state: stopped
-#        masked: true
-#        enabled: false
+    #    - name: Disable irqbalance  # noqa ignore-errors
+    #      become: true
+    #      ignore_errors: true
+    #      ansible.builtin.systemd:
+    #        name: irqbalance
+    #        state: stopped
+    #        masked: true
+    #        enabled: false
 
     - name: Enable docker service
       become: true
@@ -225,9 +225,6 @@
           - "--path.rootfs=/host"
         ports:
           - "{{ wireguard_address_ip | default(ip) }}:9100:9100"
-        labels:
-          logging: "promtail"
-          logging_jobname: "containerlogs"
       tags:
         - metrics-client
         - node_exporter

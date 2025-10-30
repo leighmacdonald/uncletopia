@@ -69,9 +69,6 @@
     restart_policy: unless-stopped
     networks:
       - name: caddy_net
-    labels:
-      logging: "promtail"
-      logging_jobname: "containerlogs"
     pull: true
     ports:
       - 127.0.0.1:8081:8081
@@ -89,9 +86,6 @@
       networks: strict
     networks:
       - name: caddy_net
-    labels:
-      logging: "promtail"
-      logging_jobname: "containerlogs"
     pull: true
     volumes:
       - /etc/grafana.ini:/etc/grafana/grafana.ini
