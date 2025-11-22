@@ -465,10 +465,10 @@
     index_var: loop0
   when: ansible_distribution == 'Ubuntu'
 
-- name: Deny RCON (WAN)
+- name: Allow RCON (WAN)
   become: true
   community.general.ufw:
-    rule: deny
+    rule: allow
     port: "{{ srcds_base_port + (loop0 * 10) }}"
     proto: tcp
   loop: "{{ services }}"
