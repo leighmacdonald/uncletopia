@@ -276,6 +276,17 @@
   loop_control:
     index_var: loop0
 
+- name: Generate /tf/cfg/sourcemod/afk_manager.cfg
+  ansible.builtin.template:
+    src: afk_manager.cfg.j2
+    dest: ~/srcds-{{ item.server_name_short }}/tf/cfg/sourcemod/afk_manager.cfg
+    mode: "0655"
+  tags:
+    - game_config
+  loop: "{{ services }}"
+  loop_control:
+    index_var: loop0
+
 - name: Generate /tf/cfg/sourcemod/basevotes.cfg
   ansible.builtin.template:
     src: basevotes.cfg.j2
