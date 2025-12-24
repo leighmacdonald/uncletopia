@@ -7,26 +7,26 @@ STAC_ROOT="$SRC_ROOT/stac"
 STAC_BRANCH="gbans-native"
 
 PVE_ROOT="$SRC_ROOT/TF2_EngineerPVE"
-PVE_BRANCH="0.9.1"
+PVE_BRANCH="0.9.2"
 
 ACCEL_ROOT="$SRC_ROOT/accelerator"
 ACCEL_BRANCH="master"
 
 GBANS_ROOT="$SRC_ROOT/gbans"
-GBANS_BRANCH="v0.7.20"
+GBANS_BRANCH="v0.7.34"
 #GBANS_BRANCH="match-tracking"
 
 DISCORD_ROOT="$SRC_ROOT/discord"
 DISCORD_BRANCH="master"
 
 COMPFIXES_ROOT="$SRC_ROOT/tf2-comp-fixes"
-COMPFIXES_BRANCH="v1.16.19"
+COMPFIXES_BRANCH="v1.17.2"
 
 EDICT_LIMITER_ROOT="$SRC_ROOT/edict-limiter"
 EDICT_LIMITER_BRANCH="v3.1.1"
 
 ECON_DATA_ROOT="$SRC_ROOT/tf2_econ_data"
-ECON_DATA_BRANCH="0.19.1.2"
+ECON_DATA_BRANCH="0.19.1.4"
 
 ATTRIBUTES_ROOT="$SRC_ROOT/tf2attributes"
 ATTRIBUTES_BRANCH="v1.7.5"
@@ -51,7 +51,6 @@ git checkout $HALLOWEENCOSMETICS_BRANCH
 git pull
 cp -rv addons/sourcemod/* "$SM_ROOT/"
 popd || exit
-
 
 pushd $STAC_ROOT || exit
 git fetch --all

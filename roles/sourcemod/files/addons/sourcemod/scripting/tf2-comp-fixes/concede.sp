@@ -73,9 +73,9 @@ static Action TimerFinished(Handle timer, int limit) {
     return Plugin_Handled;
 }
 
-void WhenRestartRound(Event event, const char[] name, bool dontBroadcast) { ResetVotes(); }
+static void WhenRestartRound(Event event, const char[] name, bool dontBroadcast) { ResetVotes(); }
 
-void WhenPlayerTeam(Event event, const char[] name, bool dontBroadcast) {
+static void WhenPlayerTeam(Event event, const char[] name, bool dontBroadcast) {
     int client = GetClientOfUserId(event.GetInt("userid"));
 
     if (g_votes[client]) {

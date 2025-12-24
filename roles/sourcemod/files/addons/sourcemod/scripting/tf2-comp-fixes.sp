@@ -14,6 +14,7 @@
 
 // Here
 #include "tf2-comp-fixes/concede.sp"
+#include "tf2-comp-fixes/class-ordered-spawnpoints.sp"
 #include "tf2-comp-fixes/debug.sp"
 #include "tf2-comp-fixes/deterministic-fall-damage.sp"
 #include "tf2-comp-fixes/empty-active-ubercharges-when-dropped.sp"
@@ -37,7 +38,7 @@
 #include "tf2-comp-fixes/tournament-end-ignores-whitelist.sp"
 #include "tf2-comp-fixes/winger-jump-bonus-when-fully-deployed.sp"
 
-#define PLUGIN_VERSION "1.16.19"
+#define PLUGIN_VERSION "1.17.2"
 
 // clang-format off
 public
@@ -82,6 +83,7 @@ void OnPluginStart() {
     Debug_Setup();
 
     // Here
+    ClassOrderedSpawnpoints_Setup();
     Concede_Setup();
     DeterministicFallDamage_Setup(game_config);
     EmptyActiveUberchargesWhenDropped_Setup(game_config);
@@ -153,6 +155,7 @@ Action Command_Cf(int client, int args) {
     if (StrEqual(full, "list")) {
         // Here
         ReplyToCommand(client, "--- Fixes");
+        ReplyDiffConVar(client, "sm_class_ordered_spawnpoints");
         ReplyDiffConVar(client, "sm_deterministic_fall_damage");
         ReplyDiffConVar(client, "sm_empty_active_ubercharges_when_dropped");
         ReplyDiffConVar(client, "sm_fix_ghost_crossbow_bolts");
@@ -207,6 +210,9 @@ Action Command_Cf(int client, int args) {
 
     // Here
     // clang-format off
+    FindConVar("sm_class_ordered_spawnpoints")
+        .SetBool(all || fixes);
+
     FindConVar("sm_deterministic_fall_damage")
         .SetBool(all || fixes || asf || etf2l || ozf || rgl);
 

@@ -6,10 +6,9 @@
 #include <tf2_stocks>
 #include <tf2items>
 #include <tf_econ_data>
-#include <sourcescramble>
 #include <dhooks>
 
-#define PLUGIN_VERSION       "0.9.1"
+#define PLUGIN_VERSION       "0.9.2"
 
 #define PVE_TEAM_HUMANS_NAME "blue"
 #define PVE_TEAM_BOTS_NAME   "red"
@@ -102,6 +101,10 @@ bool          g_bIsRoundActive        = false;
 float         g_flRoundStartTime      = 0.0;
 // Is spy capblocking feature enabled right now?
 bool          g_bSpyCapBlocking       = false;
+// Current round time if a multimap stage
+float         g_flCurrentMapTime      = 0.0;
+// Is this map a multistage map
+bool          g_bIsMultiStageMap      = false;
 
 // List of entities that need to be cleaned up on arrival to save
 // on edict count.
@@ -209,14 +212,13 @@ public OnMapStart()
 {
     g_HookHandleSwitchTeams.HookGamerules(Hook_Pre, CTFGameRules_HandleSwitchTeams);
     g_bIsRoundActive = false;
-
-    char szMap[32];
-    GetCurrentMap(szMap, sizeof(szMap));
+    g_bIsMultiStageMap = false;
+    g_flCurrentMapTime = 0.0;
 }
 
 public OnClientPutInServer(int client)
 {
-    if (IsClientSourceTV(client))
+    if (IsClientSourceTV(client) || IsClientReplay(client))
         return;
 
     CreateTimer(0.1, Timer_OnClientConnect, client);
@@ -805,6 +807,11 @@ public Action teamplay_setup_finished(Event event, const char[] name, bool dontB
 {
     g_bIsRoundActive   = true;
     g_flRoundStartTime = GetGameTime();
+
+    if (g_bIsMultiStageMap)
+    {
+        g_flRoundStartTime = g_flCurrentMapTime;
+    }
     g_eTeamRoundTimer  = FindEntityByClassname(-1, "team_round_timer");
 
     return Plugin_Continue;
@@ -823,8 +830,19 @@ public Action teamplay_point_captured(Event event, const char[] name, bool dontB
 
 public Action teamplay_round_win(Event event, const char[] name, bool dontBroadcast)
 {
+    int FullRound = event.GetInt("full_round");
     g_bIsRoundActive = false;
     g_bIsRoundEnd    = true;
+
+    if (FullRound <= 0)
+    {
+        if (g_eTeamRoundTimer != -1)
+        {
+            g_bIsMultiStageMap = true;
+            g_flCurrentMapTime = GetEntPropFloat(g_eTeamRoundTimer, Prop_Send, "m_flTimeRemaining");
+        }
+    }
+
     return Plugin_Continue;
 }
 
