@@ -1,4 +1,4 @@
-# general IDE/OS stuff 
+# general IDE/OS stuff
 .idea
 .vscode
 .DS_Store
@@ -18,3 +18,4 @@ roles/cloudalchemy.*
 /*.hosts
 *.dll
 /.ansible/
+.direnv
