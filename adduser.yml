@@ -87,7 +87,7 @@
         - restart ssh
 
   handlers:
-    - name: Restart ssh
+    - name: restart ssh
       become: true
       ansible.builtin.service:
         name: sshd

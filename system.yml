@@ -18,28 +18,12 @@
       failed_when: result_i386_check.rc > 1
       when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
 
-    - name: Install .net repo
-      ansible.builtin.apt:
-        deb: https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb
-
-    #    - name: xanmod-kernel
-    #      block:
-    #        - name: Download xanmod gpg key
-    #          get_url:
-    #            url: https://dl.xanmod.org/archive.key
-    #            dest: /usr/share/keyrings/xanmod.gpg_armored
-    #            checksum: sha256:f5f465c1abecdafb2f066046a834140d3085c227b1d53fa9232a4f338749fbc5
-    #
-    #        - name: De-Armor xanmod GPG key
-    #          shell: gpg --dearmor < /usr/share/keyrings/xanmod.gpg_armored > /usr/share/keyrings/xanmod-archive-keyring.gpg
-    #          no_log: true
-    #          args:
-    #            creates: /usr/share/keyrings/docker-archive-keyring.gpg
-    #
-    #        - name: Add xanmod apt source
-    #          ansible.builtin.apt_repository:
-    #            repo: "deb [signed-by=/usr/share/keyrings/xanmod-archive-keyring.gpg] http://deb.xanmod.org releases main"
-    #            state: present
+    - name: Add a PPA repository
+      ansible.builtin.apt_repository:
+        repo: "ppa:damentz/liquorix" # PPA URL
+        state: present
+        update_cache: yes
+        filename: "zen-repo"
 
     - name: Configure cpufrequtils
       become: true
@@ -67,14 +51,6 @@
       ansible.builtin.command: dpkg --add-architecture i386
       when: result_i386_check.rc == 1
 
-    #    - name: Setup rsyslog
-    #      #become: true
-    #      ansible.builtin.import_role:
-    #        name: hadret.rsyslog
-    #      tags:
-    #        - promtail
-    #        - rsyslog
-
     - name: Install gpg & dd dependencies
       when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
       ansible.builtin.apt:
@@ -82,10 +58,13 @@
         cache_valid_time: 0
         state: present
         pkg:
+          - linux-image-liquorix-amd64
+          - linux-headers-liquorix-amd64
+          #- linux-headers-zen
+          #- linux-image-zen
           - unzip
           - gpg
           - cpufrequtils
-          - dotnet-sdk-6.0
           - python3-netaddr
           - wget
           - apt-transport-https
@@ -110,47 +89,6 @@
         pkg:
           # Doesnt exist on newer distro versions
           - python3-distutils
-
-    - name: Install ansible dependencies on metrics host
-      when: ansible_distribution == 'Ubuntu' and ansible_hostname == metrics_hostname
-      ansible.builtin.apt:
-        update_cache: true
-        cache_valid_time: 0
-        state: present
-        pkg:
-          # Doesnt exist on newer distro versions
-          - ansible-core
-
-    #    - name: Install xanmod-rt-v2
-    #      when: old_cpu
-    #      ansible.builtin.apt:
-    #        state: present
-    #        pkg:
-    #          - linux-xanmod-rt-x64v2
-    #
-    #    - name: Install xanmod-rt-v3
-    #      when: not old_cpu
-    #      ansible.builtin.apt:
-    #        state: present
-    #        pkg:
-    #          - linux-xanmod-rt-x64v3
-
-    - name: Create dd if it does not exist
-      become: true
-      become_user: tf2server
-      ansible.builtin.file:
-        path: ~/dd
-        state: directory
-        mode: "0755"
-
-    - name: Get dd
-      become: true
-      become_user: tf2server
-      ansible.builtin.unarchive:
-        remote_src: true
-        src: "https://github.com/SteamRE/DepotDownloader/releases/download/DepotDownloader_2.5.0/depotdownloader-2.5.0.zip"
-        dest: ~/dd
-        creates: ~/dd/DepotDownloader.dll
 
     - name: Create rcon directory if it does not exist
       ansible.builtin.file:
@@ -189,15 +127,6 @@
         masked: true
         enabled: false
 
-    #    - name: Disable irqbalance  # noqa ignore-errors
-    #      become: true
-    #      ignore_errors: true
-    #      ansible.builtin.systemd:
-    #        name: irqbalance
-    #        state: stopped
-    #        masked: true
-    #        enabled: false
-
     - name: Enable docker service
       become: true
       ansible.builtin.systemd:
@@ -224,7 +153,7 @@
         command:
           - "--path.rootfs=/host"
         ports:
-          - "{{ wireguard_address_ip | default(ip) }}:9100:9100"
+          - "{{ vpn_ip[inventory_hostname] }}:9100:9100"
       tags:
         - metrics-client
         - node_exporter
@@ -232,7 +161,7 @@
     - name: Allow node_exporter firewall
       become: true
       community.general.ufw:
-        interface_in: "wg0"
+        interface_in: "tailscale0"
         rule: allow
         port: "9100"
         proto: tcp
