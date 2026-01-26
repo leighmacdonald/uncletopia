@@ -572,9 +572,9 @@
   become: true
   ansible.builtin.copy:
     dest: /etc/logrotate.d/srcds-{{ item.server_name_short }}
-    mode: "0755"
+    mode: "0770"
     content: |
-      /home/{{ srcds_user }}/srcds-{{ item.server_name_short }}/tf/logs/*.lo*
+      /home/{{ srcds_user }}/srcds-{{ item.server_name_short }}/tf/logs/*
       {
         daily
         missingok
@@ -582,7 +582,8 @@
         delaycompress
         maxage 3
         notifempty
-        rotate 1
+        rotate 3
+        size 100M
       }
   loop: "{{ services }}"
   loop_control:
