@@ -84,10 +84,10 @@
         state: present
         backup: true
       notify:
-        - restart ssh
+        - Restart SSH
 
   handlers:
-    - name: restart ssh
+    - name: Restart SSH
       become: true
       ansible.builtin.service:
         name: sshd

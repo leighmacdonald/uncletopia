@@ -22,7 +22,7 @@
       ansible.builtin.apt_repository:
         repo: "ppa:damentz/liquorix" # PPA URL
         state: present
-        update_cache: yes
+        update_cache: true
         filename: "zen-repo"
 
     - name: Configure cpufrequtils
@@ -60,8 +60,8 @@
         pkg:
           - linux-image-liquorix-amd64
           - linux-headers-liquorix-amd64
-          #- linux-headers-zen
-          #- linux-image-zen
+          # - linux-headers-zen
+          # - linux-image-zen
           - unzip
           - gpg
           - cpufrequtils
@@ -79,16 +79,6 @@
           - lib32stdc++6
           - docker-buildx-plugin
           - rsync
-
-    - name: Install extra OS Dependencies (<24.04)
-      when: ansible_distribution == 'Ubuntu' and ansible_distribution_version != '24.04'
-      ansible.builtin.apt:
-        update_cache: true
-        cache_valid_time: 0
-        state: present
-        pkg:
-          # Doesnt exist on newer distro versions
-          - python3-distutils
 
     - name: Create rcon directory if it does not exist
       ansible.builtin.file:
