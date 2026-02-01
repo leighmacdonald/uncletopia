@@ -60,8 +60,6 @@
         pkg:
           - linux-image-liquorix-amd64
           - linux-headers-liquorix-amd64
-          # - linux-headers-zen
-          # - linux-image-zen
           - unzip
           - gpg
           - cpufrequtils
@@ -79,6 +77,7 @@
           - lib32stdc++6
           - docker-buildx-plugin
           - rsync
+          - cron
 
     - name: Create rcon directory if it does not exist
       ansible.builtin.file:
@@ -123,13 +122,6 @@
         name: docker
         state: started
         enabled: true
-
-    - name: Enable UFW
-      become: true
-      community.general.ufw:
-        state: enabled
-        policy: deny
-      when: ansible_distribution == 'Ubuntu'
 
     - name: Create node_exporter container
       community.docker.docker_container:
