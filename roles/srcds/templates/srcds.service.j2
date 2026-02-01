@@ -25,7 +25,8 @@ ExecStop=/usr/bin/bash ./stop.sh
 KillSignal=SIGCONT
 
 TimeoutStartSec=0
-TimeoutStopSec=80
+TimeoutStopSec=300
+TimeoutSec=900
 
 Restart=on-failure
 RestartSec=10
