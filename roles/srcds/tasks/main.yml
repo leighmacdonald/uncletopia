@@ -122,6 +122,8 @@
     mode: "0775"
   loop: "{{ services }}"
   when: item.config == "pve"
+  tags:
+    - game_config
   # Perform the copy from the *remote* sourcemod build output
   # delegate_to: "{{ inventory_hostname }}"
 
@@ -132,6 +134,8 @@
     mode: "0775"
   loop: "{{ services }}"
   when: item.config == "pve"
+  tags:
+    - game_config
   # Perform the copy from the *remote* sourcemod build output
   # delegate_to: "{{ inventory_hostname }}"
 
@@ -140,6 +144,8 @@
     src: "{{ role_path }}/files/attach.sh"
     dest: /home/tf2server/srcds-{{ item.server_name_short }}/attach.sh
     mode: "0755"
+  tags:
+    - game_config
   loop: "{{ services }}"
 
 - name: Generate /tf/mapcycle.txt
