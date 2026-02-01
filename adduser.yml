@@ -33,6 +33,14 @@
         content: "%tf2  ALL=(ALL)  NOPASSWD: ALL"
         mode: "0600"
 
+    - name: Install ufw
+      become: true
+      when: ansible_distribution == 'Ubuntu'
+      ansible.builtin.apt:
+        state: present
+        pkg:
+          - ufw
+
     - name: Enable ufw allow 22
       become: true
       community.general.ufw:
@@ -87,7 +95,7 @@
         - Restart SSH
 
   handlers:
-    - name: Restart SSH
+    - name: Restart ssh
       become: true
       ansible.builtin.service:
         name: sshd
