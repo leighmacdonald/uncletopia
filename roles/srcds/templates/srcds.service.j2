@@ -25,8 +25,11 @@ ExecStop=/usr/bin/bash ./stop.sh
 KillSignal=SIGCONT
 
 TimeoutStartSec=0
+
+# Use larger timeouts since we have a restart script that notifies
+# users and winds the game down in a couple mins.
 TimeoutStopSec=300
-TimeoutSec=900
+TimeoutSec=300
 
 Restart=on-failure
 RestartSec=10

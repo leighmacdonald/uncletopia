@@ -1,0 +1,6 @@
+---
+- name: Restart SRCDS
+  ansible.builtin.service:
+    name: srcds-{{ item }}
+    state: restarted
+  loop: "{{ srcds_services }}"

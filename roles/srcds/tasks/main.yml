@@ -523,20 +523,6 @@
     index_var: loop0
   when: ansible_distribution == 'Ubuntu'
 
-- name: Cron srcds
-  become: true
-  ansible.builtin.cron:
-    name: "tf2-restart-{{ item.server_name_short }}"
-    weekday: "*"
-    minute: "0"
-    hour: "6"
-    job: "systemctl restart srcds-{{ item.server_name_short }}"
-  loop: "{{ services }}"
-  loop_control:
-    index_var: loop0
-  when: ansible_distribution == 'Ubuntu'
-  tags: cron
-
 - name: Generate srcds services
   become: true
   ansible.builtin.template:
@@ -546,11 +532,6 @@
   loop: "{{ services }}"
   loop_control:
     index_var: loop0
-
-- name: Reload systemd
-  become: true
-  ansible.builtin.systemd:
-    daemon_reload: true
   tags:
     - game_engine
 
@@ -567,6 +548,46 @@
     index_var: loop0
   tags:
     - game_engine
+  changed_when: True
+  register: srcds_changed
+
+- name: "Collect names of services with changed configs"
+  ansible.builtin.set_fact:
+    # Append service name to a list if its config was modified
+    srcds_services: "{{ srcds_services | default([]) + [item.server_name_short] }}"
+  loop: "{{ services }}"
+  loop_control:
+    index_var: loop0
+  tags:
+    - game_engine
+
+- name: Reload systemd
+  become: true
+  ansible.builtin.systemd:
+    daemon_reload: true
+  tags:
+    - game_engine
+
+- name: "Trigger srcds reload"
+  ansible.builtin.debug:
+    msg: "Reloading srcds services: {{ srcds_services | join(', ') }}"
+  notify: "Restart SRCDS"
+  when: srcds_services is defined and srcds_services | length > 0
+  tags:
+    - game_engine
+
+- name: Cron srcds
+  become: true
+  ansible.builtin.cron:
+    name: "tf2-restart-{{ item.server_name_short }}"
+    weekday: "*"
+    minute: "0"
+    hour: "6"
+    job: "systemctl restart srcds-{{ item.server_name_short }}"
+  loop: "{{ services }}"
+  loop_control:
+    index_var: loop0
+  tags: cron
 
 - name: Configure logrotate
   become: true

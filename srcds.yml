@@ -1,5 +1,5 @@
 ---
-- name: Build uncletopia srcds image
+- name: Build srcds instances
   hosts: tf2
   strategy: free
   roles:
