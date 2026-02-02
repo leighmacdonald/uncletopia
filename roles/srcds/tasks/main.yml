@@ -554,7 +554,8 @@
     index_var: loop0
   tags:
     - game_engine
-  changed_when: True
+  # This is currently just forced to true so it always runs, eventually will be changed to only run on update
+  changed_when: true
   register: srcds_changed
 
 - name: "Collect names of services with changed configs"
