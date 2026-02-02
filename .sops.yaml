@@ -1,0 +1,8 @@
+keys:
+  - &admin_roto age16gjw3nzrxwmjzf0ty34mm3hh9726muwk20yvwddsvlljaszeru5qdpcehe
+creation_rules:
+  - path_regex: \.(ya?ml)$
+    key_groups:
+      - age:
+          - *admin_roto 
+

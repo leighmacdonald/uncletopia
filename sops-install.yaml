@@ -1,0 +1,17 @@
+- name: Playbook to install SOPS
+  hosts: all
+  tasks:
+    # To use the sops_encrypt module on a remote host, you need to install SOPS on it:
+    - name: Install SOPS on remote hosts
+      ansible.builtin.include_role:
+        name: community.sops.install
+      #vars:
+      #sops_version: 2.7.0 # per default installs the latest version
+
+    # To use the lookup plugin, filter plugin, vars plugin, or the load_vars action,
+    # you need SOPS installed on localhost:
+    # - name: Install SOPS on localhost
+    #   ansible.builtin.include_role:
+    #     name: community.sops.install
+    #   vars:
+    #     sops_install_on_localhost: true
