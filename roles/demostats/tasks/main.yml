@@ -1,3 +1,10 @@
+- name: Copy schema.json
+  become: true
+  ansible.builtin.copy:
+    src: schema.json
+    dest: /etc/schema.json
+    mode: "0644"
+
 - name: Create tf2_demostats
   community.docker.docker_container:
     name: tf2_demostats
@@ -7,6 +14,8 @@
     pull: true
     restart_policy: always
     state: started
+    volumes:
+      - /etc/schema.json:/app/schema.json:ro
     comparisons:
       networks: strict
     networks:
