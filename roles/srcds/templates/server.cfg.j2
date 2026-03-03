@@ -148,9 +148,12 @@ sv_disable_weapon_drop_on_death 1
 {#{% endfor %}#}
 
 // Built in class limit commands
+
+{% if item.tf_classlimit|default(3) > 0 %}
 tf_classlimit {{ item.tf_classlimit|default(3) }}
 sv_vote_issue_classlimits_allowed 0
 sv_vote_issue_classlimits_max 3
+{% endif %}
 
 // Disable stalemates
 mp_stalemate_enable 0
