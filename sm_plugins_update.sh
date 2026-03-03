@@ -3,6 +3,9 @@ ROOT=$(pwd)
 SM_ROOT=$ROOT/roles/sourcemod/files/addons/sourcemod
 SRC_ROOT="sm_plugins"
 
+DODGEBALL_ROOT="$SRC_ROOT/TF2-Dodgeball-Modified"
+DODGEBALL_BRANCH="v2.1.0"
+
 STAC_ROOT="$SRC_ROOT/stac"
 STAC_BRANCH="gbans-native"
 
@@ -44,6 +47,28 @@ HALLOWEENCOSMETICS_ROOT="$SRC_ROOT/HalloweenCosmeticEnabler"
 HALLOWEENCOSMETICS_BRANCH="master"
 
 # git submodule update --init --recursive
+
+pushd $DODGEBALL_ROOT || exit
+git fetch --all
+git checkout $DODGEBALL_BRANCH
+git pull
+pushd TF2Dodgeball/addons/sourcemod || exit
+for d in 'scripting' 'translations'; do
+	cp -rv $d "$SM_ROOT"
+done
+popd || exit
+
+cp -rv Subplugins/AirblastPrevention/scripting/tfdb_airblast_prevention.sp $SM_ROOT/scripting/
+cp -rv Subplugins/NoBlock/scripting/tfdb_no_block.sp $SM_ROOT/scripting/
+cp -rv Subplugins/Votes/scripting/tfdb_votes.sp $SM_ROOT/scripting/
+cp -rv Subplugins/Speedometer/scripting/tfdb_speedhud.sp $SM_ROOT/scripting/
+cp -rv Subplugins/FFA/scripting/tfdb_ffa.sp $SM_ROOT/scripting/
+cp -rv Subplugins/Print/scripting/tfdb_print.sp $SM_ROOT/scripting/
+#cp -rv TF2Dodgeball/cfg/sourcemod/* $ROOT/roles/sourcemod/files/cfg/sourcemod/
+
+popd || exit
+
+exit 200
 
 pushd $HALLOWEENCOSMETICS_ROOT || exit
 git fetch --all

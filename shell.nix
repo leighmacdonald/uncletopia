@@ -9,10 +9,13 @@ in
 
 pkgs.mkShellNoCC {
   packages = with pkgs; [
-    gnumake
     ansible
     ansible-lint
-    #ansible-language-server
     yamllint
+    just
+    just-lsp
+    nix
+    nixd
+    just-formatter
   ];
 }
