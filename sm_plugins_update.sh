@@ -60,15 +60,13 @@ popd || exit
 
 cp -rv Subplugins/AirblastPrevention/scripting/tfdb_airblast_prevention.sp $SM_ROOT/scripting/
 cp -rv Subplugins/NoBlock/scripting/tfdb_no_block.sp $SM_ROOT/scripting/
-cp -rv Subplugins/Votes/scripting/tfdb_votes.sp $SM_ROOT/scripting/
+#cp -rv Subplugins/Votes/scripting/tfdb_votes.sp $SM_ROOT/scripting/
 cp -rv Subplugins/Speedometer/scripting/tfdb_speedhud.sp $SM_ROOT/scripting/
 cp -rv Subplugins/FFA/scripting/tfdb_ffa.sp $SM_ROOT/scripting/
 cp -rv Subplugins/Print/scripting/tfdb_print.sp $SM_ROOT/scripting/
 #cp -rv TF2Dodgeball/cfg/sourcemod/* $ROOT/roles/sourcemod/files/cfg/sourcemod/
 
 popd || exit
-
-exit 200
 
 pushd $HALLOWEENCOSMETICS_ROOT || exit
 git fetch --all
@@ -129,12 +127,6 @@ git checkout $ECON_DATA_BRANCH
 cp -rv scripting gamedata "$SM_ROOT"
 popd || exit
 
-pushd $ATTRIBUTES_ROOT || exit
-git fetch --all
-git checkout $ATTRIBUTES_BRANCH
-cp -rv scripting gamedata "$SM_ROOT"
-rm "$SM_ROOT/scripting/tf2attributes_example.sp"
-popd || exit
 
 pushd $CENTERPROJECTILES_ROOT || exit
 git fetch --all
@@ -162,4 +154,16 @@ pushd $PVE_ROOT || exit
 git fetch --all
 git checkout $PVE_BRANCH
 cp -rv scripting gamedata "$SM_ROOT"
+popd || exit
+
+
+echo "tf2attributes skipped"
+
+exit
+
+pushd $ATTRIBUTES_ROOT || exit
+git fetch --all
+git checkout $ATTRIBUTES_BRANCH
+cp -rv scripting gamedata "$SM_ROOT"
+rm "$SM_ROOT/scripting/tf2attributes_example.sp"
 popd || exit

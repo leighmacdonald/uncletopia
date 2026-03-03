@@ -66,14 +66,6 @@
 // is set to 1.
 // -------------------------------------------------------
 
-
-
-// no airblasting people
-// no ammo cvar tf_flamethrower_burstammo 0
-// Disables arena queue
-// sm_cvar tf_arena_use_queue 0
-//
-
 "tf2_dodgeball"
 {
 
@@ -91,7 +83,7 @@
                                                     // Does not override any values, only changes update rate.
         "bounce vertical scale"            "0"      // 1 = use per-class "bounce vertical ratio" to dampen vertical bounces
 
-        "music"                            "1"      // Play music on Dodgeball gamemode?
+        "music"                            "0"      // Play music on Dodgeball gamemode?
 
         "round start"                      ""       // Music to play on round start (before gameplay start)
         "round end (win)"                  ""       // Music to play for the winner team
@@ -154,9 +146,9 @@
             // >>> Specific behaviour modificators <<<
             "elevate on deflect"          "0"                // Does the rocket elevate after a deflection? (Default : 0)
             "neutral rocket"              "0"                // Does the rocket have no team based targets? (Default : 0)
-            "keep direction"              "0"                // Does the rocket keep its direction after touching a surface? (Default : 0)
+            "keep direction"              "1"                // Does the rocket keep its direction after touching a surface? (Default : 0)
             "teamless deflects"           "0"                // Can this rocket be deflected by anyone? Same as neutral but targeting is not affected. (Default : 0)
-            "reset bounces"               "0"                // Does this rocket reset its internal bounces count on deflect? (Default : 0)
+            "reset bounces"               "1"                // Does this rocket reset its internal bounces count on deflect? (Default : 0)
             "no bounce drags"             "0"                // Can you drag this rocket after it touched a surface? Does not affect "legacy homing" rockets. (Default : 0)
             "can be stolen"               "0"                // Can you steal this rocket from its target? (Default : 0)
             "steal team check"            "1"                // Checks if the stealer and the target are on the same team. (Default : 0)
@@ -188,7 +180,9 @@
             "control delay"               "0"                // Delay until the rocket starts tracking the target after a deflection.
 
             "max bounces"                 "1000"             // How many times can this rocket bounce?
-            "bounce scale"                "0.5"              // How hard should the rocket bounce? (Default : 1.0 multiplier)
+            "bounce scale"                "1.0"              // How hard should the rocket bounce? (Default : 1.0 multiplier)
+            "bounce force scale"          "1.5"
+            "bounce force angle"          "45.0"
             //"bounce vertical ratio"       "1.0"            // Scale vertical bounce velocity. 1.0 = full bounce, 0.5 = half height,
                                                              // 0.0 = no vertical bounce at all. Lower = flatter bounces.
                                                              // (used when "bounce vertical scale" = 1)
@@ -196,6 +190,14 @@
                                                              // the rocket is, it can't bounce higher than this. 0 = no cap.
                                                              // (used when "bounce vertical scale" = 1)
 
+            "crawl bounce"                "1"                // Use crawl bounce scaling/clamping.
+            "crawl bounce scale"          "1"                // Extra Z scaling in crawl mode.
+            "crawl bounce max up"         "1500"
+
+            "no. players modifier"        "0"              // Increment based upon the number of players in the server.
+            "no. rockets modifier"        "0"              // Increment based upon the number of rockets fired since the start of the round.
+            "direction to target weight"  "100"              // Weight modifier for target selection, based upon the direction of the rocket
+                                                             // to the client.
             // Drag pause: how long the rocket flies straight after a deflect
             // before reading the player's aim and resuming homing.
             // This is the "drag window" — the brief moment where the rocket
@@ -210,7 +212,7 @@
             // Snapped to tick boundaries internally: e.g. 0.1s on 66-tick
             // = 7 ticks (0.106s), on 128-tick = 13 ticks (0.102s).
             //
-            "drag pause duration"          "0.1"
+            "drag pause duration"          "0.05"
 
             "critical chance"             "100"              // Percentage of chance for a critical rocket.
 
@@ -222,7 +224,8 @@
             // >>> Events <<<
             "on spawn"                    ""                 // Actions to execute on rocket spawn.
             "on deflect"                  ""                 // Actions to execute when a rocket is deflected.
-            "on kill"                     "tf_dodgeball_print [{olive}TFDB{default}] {yellow}★ KILL{default} | {lightblue}##@owner## {default}killed {red}##@dead## {default}| Deflects: {darkorange}@deflections {default}| Speed: {red}@capmphspeed mph"  // Actions to execute when a rocket kills a client.
+            "on kill"                     ""
+            // "on kill"                     "tf_dodgeball_print [{olive}TFDB{default}] {yellow}★ KILL{default} | {lightblue}##@owner## {default}killed {red}##@dead## {default}| Deflects: {darkorange}@deflections {default}| Speed: {red}@capmphspeed mph"  // Actions to execute when a rocket kills a client.
             "on explode"                  ""                 // Actions to execute when a rocket kills a client (triggered once).
             "on no target"                ""                 // Actions to execute when a rocket has an invalid target.
             "on destroyed"                ""                 // Actions to execute when a rocket explodes (will not trigger if the player is killed by the rocket).
