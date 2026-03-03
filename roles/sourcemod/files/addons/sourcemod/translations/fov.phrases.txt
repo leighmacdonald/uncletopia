@@ -1,0 +1,17 @@
+"Phrases"
+{
+	"FOV_Usage"
+	{
+		"en"	"{orange}[FOV]{default} Usage: sm_fov <integer|float>"
+	}
+
+	"FOV_MustBeANumber"
+	{
+		"en"	"{orange}[FOV]{default} Parameter must be a number."
+	}
+
+	"FOV_MustBeWithinRange"
+	{
+		"en"	"{orange}[FOV]{default} Parameter must be within range %d-%d"
+	}
+}
