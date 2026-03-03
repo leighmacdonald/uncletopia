@@ -1,0 +1,65 @@
+"Games"
+{
+	"tf"
+	{
+		"Functions"
+		{
+			"CBasePlayer::SetFOV"
+			{
+				"signature"	"CBasePlayer::SetFOV"
+				"callconv"	"thiscall"
+				"return"	"bool"
+				"this"		"entity"
+
+				"arguments"
+				{
+					"pRequester"
+					{
+						"type"	"cbaseentity"
+					}
+					"FOV"
+					{
+						"type"	"int"
+					}
+					"zoomRate"
+					{
+						"type"	"float"
+					}
+					"iZoomStart"
+					{
+						"type"	"int"
+					}
+				}
+			}
+			"CBasePlayer::SetDefaultFOV"
+			{
+				"signature"	"CBasePlayer::SetDefaultFOV"
+				"callconv"	"thiscall"
+				"return"	"void"
+				"this"		"entity"
+
+				"arguments"
+				{
+					"fov"
+					{
+						"type"	"int"
+					}
+				}
+			}
+		}
+
+		"Signatures"
+		{
+			"CBasePlayer::SetFOV"
+			{
+				"library"	"server"
+				"linux"		"@_ZN11CBasePlayer6SetFOVEP11CBaseEntityifi"
+			}
+			"CBasePlayer::SetDefaultFOV"
+			{
+				"library"	"server"
+				"linux"		"@_ZN11CBasePlayer13SetDefaultFOVEi"
+			}
+		}
+	}
+}
