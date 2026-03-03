@@ -1,1 +1,8 @@
-{% if item.config == 'pve' %}{{ motd_pve }}{% else %}{{ motd }}{% endif %}
+{% if item.config == 'pve' %}
+{{ motd_pve }}
+{% elif item.config == 'dodgeball' %}
+{{ motd_dodgeball }}
+{% else %}
+{{ motd }}
+{% endif %}
+m

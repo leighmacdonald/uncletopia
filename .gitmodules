@@ -47,3 +47,6 @@
 [submodule "sm_plugins/HalloweenCosmeticEnabler"]
 	path = sm_plugins/HalloweenCosmeticEnabler
 	url = https://github.com/Mikusch/HalloweenCosmeticEnabler
+[submodule "sm_plugins/TF2-Dodgeball-Modified"]
+	path = sm_plugins/TF2-Dodgeball-Modified
+	url = https://github.com/Silorak/TF2-Dodgeball-Modified.git

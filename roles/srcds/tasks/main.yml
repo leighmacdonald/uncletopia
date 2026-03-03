@@ -271,6 +271,30 @@
   loop_control:
     index_var: loop0
 
+- name: mkdir tf/addons/sourcemod/configs/dodgeball
+  ansible.builtin.file:
+    path: ~/srcds-{{ item.server_name_short }}/tf/addons/sourcemod/configs/dodgeball
+    state: directory
+    mode: "0755"
+  tags:
+    - game_config
+  loop: "{{ services }}"
+  when: item.config == "dodgeball"
+  loop_control:
+    index_var: loop0
+
+- name: Generate /tf/addons/sourcemod/configs/dodgeball/dodgeball_general.cfg
+  ansible.builtin.template:
+    src: dodgeball_general.cfg.j2
+    dest: ~/srcds-{{ item.server_name_short }}/tf/addons/sourcemod/configs/dodgeball/general.cfg
+    mode: "0655"
+  tags:
+    - game_config
+  loop: "{{ services }}"
+  when: item.config == "dodgeball"
+  loop_control:
+    index_var: loop0
+
 - name: Generate /tf/cfg/sourcemod/gbans.cfg
   ansible.builtin.template:
     src: gbans.cfg.j2

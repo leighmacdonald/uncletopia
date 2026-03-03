@@ -1,0 +1,313 @@
+// -------------------------------------------------------
+// Events
+// -------------------------------------------------------
+//
+// In order to further customize the rocket types, you can
+// set a command to be executed when a certain event happens
+// with a dodgeball rocket.
+//
+// The events that are right now implemented are the following :
+//
+// on spawn     - When a rocket spawns.
+// on deflect   - A client has deflected a rocket.
+// on kill      - One of the rockets has killed the client.
+// on explode   - Same as on kill, only triggered once.
+// on no target - When a rocket has an invalid target.
+//              - The target parameter "@target" will be the new target of the rocket.
+// on destroyed - When a rocket explodes and does not kill anyone.
+//              - As a result, the rocket entity parameter "@rocket" will always be -1.
+//              - The target parameter "@target" will be the player who touched the rocket.
+//              - Requires the extra events plugin.
+//
+// The possible parameters passed for the commands are the following :
+//
+// @name          - [String]  : Name of the projectile type
+// @rocket        - [Integer] : Rocket entity index
+// @owner         - [Integer] : Owner client index
+// @target        - [Integer] : Target client index
+// @dead          - [Integer] : Last dead client index
+// @deflections   - [Integer] : Number of rocket deflections
+// @speed         - [Float]   : Speed of the rocket with limit
+// @mphspeed      - [Integer] : Speed of the rocket in MpH without limit
+// @capmphspeed   - [Integer] : Speed of the rocket in Mph with limit
+// @nocapspeed    - [Float]   : Speed of the rocket without limit (conversion from MpH)
+// @2dspeed       - [Float]   : Speed of the rocket with limit that has only 2 decimal numbers
+// @2dnocapspeed  - [Float]   : Speed of the rocket without limit that has only 2 decimal numbers
+//
+// -------------------------------------------------------
+// Commands
+// -------------------------------------------------------
+//
+// For using with the events system, the plugin has some useful
+// commands if you want to make kickass explosion blasts.
+//
+// tf_dodgeball_explosion <client>
+// Shows a huge explosion at the location of the specified client.
+//
+// tf_dodgeball_shockwave <client> <damage> <force> <radius> <falloff>
+// Applies a huge shockwave at the location of the client.
+//
+// If you are able to write plugins, you can include your custom
+// commands too!
+//
+// -------------------------------------------------------
+// Extra information
+// -------------------------------------------------------
+//
+// It is possible to have map specific configuration files by
+// creating a config with the name of the map. Keep in mind that
+// no previous values are deleted.
+//
+// If a keyvalue / parameter has a default value and you do not want
+// to change it, you can leave the value empty or ignore the parameter
+// altogether.
+//
+// Neutral rockets cannot damage teammates unless "mp_friendlyfire"
+// is set to 1.
+// -------------------------------------------------------
+
+
+
+// no airblasting people
+// no ammo cvar tf_flamethrower_burstammo 0
+// Disables arena queue
+// sm_cvar tf_arena_use_queue 0
+//
+
+"tf2_dodgeball"
+{
+
+    "general"
+    {
+        // >>> Experimental scaling modes (all disabled by default) <<<
+        // These override specific per-class values when enabled.
+        // Your existing config will work exactly the same with all of these set to 0.
+
+        "orbit coefficient"                "0"      // 1 = use "orbit tightness" instead of "turn rate" + "turn rate increment"
+                                                    // Turn rate is auto-derived from speed, keeping orbit radius constant.
+        "target speed scaling"             "0"      // 1 = use "max speed" + "max deflections" instead of "speed increment"
+                                                    // Speed increment is auto-calculated to reach max speed evenly.
+        "smooth elevation"                 "1"      // 1 = apply elevation per-frame (smooth) instead of logic timer (~10Hz) steps
+                                                    // Does not override any values, only changes update rate.
+        "bounce vertical scale"            "0"      // 1 = use per-class "bounce vertical ratio" to dampen vertical bounces
+
+        "music"                            "1"      // Play music on Dodgeball gamemode?
+
+        "round start"                      ""       // Music to play on round start (before gameplay start)
+        "round end (win)"                  ""       // Music to play for the winner team
+        "round end (lose)"                 ""       // Music to play for the loser team
+        "gameplay"                         ""       // Music to play when the gameplay starts. This one stops
+                                                    // at round end.
+
+        "use web player"                   "0"      // If the use of web player is enabled, these will be
+        "web player url"                   ""       // used instead of the gameplay music
+    }
+
+    "classes"
+    {
+        "common"
+        {
+            // >>> Basic parameters <<<
+            "name"                        "Homing Rocket"    // Full name of the rocket type
+            "behaviour"                   "homing"           // "homing" for smooth, per-frame updates.
+                                                             // "legacy homing" for classic, logic timer updates (~10Hz).
+
+            "model"                       ""                 // Default: Common rocket model
+            "is animated"                 "0"                // Only works when using a custom model (Default : 0)
+
+            // Trails section. Only usable if the trails plugin is installed.
+            // Remove the comments (//) before the keys (ex. "trail particle") if you want to use this section.
+
+            //"trail particle"              ""                 // Particle for particle trail (Default : no custom particle trail)
+                                                             // Not all particles are going to work
+
+            //"trail sprite"                ""                 // Sprite path for sprite trail (Default : no custom sprite trail)
+            //"custom color"                ""                 // Custom color for the sprite trail (Default : [255 255 255])
+            //"sprite lifetime"             ""                 // Custom lifetime for sprite trail (Default : 1.0 seconds)
+            //"sprite start width"          ""                 // Custom start width for sprite trail (Default : 6.0 units)
+            //"sprite end width"            ""                 // Custom end width for sprite trail (Default : 15.0 units)
+            //"texture resolution"          ""                 // Custom texture resolution (Default : 0.05)
+
+            // You can also insert custom keyvalue pairs for the "env_spritetrail" entity in this section
+            //"entity keyvalues"
+            //{
+                // For example, this replaces the sprite set in the "trail sprite" key with "materials/sprites/laser.vmt"
+                // "spritename" "materials/sprites/laser.vmt"
+
+                // Check https://developer.valvesoftware.com/wiki/Env_spritetrail for more info.
+            //}
+
+            //"remove particles"            ""                 // Remove the default rocket particles? (Default : 0)
+            //"replace particles"           ""                 // Replace the default rocket particles? Works only if they have been removed (Default : 0)
+                                                             // Creates a clone of the rocket and adds crit glows
+
+            // Trails section end.
+
+            "play spawn sound"            "1"                // Does the rocket emit a sound when spawning? (Default : 0)
+            "play beep sound"             "1"                // Does the rocket emit a beeping sound? (Default : 0)
+            "play alert sound"            "1"                // Does the rocket emit an alert sound to the client when being targetted? (Default : 0)
+            "spawn sound"                 ""                 // Default: Sentry rocket sound
+            "beep sound"                  ""                 // Default: Sentry searching sound
+            "alert sound"                 ""                 // Default: Sentry client spotted sound
+            "beep interval"               "0"                // Emit sound every x time (Default : 0.5 seconds)
+
+            // >>> Specific behaviour modificators <<<
+            "elevate on deflect"          "0"                // Does the rocket elevate after a deflection? (Default : 0)
+            "neutral rocket"              "0"                // Does the rocket have no team based targets? (Default : 0)
+            "keep direction"              "0"                // Does the rocket keep its direction after touching a surface? (Default : 0)
+            "teamless deflects"           "0"                // Can this rocket be deflected by anyone? Same as neutral but targeting is not affected. (Default : 0)
+            "reset bounces"               "0"                // Does this rocket reset its internal bounces count on deflect? (Default : 0)
+            "no bounce drags"             "0"                // Can you drag this rocket after it touched a surface? Does not affect "legacy homing" rockets. (Default : 0)
+            "can be stolen"               "0"                // Can you steal this rocket from its target? (Default : 0)
+            "steal team check"            "1"                // Checks if the stealer and the target are on the same team. (Default : 0)
+                                                             // Useful for neutral rockets.
+
+            // >>> Movement parameters <<<
+            "damage"                      "50"               // Base damage done by the rocket.
+            "damage increment"            "25"               // Increment per reflection.
+                                                             // Damage is multiplied by 3 if the rocket is critical.
+
+            "speed"                       "875"              // Base speed for the rocket.
+            "speed increment"             "160"              // Speed increment per reflection.
+            "speed limit"                 "0"                // Speed limit for the rocket (0 to disable speed limiting)
+            //"max speed"                  "3500"            // Target max speed (used when "target speed scaling" = 1)
+            //"max deflections"            "40"              // Deflections to reach max speed (used when "target speed scaling" = 1)
+
+            "turn rate"                   "0.260"            // Turn rate / tick for this rocket (base orbit radius).
+                                                             // Community sweet spot is often 0.180-0.320 combined with increment.
+            "turn rate increment"         "0.0180"           // Increment per reflection. At TF2's max speed cap (~3500 HU/s),
+                                                             // continuous turn rates of 1.8-3.2 provide the best orbit feel.
+            "turn rate limit"             "0"                // Maximum turn rate when deflected (0 to disable turn rate limiting)
+                                                             // Cannot exceed 1.0 regardless of the actual limit value
+            //"orbit tightness"            "0.3"             // Constant orbit coefficient (used when "orbit coefficient" = 1)
+                                                             // 0.3 matches classic turn rate feel. 0.1 = loose, 1.0 = tight.
+
+            "elevation rate"              "0"                // Elevation rate when deflected (if enabled)
+            "elevation limit"             "0"                // Maximum elevation when deflected (if enabled)
+
+            "control delay"               "0"                // Delay until the rocket starts tracking the target after a deflection.
+
+            "max bounces"                 "1000"             // How many times can this rocket bounce?
+            "bounce scale"                "0.5"              // How hard should the rocket bounce? (Default : 1.0 multiplier)
+            //"bounce vertical ratio"       "1.0"            // Scale vertical bounce velocity. 1.0 = full bounce, 0.5 = half height,
+                                                             // 0.0 = no vertical bounce at all. Lower = flatter bounces.
+                                                             // (used when "bounce vertical scale" = 1)
+            //"bounce max vertical speed"   "250"            // Hard cap on vertical bounce speed in HU/s. No matter how fast
+                                                             // the rocket is, it can't bounce higher than this. 0 = no cap.
+                                                             // (used when "bounce vertical scale" = 1)
+
+            // Drag pause: how long the rocket flies straight after a deflect
+            // before reading the player's aim and resuming homing.
+            // This is the "drag window" — the brief moment where the rocket
+            // goes forward and your mouse determines its initial trajectory.
+            //
+            //   0.1  = legacy feel (100ms, matches DB_Reborn / default timer rate)
+            //   0.05 = snappier response (50ms, rocket snaps to aim faster)
+            //   0.0  = instant (no forward flight, aim read immediately)
+            //   0.15 = sluggish (150ms, more time to aim but slower feel)
+            //
+            // Uses per-frame timing (OnGameFrame, fires every server tick).
+            // Snapped to tick boundaries internally: e.g. 0.1s on 66-tick
+            // = 7 ticks (0.106s), on 128-tick = 13 ticks (0.102s).
+            //
+            "drag pause duration"          "0.1"
+
+            "critical chance"             "100"              // Percentage of chance for a critical rocket.
+
+            "no. players modifier"        "0"              // Increment based upon the number of players in the server.
+            "no. rockets modifier"        "0"              // Increment based upon the number of rockets fired since the start of the round.
+            "direction to target weight"  "100"              // Weight modifier for target selection, based upon the direction of the rocket
+                                                             // to the client.
+
+            // >>> Events <<<
+            "on spawn"                    ""                 // Actions to execute on rocket spawn.
+            "on deflect"                  ""                 // Actions to execute when a rocket is deflected.
+            "on kill"                     "tf_dodgeball_print [{olive}TFDB{default}] {yellow}★ KILL{default} | {lightblue}##@owner## {default}killed {red}##@dead## {default}| Deflects: {darkorange}@deflections {default}| Speed: {red}@capmphspeed mph"  // Actions to execute when a rocket kills a client.
+            "on explode"                  ""                 // Actions to execute when a rocket kills a client (triggered once).
+            "on no target"                ""                 // Actions to execute when a rocket has an invalid target.
+            "on destroyed"                ""                 // Actions to execute when a rocket explodes (will not trigger if the player is killed by the rocket).
+        }
+
+        "nuke"
+        {
+            // >>> Basic parameters <<<
+            "name"                        "Nuke!"
+            "behaviour"                   "homing"
+            "model"                       "models/custom/dodgeball/nuke/nuke.mdl"
+            "is animated"                 "1"
+            "trail particle"              ""
+            "trail sprite"                ""
+            "custom color"                ""
+            "remove particles"            ""
+            "replace particles"           ""
+            "play spawn sound"            "1"
+            "play beep sound"             "1"
+            "play alert sound"            "1"
+            "spawn sound"                 ""
+            "beep sound"                  ""
+            "alert sound"                 ""
+            "beep interval"               "0.2"
+
+            // >>> Specific behaviour modificators <<<
+            "elevate on deflect"          "0"
+            "neutral rocket"              "0"
+            "keep direction"              "1"
+            "teamless deflects"           "0"
+            "reset bounces"               "0"
+            "no bounce drags"             "0"
+
+            // >>> Movement parameters <<<
+            "damage"                      "200"
+            "damage increment"            "200"
+            "speed"                       "550"
+            "speed increment"             "100"
+            "speed limit"                 "0"
+            "turn rate"                   "0.233"
+            "turn rate increment"         "0.0275"
+            "turn rate limit"             "0"
+            "elevation rate"              "0.1237"
+            "elevation limit"             "0.1237"
+            "control delay"               "0"
+            "max bounces"                 "0"
+            "bounce scale"                "1.0"
+            "critical chance"             "100"
+            "no. players modifier"        "0"
+            "no. rockets modifier"        "0"
+            "direction to target weight"  "25"
+
+            // >>> Events <<<
+            "on spawn"                    ""
+            "on deflect"                  ""
+            "on kill"                     "tf_dodgeball_print [{olive}TFDB{default}] {darkmagenta}☢ NUKE{default} | {lightblue}##@owner## {default}nuked {red}##@dead## {default}| Deflects: {darkorange}@deflections {default}| Speed: {red}@capmphspeed mph"
+            "on explode"                  "tf_dodgeball_explosion @dead ; tf_dodgeball_shockwave @dead 200 1000 1000 600"
+            "on no target"                ""
+        }
+    }
+
+    "spawners"
+    {
+        // >>> Default RED spawner <<<
+        "red"
+        {
+            // >>> Basic parameters <<<
+            "max rockets"            "1"                // Max no. of rockets before the spawner can fire another. (Default : 1)
+            "interval"               "2.0"              // Minimum time between rocket fires. (Default : 2.0 seconds)
+
+            // >>> Chances table <<<
+            "common%"                "100"               // Chance to spawn a common rocket
+            "nuke%"                  "0"               // Chance to spawn a nuke rocket
+        }
+
+        // >>> Default BLU spawner <<<
+        "blu"
+        {
+            // >>> Basic parameters <<<
+            "max rockets"            "1"               // Max no. of rockets before the spawner can fire another.
+            "interval"               "2.0"             // Minimum time between rocket fires.
+
+            // >>> Chances table <<<
+            "common%"                "100"              // Chance to spawn a common rocket
+            "nuke%"                  "0"              // Chance to spawn a nuke rocket
+        }
+    }
+}
