@@ -1,7 +1,10 @@
 #!/bin/env bash
-ROOT=$(pwd)
+ROOT=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 SM_ROOT=$ROOT/roles/sourcemod/files/addons/sourcemod
 SRC_ROOT="sm_plugins"
+
+MGE_ROOT="$SRC_ROOT/mge"
+MGE_BRANCH="pg"
 
 DODGEBALL_ROOT="$SRC_ROOT/TF2-Dodgeball-Modified-UDL"
 DODGEBALL_BRANCH="master"
@@ -47,6 +50,17 @@ HALLOWEENCOSMETICS_ROOT="$SRC_ROOT/HalloweenCosmeticEnabler"
 HALLOWEENCOSMETICS_BRANCH="master"
 
 # git submodule update --init --recursive
+#
+pushd $MGE_ROOT || exit
+git fetch --all
+git checkout $MGE_BRANCH
+git pull
+for d in 'configs' 'scripting' 'translations'; do
+  cp -rv addons/sourcemod/$d "$SM_ROOT"
+done
+
+cp -rv maps/* "$ROOT"/roles/srcds/files/maps
+popd || exit
 
 pushd $DODGEBALL_ROOT || exit
 git fetch --all
