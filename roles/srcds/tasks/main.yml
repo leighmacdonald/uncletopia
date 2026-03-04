@@ -127,6 +127,16 @@
   # Perform the copy from the *remote* sourcemod build output
   # delegate_to: "{{ inventory_hostname }}"
 
+- name: Copy mge maps to /tf/maps/
+  ansible.builtin.copy:
+    src: "{{ role_path }}/files/maps/"
+    dest: /home/tf2server/srcds-{{ item.server_name_short }}/tf/maps/
+    mode: "0775"
+  loop: "{{ services }}"
+  when: item.config == "mge"
+  # Perform the copy from the *remote* sourcemod build output
+  # delegate_to: "{{ inventory_hostname }}"
+
 - name: Copy vscripts /tf/scripts/
   ansible.builtin.copy:
     src: "{{ role_path }}/files/scripts/"
