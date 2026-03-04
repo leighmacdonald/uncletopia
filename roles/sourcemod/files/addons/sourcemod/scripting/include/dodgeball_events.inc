@@ -136,7 +136,7 @@ public void OnPlayerInventory(Event hEvent, char[] strEventName, bool bDontBroad
 	for (int iSlot = 1; iSlot < 5; iSlot++)
 	{
 		int iEntity = GetPlayerWeaponSlot(iClient, iSlot);
-		if (iEntity != -1) RemoveEntity(iEntity);
+		if (iEntity != -1) RemoveEdict(iEntity);
 	}
 }
 
@@ -200,11 +200,11 @@ public Action OnBroadcastAudio(Event hEvent, char[] strEventName, bool bDontBroa
 }
 
 /** Called when a projectile is deflected. Updates deflection count and drag state. */
-public void OnObjectDeflected(Event hEvent, char[] strEventName, bool bDontBroadcast)
+public Action OnObjectDeflected(Event hEvent, const char[] strEventName, bool bDontBroadcast)
 {
 	int iEntity = hEvent.GetInt("object_entindex");
 	int iIndex  = FindRocketByEntity(iEntity);
-	if (iIndex == -1) return;
+	if (iIndex == -1) return Plugin_Continue;
 
 	RocketEventDeflections[iIndex]++;
 
@@ -229,12 +229,14 @@ public void OnObjectDeflected(Event hEvent, char[] strEventName, bool bDontBroad
 	{
 		SetEntProp(iEntity, Prop_Send, "m_iTeamNum", 1, 1);
 	}
+
+	return Plugin_Continue;
 }
 
 /**
  * This hook runs every server frame.
  * It's responsible for the smooth "homing" behaviour.
- * "legacy homing" is handled by the logic timer OnDodgeBallGameFrame (~10Hz).
+ * "legacy homing" is handled by the 20Hz timer OnDodgeBallGameFrame.
  */
 public void OnGameFrame()
 {
@@ -350,26 +352,45 @@ public Action OnTouch(int iEntity, int iOther)
 
 	float vBounceVec[3];
 	SubtractVectors(vVelocity, vNormal, vBounceVec);
-	ScaleVector(vBounceVec, RocketClassBounceScale[iClass]);
-
-	// Z-clamp: scale vertical component to prevent extreme vertical bounces
-	if (UseBounceVerticalScale && RocketClassBounceVerticalScale[iClass] < 1.0)
+	int iOwner = GetEntPropEnt(iEntity, Prop_Send, "m_hOwnerEntity");
+	if (!(RocketInstanceFlags[iIndex] & RocketFlag_CrawlBounce))
 	{
-		vBounceVec[2] *= RocketClassBounceVerticalScale[iClass];
-	}
-
-	// Absolute vertical speed cap (like UDL's crawl bounce max up)
-	if (UseBounceVerticalScale && RocketClassBounceMaxVerticalSpeed[iClass] > 0.0)
-	{
-		if (vBounceVec[2] > RocketClassBounceMaxVerticalSpeed[iClass])
+		if (IsValidClient(iOwner, true))
 		{
-			vBounceVec[2] = RocketClassBounceMaxVerticalSpeed[iClass];
+			float fOwnerAngles[3];
+			GetClientEyeAngles(iOwner, fOwnerAngles);
+	
+			if (fOwnerAngles[0] >= RocketClassBounceForceAngle[iClass])
+				ScaleVector(vBounceVec, RocketClassBounceScale[iClass] * RocketClassBounceForceScale[iClass]);
+			else
+				ScaleVector(vBounceVec, RocketClassBounceScale[iClass]);
 		}
-		else if (vBounceVec[2] < -RocketClassBounceMaxVerticalSpeed[iClass])
+		else
 		{
-			vBounceVec[2] = -RocketClassBounceMaxVerticalSpeed[iClass];
+			ScaleVector(vBounceVec, RocketClassBounceScale[iClass]);
 		}
 	}
+	else
+	{
+		float fBounceScale = RocketClassBounceScale[iClass];
+
+		if (IsValidClient(iOwner, true))
+		{
+			float fOwnerAngles[3];
+			GetClientEyeAngles(iOwner, fOwnerAngles);
+			if (fOwnerAngles[0] >= RocketClassBounceForceAngle[iClass])
+				fBounceScale *= RocketClassBounceForceScale[iClass];
+		}
+
+		// Crawl mode: preserve horizontal carry, suppress/clamp upward pop.
+		vBounceVec[0] *= fBounceScale;
+		vBounceVec[1] *= fBounceScale;
+		vBounceVec[2] *= fBounceScale * RocketClassCrawlBounceScale[iClass];
+
+		if (RocketClassCrawlBounceMaxUp[iClass] > 0.0 && vBounceVec[2] > RocketClassCrawlBounceMaxUp[iClass])
+			vBounceVec[2] = RocketClassCrawlBounceMaxUp[iClass];
+	}
+
 
 	float vNewAngles[3];
 	GetVectorAngles(vBounceVec, vNewAngles);
@@ -389,11 +410,6 @@ public Action OnTouch(int iEntity, int iOther)
 		CopyVectors(vNewAnglesRef, vNewAngles);
 		CopyVectors(vBounceVecRef, vBounceVec);
 	}
-
-	// Pause homing — rocket flies freely with bounce velocity until
-	// the logic timer re-enables it (bounce pauses use timer, not per-frame drag).
-	RocketHomingPaused[iIndex] = true;
-	RocketIsDragPause[iIndex] = false;
 
 	TeleportEntity(iEntity, NULL_VECTOR, vNewAngles, vBounceVec);
 	RocketBounces[iIndex]++;

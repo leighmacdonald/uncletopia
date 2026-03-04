@@ -4,29 +4,8 @@
 #define _tfdb_included
 
 // ---- General settings -----------------------------------------------------------
-//
-//   Timer rate vs OnGameFrame:
-//   SourceMod's TimerSys.cpp defines TIMER_MIN_ACCURACY = 0.1 (seconds).
-//   The timer processing loop (RunFrame) only fires every ~0.1s regardless of
-//   the interval passed to CreateTimer — so the logic timer runs at ~10Hz.
-//   The actual fire interval is NOT exactly 0.1s: it depends on tickrate since
-//   0.1s must be rounded up to the next tick boundary (e.g. 7 ticks on 66-tick
-//   = 0.1061s, 13 ticks on 128-tick = 0.1016s).
-//
-//   OnGameFrame fires every server tick (~66Hz on 66-tick, ~128Hz on 128-tick).
-//   We use it for smooth per-frame homing. Turn rate and elevation values in the
-//   config are calibrated as "amount per 0.1s" for backwards compatibility.
-//   Per-frame scaling uses GetTickInterval() directly — no derived magic numbers.
-//
-#define FPS_LOGIC_RATE          10.0
+#define FPS_LOGIC_RATE          20.0
 #define FPS_LOGIC_INTERVAL      1.0 / FPS_LOGIC_RATE
-
-/**
- * The base time interval (seconds) that config turn rate / elevation values
- * are calibrated against. Turn rate 0.05 means "lerp 0.05 per 0.1s."
- * Per-frame code divides by this and multiplies by GetTickInterval().
- */
-#define TICK_BASE_INTERVAL      0.1
 
 /** Conversion factor: Hammer units/s to MPH. (1 HU ≈ 0.01905m) */
 #define HAMMER_TO_MPH           0.042614
@@ -36,7 +15,6 @@
 #define MAX_ROCKET_CLASSES      50
 #define MAX_SPAWNER_CLASSES     50
 #define MAX_SPAWN_POINTS        100
-#define MAX_PRESETS             16
 
 // ---- Flags and types constants --------------------------------------------------
 
@@ -81,8 +59,9 @@ enum RocketFlags
 	RocketFlag_NoBounceDrags    = 1 << 21,  /**< Can't drag while bouncing */
 	RocketFlag_OnNoTargetCmd    = 1 << 22,  /**< Execute commands when no target */
 	RocketFlag_CanBeStolen      = 1 << 23,  /**< Rocket can be stolen by other players */
-	RocketFlag_StealTeamCheck   = 1 << 24   /**< Only teammates can steal */
-};
+	RocketFlag_StealTeamCheck   = 1 << 24,  /**< Only teammates can steal */
+	RocketFlag_CrawlBounce      = 1 << 25   /**< Use crawl bounce scaling/clamping */
+	};
 
 /**
  * Sound types for rocket audio.
@@ -464,6 +443,17 @@ native float TFDB_GetRocketClassControlDelay(int iClass);
 /** Sets the control delay. */
 native void TFDB_SetRocketClassControlDelay(int iClass, float fDelay);
 
+/** Gets the minimum drag time. */
+native float TFDB_GetRocketClassDragTimeMin(int iClass);
+
+/** Sets the minimum drag time. */
+native void TFDB_SetRocketClassDragTimeMin(int iClass, float fMin);
+
+/** Gets the maximum drag time. */
+native float TFDB_GetRocketClassDragTimeMax(int iClass);
+
+/** Sets the maximum drag time. */
+native void TFDB_SetRocketClassDragTimeMax(int iClass, float fMax);
 
 /** Sets the total number of rocket classes. */
 native void TFDB_SetRocketClassCount(int iCount);
@@ -497,10 +487,7 @@ native float TFDB_GetSpawnersInterval(int iSpawnerClass);
 /** Sets the spawn interval (seconds between rockets). */
 native void TFDB_SetSpawnersInterval(int iSpawnerClass, float fInterval);
 
-/**
- * Gets the rocket class spawn chances table.
- * @note You MUST call delete on the returned ArrayList Handle when finished, or your plugin will leak memory.
- */
+/** Gets the rocket class spawn chances table. */
 native ArrayList TFDB_GetSpawnersChancesTable(int iSpawnerClass);
 
 /** Sets the rocket class spawn chances table. */
@@ -690,46 +677,31 @@ native void TFDB_SetRocketClassTargetWeight(int iClass, float fWeight);
 
 // ============ Command Handlers ============
 
-/**
- * Gets the commands to execute on rocket spawn.
- * @note You MUST call delete on the returned DataPack Handle when finished, or your plugin will leak memory.
- */
+/** Gets the commands to execute on rocket spawn. */
 native DataPack TFDB_GetRocketClassCmdsOnSpawn(int iClass);
 
 /** Sets the commands to execute on rocket spawn. */
 native void TFDB_SetRocketClassCmdsOnSpawn(int iClass, DataPack hCmds);
 
-/**
- * Gets the commands to execute on deflection.
- * @note You MUST call delete on the returned DataPack Handle when finished, or your plugin will leak memory.
- */
+/** Gets the commands to execute on deflection. */
 native DataPack TFDB_GetRocketClassCmdsOnDeflect(int iClass);
 
 /** Sets the commands to execute on deflection. */
 native void TFDB_SetRocketClassCmdsOnDeflect(int iClass, DataPack hCmds);
 
-/**
- * Gets the commands to execute when rocket kills a player.
- * @note You MUST call delete on the returned DataPack Handle when finished, or your plugin will leak memory.
- */
+/** Gets the commands to execute when rocket kills a player. */
 native DataPack TFDB_GetRocketClassCmdsOnKill(int iClass);
 
 /** Sets the commands to execute when rocket kills a player. */
 native void TFDB_SetRocketClassCmdsOnKill(int iClass, DataPack hCmds);
 
-/**
- * Gets the commands to execute when rocket explodes.
- * @note You MUST call delete on the returned DataPack Handle when finished, or your plugin will leak memory.
- */
+/** Gets the commands to execute when rocket explodes. */
 native DataPack TFDB_GetRocketClassCmdsOnExplode(int iClass);
 
 /** Sets the commands to execute when rocket explodes. */
 native void TFDB_SetRocketClassCmdsOnExplode(int iClass, DataPack hCmds);
 
-/**
- * Gets the commands to execute when rocket has no target.
- * @note You MUST call delete on the returned DataPack Handle when finished, or your plugin will leak memory.
- */
+/** Gets the commands to execute when rocket has no target. */
 native DataPack TFDB_GetRocketClassCmdsOnNoTarget(int iClass);
 
 /** Sets the commands to execute when rocket has no target. */
@@ -805,33 +777,6 @@ native void TFDB_GetStealInfo(int iClient, bool &stole, int &count);
  */
 native void TFDB_SetStealInfo(int iClient, bool stole, int count);
 
-// ============ Preset Functions ============
-
-/**
- * Gets the number of loaded presets.
- *
- * @return          Number of presets (0 if none loaded or presets.cfg missing).
- */
-native int TFDB_GetPresetCount();
-
-/**
- * Gets the display name of a preset.
- *
- * @param iPreset   Preset index (0 to TFDB_GetPresetCount()-1).
- * @param buffer    Buffer to store the name.
- * @param maxlen    Maximum buffer length.
- */
-native void TFDB_GetPresetName(int iPreset, char[] buffer, int maxlen);
-
-/**
- * Applies a preset: destroys active rockets, sets spawner max rockets,
- * spawn interval, and chances table to 100% the preset's rocket class.
- *
- * @param iPreset   Preset index (0 to TFDB_GetPresetCount()-1).
- * @return          True if applied successfully, false if invalid preset or class not found.
- */
-native bool TFDB_ApplyPreset(int iPreset);
-
 public SharedPlugin __pl_TFDB =
 {
 	name = "tfdb",
@@ -892,6 +837,10 @@ public void __pl_TFDB_SetNTVOptional()
 	MarkNativeAsOptional("TFDB_SetRocketClassPlayerModifier");
 	MarkNativeAsOptional("TFDB_GetRocketClassControlDelay");
 	MarkNativeAsOptional("TFDB_SetRocketClassControlDelay");
+	MarkNativeAsOptional("TFDB_GetRocketClassDragTimeMin");
+	MarkNativeAsOptional("TFDB_SetRocketClassDragTimeMin");
+	MarkNativeAsOptional("TFDB_GetRocketClassDragTimeMax");
+	MarkNativeAsOptional("TFDB_SetRocketClassDragTimeMax");
 	MarkNativeAsOptional("TFDB_SetRocketClassCount");
 	MarkNativeAsOptional("TFDB_SetRocketEntity");
 	MarkNativeAsOptional("TFDB_GetRocketClassMaxBounces");
@@ -987,8 +936,5 @@ public void __pl_TFDB_SetNTVOptional()
 	MarkNativeAsOptional("TFDB_SetRocketState");
 	MarkNativeAsOptional("TFDB_GetStealInfo");
 	MarkNativeAsOptional("TFDB_SetStealInfo");
-	MarkNativeAsOptional("TFDB_GetPresetCount");
-	MarkNativeAsOptional("TFDB_GetPresetName");
-	MarkNativeAsOptional("TFDB_ApplyPreset");
 }
 #endif

@@ -102,7 +102,7 @@
             // >>> Basic parameters <<<
             "name"                        "Homing Rocket"    // Full name of the rocket type
             "behaviour"                   "homing"           // "homing" for smooth, per-frame updates.
-                                                             // "legacy homing" for classic, logic timer updates (~10Hz).
+                                                             // "legacy homing" for classic, 20Hz timer updates.
 
             "model"                       ""                 // Default: Common rocket model
             "is animated"                 "0"                // Only works when using a custom model (Default : 0)
@@ -162,57 +162,31 @@
             "speed"                       "875"              // Base speed for the rocket.
             "speed increment"             "160"              // Speed increment per reflection.
             "speed limit"                 "0"                // Speed limit for the rocket (0 to disable speed limiting)
-            //"max speed"                  "3500"            // Target max speed (used when "target speed scaling" = 1)
-            //"max deflections"            "40"              // Deflections to reach max speed (used when "target speed scaling" = 1)
 
-            "turn rate"                   "0.260"            // Turn rate / tick for this rocket (base orbit radius).
-                                                             // Community sweet spot is often 0.180-0.320 combined with increment.
-            "turn rate increment"         "0.0180"           // Increment per reflection. At TF2's max speed cap (~3500 HU/s),
-                                                             // continuous turn rates of 1.8-3.2 provide the best orbit feel.
+            "turn rate"                   "0.260"            // Turn rate / tick for this rocket.
+            "turn rate increment"         "0.0180"           // Increment per reflection.
             "turn rate limit"             "0"                // Maximum turn rate when deflected (0 to disable turn rate limiting)
                                                              // Cannot exceed 1.0 regardless of the actual limit value
-            //"orbit tightness"            "0.3"             // Constant orbit coefficient (used when "orbit coefficient" = 1)
-                                                             // 0.3 matches classic turn rate feel. 0.1 = loose, 1.0 = tight.
 
             "elevation rate"              "0"                // Elevation rate when deflected (if enabled)
             "elevation limit"             "0"                // Maximum elevation when deflected (if enabled)
 
             "control delay"               "0"                // Delay until the rocket starts tracking the target after a deflection.
 
+            // "drag time min": After a deflect, this is the delay (in seconds) before the player's aim starts guiding the rocket.
+            // "drag time max": This is the total duration (in seconds) the player can guide the rocket after the initial min_time delay.
+            // Example: min 0.1, max 0.5 means dragging starts 0.1s after deflect and lasts for 0.5s, ending at 0.6s after deflect.
+            // This does not affect "legacy homing" rockets.
+            "drag time min"               "0.05"
+            "drag time max"               "0.05"
+
             "max bounces"                 "1000"             // How many times can this rocket bounce?
             "bounce scale"                "1.0"              // How hard should the rocket bounce? (Default : 1.0 multiplier)
-            "bounce force scale"          "1.5"
-            "bounce force angle"          "45.0"
-            //"bounce vertical ratio"       "1.0"            // Scale vertical bounce velocity. 1.0 = full bounce, 0.5 = half height,
-                                                             // 0.0 = no vertical bounce at all. Lower = flatter bounces.
-                                                             // (used when "bounce vertical scale" = 1)
-            //"bounce max vertical speed"   "250"            // Hard cap on vertical bounce speed in HU/s. No matter how fast
-                                                             // the rocket is, it can't bounce higher than this. 0 = no cap.
-                                                             // (used when "bounce vertical scale" = 1)
-
+            "bounce force scale"          "1.5"              // Multiplier for how much stronger a player-forced bounce is.
+            "bounce force angle"          "45.0"             // Minimum downward angle a player must look to trigger a stronger bounce.
             "crawl bounce"                "1"                // Use crawl bounce scaling/clamping.
             "crawl bounce scale"          "1"                // Extra Z scaling in crawl mode.
-            "crawl bounce max up"         "1500"
-
-            "no. players modifier"        "0"              // Increment based upon the number of players in the server.
-            "no. rockets modifier"        "0"              // Increment based upon the number of rockets fired since the start of the round.
-            "direction to target weight"  "100"              // Weight modifier for target selection, based upon the direction of the rocket
-                                                             // to the client.
-            // Drag pause: how long the rocket flies straight after a deflect
-            // before reading the player's aim and resuming homing.
-            // This is the "drag window" — the brief moment where the rocket
-            // goes forward and your mouse determines its initial trajectory.
-            //
-            //   0.1  = legacy feel (100ms, matches DB_Reborn / default timer rate)
-            //   0.05 = snappier response (50ms, rocket snaps to aim faster)
-            //   0.0  = instant (no forward flight, aim read immediately)
-            //   0.15 = sluggish (150ms, more time to aim but slower feel)
-            //
-            // Uses per-frame timing (OnGameFrame, fires every server tick).
-            // Snapped to tick boundaries internally: e.g. 0.1s on 66-tick
-            // = 7 ticks (0.106s), on 128-tick = 13 ticks (0.102s).
-            //
-            "drag pause duration"          "0.05"
+            "crawl bounce max up"         "1500"             // Max upward velocity after bounce in crawl mode (0 disables cap).
 
             "critical chance"             "100"              // Percentage of chance for a critical rocket.
 
@@ -224,8 +198,7 @@
             // >>> Events <<<
             "on spawn"                    ""                 // Actions to execute on rocket spawn.
             "on deflect"                  ""                 // Actions to execute when a rocket is deflected.
-            "on kill"                     ""
-            // "on kill"                     "tf_dodgeball_print [{olive}TFDB{default}] {yellow}★ KILL{default} | {lightblue}##@owner## {default}killed {red}##@dead## {default}| Deflects: {darkorange}@deflections {default}| Speed: {red}@capmphspeed mph"  // Actions to execute when a rocket kills a client.
+            "on kill"                     ""                 // Actions to execute when a rocket kills a client.
             "on explode"                  ""                 // Actions to execute when a rocket kills a client (triggered once).
             "on no target"                ""                 // Actions to execute when a rocket has an invalid target.
             "on destroyed"                ""                 // Actions to execute when a rocket explodes (will not trigger if the player is killed by the rocket).

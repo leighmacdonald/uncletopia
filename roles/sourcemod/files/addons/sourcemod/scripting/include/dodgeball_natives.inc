@@ -304,6 +304,23 @@ public any Native_SetRocketClassControlDelay(Handle hPlugin, int iNumParams) {
 	return 0;
 }
 
+public any Native_GetRocketClassDragTimeMin(Handle hPlugin, int iNumParams) {
+	return view_as<any>(RocketClassDragTimeMin[GetNativeCell(1)]);
+}
+
+public any Native_SetRocketClassDragTimeMin(Handle hPlugin, int iNumParams) {
+	RocketClassDragTimeMin[GetNativeCell(1)] = GetNativeCell(2);
+	return 0;
+}
+
+public any Native_GetRocketClassDragTimeMax(Handle hPlugin, int iNumParams) {
+	return view_as<any>(RocketClassDragTimeMax[GetNativeCell(1)]);
+}
+
+public any Native_SetRocketClassDragTimeMax(Handle hPlugin, int iNumParams) {
+	RocketClassDragTimeMax[GetNativeCell(1)] = GetNativeCell(2);
+	return 0;
+}
 
 public any Native_GetRocketClassMaxBounces(Handle hPlugin, int iNumParams) {
 	return RocketClassMaxBounces[GetNativeCell(1)];
@@ -752,59 +769,4 @@ public any Native_HomingRocketThink(Handle hPlugin, int iNumParams) {
 public any Native_RocketLegacyThink(Handle hPlugin, int iNumParams) {
 	RocketLegacyThink(GetNativeCell(1));
 	return 0;
-}
-
-// *********************************************************************************
-// NATIVES - PRESETS
-// *********************************************************************************
-
-public any Native_GetPresetCount(Handle hPlugin, int iNumParams) {
-	return PresetCount;
-}
-
-public any Native_GetPresetName(Handle hPlugin, int iNumParams) {
-	int iPreset = GetNativeCell(1);
-	int iMaxLen = GetNativeCell(3);
-	SetNativeString(2, PresetName[iPreset], iMaxLen);
-	return 0;
-}
-
-public any Native_ApplyPreset(Handle hPlugin, int iNumParams) {
-	int iPreset = GetNativeCell(1);
-	if (iPreset < 0 || iPreset >= PresetCount) return false;
-
-	// Find the rocket class index by short name
-	int iTargetClass = -1;
-	for (int i = 0; i < RocketClassCount; i++)
-	{
-		if (StrEqual(RocketClassName[i], PresetRocketClass[iPreset], false))
-		{
-			iTargetClass = i;
-			break;
-		}
-	}
-	if (iTargetClass == -1) return false;
-
-	// Destroy active rockets before changing settings
-	DestroyRockets();
-
-	// Apply to all spawners
-	for (int i = 0; i < SpawnersCount; i++)
-	{
-		SpawnersMaxRockets[i] = PresetMaxRockets[iPreset];
-
-		if (PresetSpawnInterval[iPreset] > 0.0)
-		{
-			SpawnersInterval[i] = PresetSpawnInterval[iPreset];
-		}
-
-		// Set chances table: 100% target class, 0% everything else
-		ArrayList hTable = SpawnersChancesTable[i];
-		for (int j = 0; j < hTable.Length; j++)
-		{
-			hTable.Set(j, (j == iTargetClass) ? 100 : 0);
-		}
-	}
-
-	return true;
 }

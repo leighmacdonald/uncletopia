@@ -5,11 +5,6 @@
 		"en"		"[{olive}TFDB{default}] This command is disabled."
 	}
 	
-	"Command_NoAccess"
-	{
-		"en"		"[{olive}TFDB{default}] You do not have permission to use this command."
-	}
-	
 	"Command_DBExplosion_Usage"
 	{
 		"en"		"Usage : tf_dodgeball_explosion <client index>"
@@ -623,22 +618,5 @@
 	{
 		"#format"	"{1:i}"
 		"en"		"[{olive}TFDB{default}] The rockets count has been changed to {community}{1}{default}."
-	}
-	
-	"Dodgeball_PresetVote_Cooldown"
-	{
-		"#format"	"{1:i}"
-		"en"		"[{olive}TFDB{default}] Voting for presets is in cooldown for {darkorange}{1}{default} seconds."
-	}
-	
-	"Dodgeball_PresetVote_NoPresets"
-	{
-		"en"		"[{olive}TFDB{default}] No presets are configured."
-	}
-	
-	"Dodgeball_PresetVote_Applied"
-	{
-		"#format"	"{1:s}"
-		"en"		"[{olive}TFDB{default}] Preset changed to {community}{1}{default}."
 	}
 }

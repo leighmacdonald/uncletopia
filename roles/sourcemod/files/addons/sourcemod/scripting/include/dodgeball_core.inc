@@ -9,6 +9,8 @@
 
 // Tracks whether game events have been hooked (to prevent double-unhook errors)
 static bool EventsHooked = false;
+// Tracks whether object_deflected was successfully hooked.
+static bool ObjectDeflectedHooked = false;
 
 /** Checks if the current map is a dodgeball map (starts with "tfdb_", "db_", or "dbs_"). */
 bool IsDodgeBallMap()
@@ -33,7 +35,6 @@ void EnableDodgeBall()
 	char mapFile[PLATFORM_MAX_PATH]; FormatEx(mapFile, sizeof(mapFile), "%s.cfg", mapName);
 
 	ParseConfigurations();
-	ParseConfigurations("presets.cfg");
 	ParseConfigurations(mapFile);
 
 	if (RocketClassCount == 0)   SetFailState("No rocket class defined.");
@@ -52,7 +53,16 @@ void EnableDodgeBall()
 		HookEventEx("player_death", OnPlayerDeath, EventHookMode_Pre);
 		HookEventEx("post_inventory_application", OnPlayerInventory, EventHookMode_Post);
 		HookEventEx("teamplay_broadcast_audio", OnBroadcastAudio, EventHookMode_Pre);
-		HookEventEx("object_deflected", OnObjectDeflected);
+		// Keep this hook global (not tied to enable/disable) to avoid
+		// map-end unhook exceptions observed on some installs.
+		if (!ObjectDeflectedHooked)
+		{
+			ObjectDeflectedHooked = HookEventEx("object_deflected", OnObjectDeflected);
+			if (!ObjectDeflectedHooked)
+			{
+				LogError("Failed to hook game event \"object_deflected\". Deflect-specific rocket updates will be disabled.");
+			}
+		}
 		EventsHooked = true;
 	}
 
@@ -108,7 +118,6 @@ void DisableDodgeBall()
 	DestroyRockets();
 	DestroyRocketClasses();
 	DestroySpawners();
-	PresetCount = 0;
 
 	if (LogicTimer != null) KillTimer(LogicTimer);
 	LogicTimer = null;
@@ -129,7 +138,6 @@ void DisableDodgeBall()
 		UnhookEvent("player_death", OnPlayerDeath, EventHookMode_Pre);
 		UnhookEvent("post_inventory_application", OnPlayerInventory, EventHookMode_Post);
 		UnhookEvent("teamplay_broadcast_audio", OnBroadcastAudio, EventHookMode_Pre);
-		UnhookEvent("object_deflected", OnObjectDeflected);
 		EventsHooked = false;
 	}
 
@@ -145,7 +153,7 @@ void DisableDodgeBall()
 }
 
 /**
- * This is the main logic timer for the gamemode.
+ * This is the main 20Hz timer for the gamemode.
  * It handles rocket spawning and the logic for "legacy homing" rockets.
  * It also calls shared logic functions like sound updates.
  */

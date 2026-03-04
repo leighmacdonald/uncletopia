@@ -3,8 +3,8 @@ ROOT=$(pwd)
 SM_ROOT=$ROOT/roles/sourcemod/files/addons/sourcemod
 SRC_ROOT="sm_plugins"
 
-DODGEBALL_ROOT="$SRC_ROOT/TF2-Dodgeball-Modified"
-DODGEBALL_BRANCH="v2.1.0"
+DODGEBALL_ROOT="$SRC_ROOT/TF2-Dodgeball-Modified-UDL"
+DODGEBALL_BRANCH="master"
 
 STAC_ROOT="$SRC_ROOT/stac"
 STAC_BRANCH="gbans-native"
@@ -67,7 +67,7 @@ cp -rv Subplugins/Print/scripting/tfdb_print.sp $SM_ROOT/scripting/
 #cp -rv TF2Dodgeball/cfg/sourcemod/* $ROOT/roles/sourcemod/files/cfg/sourcemod/
 
 popd || exit
-
+exit
 pushd $HALLOWEENCOSMETICS_ROOT || exit
 git fetch --all
 git checkout $HALLOWEENCOSMETICS_BRANCH
