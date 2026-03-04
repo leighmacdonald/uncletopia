@@ -1,4 +1,4 @@
-name: Ansible Lint  # feel free to pick your own name
+name: Ansible Lint # feel free to pick your own name
 
 on: [push, pull_request]
 
@@ -7,10 +7,10 @@ jobs:
     name: Ansible Lint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Run ansible-lint
         uses: ansible/ansible-lint@main
-#        # optional (see below):
+        #        # optional (see below):
         with:
           args: "--exclude sm_plugins watcher"
           setup_python: "true"
@@ -21,12 +21,12 @@ jobs:
     name: Build Plugins
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Setup SourcePawn Compiler
         uses: rumblefrog/setup-sp@master
         with:
-          version: "1.12.x"
+          version: "1.13.x"
 
       - name: Ensure plugin builds
         working-directory: ./roles/sourcemod/files/addons/sourcemod/scripting
@@ -36,7 +36,7 @@ jobs:
             echo -e "\nCompiling $file... to ../plugins/${f}.smx"
             spcomp -w234 -O2 -v2 -i include $file -o ../plugins/$f.smx
           done
-          
+
           echo "===OUT FILES==="
           ls
           echo version = ${{ steps.setup_sp.outputs.plugin-version }}
