@@ -271,7 +271,7 @@
   loop_control:
     index_var: loop0
 
-- name: mkdir tf/addons/sourcemod/configs/dodgeball
+- name: Make tf/addons/sourcemod/configs/dodgeball
   ansible.builtin.file:
     path: ~/srcds-{{ item.server_name_short }}/tf/addons/sourcemod/configs/dodgeball
     state: directory
