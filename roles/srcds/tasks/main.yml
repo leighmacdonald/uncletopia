@@ -599,13 +599,13 @@
   tags:
     - game_engine
 
-# - name: "Trigger srcds reload"
-#   ansible.builtin.debug:
-#     msg: "Reloading srcds services: {{ srcds_services | join(', ') }}"
-#   notify: "Restart SRCDS"
-#   when: srcds_services is defined and srcds_services | length > 0
-#   tags:
-#     - game_engine
+- name: "Trigger srcds reload"
+  ansible.builtin.debug:
+    msg: "Reloading srcds services: {{ srcds_services | join(', ') }}"
+  notify: "Restart SRCDS"
+  when: srcds_services is defined and srcds_services | length > 0
+  tags:
+    - game_engine
 
 - name: Cron srcds
   become: true
