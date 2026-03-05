@@ -432,7 +432,7 @@
 - name: Generate /tf/cfg/sourcemod/mge.cfg
   ansible.builtin.template:
     src: mge.cfg.j2
-    dest: ~/srcds-{{ item.server_name_short }}/tf/cfg/sourcemod/mge.cfg
+    dest: ~/srcds-{{ item.server_name_short }}/tf/cfg/sourcemod/plugin.mge.cfg
     mode: "0755"
   when: item.config == "mge"
   tags:
