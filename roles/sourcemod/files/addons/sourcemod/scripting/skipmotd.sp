@@ -68,9 +68,9 @@ public OnPluginStart()
   CreateConVar("sm_nomotd_version", PLUGIN_VERSION, "No MOTD version", FCVAR_NOTIFY|FCVAR_SPONLY);
 
   noMotdCookie = RegClientCookie("no_motd", "No MOTD", CookieAccess_Protected);
-  randomTeamCookie = RegClientCookie("random_team", "No MOTD", CookieAccess_Protected);
-  randomClassCookie = RegClientCookie("random_class", "No MOTD", CookieAccess_Protected);
-  rememberClassCookie = RegClientCookie("remember_class", "No MOTD", CookieAccess_Protected);
+  randomTeamCookie = RegClientCookie("random_team", "Random Team", CookieAccess_Protected);
+  randomClassCookie = RegClientCookie("random_class", "Random Class", CookieAccess_Protected);
+  rememberClassCookie = RegClientCookie("remember_class", "Remember Class", CookieAccess_Protected);
 
   // Register sm_settings menus. These can't be unregistered(?) so if
   // cvars are changed after server startpu, the menu will be out of

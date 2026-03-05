@@ -95,7 +95,6 @@ bool g_bBlockFallDamage,
      g_bAutoCvar;
 
 int
-    g_iDBDriver,
     g_iDefaultFragLimit,
     g_iAirshotHeight = 80;
 
@@ -623,7 +622,7 @@ public void OnClientPostAdminCheck(int client)
             GetClientAuthId(client, AuthId_Steam2, steamid_dirty, sizeof(steamid_dirty));
             db.Escape(steamid_dirty, steamid, sizeof(steamid));
             strcopy(g_sPlayerSteamID[client], 32, steamid);
-            Format(query, sizeof(query), "SELECT rating, hitblip, wins, losses FROM mgemod_stats WHERE steamid=steam_to_steam64('%s')", steamid);
+            Format(query, sizeof(query), "SELECT rating, hitblip, wins, losses FROM mgemod_stats WHERE steamid=text_to_steam64('%s')", steamid);
             db.Query(T_SQLQueryOnConnect, query, client);
         }
     }
@@ -2191,17 +2190,17 @@ void CalcELO(int winner, int loser)
     int winner_team_slot = (g_iPlayerSlot[winner] > 2) ? (g_iPlayerSlot[winner] - 2) : g_iPlayerSlot[winner];
     int loser_team_slot = (g_iPlayerSlot[loser] > 2) ? (g_iPlayerSlot[loser] - 2) : g_iPlayerSlot[loser];
 
-    Format(query, sizeof(query), "INSERT INTO mgemod_duels (winner, loser, winnerscore, loserscore, winlimit, gametime, mapname, arenaname) VALUES (steam_to_steam64('%s'), steam_to_steam64('%s'), %i, %i, %i, %i, '%s', '%s')",
+    Format(query, sizeof(query), "INSERT INTO mgemod_duels (winner, loser, winnerscore, loserscore, winlimit, gametime, mapname, arenaname) VALUES (text_to_steam64('%s'), text_to_steam64('%s'), %i, %i, %i, %i, '%s', '%s')",
             g_sPlayerSteamID[winner], g_sPlayerSteamID[loser], g_iArenaScore[arena_index][winner_team_slot], g_iArenaScore[arena_index][loser_team_slot], g_iArenaFraglimit[arena_index], time, g_sMapName, g_sArenaName[arena_index]);
         db.Query(SQLErrorCheckCallback, query);
 
     //winner's stats
-    Format(query, sizeof(query), "UPDATE mgemod_stats SET rating=%i,wins=wins+1,lastplayed=%i WHERE steamid=steam_to_steam64('%s')",
+    Format(query, sizeof(query), "UPDATE mgemod_stats SET rating=%i,wins=wins+1,lastplayed=%i WHERE steamid=text_to_steam64('%s')",
         g_iPlayerRating[winner], time, g_sPlayerSteamID[winner]);
     db.Query(SQLErrorCheckCallback, query);
 
     //loser's stats
-    Format(query, sizeof(query), "UPDATE mgemod_stats SET rating=%i,losses=losses+1,lastplayed=%i WHERE steamid=steam_to_steam64('%s')",
+    Format(query, sizeof(query), "UPDATE mgemod_stats SET rating=%i,losses=losses+1,lastplayed=%i WHERE steamid=text_to_steam64('%s')",
         g_iPlayerRating[loser], time, g_sPlayerSteamID[loser]);
     db.Query(SQLErrorCheckCallback, query);
 }
@@ -2247,27 +2246,27 @@ void CalcELO2(int winner, int winner2, int loser, int loser2)
     if (IsValidClient(loser2) && !g_bNoDisplayRating)
         MC_PrintToChat(loser2, "%t", "LostPoints", loserscore);
 
-    Format(query, sizeof(query), "INSERT INTO mgemod_duels_2v2 (winner, winner2, loser, loser2, winnerscore, loserscore, winlimit, gametime, mapname, arenaname) VALUES (steam_to_steam64('%s'), steam_to_steam64('%s'), steam_to_steam64('%s'), steam_to_steam64('%s'), %i, %i, %i, %i, '%s', '%s')",
+    Format(query, sizeof(query), "INSERT INTO mgemod_duels_2v2 (winner, winner2, loser, loser2, winnerscore, loserscore, winlimit, gametime, mapname, arenaname) VALUES (text_to_steam64('%s'), text_to_steam64('%s'), text_to_steam64('%s'), text_to_steam64('%s'), %i, %i, %i, %i, '%s', '%s')",
             g_sPlayerSteamID[winner], g_sPlayerSteamID[winner2], g_sPlayerSteamID[loser], g_sPlayerSteamID[loser2], g_iArenaScore[arena_index][winner_team_slot], g_iArenaScore[arena_index][loser_team_slot], g_iArenaFraglimit[arena_index], time, g_sMapName, g_sArenaName[arena_index]);
     db.Query(SQLErrorCheckCallback, query);
 
     //winner's stats
-    Format(query, sizeof(query), "UPDATE mgemod_stats SET rating=%i,wins=wins+1,lastplayed=%i WHERE steamid=steam_to_steam64('%s')",
+    Format(query, sizeof(query), "UPDATE mgemod_stats SET rating=%i,wins=wins+1,lastplayed=%i WHERE steamid=text_to_steam64('%s')",
         g_iPlayerRating[winner], time, g_sPlayerSteamID[winner]);
     db.Query(SQLErrorCheckCallback, query);
 
     //winner's teammate stats
-    Format(query, sizeof(query), "UPDATE mgemod_stats SET rating=%i,wins=wins+1,lastplayed=%i WHERE steamid=steam_to_steam64('%s')",
+    Format(query, sizeof(query), "UPDATE mgemod_stats SET rating=%i,wins=wins+1,lastplayed=%i WHERE steamid=text_to_steam64('%s')",
         g_iPlayerRating[winner2], time, g_sPlayerSteamID[winner2]);
     db.Query(SQLErrorCheckCallback, query);
 
     //loser's stats
-    Format(query, sizeof(query), "UPDATE mgemod_stats SET rating=%i,losses=losses+1,lastplayed=%i WHERE steamid=steam_to_steam64('%s')",
+    Format(query, sizeof(query), "UPDATE mgemod_stats SET rating=%i,losses=losses+1,lastplayed=%i WHERE steamid=text_to_steam64('%s')",
         g_iPlayerRating[loser], time, g_sPlayerSteamID[loser]);
     db.Query(SQLErrorCheckCallback, query);
 
     //loser's teammate stats
-    Format(query, sizeof(query), "UPDATE mgemod_stats SET rating=%i,losses=losses+1,lastplayed=%i WHERE steamid=steam_to_steam64('%s')",
+    Format(query, sizeof(query), "UPDATE mgemod_stats SET rating=%i,losses=losses+1,lastplayed=%i WHERE steamid=text_to_steam64('%s')",
         g_iPlayerRating[loser2], time, g_sPlayerSteamID[loser2]);
     db.Query(SQLErrorCheckCallback, query);
 }
@@ -3815,27 +3814,14 @@ void PrepareSQL() // Opens the connection to the database, and creates the table
     char ident[16];
     db.Driver.GetIdentifier(ident, sizeof(ident));
 
-    if (StrEqual(ident, "mysql", false)) {
-        g_iDBDriver = DRIVER_MYSQL;
-    } else if (StrEqual(ident, "sqlite", false)) {
-        g_iDBDriver = DRIVER_SQLITE;
-    } else if (StrEqual(ident, "pgsql", false)) {
-        g_iDBDriver = DRIVER_POSTGRES;
-    } else {
-        SetFailState("Invalid database.");
-    }
-
-
-    // No indexes/pk?
-    if (g_iDBDriver == DRIVER_SQLITE)
-    {
+    if (StrEqual(ident, "sqlite", false)) {
         // Untested.
-        db.Query(SQLErrorCheckCallback, "CREATE FUNCTION steam_to_steam64(steamid TEXT) RETURNS TEXT AS BEGIN RETURN steam_id; END;");
+        db.Query(SQLErrorCheckCallback, "CREATE FUNCTION text_to_steam64(steamid TEXT) RETURNS TEXT AS BEGIN RETURN steam_id; END;");
         db.Query(SQLErrorCheckCallback, "CREATE TABLE IF NOT EXISTS mgemod_stats (rating INTEGER, steamid TEXT, name TEXT, wins INTEGER, losses INTEGER, lastplayed INTEGER, hitblip INTEGER)");
         db.Query(SQLErrorCheckCallback, "CREATE TABLE IF NOT EXISTS mgemod_duels (winner TEXT, loser TEXT, winnerscore INTEGER, loserscore INTEGER, winlimit INTEGER, gametime INTEGER, mapname TEXT, arenaname TEXT) ");
         db.Query(SQLErrorCheckCallback, "CREATE TABLE IF NOT EXISTS mgemod_duels_2v2 (winner TEXT, winner2 TEXT, loser TEXT, loser2 TEXT, winnerscore INTEGER, loserscore INTEGER, winlimit INTEGER, gametime INTEGER, mapname TEXT, arenaname TEXT) ");
-    } else if (g_iDBDriver == DRIVER_POSTGRES) {
-        db.Query(SQLErrorCheckCallback, "CREATE OR REPLACE FUNCTION steam_to_steam64(steam_id text) RETURNS bigint \
+    } else if (StrEqual(ident, "pgsql", false)) {
+        db.Query(SQLErrorCheckCallback, "CREATE OR REPLACE FUNCTION text_to_steam64(steam_id text) RETURNS bigint \
     LANGUAGE plpgsql as $func$ \
     DECLARE parts text[]; \
     BEGIN \
@@ -3843,21 +3829,27 @@ void PrepareSQL() // Opens the connection to the database, and creates the table
         parts := regexp_matches(steam_id, '^STEAM_([0-5]):([0-1]):([0-9]+)$'); \
         return (cast(parts[3] as bigint) * 2) + 76561197960265728 + cast(parts[2] as bigint); \
     END ; $func$;");
-        // Not currently using a FK since i don't want to diverge from the base mod schema too much and hard depend on other stuff.
-        // TEXT for the id's needs to go though.
-        // TODO Use the native sm 64bit when its 
+        // Not currently using foreign keys since i don't want to diverge from the base mod schema too much and hard depend on other stuff.
+        // I, however, refuse to store steamids as text, so upstream may not want this. The other stored procs provide a dummy function so
+        // the actual queries can remain consistent across the drivers.
+        // TODO Use the native sm 64bit when its in production.
         db.Query(SQLErrorCheckCallback, "CREATE TABLE IF NOT EXISTS mgemod_stats (rating INTEGER, steamid BIGINT, name TEXT, wins INTEGER, losses INTEGER, lastplayed INTEGER, hitblip INTEGER)");
         db.Query(SQLErrorCheckCallback, "CREATE TABLE IF NOT EXISTS mgemod_duels (duel_id serial, winner BIGINT, loser BIGINT, winnerscore INTEGER, loserscore INTEGER, winlimit INTEGER, gametime INTEGER, mapname TEXT, arenaname TEXT) ");
         db.Query(SQLErrorCheckCallback, "CREATE TABLE IF NOT EXISTS mgemod_duels_2v2 (duel2_id serial, winner BIGINT, winner2 BIGINT, loser BIGINT, loser2 BIGINT, winnerscore INTEGER, loserscore INTEGER, winlimit INTEGER, gametime INTEGER, mapname TEXT, arenaname TEXT) ");
-    } else if (g_iDBDriver == DRIVER_MYSQL) {
+    } else if (StrEqual(ident, "mysql", false)) {
         // Untested.
-        db.Query(SQLErrorCheckCallback, "DELIMITER // CREATE PROCEDURE steam_to_steam64( IN input_steam_id VARCHAR(255), OUT output_steam_id VARCHAR(255) ) BEGIN SET output_steam_id = input_steam_id; END //// DELIMITER ;");
+        db.Query(SQLErrorCheckCallback, "DELIMITER // CREATE PROCEDURE text_to_steam64( IN input_steam_id VARCHAR(255), OUT output_steam_id VARCHAR(255) ) BEGIN SET output_steam_id = input_steam_id; END //// DELIMITER ;");
         db.Query(SQLErrorCheckCallback, "CREATE TABLE IF NOT EXISTS mgemod_stats (rating INT(4) NOT NULL, steamid VARCHAR(32) NOT NULL, name VARCHAR(64) NOT NULL, wins INT(4) NOT NULL, losses INT(4) NOT NULL, lastplayed INT(11) NOT NULL, hitblip INT(2) NOT NULL) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = InnoDB ");
         db.Query(SQLErrorCheckCallback, "CREATE TABLE IF NOT EXISTS mgemod_duels (winner VARCHAR(32) NOT NULL, loser VARCHAR(32) NOT NULL, winnerscore INT(4) NOT NULL, loserscore INT(4) NOT NULL, winlimit INT(4) NOT NULL, gametime INT(11) NOT NULL, mapname VARCHAR(64) NOT NULL, arenaname VARCHAR(32) NOT NULL) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = InnoDB ");
         db.Query(SQLErrorCheckCallback, "CREATE TABLE IF NOT EXISTS mgemod_duels_2v2 (winner VARCHAR(32) NOT NULL, winner2 VARCHAR(32) NOT NULL, loser VARCHAR(32) NOT NULL, loser2 VARCHAR(32) NOT NULL, winnerscore INT(4) NOT NULL, loserscore INT(4) NOT NULL, winlimit INT(4) NOT NULL, gametime INT(11) NOT NULL, mapname VARCHAR(64) NOT NULL, arenaname VARCHAR(32) NOT NULL) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = InnoDB ");
+    } else {
+        SetFailState("Invalid database driver: %s.", ident);
+        return;
     }
 
-    db.Query(SQLErrorCheckCallback, "CREATE UNIQUE INDEX mgemod_stats_uidx ON mgemod_stats (steam_id)");
+    // There was no indexes/pk at all before except sqlite ROWID i guess..?, is there something im missing?
+    // Removed the `LIMIT 1` queries.
+    db.Query(SQLErrorCheckCallback, "CREATE UNIQUE INDEX IF NOT EXISTS mgemod_stats_uidx ON mgemod_stats (steamid)");
 }
 
 void T_SQLQueryOnConnect(Database owner, DBResultSet hndl, const char[] error, any data)
@@ -3888,10 +3880,10 @@ void T_SQLQueryOnConnect(Database owner, DBResultSet hndl, const char[] error, a
         g_iPlayerWins[client] = hndl.FetchInt(2);
         g_iPlayerLosses[client] = hndl.FetchInt(3);
         
-        Format(query, sizeof(query), "UPDATE mgemod_stats SET name='%s' WHERE steamid=steam_to_steam64('%s')", namesql, g_sPlayerSteamID[client]);
+        Format(query, sizeof(query), "UPDATE mgemod_stats SET name='%s' WHERE steamid=text_to_steam64('%s')", namesql, g_sPlayerSteamID[client]);
         db.Query(SQLErrorCheckCallback, query);
     } else {
-        Format(query, sizeof(query), "INSERT INTO mgemod_stats (rating, steamid, name, wins, losses, lastplayed, hitblip) VALUES (1600, '%s', steam_to_steam64(%s), 0, 0, %i, 1)", g_sPlayerSteamID[client], namesql, GetTime());
+        Format(query, sizeof(query), "INSERT INTO mgemod_stats (rating, steamid, name, wins, losses, lastplayed, hitblip) VALUES (1600, text_to_steam64('%s'), '%s', 0, 0, %i, 1)", g_sPlayerSteamID[client], namesql, GetTime());
         db.Query(SQLErrorCheckCallback, query);
 
         g_iPlayerRating[client] = 1600;

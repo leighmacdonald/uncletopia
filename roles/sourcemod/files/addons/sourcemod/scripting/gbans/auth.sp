@@ -42,7 +42,6 @@ void checkPlayer(int clientId)
 	char clientAuth[64];
 	GetClientAuthId(clientId, AuthId_SteamID64, clientAuth, sizeof(clientAuth));
 
-
 	JSONObject obj = new JSONObject(); 
 	obj.SetString("steam_id", clientAuth);
 	obj.SetInt("client_id", clientId);
@@ -61,44 +60,44 @@ void checkPlayer(int clientId)
 }
 
 
-void onCheckResp(HTTPResponse response, any value)
-{
+void onCheckResp(HTTPResponse response, any value) {
 	gbLog("--- onCheckResp");
-	if (response.Status != HTTPStatus_OK) {
-		LogError("Invalid check response code: %d", response.Status);
+	switch (response.Status) {
+	case HTTPStatus_OK:
+		// good boi
+		return;
+	case HTTPStatus_Forbidden: {
+		JSONObject data = view_as<JSONObject>(response.Data); 
 
-        return;
-    } 
+		char msg[256];
+		data.GetString("msg", msg, sizeof msg);
+		int clientId = data.GetInt("client_id");
+		int banType = data.GetInt("ban_type");
 
-	JSONObject data = view_as<JSONObject>(response.Data); 
-	
-	char msg[256];
-	data.GetString("msg", msg, sizeof msg);
-	int clientId = data.GetInt("client_id");
-	int banType = data.GetInt("ban_type");
-
-	switch(banType)
-	{
-		case BSNoComm: {
-			if(!BaseComm_IsClientMuted(clientId)) {
-				BaseComm_SetClientMute(clientId, true);
+		switch(banType) {
+			case BSNoComm: {
+				if(!BaseComm_IsClientMuted(clientId)) {
+					BaseComm_SetClientMute(clientId, true);
+				}
+				if(!BaseComm_IsClientGagged(clientId)){
+					BaseComm_SetClientGag(clientId, true);
+				}
+				ReplyToCommand(clientId, "You are currently muted/gag, it will expire automatically");
+				gbLog("Muted \"%L\" for an unfinished mute punishment.", clientId);
 			}
-			if(!BaseComm_IsClientGagged(clientId)){
-				BaseComm_SetClientGag(clientId, true);
+			case BSNetwork: {
+				KickClient(clientId, msg);
+				LogAction(0, clientId, "Kicked \"%L\" for a network block.", clientId);
 			}
-			ReplyToCommand(clientId, "You are currently muted/gag, it will expire automatically");
-			gbLog("Muted \"%L\" for an unfinished mute punishment.", clientId);
-		}
-		case BSNetwork:
-		{
-		    KickClient(clientId, msg);
-		    LogAction(0, clientId, "Kicked \"%L\" for a network block.", clientId);
-		}
-		case BSBanned:
-		{
-			KickClient(clientId, msg);
-			LogAction(0, clientId, "Kicked \"%L\" for an unfinished ban.", clientId);
+			case BSBanned: {
+				KickClient(clientId, msg);
+				LogAction(0, clientId, "Kicked \"%L\" for an unfinished ban.", clientId);
+			}
 		}
 	}
-
+	default: {
+		LogError("Invalid check response code: %d", response.Status);
+	}
+	}
 }
+		

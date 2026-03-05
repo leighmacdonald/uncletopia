@@ -64,9 +64,7 @@ public Action onCmdMod(int clientId, int argc)
 	return Plugin_Handled;
 }
 
-
-void onPingModRespReceived(HTTPResponse response, any clientId)
-{
+void onPingModRespReceived(HTTPResponse response, any clientId) {
 	if (response.Status != HTTPStatus_OK) {
 		LogError("Invalid report response code: %d", response.Status);
 
@@ -75,6 +73,45 @@ void onPingModRespReceived(HTTPResponse response, any clientId)
 	ReplyToCommand(clientId, "Mods have been alerted, thanks!");
 }
 
+public Action onCmdSeed(int clientId, int argc) {
+
+	ReplyToCommand(clientId, "Computering...");
+	char auth_id[50];
+	if(!GetClientAuthId(clientId, AuthId_Steam3, auth_id, sizeof auth_id, true))
+	{
+		ReplyToCommand(clientId, "Failed to get auth_id of user: %d", clientId);
+		return Plugin_Continue;
+	}
+
+	char url[1024];
+	makeURL("/api/sm/seed", url, sizeof url);
+	StrCat(url, sizeof url, "?steam_id=");
+	StrCat(url, sizeof url, auth_id);
+
+
+	HTTPRequest request = new HTTPRequest(url);
+	addAuthHeader(request);
+    request.Get(onCmdSeedReceived, clientId); 
+
+	return Plugin_Handled;
+}
+
+void onCmdSeedReceived(HTTPResponse response, any clientId) {
+	switch (response.Status) {
+		case HTTPStatus_TooManyRequests: {
+			ReplyToCommand(clientId, "Please wait before making new seed requests (5min cooldown)");
+			return;
+		}
+		case HTTPStatus_OK: {
+			ReplyToCommand(clientId, "Mods have been alerted, thanks!");
+			return;
+		}
+		default: {
+			ReplyToCommand(clientId, "Got invalid response code :(");
+			return;
+		}
+	}
+}
 
 public Action onCmdHelp(int clientId, int argc)
 {
