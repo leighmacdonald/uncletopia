@@ -309,7 +309,7 @@
 - name: Generate /tf/cfg/sourcemod/afk_manager.cfg
   ansible.builtin.template:
     src: afk_manager.cfg.j2
-    dest: ~/srcds-{{ item.server_name_short }}/tf/cfg/sourcemod/afk_manager.cfg
+    dest: ~/srcds-{{ item.server_name_short }}/tf/cfg/sourcemod/plugin.afk_manager.cfg
     mode: "0655"
   tags:
     - game_config
