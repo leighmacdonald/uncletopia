@@ -1,4 +1,3 @@
-#!/bin/env bash
 ROOT=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 SM_ROOT=$ROOT/roles/sourcemod/files/addons/sourcemod
 SRC_ROOT="sm_plugins"
@@ -19,14 +18,13 @@ ACCEL_ROOT="$SRC_ROOT/accelerator"
 ACCEL_BRANCH="master"
 
 GBANS_ROOT="$SRC_ROOT/gbans"
-GBANS_BRANCH="v0.7.34"
-#GBANS_BRANCH="match-tracking"
+GBANS_BRANCH="v0.7.45"
 
 DISCORD_ROOT="$SRC_ROOT/discord"
 DISCORD_BRANCH="master"
 
 COMPFIXES_ROOT="$SRC_ROOT/tf2-comp-fixes"
-COMPFIXES_BRANCH="v1.17.2"
+COMPFIXES_BRANCH="v1.18.0"
 
 EDICT_LIMITER_ROOT="$SRC_ROOT/edict-limiter"
 EDICT_LIMITER_BRANCH="v3.1.1"
@@ -81,7 +79,7 @@ cp -rv Subplugins/Print/scripting/tfdb_print.sp $SM_ROOT/scripting/
 #cp -rv TF2Dodgeball/cfg/sourcemod/* $ROOT/roles/sourcemod/files/cfg/sourcemod/
 
 popd || exit
-exit
+
 pushd $HALLOWEENCOSMETICS_ROOT || exit
 git fetch --all
 git checkout $HALLOWEENCOSMETICS_BRANCH
