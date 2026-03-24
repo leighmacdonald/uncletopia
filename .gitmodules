@@ -32,7 +32,6 @@
 [submodule "sm_plugins/stac"]
 	path = sm_plugins/stac
 	url = https://github.com/leighmacdonald/StAC-tf2.git
-
 [submodule "sm_plugins/skipmotd"]
 	path = sm_plugins/skipmotd
 	url = https://github.com/gcommer/skipmotd
