@@ -1,6 +1,6 @@
 static ConVar g_convar;
 
-#define ORDER_LEN 6
+#define ORDER_LEN 11
 static const TFClassType ORDER[ORDER_LEN] = {
     TFClass_DemoMan,
     TFClass_Medic,
@@ -8,6 +8,11 @@ static const TFClassType ORDER[ORDER_LEN] = {
     TFClass_Soldier,
     TFClass_Scout,
     TFClass_Scout,
+    TFClass_Pyro,
+    TFClass_Heavy,
+    TFClass_Engineer,
+    TFClass_Sniper,
+    TFClass_Spy,
 };
 
 void ClassOrderedSpawnpoints_Setup() {

@@ -48,8 +48,8 @@
 	path = sm_plugins/HalloweenCosmeticEnabler
 	url = https://github.com/Mikusch/HalloweenCosmeticEnabler
 [submodule "sm_plugins/TF2-Dodgeball-Modified"]
-	path = sm_plugins/TF2-Dodgeball-Modified
-	url = https://github.com/Silorak/TF2-Dodgeball-Modified.git
+	path = sm_plugins/TF2-Dodgeball-Modified-UDL
+	url = https://github.com/Silorak/TF2-Dodgeball-Modified-UDL.git
 [submodule "sm_plugins/mge"]
 	path = sm_plugins/mge
 	url = git@github.com:leighmacdonald/MGEMod.git

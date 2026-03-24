@@ -7,7 +7,9 @@
 #endif
 #define _more_colors_included
 
-#pragma newdecls optional
+#pragma semicolon 1
+#pragma newdecls required
+
 #include <regex>
 
 #define MORE_COLORS_VERSION     "2.0.0-MC"
@@ -21,11 +23,15 @@
 
 #define MC_GAME_DODS           0
 
-bool MC_SkipList[MAXPLAYERS+1];
+// hack for no sm 1.12
+// -sappho
+#define TF_MAXPLAYERS 101
+
+bool MC_SkipList[TF_MAXPLAYERS + 1];
 StringMap MC_Trie;
 int MC_TeamColors[][] = {{0xCCCCCC, 0x4D7942, 0xFF4040}}; // Multi-dimensional array for games that don't support SayText2. First index is the game index (as defined by the GAME_ defines), second index is team. 0 = spectator, 1 = team1, 2 = team2
 
-static ConVar sm_show_activity;
+static ConVar sm_show_activity = null;
 
 /**
  * Prints a message to a specific client in the chat area.
@@ -106,11 +112,11 @@ stock void MC_PrintToChatEx(int client, int author, const char[] message, any ..
 		ThrowError("Client %i is not in game", client);
 	}
 
-	if (author < 0 || author > MaxClients) {
+	if (author <= 0 || author > MaxClients) {
 		ThrowError("Invalid client index %i", author);
 	}
 
-	if ((author != 0) && !IsClientInGame(author)) {
+	if (!IsClientInGame(author)) {
 		ThrowError("Client %i is not in game", author);
 	}
 
@@ -134,11 +140,11 @@ stock void MC_PrintToChatEx(int client, int author, const char[] message, any ..
 stock void MC_PrintToChatAllEx(int author, const char[] message, any ...) {
 	MC_CheckTrie();
 
-	if (author < 0 || author > MaxClients) {
+	if (author <= 0 || author > MaxClients) {
 		ThrowError("Invalid client index %i", author);
 	}
 
-	if ((author != 0) && !IsClientInGame(author)) {
+	if (!IsClientInGame(author)) {
 		ThrowError("Client %i is not in game", author);
 	}
 
@@ -259,7 +265,6 @@ stock void MC_ReplaceColorCodes(char[] buffer, int author = 0, bool removeTags =
 		ReplaceString(buffer, maxlen, "{default}", "", false);
 		ReplaceString(buffer, maxlen, "{teamcolor}", "", false);
 	}
-
 	if (author != 0 && !removeTags) {
 		if (author < 0 || author > MaxClients) {
 			ThrowError("Invalid client index %i", author);
@@ -281,13 +286,12 @@ stock void MC_ReplaceColorCodes(char[] buffer, int author = 0, bool removeTags =
 	// Since the string's size is going to be changing, output will hold the replaced string and we'll search buffer
 
 	Regex regex = new Regex("{[#a-zA-Z0-9]+}");
-	for (int i = 0; i < 1000; i++) { // The RegEx extension is quite flaky, so we have to loop here :/. This loop is supposed to be infinite and broken by return, but conditions have been added to be safe.
+	for(int i = 0; i < 1000; i++) { // The RegEx extension is quite flaky, so we have to loop here :/. This loop is supposed to be infinite and broken by return, but conditions have been added to be safe.
 		if (regex.Match(buffer[cursor]) < 1) {
 			delete regex;
 			strcopy(buffer, maxlen, output);
 			return;
 		}
-
 		regex.GetSubString(0, tag, sizeof(tag));
 		MC_StrToLower(tag);
 		cursor = StrContains(buffer[cursor], tag, false) + cursor + 1;
@@ -339,12 +343,11 @@ stock void MC_ReplaceColorCodes(char[] buffer, int author = 0, bool removeTags =
  */
 stock void CSubString(const char[] input, char[] output, int maxlen, int start, int numChars = 0) {
 	int i = 0;
-	for (;;) {
+	for(;;) {
 		if (i == maxlen - 1 || i >= numChars || input[start + i] == '\0') {
 			output[i] = '\0';
 			return;
 		}
-
 		output[i] = input[start + i];
 		i++;
 	}
@@ -357,7 +360,7 @@ stock void CSubString(const char[] input, char[] output, int maxlen, int start, 
  */
 stock void MC_StrToLower(char[] buffer) {
 	int len = strlen(buffer);
-	for (int i = 0; i < len; i++) {
+	for(int i = 0; i < len; i++) {
 		buffer[i] = CharToLower(buffer[i]);
 	}
 }
@@ -411,7 +414,8 @@ stock void MC_ReplyToCommand(int client, const char[] message, any ...) {
 		MC_RemoveTags(buffer, sizeof(buffer));
 		PrintToServer("%s", buffer);
 	}
-	else if (GetCmdReplySource() == SM_REPLY_TO_CONSOLE) {
+
+	if (GetCmdReplySource() == SM_REPLY_TO_CONSOLE) {
 		MC_RemoveTags(buffer, sizeof(buffer));
 		PrintToConsole(client, "%s", buffer);
 	}
@@ -436,7 +440,8 @@ stock void MC_ReplyToCommandEx(int client, int author, const char[] message, any
 		MC_RemoveTags(buffer, sizeof(buffer));
 		PrintToServer("%s", buffer);
 	}
-	else if (GetCmdReplySource() == SM_REPLY_TO_CONSOLE) {
+
+	if (GetCmdReplySource() == SM_REPLY_TO_CONSOLE) {
 		MC_RemoveTags(buffer, sizeof(buffer));
 		PrintToConsole(client, "%s", buffer);
 	}
@@ -481,17 +486,20 @@ stock int MC_ShowActivity(int client, const char[] format, any ...) {
 
 		GetClientName(client, name, sizeof(name));
 		AdminId id = GetUserAdmin(client);
-		if (id == INVALID_ADMIN_ID || !id.HasFlag(Admin_Generic, Access_Effective)) {
+		if (id == INVALID_ADMIN_ID
+			|| !id.HasFlag(Admin_Generic, Access_Effective))
+		{
 			sign = "PLAYER";
 		}
 
 		/* Display the message to the client? */
-		if (replyto == SM_REPLY_TO_CONSOLE) {
+		if (replyto == SM_REPLY_TO_CONSOLE)
+		{
 			SetGlobalTransTarget(client);
 			VFormat(szBuffer, sizeof(szBuffer), format, 3);
 
 			MC_RemoveTags(szBuffer, sizeof(szBuffer));
-			PrintToConsole(client, "%s%s", tag, szBuffer);
+			PrintToConsole(client, "%s%s\n", tag, szBuffer);
 			display_in_chat = true;
 		}
 	}
@@ -500,7 +508,7 @@ stock int MC_ShowActivity(int client, const char[] format, any ...) {
 		VFormat(szBuffer, sizeof(szBuffer), format, 3);
 
 		MC_RemoveTags(szBuffer, sizeof(szBuffer));
-		PrintToServer("%s%s", tag, szBuffer);
+		PrintToServer("%s%s\n", tag, szBuffer);
 	}
 
 	if (!value) {
@@ -508,22 +516,23 @@ stock int MC_ShowActivity(int client, const char[] format, any ...) {
 	}
 
 	for (int i = 1; i <= MaxClients; ++i) {
-		if (!IsClientInGame(i) || IsFakeClient(i) || (display_in_chat && i == client)) {
+		if (!IsClientInGame(i)
+		|| IsFakeClient(i)
+		|| (display_in_chat && i == client)) {
 			continue;
 		}
 
 		AdminId id = GetUserAdmin(i);
 		SetGlobalTransTarget(i);
-		if (id == INVALID_ADMIN_ID || !id.HasFlag(Admin_Generic, Access_Effective)) {
+		if (id == INVALID_ADMIN_ID
+		|| !id.HasFlag(Admin_Generic, Access_Effective)) {
 			/* Treat this as a normal user. */
 			if ((value & 1) | (value & 2)) {
 				char newsign[MAX_NAME_LENGTH];
+				newsign = sign;
 
 				if ((value & 2) || (i == client)) {
 					newsign = name;
-				}
-				else {
-					newsign = sign;
 				}
 
 				VFormat(szBuffer, sizeof(szBuffer), format, 3);
@@ -534,14 +543,14 @@ stock int MC_ShowActivity(int client, const char[] format, any ...) {
 		else {
 			/* Treat this as an admin user */
 			bool is_root = id.HasFlag(Admin_Root, Access_Effective);
-			if ((value & 4) || (value & 8) || ((value & 16) && is_root)) {
+			if ((value & 4)
+			|| (value & 8)
+			|| ((value & 16) && is_root)) {
 				char newsign[MAX_NAME_LENGTH];
+				newsign = sign;
 
 				if ((value & 8) || ((value & 16) && is_root) || (i == client)) {
 					newsign = name;
-				}
-				else {
-					newsign = sign;
 				}
 
 				VFormat(szBuffer, sizeof(szBuffer), format, 3);
@@ -565,13 +574,8 @@ stock int MC_ShowActivity(int client, const char[] format, any ...) {
  * @error
  */
 stock int MC_ShowActivityEx(int client, const char[] tag, const char[] format, any ...) {
-	if (sm_show_activity == null) {
+	if (sm_show_activity == null)
 		sm_show_activity = FindConVar("sm_show_activity");
-	}
-
-	char szTag[MC_MAX_MESSAGE_LENGTH];
-	strcopy(szTag, sizeof(szTag), tag);
-	MC_RemoveTags(szTag, sizeof(szTag));
 
 	char szBuffer[MC_MAX_MESSAGE_LENGTH];
 	//char szCMessage[MC_MAX_MESSAGE_LENGTH];
@@ -588,7 +592,8 @@ stock int MC_ShowActivityEx(int client, const char[] tag, const char[] format, a
 
 		GetClientName(client, name, sizeof(name));
 		AdminId id = GetUserAdmin(client);
-		if (id == INVALID_ADMIN_ID || !id.HasFlag(Admin_Generic, Access_Effective)) {
+		if (id == INVALID_ADMIN_ID
+		|| !id.HasFlag(Admin_Generic, Access_Effective)) {
 			sign = "PLAYER";
 		}
 
@@ -598,7 +603,7 @@ stock int MC_ShowActivityEx(int client, const char[] tag, const char[] format, a
 			VFormat(szBuffer, sizeof(szBuffer), format, 4);
 
 			MC_RemoveTags(szBuffer, sizeof(szBuffer));
-			PrintToConsole(client, "%s%s", szTag, szBuffer);
+			PrintToConsole(client, "%s%s\n", tag, szBuffer);
 			display_in_chat = true;
 		}
 	}
@@ -607,7 +612,7 @@ stock int MC_ShowActivityEx(int client, const char[] tag, const char[] format, a
 		VFormat(szBuffer, sizeof(szBuffer), format, 4);
 
 		MC_RemoveTags(szBuffer, sizeof(szBuffer));
-		PrintToServer("%s%s", szTag, szBuffer);
+		PrintToServer("%s%s\n", tag, szBuffer);
 	}
 
 	if (!value) {
@@ -615,22 +620,23 @@ stock int MC_ShowActivityEx(int client, const char[] tag, const char[] format, a
 	}
 
 	for (int i = 1; i <= MaxClients; ++i) {
-		if (!IsClientInGame(i) || IsFakeClient(i) || (display_in_chat && i == client)) {
+		if (!IsClientInGame(i)
+		|| IsFakeClient(i)
+		|| (display_in_chat && i == client)) {
 			continue;
 		}
 
 		AdminId id = GetUserAdmin(i);
 		SetGlobalTransTarget(i);
-		if (id == INVALID_ADMIN_ID || !id.HasFlag(Admin_Generic, Access_Effective)) {
+		if (id == INVALID_ADMIN_ID
+		|| !id.HasFlag(Admin_Generic, Access_Effective)) {
 			/* Treat this as a normal user. */
 			if ((value & 1) | (value & 2)) {
 				char newsign[MAX_NAME_LENGTH];
+				newsign = sign;
 
 				if ((value & 2) || (i == client)) {
 					newsign = name;
-				}
-				else {
-					newsign = sign;
 				}
 
 				VFormat(szBuffer, sizeof(szBuffer), format, 4);
@@ -641,14 +647,14 @@ stock int MC_ShowActivityEx(int client, const char[] tag, const char[] format, a
 		else {
 			/* Treat this as an admin user */
 			bool is_root = id.HasFlag(Admin_Root, Access_Effective);
-			if ((value & 4) || (value & 8) || ((value & 16) && is_root)) {
+			if ((value & 4)
+			|| (value & 8)
+			|| ((value & 16) && is_root)) {
 				char newsign[MAX_NAME_LENGTH];
+				newsign = sign;
 
 				if ((value & 8) || ((value & 16) && is_root) || (i == client)) {
 					newsign = name;
-				}
-				else {
-					newsign = sign;
 				}
 
 				VFormat(szBuffer, sizeof(szBuffer), format, 4);
@@ -678,10 +684,6 @@ stock int MC_ShowActivity2(int client, const char[] tag, const char[] format, an
 		sm_show_activity = FindConVar("sm_show_activity");
 	}
 
-	char szTag[MC_MAX_MESSAGE_LENGTH];
-	strcopy(szTag, sizeof(szTag), tag);
-	MC_RemoveTags(szTag, sizeof(szTag));
-
 	char szBuffer[MC_MAX_MESSAGE_LENGTH];
 	//char szCMessage[MC_MAX_MESSAGE_LENGTH];
 	int value = sm_show_activity.IntValue;
@@ -698,7 +700,8 @@ stock int MC_ShowActivity2(int client, const char[] tag, const char[] format, an
 		GetClientName(client, name, sizeof(name));
 
 		AdminId id = GetUserAdmin(client);
-		if (id == INVALID_ADMIN_ID || !id.HasFlag(Admin_Generic, Access_Effective)) {
+		if (id == INVALID_ADMIN_ID
+		|| !id.HasFlag(Admin_Generic, Access_Effective)) {
 			sign = "PLAYER";
 		}
 
@@ -709,14 +712,14 @@ stock int MC_ShowActivity2(int client, const char[] tag, const char[] format, an
 		 * simply gets added to the console, so we don't want it to print 
 		 * twice.
 		 */
-		MC_PrintToChatEx(client, client, "%s%s", szTag, szBuffer);
+		MC_PrintToChatEx(client, client, "%s%s", tag, szBuffer);
 	}
 	else {
 		SetGlobalTransTarget(LANG_SERVER);
 		VFormat(szBuffer, sizeof(szBuffer), format, 4);
 
 		MC_RemoveTags(szBuffer, sizeof(szBuffer));
-		PrintToServer("%s%s", szTag, szBuffer);
+		PrintToServer("%s%s\n", tag, szBuffer);
 	}
 
 	if (!value) {
@@ -724,22 +727,23 @@ stock int MC_ShowActivity2(int client, const char[] tag, const char[] format, an
 	}
 
 	for (int i = 1; i <= MaxClients; ++i) {
-		if (!IsClientInGame(i) || IsFakeClient(i) || i == client) {
+		if (!IsClientInGame(i)
+		|| IsFakeClient(i)
+		|| i == client) {
 			continue;
 		}
 
 		AdminId id = GetUserAdmin(i);
 		SetGlobalTransTarget(i);
-		if (id == INVALID_ADMIN_ID || !id.HasFlag(Admin_Generic, Access_Effective)) {
+		if (id == INVALID_ADMIN_ID
+		|| !id.HasFlag(Admin_Generic, Access_Effective)) {
 			/* Treat this as a normal user. */
 			if ((value & 1) | (value & 2)) {
 				char newsign[MAX_NAME_LENGTH];
+				newsign = sign;
 
 				if ((value & 2)) {
 					newsign = name;
-				}
-				else {
-					newsign = sign;
 				}
 
 				VFormat(szBuffer, sizeof(szBuffer), format, 4);
@@ -750,15 +754,14 @@ stock int MC_ShowActivity2(int client, const char[] tag, const char[] format, an
 		else {
 			/* Treat this as an admin user */
 			bool is_root = id.HasFlag(Admin_Root, Access_Effective);
-			if ((value & 4) || (value & 8) || ((value & 16) && is_root)) {
+			if ((value & 4)
+			|| (value & 8)
+			|| ((value & 16) && is_root)) {
 				char newsign[MAX_NAME_LENGTH];
-				
+				newsign = sign;
 
 				if ((value & 8) || ((value & 16) && is_root)) {
 					newsign = name;
-				}
-				else {
-					newsign = sign;
 				}
 
 				VFormat(szBuffer, sizeof(szBuffer), format, 4);
@@ -993,6 +996,6 @@ stock StringMap MC_InitColorTrie() {
 	hTrie.SetValue("whitesmoke", 0xF5F5F5);
 	hTrie.SetValue("yellow", 0xFFFF00);
 	hTrie.SetValue("yellowgreen", 0x9ACD32);
-	
+
 	return hTrie;
 }

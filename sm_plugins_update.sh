@@ -47,8 +47,8 @@ SKIPMOTD_BRANCH="master"
 HALLOWEENCOSMETICS_ROOT="$SRC_ROOT/HalloweenCosmeticEnabler"
 HALLOWEENCOSMETICS_BRANCH="master"
 
-# git submodule update --init --recursive
-#
+git submodule update --init --recursive
+
 pushd $MGE_ROOT || exit
 git fetch --all
 git checkout $MGE_BRANCH

@@ -122,6 +122,42 @@
 				}
 			}
 
+			"CTFGrenadePipebombProjectile::Create" {
+				/* CTFGrenadePipebombProjectile* CTFGrenadePipebombProjectile::Create( const Vector &position, const QAngle &angles,
+																	const Vector &velocity, const AngularImpulse &angVelocity,
+																	CBaseCombatCharacter *pOwner, const CTFWeaponInfo &weaponInfo,
+																	int iPipeBombType, float flMultDmg ) */
+				"signature" "CTFGrenadePipebombProjectile::Create"
+				"callconv" "cdecl"
+				"return" "cbaseentity"
+				"arguments" {
+					"position" {
+						"type" "vectorptr"
+					}
+					"angles" {
+						"type" "vectorptr"
+					}
+					"velocity" {
+						"type" "vectorptr"
+					}
+					"angVelocity" {
+						"type" "vectorptr"
+					}
+					"pOwner" {
+						"type" "objectptr"
+					}
+					"weaponInfo" {
+						"type" "objectptr"
+					}
+					"iPipeBombType" {
+						"type" "int"
+					}
+					"flMultDmg" {
+						"type" "float"
+					}
+				}
+			}
+
 			"CTFFlameThrower::DeflectEntity" {
 				// virtual bool DeflectEntity( CBaseEntity *pTarget, CTFPlayer *pOwner, Vector &vecForward )
 				"offset" "CTFFlameThrower::DeflectEntity"
@@ -172,7 +208,7 @@
 				"signature" "CTFWeaponBaseGun::FirePipeBomb"
 				"callconv" "thiscall"
 				"return" "cbaseentity"
-				"this" "ignore"
+				"this" "entity"
 				"arguments" {
 					"player" {
 						"type" "objectptr"
@@ -262,6 +298,28 @@
 				"linux" "294"
 				"windows" "288"
 			}
+			// string: "bleeding_duration"
+			// CTFPlayer::OnTakeDamage_Alive
+			// Look for (int)fminf(fmaxf ... in ida psuedo
+			// It's like right after that
+			// Also just a bit after "lifeleech_on_damage"
+			// Linux:
+			// loc_F06C48:
+			//    mov     eax, ds:gpGlobals
+			//    mov     edx, ds:g_pGameRules
+			//    movss   xmm0, dword ptr [eax+0Ch]
+			//    movss   dword ptr [ebx+2150h], xmm0
+			// 2150h = 8528
+			// Win:
+			// loc_1049F870:
+			//    mov     eax, dword_1098C5A8
+			//    fld     dword ptr [eax+0Ch]
+			//    fstp    dword ptr [edi+214Ch]
+			// 214Ch = 8524
+			"CTFPlayer::m_flLastDamageTime" {
+				"linux" "8980"
+				"windows" "8972"
+			}
 		}
 
 		"Signatures" {
@@ -329,6 +387,15 @@
 			"CTFGameRules::DropHalloweenSoulPack" {
 				"linux" "@_ZN12CTFGameRules21DropHalloweenSoulPackEiRK6VectorP11CBaseEntityi"
 				"windows" "\x55\x8B\xEC\x83\xEC\x0C\x56\x6A\x00\x8D\x45\x2A"
+			}
+
+
+			"CTFGrenadeLauncher::GetProjectileSpeed" {
+				"linux" "@_ZN18CTFGrenadeLauncher18GetProjectileSpeedEv"
+			}
+
+			"CTFGrenadePipebombProjectile::Create" {
+				"linux" "@_ZN28CTFGrenadePipebombProjectile6CreateERK6VectorRK6QAngleS2_S2_P20CBaseCombatCharacterRK13CTFWeaponInfoif"
 			}
 
 			"CTFPlayer::OnTakeDamage_Alive" {

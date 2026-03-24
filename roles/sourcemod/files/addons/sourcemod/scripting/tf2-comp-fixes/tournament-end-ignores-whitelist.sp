@@ -11,7 +11,7 @@ void TournamentEndIgnoresWhitelist_Setup(Handle game_config) {
     g_detour_CEconItemSystem_ReloadWhitelist =
         CheckedDHookCreateFromConf(game_config, "CEconItemSystem::ReloadWhitelist");
 
-    g_cvar = CreateConVar("sm_tournament_end_ignores_whitelist", "1", _, FCVAR_NOTIFY, true, 0.0,
+    g_cvar = CreateConVar("sm_tournament_end_ignores_whitelist", "0", _, FCVAR_NOTIFY, true, 0.0,
                           true, 1.0);
 
     CallConVarUpdateHook(g_cvar, WhenConVarChange);

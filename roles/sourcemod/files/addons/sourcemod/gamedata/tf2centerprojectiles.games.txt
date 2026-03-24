@@ -1,4 +1,4 @@
-// updated 202301060113
+// updated 202510162046
 "Games"
 {
 	"tf"
@@ -8,15 +8,16 @@
 			// https://asherkin.github.io/vtable/
 			"Weapon_ShootPosition"
 			{
-				"windows" "275"
-				"linux"   "276"
+				"windows" "276"
+				"linux"   "277"
 			}
 			// https://asherkin.github.io/vtable/
 			"IsViewModelFlipped"
 			{
-				"windows" "440"
-				"linux"   "447"
+				"windows" "443"
+				"linux"   "450"
 			}
 		}
 	}
 }
+

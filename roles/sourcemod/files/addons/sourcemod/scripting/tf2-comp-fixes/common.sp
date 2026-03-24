@@ -166,6 +166,10 @@ stock int GetEntityFromAddress(Address entity_ptr) {
     return entity_handle & 0xFFF;
 }
 
+stock void GetEntityPosition(int entity, float position[3]) {
+    GetEntPropVector(entity, Prop_Data, "m_vecOrigin", position);
+}
+
 stock void ScaleVectorTo(const float vec[3], float scale, float result[3]) {
     result[0] = vec[0] * scale;
     result[1] = vec[1] * scale;

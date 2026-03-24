@@ -13,8 +13,9 @@
 #include "tf2-comp-fixes/common.sp"
 
 // Here
-#include "tf2-comp-fixes/concede.sp"
+#include "tf2-comp-fixes/cabinet-resets-crit-heals.sp"
 #include "tf2-comp-fixes/class-ordered-spawnpoints.sp"
+#include "tf2-comp-fixes/concede.sp"
 #include "tf2-comp-fixes/debug.sp"
 #include "tf2-comp-fixes/deterministic-fall-damage.sp"
 #include "tf2-comp-fixes/empty-active-ubercharges-when-dropped.sp"
@@ -34,11 +35,12 @@
 #include "tf2-comp-fixes/remove-halloween-souls.sp"
 #include "tf2-comp-fixes/remove-medic-attach-speed.sp"
 #include "tf2-comp-fixes/remove-pipe-spin.sp"
+#include "tf2-comp-fixes/remove-pipe-spread.sp"
 #include "tf2-comp-fixes/solid-buildings.sp"
 #include "tf2-comp-fixes/tournament-end-ignores-whitelist.sp"
 #include "tf2-comp-fixes/winger-jump-bonus-when-fully-deployed.sp"
 
-#define PLUGIN_VERSION "1.17.2"
+#define PLUGIN_VERSION "1.18.0"
 
 // clang-format off
 public
@@ -83,6 +85,7 @@ void OnPluginStart() {
     Debug_Setup();
 
     // Here
+    CabinetResetsCritHeals_Setup(game_config);
     ClassOrderedSpawnpoints_Setup();
     Concede_Setup();
     DeterministicFallDamage_Setup(game_config);
@@ -103,6 +106,7 @@ void OnPluginStart() {
     RemoveHalloweenSouls_Setup(game_config);
     RemoveMedicAttachSpeed_Setup(game_config);
     RemovePipeSpin_Setup();
+    RemovePipeSpread_Setup(game_config);
     SolidBuildings_Setup();
     TournamentEndIgnoresWhitelist_Setup(game_config);
     WingerJumpBonusWhenFullyDeployed_Setup(game_config);
@@ -141,6 +145,12 @@ Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3], floa
     return Plugin_Continue;
 }
 
+public
+void OnEntityCreated(int entity, const char[] classname)
+{
+    CabinetResetsCritHeals_OnEntityCreated(entity, classname);
+}
+
 Action Command_Cf(int client, int args) {
     char full[256];
     bool all   = false;
@@ -155,6 +165,7 @@ Action Command_Cf(int client, int args) {
     if (StrEqual(full, "list")) {
         // Here
         ReplyToCommand(client, "--- Fixes");
+        ReplyDiffConVar(client, "sm_cabinet_resets_crit_heals");
         ReplyDiffConVar(client, "sm_class_ordered_spawnpoints");
         ReplyDiffConVar(client, "sm_deterministic_fall_damage");
         ReplyDiffConVar(client, "sm_empty_active_ubercharges_when_dropped");
@@ -177,6 +188,7 @@ Action Command_Cf(int client, int args) {
         ReplyDiffConVar(client, "sm_gunboats_always_apply");
         ReplyDiffConVar(client, "sm_prevent_respawning");
         ReplyDiffConVar(client, "sm_remove_medic_attach_speed");
+        ReplyDiffConVar(client, "sm_remove_pipe_spread");
         ReplyDiffConVar(client, "sm_solid_buildings");
         ReplyDiffConVar(client, "sm_winger_jump_bonus_when_fully_deployed");
 
@@ -210,6 +222,9 @@ Action Command_Cf(int client, int args) {
 
     // Here
     // clang-format off
+    FindConVar("sm_cabinet_resets_crit_heals")
+        .SetBool(all || fixes);
+
     FindConVar("sm_class_ordered_spawnpoints")
         .SetBool(all || fixes);
 
@@ -249,8 +264,8 @@ Action Command_Cf(int client, int args) {
     FindConVar("sm_remove_halloween_souls")
         .SetBool(all || fixes || etf2l || ozf || rgl);
 
-    FindConVar("sm_remove_pipe_spin")
-        .SetBool(all);
+    FindConVar("sm_remove_pipe_spread")
+        .SetBool(all || fixes);
 
     FindConVar("sm_rest_in_peace_rick_may")
         .SetInt(all || fixes || rgl ? 128 : ozf ? 255 : 0);
@@ -261,12 +276,15 @@ Action Command_Cf(int client, int args) {
         .SetBool(all);
 
     FindConVar("sm_gunboats_always_apply")
-        .SetBool(all || etf2l);
+        .SetBool(all);
 
     FindConVar("sm_prevent_respawning")
         .SetBool(all);
 
     FindConVar("sm_remove_medic_attach_speed")
+        .SetBool(all);
+
+    FindConVar("sm_remove_pipe_spin")
         .SetBool(all);
 
     FindConVar("sm_solid_buildings")

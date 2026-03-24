@@ -1,20 +1,3 @@
-/**
- * Copyright (C) 2022  Mikusch
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- */
-
 "Games"
 {
 	"tf"
@@ -25,13 +8,17 @@
 			{
 				"library"	"server"
 				"linux"		"@_Z18TF_IsHolidayActivei"
+				"linux64"	"@_Z18TF_IsHolidayActivei"
 				"windows"	"\x55\x8B\xEC\xA1\x2A\x2A\x2A\x2A\x83\x78\x30\x00\x74\x2A\x32\xC0"
+				"windows64"	"\x48\x83\xEC\x28\x48\x8B\x05\x3D\x7D\x9B\x00"
 			}
 			"CLogicOnHoliday::InputFire"
 			{
 				"library"	"server"
 				"linux"		"@_ZN15CLogicOnHoliday9InputFireER11inputdata_t"
+				"linux64"	"@_ZN15CLogicOnHoliday9InputFireER11inputdata_t"
 				"windows"	"\x55\x8B\xEC\x51\x53\x56\x6A\x0B"
+				"windows64"	"\x48\x89\x5C\x24\x08\x48\x89\x6C\x24\x10\x48\x89\x74\x24\x18\x48\x89\x7C\x24\x20\x41\x54\x41\x56\x41\x57\x48\x83\xEC\x20\x48\x8B\xD9\xB9\x0B\x00\x00\x00"
 			}
 		}
 		"Functions"
