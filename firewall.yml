@@ -3,7 +3,7 @@
   hosts: all
   become: true
   tasks:
-    - block:
+    - block: # noqa name[missing]
         - name: Install UFW
           ansible.builtin.apt:
             name: ufw
