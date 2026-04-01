@@ -2,6 +2,10 @@ old_cpu: true
 
 ssh_keys:
   - "ssh-rsa xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx== name"
+ssh_allowed_hosts:
+  #- "{{ vpn_mask }}"
+  - 0.0.0.0/0
+  #- 12.34.56.78/32
 
 vpn_mask: 10.20.30.0/24
 vpn_hosts:

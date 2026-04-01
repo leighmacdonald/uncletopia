@@ -59,9 +59,56 @@
             index_var: loop0
           when: ansible_distribution == 'Ubuntu'
 
+        - name: Allow SRCDS Logs
+          community.general.ufw:
+            rule: allow
+            port: "{{ srcds_log_port }}"
+            proto: udp
+            comment: srcds-stv
+            from_ip: 0.0.0.0/0
+          when: ansible_distribution == 'Ubuntu'
+
+        - name: Allow SRCDS Postgres
+          community.general.ufw:
+            rule: allow
+            port: 5432
+            proto: tcp
+            comment: srcds-postgres-client
+            src: "{{ vpn_mask }}"
+          when: ansible_distribution == 'Ubuntu' and inventory_hostname == metrics_hostname
+
+        - name: Allow HTTP
+          community.general.ufw:
+            rule: allow
+            port: "{{ item }}"
+            proto: tcp
+            comment: http
+            dest: "{{ http_ip }}"
+          loop:
+            - 80
+            - 443
+          when: ansible_distribution == 'Ubuntu' and inventory_hostname == metrics_hostname
+
+        - name: Allow HTTP (QUIC)
+          community.general.ufw:
+            rule: allow
+            port: 443
+            proto: udp
+            comment: http-quic
+            dest: "{{ http_ip }}"
+          when: ansible_distribution == 'Ubuntu' and inventory_hostname == metrics_hostname
+
+        - name: Allow node_exporter
+          community.general.ufw:
+            rule: allow
+            port: 9100
+            proto: tcp
+            comment: node_exporter
+            src: "{{ vpn_mask }}"
+
       always:
         - name: Grant ssh access
-          ufw:
+          community.general.ufw:
             rule: allow
             direction: in
             port: "22"
@@ -70,5 +117,5 @@
           loop: "{{ ssh_allowed_hosts }}"
 
         - name: Enable Firewall
-          ufw:
+          community.general.ufw:
             state: enabled

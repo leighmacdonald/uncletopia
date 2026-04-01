@@ -139,11 +139,3 @@
       tags:
         - metrics-client
         - node_exporter
-
-    - name: Allow node_exporter firewall
-      become: true
-      community.general.ufw:
-        interface_in: "tailscale0"
-        rule: allow
-        port: "9100"
-        proto: tcp

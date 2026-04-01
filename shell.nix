@@ -15,7 +15,9 @@ pkgs.mkShellNoCC {
     just
     just-lsp
     nix
+    nil
     nixd
     just-formatter
+    rcon-cli
   ];
 }

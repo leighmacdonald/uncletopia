@@ -41,14 +41,6 @@
       - 127.0.0.1:6006:6006
       - 27715:27715/udp
 
-- name: Create srcds-log-fw
-  become: true
-  community.general.ufw:
-    interface_in: "wg0"
-    rule: allow
-    port: "27715"
-    proto: udp
-
 - name: Generate /gbans.conf
   ansible.builtin.template:
     src: gbans.conf.j2

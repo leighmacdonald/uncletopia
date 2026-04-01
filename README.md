@@ -93,7 +93,7 @@ Installs base OS runtime requirements and services.
 
 - Set timezone
 - Enable i386 arch for steam_cmd/srcds
-- Installs apt repos and install docker, rsyslog
+- Installs apt repos and install docker
 - Enable firewall in deny mode
 
 ### update.yml
