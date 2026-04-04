@@ -28,15 +28,6 @@ datasources:
     version: 2
     editable: true
 
-  # P8E80F9AEF21F6940
-  - name: Loki
-    type: loki
-    access: proxy
-    url: "http://loki:{{ loki.port }}"
-    uid: loki
-    jsonData:
-      timeout: 60
-      maxLines: 1000
   # P7647F508D5F54FCB
   - name: Alertmanager
     type: alertmanager
