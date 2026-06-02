@@ -20,4 +20,10 @@ pkgs.mkShellNoCC {
     just-formatter
     rcon-cli
   ];
+
+  shellHook = ''
+    python -m venv .venv
+    source .venv/bin/activate
+    pip install ansible-dev-tools
+  '';
 }

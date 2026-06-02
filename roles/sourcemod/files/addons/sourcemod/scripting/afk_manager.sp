@@ -1390,7 +1390,7 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 {
 	if (g_bEnabled)
 	{
-		if (IsClientSourceTV(client) || IsFakeClient(client)) // Ignore Source TV & Bots
+		if (!IsClientConnected(client) || IsClientSourceTV(client) || IsFakeClient(client)) // Ignore Source TV & Bots
 		{
 			return Plugin_Continue;
 		}
