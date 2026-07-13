@@ -1,74 +1,74 @@
 ---
-- name: Create caddy_data volume
+- name: Create caddy data volume
   community.docker.docker_volume:
-    name: caddy_data
+    name: "{{ caddy_data_volume_name }}"
     state: present
 
-- name: Create caddy_config volume
+- name: Create caddy config volume
   community.docker.docker_volume:
-    name: caddy_config
+    name: "{{ caddy_config_volume_name }}"
     state: present
 
-- name: Generate /etc/caddy/conf.d
+- name: Ensure caddy configuration directory exists
   become: true
   ansible.builtin.file:
-    path: /etc/caddy/conf.d
+    path: "{{ caddy_config_dir }}"
     state: directory
     mode: "0775"
 
-- name: Generate /etc/caddy/Caddyfile
+- name: Deploy caddy configuration file
   become: true
   ansible.builtin.template:
     src: Caddyfile.j2
-    dest: /etc/caddy/Caddyfile
+    dest: "{{ caddy_config_file }}"
     mode: "0775"
 
-- name: Create caddy_net network
+- name: Create caddy network
   community.docker.docker_network:
-    name: caddy_net
+    name: "{{ caddy_network_name }}"
 
-- name: Make caddy dir
+- name: Ensure caddy user directory exists
   ansible.builtin.file:
-    path: ~/caddy
+    path: "{{ caddy_user_dir }}"
     state: directory
     mode: "0755"
 
-- name: Copy file with owner and permissions
+- name: Copy Dockerfile to caddy directory
   ansible.builtin.copy:
     src: Dockerfile
-    dest: ~/caddy/Dockerfile
+    dest: "{{ caddy_dockerfile_dest }}"
     mode: "0644"
 
-- name: Build image and with build args
+- name: Build caddy docker image
   community.docker.docker_image:
-    name: caddy-ut:latest
+    name: "{{ caddy_image_name }}"
     build:
-      path: ~/caddy
+      path: "{{ caddy_user_dir }}"
     source: build
 
-- name: Create caddy container
+- name: Deploy caddy container
   community.docker.docker_container:
     name: caddy
-    image: caddy-ut:latest
+    image: "{{ caddy_image_name }}"
     restart: true
     recreate: true
     comparisons:
       networks: strict
     restart_policy: always
     networks:
-      - name: caddy_net
+      - name: "{{ caddy_network_name }}"
     pull: false
     capabilities:
       - NET_ADMIN
     volumes:
-      - caddy_data:/data
-      - caddy_config:/config
-      - /etc/caddy:/etc/caddy
+      - "{{ caddy_data_volume_name }}:/data"
+      - "{{ caddy_config_volume_name }}:/config"
+      - "/etc/caddy:/etc/caddy"
     env:
       ACME_AGREE: "true"
     ports:
       - "127.0.0.1:2019:2019"
-      - "{{ service_ip | default(ip) }}:443:443"
-      - "{{ service_ip | default(ip) }}:80:80"
-      - "[{{ service_ip6 }}]:443:443"
-      - "[{{ service_ip6 }}]:80:80"
+      - "{{ (caddy_service_ip | default(caddy_ip)) }}:443:443"
+      - "{{ (caddy_service_ip | default(caddy_ip)) }}:80:80"
+      - "[{{ caddy_service_ip6 }}]:443:443"
+      - "[{{ caddy_service_ip6 }}]:80:80"

@@ -22,7 +22,7 @@
 - name: Create uncledane-web
   community.docker.docker_container:
     name: uncledane-web
-    image: "ghcr.io/leighmacdonald/uncledane-web:latest"
+    image: "ghcr.io/leighmacdonald/uncledane-web:v1.2.0"
     restart: true
     recreate: true
     pull: false

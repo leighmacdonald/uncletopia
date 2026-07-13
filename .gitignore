@@ -8,9 +8,6 @@
 *.log
 
 *.smx
-roles/tf2/files/tf/addons/sourcemod/configs/admins_simple.ini
-roles/tf2/files/tf/addons/sourcemod/configs/admin_overrides.ini
-roles/tf2/files/tf/cfg/sourcemod/sourcemod.cfg
 
 host_vars/*
 group_vars/*

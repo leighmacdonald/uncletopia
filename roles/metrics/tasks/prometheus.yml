@@ -20,7 +20,7 @@
 - name: Create prometheus container
   community.docker.docker_container:
     name: prometheus
-    image: prom/prometheus:latest
+    image: prom/prometheus:v2.51.0
     pull: true
     restart: true
     comparisons:
@@ -57,7 +57,7 @@
 - name: Create alertmanager container
   community.docker.docker_container:
     name: alertmanager
-    image: quay.io/prometheus/alertmanager:latest
+    image: quay.io/prometheus/alertmanager:v0.27.0
     pull: true
     restart: true
     comparisons:

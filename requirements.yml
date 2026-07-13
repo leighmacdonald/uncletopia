@@ -1,5 +1,5 @@
 ---
 collections:
-  - community.general
-  - community.docker
-  - ansible.posix
+  - community.general: "4.0.0"
+  - community.docker: "3.0.0"
+  - ansible.posix: "2.0.0"

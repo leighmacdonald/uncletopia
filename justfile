@@ -9,7 +9,7 @@ lint:
     @ansible-lint --exclude sm_plugins --exclude watcher --exclude roles/*/files
 
 deps:
-    @ansible-galaxy collection install -r collections/requirements.yml
+    @ansible-galaxy collection install -r requirements.yml
 
 adduser:
     @ansible-playbook -u root -i {{ inventory }} --forks {{ forks }} {{ playbook_path }}/adduser.yml
@@ -20,8 +20,9 @@ srcds:
 web:
     ansible-playbook -u {{ user }} -i {{ inventory }} --forks {{ forks }} {{ playbook_path }}/web.yml --limit metrics
 
-vpn:
-    @ansible-playbook -u {{ user }} -i {{ inventory }} --forks {{ forks }} {{ playbook_path }}/vpn.yml
+# vpn:
+#     @ansible-playbook -u {{ user }} -i {{ inventory }} --forks {{ forks }} {{ playbook_path }}/vpn.yml
+# Note: vpn.yml does not exist. Remove or implement the vpn playbook.
 
 system:
     @ansible-playbook -u {{ user }} -i {{ inventory }} --forks {{ forks }} {{ playbook_path }}/system.yml

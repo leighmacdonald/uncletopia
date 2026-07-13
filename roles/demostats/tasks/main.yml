@@ -8,7 +8,7 @@
 - name: Create tf2_demostats
   community.docker.docker_container:
     name: tf2_demostats
-    image: "{{ demoparser.image | default('ghcr.io/leighmacdonald/tf2_demostats:latest') }}"
+    image: "{{ demoparser.image | default('ghcr.io/leighmacdonald/tf2_demostats:v1.2.0') }}"
     restart: true
     recreate: true
     pull: true

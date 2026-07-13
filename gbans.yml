@@ -1,7 +1,0 @@
----
-
-- name: "Playbook for gbans game mangement service"
-  hosts: metrics
-  roles:
-    - caddy
-    - gbans

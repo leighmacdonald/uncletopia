@@ -5,6 +5,12 @@
 - name: System Settings
   import_playbook: system.yml
 
+- name: Tune
+  import_playbook: tune.yml
+
+- name: Firewall
+  import_playbook: firewall.yml
+
 - name: Web
   import_playbook: web.yml
 

@@ -85,7 +85,7 @@
 - name: Create gbans-postgres_exporter container (gbans)
   community.docker.docker_container:
     name: gbans-postgres_exporter
-    image: quay.io/prometheuscommunity/postgres-exporter:latest
+    image: quay.io/prometheuscommunity/postgres-exporter:v0.14.0
     restart_policy: unless-stopped
     comparisons:
       networks: strict

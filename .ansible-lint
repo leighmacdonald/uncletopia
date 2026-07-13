@@ -9,7 +9,6 @@ exclude_paths:
   - hosts.yml
   - .ansible-lint
   - sm_plugins/*
-  - roles/githubixx.ansible_role_wireguard/*
 
 kinds:
   - tasks: "*/tasks/*.yml"

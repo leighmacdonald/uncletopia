@@ -56,7 +56,6 @@
       - libtinfo5:i386
       - libcurl3-gnutls:i386
       - libsdl2-2.0-0:i386
-      - libtinfo5:i386
       - libcurl4:i386
       - libstdc++6:i386
       - libcurl4-gnutls-dev:i386
@@ -84,7 +83,6 @@
       - libtinfo5:i386
       - libcurl3t64-gnutls
       - libsdl2-2.0-0:i386
-      - libtinfo5:i386
       - libcurl4:i386
       - libstdc++6:i386
       - libcurl4-gnutls-dev:i386
@@ -124,8 +122,6 @@
   when: item.config == "pve"
   tags:
     - game_config
-  # Perform the copy from the *remote* sourcemod build output
-  # delegate_to: "{{ inventory_hostname }}"
 
 - name: Copy vscripts /tf/scripts/
   ansible.builtin.copy:
@@ -136,8 +132,6 @@
   when: item.config == "pve"
   tags:
     - game_config
-  # Perform the copy from the *remote* sourcemod build output
-  # delegate_to: "{{ inventory_hostname }}"
 
 - name: Copy attach.sh
   ansible.builtin.copy:
