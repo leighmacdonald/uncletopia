@@ -28,7 +28,7 @@
     - name: Update apt cache after adding liquorix PPA
       ansible.builtin.apt:
         update_cache: true
-      when: liquorix_ppa_added is changed
+      when: liquorix_ppa_added is changed # noqa no-handler
 
     - name: Configure cpufrequtils
       become: true
