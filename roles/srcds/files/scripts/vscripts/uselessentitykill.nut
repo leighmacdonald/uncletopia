@@ -81,3 +81,17 @@ function KillTheShortCircuit()
 		else continue
 	}
 }
+
+function KillTheTeleporters()
+{
+	local botteleporter = null
+	while (botteleporter = Entities.FindByClassname(botteleporter, "obj_teleporter"))
+	{
+		local owner = (NetProps.GetPropEntity(botteleporter,"m_hBuilder"))
+		if (owner != null && owner.IsValid() && owner.IsAlive() && owner.IsFakeClient())
+		{
+			botteleporter.AcceptInput("Kill", null, null, null)
+		}
+		else continue
+	}
+}

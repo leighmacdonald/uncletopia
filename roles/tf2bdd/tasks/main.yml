@@ -8,6 +8,7 @@
     mode: "0775"
 
 - name: Create tf2bdd-service
+  no_log: true
   community.docker.docker_container:
     name: tf2bdd-service
     image: ghcr.io/leighmacdonald/tf2bdd:v1.0.5

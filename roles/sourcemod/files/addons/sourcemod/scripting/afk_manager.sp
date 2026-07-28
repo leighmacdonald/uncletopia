@@ -1091,14 +1091,14 @@ void RegisterCvars() // Cvar Registrations
 	hCvarAdminsFlag = CreateConVar("sm_afk_admins_flag", "", "Admin Flag for immunity? Leave Blank for any flag.");
 	hCvarMoveSpec = CreateConVar("sm_afk_move_spec", "0", "Should the AFK Manager move AFK clients to spectator team? [0 = FALSE, 1 = TRUE, DEFAULT: 1]", FCVAR_NONE, true, 0.0, true, 1.0);
 	hCvarMoveAnnounce = CreateConVar("sm_afk_move_announce", "2", "Should the AFK Manager announce AFK moves to the server? [0 = DISABLED, 1 = EVERYONE, 2 = ADMINS ONLY, DEFAULT: 1]", FCVAR_NONE, true, 0.0, true, 2.0);
-	hCvarTimeToMove = CreateConVar("sm_afk_move_time", "130.0", "Time in seconds (total) client must be AFK before being moved to spectator. [0 = DISABLED, DEFAULT: 60.0 seconds]");
-	hCvarWarnTimeToMove = CreateConVar("sm_afk_move_warn_time", "60.0", "Time in seconds remaining, player should be warned before being moved for AFK. [DEFAULT: 30.0 seconds]");
+	hCvarTimeToMove = CreateConVar("sm_afk_move_time", "0", "Time in seconds (total) client must be AFK before being moved to spectator. [0 = DISABLED, DEFAULT: 60.0 seconds]");
+	hCvarWarnTimeToMove = CreateConVar("sm_afk_move_warn_time", "300.0", "Time in seconds remaining, player should be warned before being moved for AFK. [DEFAULT: 30.0 seconds]");
 	hCvarKickPlayers = CreateConVar("sm_afk_kick_players", "1", "Should the AFK Manager kick AFK clients? [0 = DISABLED, 1 = KICK ALL, 2 = ALL EXCEPT SPECTATORS, 3 = SPECTATORS ONLY]");
 	hCvarKickAnnounce = CreateConVar("sm_afk_kick_announce", "1", "Should the AFK Manager announce AFK kicks to the server? [0 = DISABLED, 1 = EVERYONE, 2 = ADMINS ONLY, DEFAULT: 1]", FCVAR_NONE, true, 0.0, true, 2.0);
 	hCvarTimeToKick = CreateConVar("sm_afk_kick_time", "180.0", "Time in seconds (total) client must be AFK before being kicked. [0 = DISABLED, DEFAULT: 120.0 seconds]");
 	hCvarWarnTimeToKick = CreateConVar("sm_afk_kick_warn_time", "120.0", "Time in seconds remaining, player should be warned before being kicked for AFK. [DEFAULT: 30.0 seconds]");
-	hCvarSpawnTime = CreateConVar("sm_afk_spawn_time", "60.0", "Time in seconds (total) that player should have moved from their spawn position. [0 = DISABLED, DEFAULT: 20.0 seconds]");
-	hCvarWarnSpawnTime = CreateConVar("sm_afk_spawn_warn_time", "45.0", "Time in seconds remaining, player should be warned for being AFK in spawn. [DEFAULT: 15.0 seconds]");
+	hCvarSpawnTime = CreateConVar("sm_afk_spawn_time", "0", "Time in seconds (total) that player should have moved from their spawn position. [0 = DISABLED, DEFAULT: 20.0 seconds]");
+	hCvarWarnSpawnTime = CreateConVar("sm_afk_spawn_warn_time", "0", "Time in seconds remaining, player should be warned for being AFK in spawn. [DEFAULT: 15.0 seconds]");
 	hCvarExcludeDead = CreateConVar("sm_afk_exclude_dead", "0", "Should the AFK Manager exclude checking dead players? [0 = FALSE, 1 = TRUE, DEFAULT: 0]", FCVAR_NONE, true, 0.0, true, 1.0);
 	hCvarWarnUnassigned = CreateConVar("sm_afk_move_warn_unassigned", "1", "Should the AFK Manager warn team 0 (Usually unassigned) players? (Disabling may not work for some games) [0 = FALSE, 1 = TRUE, DEFAULT: 1]", FCVAR_NONE, true, 0.0, true, 1.0);
 	hCvarButtonsBuffer = CreateConVar("sm_afk_buttons", "5", "How many button changes should the AFK Manager track before resetting AFK status? [0 = DISABLED, DEFAULT: 5]", FCVAR_NONE, true, 0.0, true, float(BUTTONS_MAX_ARRAY));

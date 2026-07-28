@@ -52,12 +52,12 @@ sm_afk_force_language "{{ sm_afk_force_language|default("1") }}"
 // Default: "2"
 // Minimum: "0.000000"
 // Maximum: "2.000000"
-sm_afk_kick_announce "{{ sm_afk_kick_announce|default("2") }}"
+sm_afk_kick_announce "{{ sm_afk_kick_announce|default("1") }}"
 
 // Minimum number of connected clients required for AFK kick to be enabled. [DEFAULT: 6]
 // -
 // Default: "6"
-sm_afk_kick_min_players "{{ sm_afk_kick_min_players|default("20") }}"
+sm_afk_kick_min_players "{{ sm_afk_kick_min_players|default("16") }}"
 
 // Should the AFK Manager kick AFK clients? [0 = DISABLED, 1 = KICK ALL, 2 = ALL EXCEPT SPECTATORS, 3 = SPECTATORS ONLY]
 // -
@@ -71,8 +71,8 @@ sm_afk_kick_time "{{ sm_afk_kick_time|default("300.0") }}"
 
 // Time in seconds remaining, player should be warned before being kicked for AFK. [DEFAULT: 30.0 seconds]
 // -
-// Default: "300.0"
-sm_afk_kick_warn_time "{{ sm_afk_kick_warn_time|default("30.0") }}"
+// Default: "30.0"
+sm_afk_kick_warn_time "{{ sm_afk_kick_warn_time|default("200.0") }}"
 
 // How many days should we keep AFK Manager log files. [0 = INFINITE, DEFAULT: 0]
 // -
@@ -122,7 +122,7 @@ sm_afk_move_spec "{{ sm_afk_move_spec|default("0") }}"
 // Time in seconds (total) client must be AFK before being moved to spectator. [0 = DISABLED, DEFAULT: 60.0 seconds]
 // -
 // Default: "0"
-sm_afk_move_time "{{ sm_afk_move_time|default("300.0") }}"
+sm_afk_move_time "{{ sm_afk_move_time|default("0") }}"
 
 // Time in seconds remaining, player should be warned before being moved for AFK. [DEFAULT: 30.0 seconds]
 // -
@@ -146,7 +146,7 @@ sm_afk_prefix_short "{{ sm_afk_prefix_short|default("0") }}"
 // Time in seconds (total) that player should have moved from their spawn position. [0 = DISABLED, DEFAULT: 20.0 seconds]
 // -
 // Default: "120.0"
-sm_afk_spawn_time "{{ sm_afk_spawn_time|default("300.0") }}"
+sm_afk_spawn_time "{{ sm_afk_spawn_time|default("0") }}"
 
 // Time in seconds remaining, player should be warned for being AFK in spawn. [DEFAULT: 15.0 seconds]
 // -
