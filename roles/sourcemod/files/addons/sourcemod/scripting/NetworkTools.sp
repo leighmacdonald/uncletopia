@@ -390,7 +390,6 @@ public void ProcessData()
 public void GetData()
 {
 	int CmdRate;
-	int RandomVariable;
 	int MinCmdRate = g_iCmdRate[0];
 	int MaxCmdRate = g_iCmdRate[1];
 	int iTickRate;
@@ -440,13 +439,15 @@ public void GetData()
 							CmdRate = MinCmdRate;
 						}
 
-						RandomVariable = RoundFloat(GetClientAvgLatency(i, NetFlow_Outgoing));
-						RandomVariable -= ((0.5 / CrazyLiamBitWise(CmdRate, 20)) + iTickRate);
-						RandomVariable -= (iTickRate * 0.5);
-
-						if(-1 < (g_iClientLatency[i][0] = RandomVariable *= 1000) < g_iLimit[1])
+						float CmdRateF = view_as<float>(CmdRate);
+						float iTickRateF = view_as<float>(iTickRate);
+						float RandomVariableF =  GetClientAvgLatency(i, NetFlow_Outgoing);
+						RandomVariableF -= ((0.5 / CrazyLiamBitWise(CmdRateF, 20.0)) + iTickRateF);
+						RandomVariableF -= (iTickRateF * 0.5);
+						int randomRateI = RoundFloat(RandomVariableF);
+						if(-1 < (g_iClientLatency[i][0] = randomRateI *= 1000) < g_iLimit[1])
 						{
-							g_iLimit[1] = RandomVariable;
+							g_iLimit[1] = randomRateI;
 						}
 					}
 					else
