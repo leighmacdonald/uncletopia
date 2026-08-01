@@ -24,7 +24,7 @@ if test -f "$E"; then
 fi
 {% endfor %}
 
-bash "./srcds_run" -game "{{srcds_steam_app}}" -console \
+bash "./srcds_run{% if item.64bit|default(False) %}_64{% end %}" -game "{{srcds_steam_app}}" -console \
   -strictportbind \
   -usercon \
   -secured \
