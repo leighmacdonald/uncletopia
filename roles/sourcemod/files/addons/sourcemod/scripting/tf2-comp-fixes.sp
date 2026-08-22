@@ -40,7 +40,7 @@
 #include "tf2-comp-fixes/tournament-end-ignores-whitelist.sp"
 #include "tf2-comp-fixes/winger-jump-bonus-when-fully-deployed.sp"
 
-#define PLUGIN_VERSION "1.18.0"
+#define PLUGIN_VERSION "1.18.1"
 
 // clang-format off
 public

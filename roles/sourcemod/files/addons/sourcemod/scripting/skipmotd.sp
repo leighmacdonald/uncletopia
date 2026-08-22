@@ -3,6 +3,7 @@
 #include <tf2>
 #include <tf2_stocks>
 
+#pragma newdecls required
 #pragma semicolon 1
 #define PLUGIN_VERSION  "1.3"
 

@@ -91,15 +91,23 @@ static MRESReturn Hook_CBaseCombatWeapon_Deploy(int weapon, Handle ret) {
 
     SetAttribute(weapon, ATTR_MOD_JUMP_HEIGHT_FROM_WEAPON, 1.0);
 
-    g_timers[weapon] = CreateTimer(0.2, TimerFinished, weapon);
+    // Use an entity reference: the weapon's index may be reused before this fires.
+    g_timers[weapon] = CreateTimer(0.2, TimerFinished, EntIndexToEntRef(weapon));
 
     return MRES_Handled;
 }
 
-static Action TimerFinished(Handle timer, int weapon) {
-    g_timers[weapon] = INVALID_HANDLE;
+static Action TimerFinished(Handle timer, int weapon_ref) {
+    for (int ent = 0; ent <= MAXENTITIES; ent++) {
+        if (g_timers[ent] == timer) {
+            g_timers[ent] = INVALID_HANDLE;
+            break;
+        }
+    }
 
-    if (!IsValidEntity(weapon)) {
+    int weapon = EntRefToEntIndex(weapon_ref);
+
+    if (weapon == INVALID_ENT_REFERENCE || !IsValidEntity(weapon)) {
         return Plugin_Continue;
     }
 
