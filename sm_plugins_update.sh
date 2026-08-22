@@ -24,7 +24,7 @@ DISCORD_ROOT="$SRC_ROOT/discord"
 DISCORD_BRANCH="master"
 
 COMPFIXES_ROOT="$SRC_ROOT/tf2-comp-fixes"
-COMPFIXES_BRANCH="v1.18.0"
+COMPFIXES_BRANCH="v1.18.1"
 
 EDICT_LIMITER_ROOT="$SRC_ROOT/edict-limiter"
 EDICT_LIMITER_BRANCH="v3.1.1"
@@ -38,14 +38,11 @@ ATTRIBUTES_BRANCH="v1.7.5"
 CENTERPROJECTILES_ROOT="$SRC_ROOT/tf2centerprojectiles"
 CENTERPROJECTILES_BRANCH="main"
 
-NATIVEVOTES_ROOT="$SRC_ROOT/nativevotes"
-NATIVEVOTES_BRANCH="master"
-
 SKIPMOTD_ROOT="$SRC_ROOT/skipmotd"
 SKIPMOTD_BRANCH="master"
 
 HALLOWEENCOSMETICS_ROOT="$SRC_ROOT/HalloweenCosmeticEnabler"
-HALLOWEENCOSMETICS_BRANCH="master"
+HALLOWEENCOSMETICS_BRANCH="1.4.0"
 
 git submodule update --init --recursive
 
@@ -146,15 +143,15 @@ git checkout $CENTERPROJECTILES_BRANCH
 cp -rv addons/sourcemod/* "$SM_ROOT/"
 popd || exit
 
-pushd $NATIVEVOTES_ROOT || exit
-git fetch --all
-git checkout $NATIVEVOTES_BRANCH
-git pull
-cp -rv addons/sourcemod/* "$SM_ROOT/"
-rm "$SM_ROOT/scripting/nativevotes_votemanager_test.sp" \
-	"$SM_ROOT/scripting/nativevotes_votetest.sp" \
-	"$SM_ROOT/scripting/csgo_votestart_test.sp"
-popd || exit
+# pushd $NATIVEVOTES_ROOT || exit
+# git fetch --all
+# git checkout $NATIVEVOTES_BRANCH
+# git pull
+# cp -rv addons/sourcemod/* "$SM_ROOT/"
+# rm "$SM_ROOT/scripting/nativevotes_votemanager_test.sp" \
+# 	"$SM_ROOT/scripting/nativevotes_votetest.sp" \
+# 	"$SM_ROOT/scripting/csgo_votestart_test.sp"
+# popd || exit
 
 pushd $SKIPMOTD_ROOT || exit
 git fetch --all

@@ -469,7 +469,8 @@ void BanUser(int userid, char reason[128], char pubreason[256])
         }
 
         // stock tf2, no ext ban system. if we somehow fail here, keep going.
-        if (BanClient(cl, banDuration, BANFLAG_AUTO, reason, reason, _, _))
+        // OnBanClient requires a non empty const char[] command. Just use "stac" so that fwd fires.
+        if (BanClient(cl, banDuration, BANFLAG_AUTO, reason, reason, "stac", _))
         {
             return;
         }
@@ -1285,6 +1286,34 @@ int GetSRandomInt()
     return random;
 }
 
+
+/*
+
+#define TIME_TO_TICKS( dt )		( (int)( 0.5f + (float)(dt) / TICK_INTERVAL ) )
+#define TICKS_TO_TIME( t )		( TICK_INTERVAL *( t ) )
+#define ROUND_TO_TICKS( t )		( TICK_INTERVAL * TIME_TO_TICKS( t ) )
+
+*/
+
+// defined in jaypatch
+// ty av🥑cado
+// RoundToFloor mimics the behavior of c-casting a float to an int
+int time_to_ticks_2(float time)
+{
+    return RoundToFloor(0.5 + time / tickinterv);
+}
+
+/*
+float ticks_to_time(int ticks)
+{
+    return tickinterv * ticks;
+}
+*/
+
+float round_to_ticks(float time)
+{
+    return tickinterv * time_to_ticks_2(time);
+}
 
 // https://forums.alliedmods.net/showpost.php?p=2698561&postcount=2
 // STEAM_1:1:23456789 to 23456789
