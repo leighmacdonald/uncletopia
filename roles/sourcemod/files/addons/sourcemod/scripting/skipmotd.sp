@@ -7,7 +7,7 @@
 #pragma semicolon 1
 #define PLUGIN_VERSION  "1.3"
 
-public Plugin:myinfo = {
+public Plugin myinfo = {
   name = "No MOTD",
   author = "Original by MasterOfTheXP, modified by GC",
   description = "Removes the MOTD, autojoin random team, and autojoins classes.",
@@ -17,42 +17,42 @@ public Plugin:myinfo = {
 
 bool clientMOTDBlocked[MAXPLAYERS + 1];
 
-Handle enableNoMotdCvar = null;
-Handle alwaysNoMotdCvar = null;
+ConVar enableNoMotdCvar = null;
+ConVar alwaysNoMotdCvar = null;
 
-Handle enableRandomTeamCvar = null;
-Handle alwaysRandomTeamCvar = null;
+ConVar enableRandomTeamCvar = null;
+ConVar alwaysRandomTeamCvar = null;
 
-Handle enableRandomClassCvar = null;
-Handle alwaysRandomClassCvar = null;
+ConVar enableRandomClassCvar = null;
+ConVar alwaysRandomClassCvar = null;
 
-Handle enableRememberClassCvar = null;
-Handle alwaysRememberClassCvar = null;
+ConVar enableRememberClassCvar = null;
+ConVar alwaysRememberClassCvar = null;
 
 // Opt in to skipping the MOTD.
-Handle noMotdCookie = null;
+Cookie noMotdCookie = null;
 // Opt in to auto joining a random team.
-Handle randomTeamCookie = null;
+Cookie randomTeamCookie = null;
 // Opt in to rejoining as a random class.
-Handle randomClassCookie = null;
+Cookie randomClassCookie = null;
 // Opt in to rejoining as last played class.
-Handle rememberClassCookie = null;
+Cookie rememberClassCookie = null;
 // Store last played class.
-Handle latestClassCookie = null;
+Cookie latestClassCookie = null;
 
-bool CvarEnabled(Handle cvar) {
+bool CvarEnabled(ConVar cvar) {
   char value[20];
-  GetConVarString(cvar, value, 20);
+  GetConVarString(cvar, value, sizeof(value));
   return StrEqual(value, "1");
 }
 
-bool CookieEnabled(int client, Handle cookie) {
+bool CookieEnabled(int client, Cookie cookie) {
   char value[4];
-  GetClientCookie(client, cookie, value, 20);
+  GetClientCookie(client, cookie, value, sizeof(value));
   return StrEqual(value, "1");
 }
 
-public OnPluginStart()
+public void OnPluginStart()
 {
   enableNoMotdCvar = CreateConVar("sm_nomotd", "", "If 1, allow clients to opt into skipping the MOTD.");
   alwaysNoMotdCvar = CreateConVar("sm_nomotd_force", "", "If 1, make all clients skip MOTD.");
@@ -92,7 +92,7 @@ public OnPluginStart()
   // Cookie for storing the player's most recently played class.
   latestClassCookie = RegClientCookie("latest_class", "No MOTD", CookieAccess_Private);
 
-  for (new i = 1; i <= MaxClients; i++) {
+  for (int i = 1; i <= MaxClients; i++) {
     clientMOTDBlocked[i] = IsClientInGame(i);
   }
 
@@ -100,7 +100,7 @@ public OnPluginStart()
   HookUserMessage(GetUserMessageId("Train"), UserMessageHook, true);
 }
 
-stock JoinClassName(TFClassType id, char[] name) {
+void JoinClassName(TFClassType id, char[] name) {
   if (id == TFClass_Scout) {strcopy(name, 12, "scout");}
   else if (id == TFClass_Sniper) {strcopy(name, 12, "sniper");}
   else if (id == TFClass_Soldier) {strcopy(name, 12, "soldier");}
@@ -113,7 +113,7 @@ stock JoinClassName(TFClassType id, char[] name) {
   else {strcopy(name, 12, "random");}
 }
 
-public Event_ChangeClass(Handle event, const char[] name, bool dontBroadcast)
+public void Event_ChangeClass(Handle event, const char[] name, bool dontBroadcast)
 {
   int client = GetClientOfUserId(GetEventInt(event, "userid"));
   char to[20];
@@ -121,11 +121,11 @@ public Event_ChangeClass(Handle event, const char[] name, bool dontBroadcast)
   SetClientCookie(client, latestClassCookie, to);
 }
 
-public void OnClientDisconnect(client) {
+public void OnClientDisconnect(int client) {
   clientMOTDBlocked[client] = false;
 }
 
-public Action UserMessageHook(UserMsg msg_id, Handle bf, const players[], playersNum, bool reliable, bool init)
+public Action UserMessageHook(UserMsg msg_id, BfRead bf, const int[] players, int playersNum, bool reliable, bool init)
 {
   if (playersNum == 1 && IsClientConnected(players[0]) && !clientMOTDBlocked[players[0]] && !IsFakeClient(players[0]))
   {
@@ -136,7 +136,7 @@ public Action UserMessageHook(UserMsg msg_id, Handle bf, const players[], player
   return Plugin_Continue;
 }
 
-public Action KillMOTD(Handle timer, any uid)
+public Action KillMOTD(Handle timer, int uid)
 {
   int client = GetClientOfUserId(uid);
   if (!client) return Plugin_Handled;
@@ -160,7 +160,7 @@ public Action KillMOTD(Handle timer, any uid)
 
   if ((CvarEnabled(enableRememberClassCvar) && CookieEnabled(client, rememberClassCookie)) || CvarEnabled(alwaysRememberClassCvar)) {
     char class[64];
-    GetClientCookie(client, latestClassCookie, class, 20);
+    GetClientCookie(client, latestClassCookie, class, sizeof(class));
     if (StrEqual(class, "")) {
       strcopy(class, 10, "random");
     }
