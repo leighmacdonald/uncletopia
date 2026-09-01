@@ -1,6 +1,6 @@
 #!/bin/bash
 
-{% for name in config[item.config].plugins_disabled %}
+{% for name in config[item.config].sourcemod_plugins_disabled %}
 D=./tf/addons/sourcemod/plugins/{{ name }}
 if test -f "$D"; then
     echo "Disabling plugin $D"
@@ -16,7 +16,7 @@ if test -f "$E"; then
 fi
 {% endfor %}
 
-{% for name in config[item.config].extensions_disabled %}
+{% for name in config[item.config].sourcemod_extensions_disabled %}
 E=./tf/addons/sourcemod/extensions/{{ name }}
 if test -f "$E"; then
     echo "Disabling extension $E"

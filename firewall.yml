@@ -3,7 +3,7 @@
   hosts: all
   become: true
   tasks:
-    - block_name: Configure UFW Firewall Rules
+    - name: Configure UFW Firewall Rules
       block:
         - name: Install UFW
           ansible.builtin.apt:
