@@ -52,7 +52,7 @@ public Plugin myinfo =
     author		=		"Kyle Sanderson",
     description	=		 PLUGIN_DESCRIPTION,
     version		=		 PLUGIN_VERSION,
-    url			=		"http://SourceMod.net"
+    url			=		"http://SourceMod.net" // https://forums.alliedmods.net/showthread.php?p=1427368
 };
 
 /* Plugin Start */
@@ -441,8 +441,8 @@ public void GetData()
 						}
 
 						RandomVariable = RoundFloat(GetClientAvgLatency(i, NetFlow_Outgoing));
-						RandomVariable -= ((0.5 / CrazyLiamBitWise(CmdRate, 20)) + iTickRate);
-						RandomVariable -= (iTickRate * 0.5);
+						RandomVariable -= RoundFloat((0.5 / CrazyLiamBitWise(CmdRate, 20)) + iTickRate);
+						RandomVariable -= RoundFloat(iTickRate * 0.5);
 
 						if(-1 < (g_iClientLatency[i][0] = RandomVariable *= 1000) < g_iLimit[1])
 						{
