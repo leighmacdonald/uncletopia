@@ -1,9 +1,7 @@
 ---
-prometheus_port: 9090
+metrics_port: 9090
 metrics_ip: 127.0.0.1
-alertmanager_port: 9093
-grafana_port: 3000
-grafana_allow_sign_up: false
-node_exporter_port: 9100
-vpn_hosts: {}
-vpn_ip: {}
+metrics_alertmanager_port: 9093
+metrics_grafana_port: 3000
+metrics_grafana_allow_sign_up: false
+metrics_node_exporter_port: 9100
