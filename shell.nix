@@ -8,11 +8,11 @@ let
 
   sourcemod = pkgs.stdenv.mkDerivation {
     pname = "sourcemod";
-    version = "1.12.0-git7249";
+    version = "1.13.0-git7441";
 
     src = pkgs.fetchurl {
-      url = "https://github.com/alliedmodders/sourcemod/releases/download/1.12.0.7249/sourcemod-1.12.0-git7249-linux.tar.gz";
-      sha256 = "6c0b1a16e6032f36ec769c09cc02d974eb035a5bdee2c51ff0296becf1bcff2c";
+      url = "https://github.com/alliedmodders/sourcemod/releases/download/1.13.0.7441/sourcemod-1.13.0-git7441-linux.tar.gz";
+      sha256 = "sha256-dEvfmAnluzLPC+xmMv6AXUspLoU24hbj/fC1kZVPzCc=";
     };
 
     # Prebuilt release tarball with multiple top-level directories
