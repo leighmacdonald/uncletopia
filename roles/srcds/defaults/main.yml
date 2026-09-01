@@ -1,0 +1,20 @@
+---
+srcds_user: "tf2server"
+srcds_homedir: "/home/tf2server"
+srcds_base_port: 27015
+srcds_tv_port: 27020
+srcds_max_players: 32
+srcds_rcon_password: "changeme"
+srcds_server_password: ""
+srcds_start_map: ""
+srcds_region: 3
+srcds_hostname: "TF2 Server"
+use64Bit: false
+whitelist_default: ""
+fastdl_url: ""
+sv_tags: "uncletopia,nocrits,nodmgspread"
+sv_pure: 1
+start_map: "pl_badwater"
+log_file_enable: false
+log_net_enable: true
+log_net_hosts: ["127.0.0.1:27015"]

@@ -1,0 +1,19 @@
+---
+galaxy_info:
+  author: uncletopia
+  description: Sentry monitoring setup
+  company: uncletopia.com
+  license: MIT
+  min_ansible_version: "2.14"
+  platforms:
+    - name: Ubuntu
+      release:
+        - focal
+    - name: Debian
+      release:
+        - bookworm
+  galaxy_tags:
+    - sentry
+    - monitoring
+
+dependencies: []

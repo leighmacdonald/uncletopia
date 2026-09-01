@@ -1,0 +1,11 @@
+---
+caddy_data_volume_name: caddy_data
+caddy_config_volume_name: caddy_config
+caddy_config_dir: /etc/caddy
+caddy_config_file: /etc/caddy/Caddyfile
+caddy_network_name: caddy_net
+caddy_user_dir: /home/tf2server/caddy
+caddy_dockerfile_dest: /home/tf2server/caddy/Dockerfile
+caddy_image_name: caddy-uncletopia
+caddy_service_ip: "{{ ansible_default_ipv4.address }}"
+caddy_service_ip6: "{{ ansible_default_ipv4.address }}"

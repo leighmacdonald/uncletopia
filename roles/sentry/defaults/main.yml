@@ -1,0 +1,6 @@
+---
+sentry_external_url: "https://sentry.uncletopia.com"
+sentry_dsn: "https://example@sentry.io/123"
+sentry_github_app_id: 123
+sentry_github_client_id: ""
+sentry_github_client_secret: ""
