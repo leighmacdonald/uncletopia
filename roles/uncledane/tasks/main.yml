@@ -14,7 +14,7 @@
 
 - name: Build image and with build args
   community.docker.docker_image:
-    name: uncledane-web:latest
+    name: uncledane-web
     build:
       path: ~/uncledane-web
     source: build
