@@ -9,8 +9,6 @@
 
 // Tracks whether game events have been hooked (to prevent double-unhook errors)
 static bool EventsHooked = false;
-// Tracks whether object_deflected was successfully hooked.
-static bool ObjectDeflectedHooked = false;
 
 /** Checks if the current map is a dodgeball map (starts with "tfdb_", "db_", or "dbs_"). */
 bool IsDodgeBallMap()
@@ -30,11 +28,20 @@ void EnableDodgeBall()
 {
 	if (Enabled) return;
 
+	// Initialize the O(1) entity -> rocket-slot reverse-lookup cache.
+	// SourcePawn does not zero-init globals between map changes the way you'd
+	// expect, and 0 is a valid slot index — so explicitly fill with -1.
+	for (int i = 0; i < sizeof(g_EntityIndexToRocketSlot); i++)
+	{
+		g_EntityIndexToRocketSlot[i] = ROCKET_SLOT_NONE;
+	}
+
 	char mapName[64]; GetCurrentMap(mapName, sizeof(mapName));
 	GetMapDisplayName(mapName, mapName, sizeof(mapName));
 	char mapFile[PLATFORM_MAX_PATH]; FormatEx(mapFile, sizeof(mapFile), "%s.cfg", mapName);
 
 	ParseConfigurations();
+	ParseConfigurations("presets.cfg");
 	ParseConfigurations(mapFile);
 
 	if (RocketClassCount == 0)   SetFailState("No rocket class defined.");
@@ -51,19 +58,24 @@ void EnableDodgeBall()
 		HookEventEx("teamplay_round_win", OnRoundEnd, EventHookMode_PostNoCopy);
 		HookEventEx("player_spawn", OnPlayerSpawn, EventHookMode_Post);
 		HookEventEx("player_death", OnPlayerDeath, EventHookMode_Pre);
+		HookEventEx("player_team",  OnPlayerTeam,  EventHookMode_Post);
 		HookEventEx("post_inventory_application", OnPlayerInventory, EventHookMode_Post);
 		HookEventEx("teamplay_broadcast_audio", OnBroadcastAudio, EventHookMode_Pre);
-		// Keep this hook global (not tied to enable/disable) to avoid
-		// map-end unhook exceptions observed on some installs.
-		if (!ObjectDeflectedHooked)
+		HookEventEx("object_deflected", OnObjectDeflected);
+		EventsHooked = true;
+	}
+
+	// Existing clients are not guaranteed to pass through OnClientPutInServer
+	// after mode toggles, so apply WeaponCanUse hook here as well.
+	if (UsePushPrevention)
+	{
+		for (int client = 1; client <= MaxClients; client++)
 		{
-			ObjectDeflectedHooked = HookEventEx("object_deflected", OnObjectDeflected);
-			if (!ObjectDeflectedHooked)
+			if (IsClientInGame(client))
 			{
-				LogError("Failed to hook game event \"object_deflected\". Deflect-specific rocket updates will be disabled.");
+				SDKHook(client, SDKHook_WeaponCanUse, OnWeaponCanUse);
 			}
 		}
-		EventsHooked = true;
 	}
 
 	AddMultiTargetFilter("@stealer", MLTargetFilterStealer, "last stealer", false);
@@ -102,6 +114,10 @@ void EnableDodgeBall()
 	CvarEnableCfgFile.GetString(cfgFile, sizeof(cfgFile));
 	ServerCommand("exec \"%s\"", cfgFile);
 
+	// Authoritative alive-counter reset. Subsequent maintenance is incremental
+	// via player_spawn / player_death / player_team / OnClientDisconnect.
+	RecountAlive();
+
 	Enabled      = true;
 	RoundStarted = false;
 	RoundCount   = 0;
@@ -118,6 +134,7 @@ void DisableDodgeBall()
 	DestroyRockets();
 	DestroyRocketClasses();
 	DestroySpawners();
+	PresetCount = 0;
 
 	if (LogicTimer != null) KillTimer(LogicTimer);
 	LogicTimer = null;
@@ -127,18 +144,22 @@ void DisableDodgeBall()
 	Music[Music_RoundLose]  =
 	Music[Music_Gameplay]   = false;
 
-	// Only unhook events if they were previously hooked
-	if (EventsHooked)
+	// Do NOT manually UnhookEvent here. SourceMod automatically cleans up
+	// event hooks when a plugin unloads. Manual unhooking causes cascading
+	// "has no active hook" / "Invalid hook callback" errors when subplugins
+	// (trails, FFA, etc.) unhook shared events first, which aborts this
+	// callback and leaves EventsHooked=true permanently.
+	//
+	// The event callbacks themselves already guard with Enabled/RoundStarted
+	// checks, so leaving hooks active during map transitions is safe.
+
+	// Explicitly unhook to keep behavior isolated to active Dodgeball mode.
+	for (int client = 1; client <= MaxClients; client++)
 	{
-		UnhookEvent("teamplay_round_start", OnRoundStart, EventHookMode_PostNoCopy);
-		UnhookEvent("teamplay_round_active", OnSetupFinished, EventHookMode_PostNoCopy);
-		UnhookEvent("arena_round_start", OnSetupFinished, EventHookMode_PostNoCopy);
-		UnhookEvent("teamplay_round_win", OnRoundEnd, EventHookMode_PostNoCopy);
-		UnhookEvent("player_spawn", OnPlayerSpawn, EventHookMode_Post);
-		UnhookEvent("player_death", OnPlayerDeath, EventHookMode_Pre);
-		UnhookEvent("post_inventory_application", OnPlayerInventory, EventHookMode_Post);
-		UnhookEvent("teamplay_broadcast_audio", OnBroadcastAudio, EventHookMode_Pre);
-		EventsHooked = false;
+		if (IsClientInGame(client))
+		{
+			SDKUnhook(client, SDKHook_WeaponCanUse, OnWeaponCanUse);
+		}
 	}
 
 	RemoveMultiTargetFilter("@stealer", MLTargetFilterStealer);
@@ -153,9 +174,9 @@ void DisableDodgeBall()
 }
 
 /**
- * This is the main 20Hz timer for the gamemode.
- * It handles rocket spawning and the logic for "legacy homing" rockets.
- * It also calls shared logic functions like sound updates.
+ * Spawner bookkeeping timer — creates new rockets when NextSpawnTime elapses.
+ * Per-rocket think (homing, legacy-behaviour step, shared logic) runs in
+ * OnRocketThink, dispatched from OnGameFrame — not here.
  */
 public Action OnDodgeBallGameFrame(Handle timer, any data)
 {
@@ -188,21 +209,9 @@ public Action OnDodgeBallGameFrame(Handle timer, any data)
 		}
 	}
 
-	// Rocket Think Logic
-	int index = -1;
-	while ((index = FindNextValidRocket(index)) != -1)
-	{
-		// This timer handles legacy homing rockets and shared logic for all rockets.
-		switch (RocketClassBehaviour[RocketClass[index]])
-		{
-			case Behaviour_LegacyHoming:
-			{
-				RocketLegacyThink(index);
-			}
-		}
-		// Shared logic (sounds, delays) is called for all rockets from here.
-		SharedRocketThink(index);
-	}
+	// Per-rocket think (legacy-behaviour step + shared logic) runs inside OnRocketThink,
+	// dispatched from OnGameFrame and gated internally to 10 Hz. This timer only handles
+	// spawner bookkeeping now — rockets manage their own cadence.
 
 	return Plugin_Continue;
 }
