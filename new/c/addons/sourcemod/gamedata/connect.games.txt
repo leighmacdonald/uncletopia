@@ -1,0 +1,87 @@
+"Games"
+{
+	"#default"
+	{
+		"#supported"
+		{
+			"engine"    "dods"
+			"engine"    "css"
+			"engine"    "hl2dm"
+			"engine"    "tf2"
+		}
+
+		"Offsets"
+		{
+			"ISteamGameServer__BeginAuthSession"
+			{
+				"linux"         "26"
+				"linux64"       "26"
+				"windows"       "26"
+				"windows64"     "26"
+			}
+
+			"ISteamGameServer__EndAuthSession"
+			{
+				"linux"         "27"
+				"linux64"       "27"
+				"windows"       "27"
+				"windows64"     "27"
+			}
+
+			"CheckMasterServerRequestRestart_Steam3ServerFuncOffset"
+			{
+				"windows"		"240"
+				"windows64"     "299"
+			}
+		}
+
+		"Signatures"
+		{
+			"Steam3Server"
+			{
+				"library"       "engine"
+				"linux"         "@_Z12Steam3Serverv"
+				"linux64"       "@_Z12Steam3Serverv"
+			}
+
+			"CBaseServer__ConnectClient"
+			{
+				"library"       "engine"
+				"linux"         "@_ZN11CBaseServer13ConnectClientER8netadr_siiiiPKcS3_S3_i"
+				"linux64"       "@_ZN11CBaseServer13ConnectClientER8netadr_siiiiPKcS3_S3_i"
+				"windows"       "\x55\x8B\xEC\x81\xEC\x24\x05\x00\x00\x53\x56\x57\x68\x2A\x2A\x2A\x2A"
+				"windows64"     "\x48\x89\x5C\x24\x2A\x44\x89\x4C\x24\x2A\x55\x56\x57\x41\x54\x41\x55\x41\x56\x41\x57\x48\x81\xEC\x80\x05\x00\x00"
+			}
+
+			"CBaseServer__RejectConnection"
+			{
+				"library"       "engine"
+				"linux"         "@_ZN11CBaseServer16RejectConnectionERK8netadr_siPKc"
+				"linux64"       "@_ZN11CBaseServer16RejectConnectionERK8netadr_siPKc"
+				"windows"       "\x55\x8B\xEC\x81\xEC\x04\x05\x00\x00\x57"
+				"windows64"     "\x48\x89\x5C\x24\x2A\x48\x89\x6C\x24\x2A\x48\x89\x74\x24\x2A\x57\x48\x81\xEC\x50\x05\x00\x00"
+			}
+
+			"CBaseServer__CheckMasterServerRequestRestart"
+			{
+				// "%cMasterRequestRestart"
+				"library"       "engine"
+				"windows"       "\x55\x8B\xEC\x83\xEC\x1C\x53\x57\x33\xD2"
+				"windows64"     "\x4C\x8B\xDC\x49\x89\x5B\x2A\x49\x89\x6B\x2A\x56\x57\x41\x54\x41\x56\x41\x57\x48\x83\xEC\x60\x48\x8B\x05\x2A\x2A\x2A\x2A\x48\x8D\x1D"
+			}
+		}
+	}
+	"tf"
+	{
+		"Signatures"
+		{
+			"CBaseServer__CheckMasterServerRequestRestart"
+			{
+				"library"       "engine"
+				// "%cMasterRequestRestart"
+				"windows"       "\x55\x8B\xEC\x83\xEC\x18\x53\x57\x33\xD2\x8B\xF9\x8B\x0D\x2A\x2A\x2A\x2A\x89\x55\xE8\x89\x55\xEC\x89\x55\xF4\x8B\x41\x08"
+				"windows64"     "\x4C\x8B\xDC\x49\x89\x5B\x10\x49\x89\x6B\x18\x56\x57\x41\x54\x41\x56\x41\x57\x48\x83\xEC\x60\x48\x8B\x05\x2A\x83\x20\x00"
+			}
+		}
+	}
+}

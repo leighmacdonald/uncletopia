@@ -1,9 +1,6 @@
 [submodule "sm_plugins/discord"]
 	path = sm_plugins/discord
 	url = https://gitlab.com/Zipcore/Discord.git
-[submodule "sm_plugins/accelerator"]
-	path = sm_plugins/accelerator
-	url = https://github.com/asherkin/accelerator.git
 [submodule "sm_plugins/gbans"]
 	path = sm_plugins/gbans
 	url = https://github.com/leighmacdonald/gbans.git
