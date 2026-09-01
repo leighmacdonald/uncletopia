@@ -1,22 +1,22 @@
 /**
- * AutoExecConfig 
+ * AutoExecConfig
  *
  * Copyright (C) 2013-2023 Impact
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  */
- 
+
 #if defined _autoexecconfig_included
 	#endinput
 #endif
@@ -124,7 +124,7 @@ stock void AutoExecConfig_SetCreateFile(bool create)
 
 /**
  * Set if the config file's folder should be created by the autoexecconfig include itself if it doesn't exist.
- * Note: Must be used before AutoExecConfig_SetFile as the potential creation of it happens there 
+ * Note: Must be used before AutoExecConfig_SetFile as the potential creation of it happens there
  *
  * @param create        True if config file should be created, false otherwise.
  * @param mode          Folder permission mode, default is u=rwx,g=rx,o=rx.
@@ -184,12 +184,12 @@ stock Handle AutoExecConfig_GetPlugin()
 stock bool AutoExecConfig_SetFile(char[] file, char[] folder="sourcemod")
 {
 	Format(g_sConfigFile, sizeof(g_sConfigFile), "%s", file);
-	
+
 	// Global buffers for cfg execution
 	strcopy(g_sRawFileName, sizeof(g_sRawFileName), file);
 	strcopy(g_sFolderPath, sizeof(g_sFolderPath), folder);
-	
-	
+
+
 	// Format the filename
 	return AutoExecConfig_FormatFileName(g_sConfigFile, sizeof(g_sConfigFile), folder) == AUTOEXEC_FORMAT_SUCCESS;
 }
@@ -211,13 +211,13 @@ stock bool AutoExecConfig_GetFile(char[] buffer,int size)
 	if (strlen(g_sConfigFile) > 0)
 	{
 		strcopy(buffer, size, g_sConfigFile);
-		
+
 		return true;
 	}
-	
+
 	// Security for decl users
 	buffer[0] = '\0';
-	
+
 	return false;
 }
 
@@ -249,11 +249,11 @@ stock ConVar AutoExecConfig_CreateConVar(const char[] name, const char[] default
 		// Reset the results
 		g_iLastFindResult = -1;
 		g_iLastAppendResult = -1;
-		
-		
+
+
 		// Add it if not found
 		char buffer[64];
-		
+
 		g_iLastFindResult = AutoExecConfig_FindValue(name, buffer, sizeof(buffer), true);
 
 		// We only add this convar if it doesn't exist, or the file doesn't exist and it should be auto-generated
@@ -262,8 +262,8 @@ stock ConVar AutoExecConfig_CreateConVar(const char[] name, const char[] default
 			g_iLastAppendResult = AutoExecConfig_AppendValue(name, defaultValue, description, flags, hasMin, min, hasMax, max);
 		}
 	}
-	
-	
+
+
 	// Create the convar
 	return CreateConVar(name, defaultValue, description, flags, hasMin, min, hasMax, max);
 }
@@ -279,7 +279,7 @@ stock ConVar AutoExecConfig_CreateConVar(const char[] name, const char[] default
 */
 stock void AutoExecConfig_ExecuteFile()
 {
-	// Only let sourcemod create the file, if we didn't do that already. 
+	// Only let sourcemod create the file, if we didn't do that already.
 	AutoExecConfig(!g_bCreateFile, g_sRawFileName, g_sFolderPath);
 }
 
@@ -301,21 +301,21 @@ stock static int AutoExecConfig_FormatFileName(char[] buffer, int size, char[] f
 	{
 		return AUTOEXEC_NO_CONFIG;
 	}
-	
-	
+
+
 	// Can't be an cfgfile
 	if (StrContains(g_sConfigFile, ".cfg") != -1 && strlen(g_sConfigFile) < 4)
 	{
 		return AUTOEXEC_FORMAT_BAD_FILENAME;
 	}
-	
-	
+
+
 	// Pathprefix
 	char pathprefixbuffer[PLATFORM_MAX_PATH];
 	if (strlen(folder) > 0)
 	{
 		Format(pathprefixbuffer, sizeof(pathprefixbuffer), "cfg/%s/", folder);
-		
+
 		if (g_bCreateDirectory && !DirExists(pathprefixbuffer))
 		{
 			CreateDirectory(pathprefixbuffer, g_bCreateDirectoryMode);
@@ -325,28 +325,28 @@ stock static int AutoExecConfig_FormatFileName(char[] buffer, int size, char[] f
 	{
 		Format(pathprefixbuffer, sizeof(pathprefixbuffer), "cfg/");
 	}
-	
-	
+
+
 	char filebuffer[PLATFORM_MAX_PATH];
 	filebuffer[0] = '\0';
-	
+
 	// Add path if file doesn't begin with it
 	if (StrContains(buffer, pathprefixbuffer) != 0)
 	{
 		StrCat(filebuffer, sizeof(filebuffer), pathprefixbuffer);
 	}
-	
+
 	StrCat(filebuffer, sizeof(filebuffer), g_sConfigFile);
-	
-	
+
+
 	// Add .cfg extension if file doesn't end with it
 	if (StrContains(filebuffer[strlen(filebuffer) - 4], ".cfg") != 0)
 	{
 		StrCat(filebuffer, sizeof(filebuffer), ".cfg");
 	}
-	
+
 	strcopy(buffer, size, filebuffer);
-	
+
 	return AUTOEXEC_FORMAT_SUCCESS;
 }
 
@@ -370,46 +370,48 @@ stock static int AutoExecConfig_FormatFileName(char[] buffer, int size, char[] f
 */
 stock int AutoExecConfig_AppendValue(const char[] name, const char[] defaultValue, const char[] description, int flags, bool hasMin, float min, bool hasMax, float max)
 {
+    if (flags == flags) {} // Disable flags warning since we dont want to change the signature
+
 	// No config set
 	if (strlen(g_sConfigFile) < 1)
 	{
 		return AUTOEXEC_NO_CONFIG;
 	}
-	
-	
+
+
 	char filebuffer[PLATFORM_MAX_PATH];
 	strcopy(filebuffer, sizeof(filebuffer), g_sConfigFile);
-	
-	
+
+
 	//PrintToServer("pathbuffer: %s", filebuffer);
-	
+
 	bool bFileExists = FileExists(filebuffer);
-	
+
 	if (g_bCreateFile || bFileExists)
 	{
 		// If the file already exists we open it in append mode, otherwise we use a write mode which creates the file
 		File fFile = OpenFile(filebuffer, (bFileExists ? "a" : "w"));
 		char writebuffer[2048];
-		
-		
+
+
 		if (fFile == null)
 		{
 			return AUTOEXEC_APPEND_BAD_HANDLE;
 		}
-		
+
 		// We just created the file, so add some header about version and stuff
 		if (g_bCreateFile && !bFileExists)
 		{
 			fFile.WriteLine( "// This file was auto-generated by AutoExecConfig v%s (%s)", AUTOEXECCONFIG_VERSION, AUTOEXECCONFIG_URL);
-			
+
 			GetPluginFilename(g_hPluginHandle, writebuffer, sizeof(writebuffer));
 			Format(writebuffer, sizeof(writebuffer), "// ConVars for plugin \"%s\"", writebuffer);
 			fFile.WriteLine("%s", writebuffer);
 		}
-		
+
 		// Spacer
 		fFile.WriteLine("\n");
-		
+
 
 		// This is used for multiline comments
 		int newlines = GetCharCountInStr('\n', description);
@@ -423,7 +425,7 @@ stock int AutoExecConfig_AppendValue(const char[] name, const char[] defaultValu
 		{
 			char[][] newlineBuf = new char[newlines +1][2048];
 			ExplodeString(description, "\n", newlineBuf, newlines +1, 2048, false);
-			
+
 			// Each newline gets a commented newline
 			for (int i; i <= newlines; i++)
 			{
@@ -433,43 +435,43 @@ stock int AutoExecConfig_AppendValue(const char[] name, const char[] defaultValu
 				}
 			}
 		}
-		
-		
+
+
 		// Descspacer
 		fFile.WriteLine("// -");
-		
-		
+
+
 		// Default
 		Format(writebuffer, sizeof(writebuffer), "// Default: \"%s\"", defaultValue);
 		fFile.WriteLine("%s", writebuffer);
-		
-		
+
+
 		// Minimum
 		if (hasMin)
-		{		
+		{
 			Format(writebuffer, sizeof(writebuffer), "// Minimum: \"%f\"", min);
 			fFile.WriteLine("%s", writebuffer);
 		}
-		
-		
+
+
 		// Maximum
 		if (hasMax)
 		{
 			Format(writebuffer, sizeof(writebuffer), "// Maximum: \"%f\"", max);
 			fFile.WriteLine("%s", writebuffer);
 		}
-		
-		
+
+
 		// Write end and defaultvalue
 		Format(writebuffer, sizeof(writebuffer), "%s \"%s\"", name, defaultValue);
 		fFile.WriteLine("%s", writebuffer);
-		
-		
-		fFile.Close();		
-		
+
+
+		fFile.Close();
+
 		return AUTOEXEC_APPEND_SUCCESS;
 	}
-	
+
 	return AUTOEXEC_APPEND_FILE_NOT_FOUND;
 }
 
@@ -491,50 +493,50 @@ stock int AutoExecConfig_FindValue(const char[] cvar, char[] value, int size, bo
 {
 	// Security for decl users
 	value[0] = '\0';
-	
-	
+
+
 	// No config set
 	if (strlen(g_sConfigFile) < 1)
 	{
 		return AUTOEXEC_NO_CONFIG;
 	}
-	
-	
+
+
 	char filebuffer[PLATFORM_MAX_PATH];
 	strcopy(filebuffer, sizeof(filebuffer), g_sConfigFile);
-	
-	
-	
+
+
+
 	//PrintToServer("pathbuffer: %s", filebuffer);
-	
+
 	bool bFileExists = FileExists(filebuffer);
-	
+
 	// We want to create the config file and it doesn't exist yet.
 	if (g_bCreateFile && !bFileExists)
 	{
 		return AUTOEXEC_FIND_FILE_NOT_FOUND;
 	}
-	
-	
+
+
 	if (bFileExists)
 	{
 		File fFile = OpenFile(filebuffer, "r");
 		int valuestart;
 		int valueend;
 		int cvarend;
-		
+
 		// Just a reminder to self, leave the values that high
 		char sConvar[64];
 		char sValue[64];
 		char readbuffer[2048];
 		char copybuffer[2048];
-		
+
 		if (fFile == null)
 		{
 			return AUTOEXEC_FIND_BAD_HANDLE;
 		}
-		
-		
+
+
 		while (!fFile.EndOfFile() && fFile.ReadLine(readbuffer, sizeof(readbuffer)))
 		{
 			// Is a comment or not valid
@@ -542,83 +544,83 @@ stock int AutoExecConfig_FindValue(const char[] cvar, char[] value, int size, bo
 			{
 				continue;
 			}
-			
-			
+
+
 			// Has not enough spaces, must have at least 1
 			if (GetCharCountInStr(' ', readbuffer) < 1)
 			{
 				continue;
 			}
 
-			
+
 			// Ignore cvars which aren't quoted
 			if (GetCharCountInStr('"', readbuffer) != 2)
 			{
 				continue;
 			}
-			
-			
-			
+
+
+
 			// Get the start of the value
 			if ( (valuestart = StrContains(readbuffer, "\"")) == -1 )
 			{
 				continue;
 			}
-			
-			
+
+
 			// Get the end of the value
 			if ( (valueend = StrContains(readbuffer[valuestart+1], "\"")) == -1 )
 			{
 				continue;
 			}
-			
-			
-			// Get the start of the cvar, 
+
+
+			// Get the start of the cvar,
 			if ( (cvarend = StrContains(readbuffer, " ")) == -1 || cvarend >= valuestart)
 			{
 				continue;
 			}
-			
-			
+
+
 			// Skip if cvarendindex is before valuestartindex
 			if (cvarend >= valuestart)
 			{
 				continue;
 			}
-			
-			
+
+
 			// Convar
 			// Tempcopy for security
 			strcopy(copybuffer, sizeof(copybuffer), readbuffer);
 			copybuffer[cvarend] = '\0';
-			
+
 			strcopy(sConvar, sizeof(sConvar), copybuffer);
-			
+
 
 			// Value
 			// Tempcopy for security
 			strcopy(copybuffer, sizeof(copybuffer), readbuffer[valuestart+1]);
 			copybuffer[valueend] = '\0';
-			
+
 			strcopy(sValue, sizeof(sValue), copybuffer);
-			
-			
+
+
 			//PrintToServer("Cvar %s has a value of %s", sConvar, sValue);
-			
+
 			if (StrEqual(sConvar, cvar, caseSensitive))
 			{
 				Format(value, size, "%s", sConvar);
-				
+
 				fFile.Close();
 				return AUTOEXEC_FIND_SUCCESS;
-			}					
+			}
 		}
 
-		fFile.Close();	
+		fFile.Close();
 		return AUTOEXEC_FIND_NOT_FOUND;
 	}
-	
-	
+
+
 	return AUTOEXEC_FIND_FILE_NOT_FOUND;
 }
 
@@ -639,35 +641,35 @@ stock int AutoExecConfig_CleanFile()
 	{
 		return AUTOEXEC_NO_CONFIG;
 	}
-	
-	
+
+
 	char sfile[PLATFORM_MAX_PATH];
 	strcopy(sfile, sizeof(sfile), g_sConfigFile);
-	
-	
+
+
 	// Security
 	if (!FileExists(sfile))
 	{
 		return AUTOEXEC_CLEAN_FILE_NOT_FOUND;
 	}
-	
-	
-	
+
+
+
 	char sfile2[PLATFORM_MAX_PATH];
 	Format(sfile2, sizeof(sfile2), "%s_tempcopy", sfile);
-	
-	
+
+
 	char readbuffer[2048];
 	int count;
 	bool firstreached;
-	
-	
+
+
 	// Open files
 	File fFile1 = OpenFile(sfile, "r");
 	File fFile2 = OpenFile(sfile2, "w");
-	
-	
-	
+
+
+
 	// Check filehandles
 	if (fFile1 == null || fFile2 == null)
 	{
@@ -676,18 +678,18 @@ stock int AutoExecConfig_CleanFile()
 			//PrintToServer("Handle1 invalid");
 			fFile1.Close();
 		}
-		
+
 		if (fFile2 != null)
 		{
 			//PrintToServer("Handle2 invalid");
 			fFile2.Close();
 		}
-		
+
 		return AUTOEXEC_CLEAN_BAD_HANDLE;
 	}
-	
-	
-	
+
+
+
 	while (!fFile1.EndOfFile() && fFile1.ReadLine(readbuffer, sizeof(readbuffer)))
 	{
 		// Is space
@@ -700,32 +702,32 @@ stock int AutoExecConfig_CleanFile()
 		{
 			count = 0;
 		}
-		
-		
+
+
 		// Don't write more than 1 space if seperation after informations have been reached
 		if (count < 2 || !firstreached)
 		{
 			ReplaceString(readbuffer, sizeof(readbuffer), "\n", "");
 			fFile2.WriteLine("%s", readbuffer);
 		}
-		
-		
+
+
 		// First bigger seperation after informations has been reached
 		if (count == 2)
 		{
 			firstreached = true;
 		}
 	}
-	
-	
+
+
 	fFile1.Close();
 	fFile2.Close();
-	
-	
+
+
 	// This might be a risk, for now it works
 	DeleteFile(sfile);
 	RenameFile(sfile, sfile2);
-	
+
 	return AUTOEXEC_CLEAN_SUCCESS;
 }
 
@@ -744,7 +746,7 @@ stock static int GetCharCountInStr(int character, const char[] str)
 {
 	int len = strlen(str);
 	int count;
-	
+
 	for (int i; i < len; i++)
 	{
 		if (str[i] == character)
@@ -752,7 +754,7 @@ stock static int GetCharCountInStr(int character, const char[] str)
 			count++;
 		}
 	}
-	
+
 	return count;
 }
 
