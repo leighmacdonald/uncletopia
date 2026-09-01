@@ -8,22 +8,26 @@
  */
 
 /** Called when a new round starts. Resets steal info and plays round start music. */
-public void OnRoundStart(Event hEvent, char[] strEventName, bool bDontBroadcast)
+public void OnRoundStart(Event event, char[] eventName, bool dontBroadcast)
 {
 	if (Music[Music_RoundStart])
 	{
 		EmitSoundToAll(MusicPath[Music_RoundStart]);
 	}
 
-	for (int iClient = 1; iClient <= MaxClients; iClient++)
+	for (int client = 1; client <= MaxClients; client++)
 	{
-		StealInfo[iClient].stoleRocket = false;
-		StealInfo[iClient].rocketsStolen = 0;
+		StealInfo[client].stoleRocket = false;
+		StealInfo[client].rocketsStolen = 0;
 	}
+
+	// Authoritative reset of cached alive counters. Catches any drift that
+	// might have accumulated through the round.
+	RecountAlive();
 }
 
 /** Called when setup phase ends. Initializes spawn points and starts the game timer. */
-public void OnSetupFinished(Event hEvent, char[] strEventName, bool bDontBroadcast)
+public void OnSetupFinished(Event event, char[] eventName, bool dontBroadcast)
 {
 	// Guard against being called twice (both teamplay_round_active and arena_round_start hook this)
 	if (RoundStarted) return;
@@ -44,7 +48,7 @@ public void OnSetupFinished(Event hEvent, char[] strEventName, bool bDontBroadca
 }
 
 /** Called when round ends. Stops timer, music, and destroys all rockets. */
-public void OnRoundEnd(Event hEvent, char[] strEventName, bool bDontBroadcast)
+public void OnRoundEnd(Event event, char[] eventName, bool dontBroadcast)
 {
 	if (LogicTimer != null)
 	{
@@ -56,10 +60,10 @@ public void OnRoundEnd(Event hEvent, char[] strEventName, bool bDontBroadcast)
 	{
 		if (UseWebPlayer)
 		{
-			for (int iClient = 1; iClient <= MaxClients; iClient++)
+			for (int client = 1; client <= MaxClients; client++)
 			{
-				if (!IsValidClientEx(iClient)) continue;
-				ShowHiddenMOTDPanel(iClient, "MusicPlayerStop", "http://0.0.0.0/");
+				if (!IsValidClientEx(client)) continue;
+				ShowHiddenMOTDPanel(client, "MusicPlayerStop", "http://0.0.0.0/");
 			}
 		}
 		else if (Music[Music_Gameplay])
@@ -72,91 +76,145 @@ public void OnRoundEnd(Event hEvent, char[] strEventName, bool bDontBroadcast)
 	RoundStarted = false;
 }
 
-/** Called when player spawns. Forces Pyro class for dodgeball. */
-public void OnPlayerSpawn(Event hEvent, char[] strEventName, bool bDontBroadcast)
+/** Called when player spawns. Forces Pyro class. */
+public void OnPlayerSpawn(Event event, char[] eventName, bool dontBroadcast)
 {
-	int iClient = GetClientOfUserId(hEvent.GetInt("userid"));
-	if (!IsValidClient(iClient)) return;
+	int client = GetClientOfUserId(event.GetInt("userid"));
+	if (!IsValidClient(client)) return;
 
-	TFClassType iClass = TF2_GetPlayerClass(iClient);
-	if ((iClass == TFClass_Pyro || iClass == TFClass_Unknown)) return;
+	// Refresh cached alive counters. Recount instead of incrementing because
+	// the TF2_RespawnPlayer call below re-fires player_spawn, and a naive
+	// increment would double-count on every class-force respawn. Recount is
+	// O(MaxClients) but only runs on this rare event, not in a hot path.
+	RecountAlive();
 
-	TF2_SetPlayerClass(iClient, TFClass_Pyro, false, true);
-	TF2_RespawnPlayer(iClient);
+	TFClassType playerClass = TF2_GetPlayerClass(client);
+	if ((playerClass == TFClass_Pyro || playerClass == TFClass_Unknown)) return;
+
+	TF2_SetPlayerClass(client, TFClass_Pyro, false, true);
+	TF2_RespawnPlayer(client);
 }
 
 /** Called when player dies. Updates game state and executes kill commands. */
-public void OnPlayerDeath(Event hEvent, char[] strEventName, bool bDontBroadcast)
+public void OnPlayerDeath(Event event, char[] eventName, bool dontBroadcast)
 {
 	if (!RoundStarted) return;
 
 	SetRandomSeed(view_as<int>(GetGameTime()));
 
-	int iAttacker = GetClientOfUserId(hEvent.GetInt("attacker"));
-	int iVictim = GetClientOfUserId(hEvent.GetInt("userid"));
+	int attacker = GetClientOfUserId(event.GetInt("attacker"));
+	int victim = GetClientOfUserId(event.GetInt("userid"));
 
-	if (!IsValidClient(iVictim)) return;
+	if (!IsValidClient(victim)) return;
 
-	StealInfo[iVictim].stoleRocket = false;
-	StealInfo[iVictim].rocketsStolen = 0;
-
-	LastDeadClient = iVictim;
-	LastDeadTeam = GetClientTeam(iVictim);
-	PlayerCount = CountAlivePlayers();
-	
-	int iInflictor = hEvent.GetInt("inflictor_entindex");
-	int iIndex = FindRocketByEntity(iInflictor);
-
-	if (iIndex == -1) return;
-
-	int iClass = RocketClass[iIndex];
-	int iTarget = EntRefToEntIndex(RocketTarget[iIndex]);
-	float fSpeed = RocketSpeed[iIndex];
-	float fMphSpeed = RocketMphSpeed[iIndex];
-	int iDeflections = RocketDeflections[iIndex];
-
-	if ((RocketInstanceFlags[iIndex] & RocketFlag_OnExplodeCmd) && !(RocketInstanceFlags[iIndex] & RocketFlag_Exploded))
+	// Force FL_NOTARGET on death — prevents spectator ghost airblast bug
+	if (UsePushPrevention)
 	{
-		ExecuteCommands(RocketClassCmdsOnExplode[iClass], iClass, iInflictor, iAttacker, iTarget, LastDeadClient, fSpeed, iDeflections, fMphSpeed);
-		RocketInstanceFlags[iIndex] |= RocketFlag_Exploded;
+		SetEntityFlags(victim, GetEntityFlags(victim) | FL_NOTARGET);
 	}
 
-	if (TestFlags(RocketInstanceFlags[iIndex], RocketFlag_OnKillCmd))
+	StealInfo[victim].stoleRocket = false;
+	StealInfo[victim].rocketsStolen = 0;
+
+	LastDeadClient = victim;
+	LastDeadTeam = GetClientTeam(victim);
+
+	// Decrement the dying player's team-bucket directly. We hook player_death
+	// as EventHookMode_Pre, so IsPlayerAlive(victim) may still report true
+	// here — a RecountAlive() at this moment can miss the death. The clamp
+	// to 0 guards against the rare case where the victim has already been
+	// counted out by another path (e.g. player_team firing first).
+	if (LastDeadTeam == 2 || LastDeadTeam == 3)
 	{
-		ExecuteCommands(RocketClassCmdsOnKill[iClass], iClass, iInflictor, iAttacker, iTarget, LastDeadClient, fSpeed, iDeflections, fMphSpeed);
+		if (g_AliveCount[LastDeadTeam] > 0) g_AliveCount[LastDeadTeam]--;
+	}
+	PlayerCount = CountAlivePlayers();
+	
+	int inflictor = event.GetInt("inflictor_entindex");
+	int index = FindRocketByEntity(inflictor);
+
+	if (index == -1) return;
+
+	int rocketClass = RocketClass[index];
+	int target = EntRefToEntIndex(RocketTarget[index]);
+	float speed = RocketSpeed[index];
+	float mphSpeed = RocketMphSpeed[index];
+	int deflections = RocketDeflections[index];
+
+	if ((RocketInstanceFlags[index] & RocketFlag_OnExplodeCmd) && !(RocketInstanceFlags[index] & RocketFlag_Exploded))
+	{
+		ExecuteCommands(RocketClassCmdsOnExplode[rocketClass], rocketClass, inflictor, attacker, target, LastDeadClient, speed, deflections, mphSpeed);
+		RocketInstanceFlags[index] |= RocketFlag_Exploded;
+	}
+
+	// "on kill" fires only on deflected kills; "on spawn kill" fires only on undeflected (spawn) kills.
+	if (deflections > 0)
+	{
+		if (TestFlags(RocketInstanceFlags[index], RocketFlag_OnKillCmd))
+			ExecuteCommands(RocketClassCmdsOnKill[rocketClass], rocketClass, inflictor, attacker, target, LastDeadClient, speed, deflections, mphSpeed);
+	}
+	else
+	{
+		if (TestFlags(RocketInstanceFlags[index], RocketFlag_OnSpawnKillCmd))
+			ExecuteCommands(RocketClassCmdsOnSpawnKill[rocketClass], rocketClass, inflictor, attacker, target, LastDeadClient, speed, deflections, mphSpeed);
 	}
 }
 
-/** Called when player receives inventory. Removes non-flamethrower weapons. */
-public void OnPlayerInventory(Event hEvent, char[] strEventName, bool bDontBroadcast)
+/**
+ * Called on player_team. Refreshes cached alive counters because team
+ * changes invalidate the per-team alive bookkeeping. We recount rather than
+ * try to apply oldteam/newteam deltas — the event also fires on disconnect
+ * (with disconnect=true) and on initial join (oldteam=0/Unassigned), and
+ * IsPlayerAlive() semantics during the event vary; a full recount is
+ * unconditionally correct.
+ */
+public void OnPlayerTeam(Event event, char[] eventName, bool dontBroadcast)
 {
-	int iClient = GetClientOfUserId(hEvent.GetInt("userid"));
+	RecountAlive();
+}
 
-	if (!IsValidClient(iClient)) return;
-	for (int iSlot = 1; iSlot < 5; iSlot++)
+/** Called when player receives inventory. Removes non-flamethrower weapons and applies built-in features. */
+public void OnPlayerInventory(Event event, char[] eventName, bool dontBroadcast)
+{
+	int client = GetClientOfUserId(event.GetInt("userid"));
+
+	if (!IsValidClient(client)) return;
+	for (int slot = 1; slot < 5; slot++)
 	{
-		int iEntity = GetPlayerWeaponSlot(iClient, iSlot);
-		if (iEntity != -1) RemoveEdict(iEntity);
+		int weapon = GetPlayerWeaponSlot(client, slot);
+		if (weapon != -1) RemoveEntity(weapon);
+	}
+
+	// Push prevention: set FL_NOTARGET to prevent airblast push
+	if (UsePushPrevention && PushPreventionEnabled[client])
+	{
+		SetEntityFlags(client, GetEntityFlags(client) | FL_NOTARGET);
+	}
+
+	// NoBlock: remove player-to-player collision
+	if (UseNoBlock && GetClientTeam(client) > 1)
+	{
+		SetEntProp(client, Prop_Data, "m_CollisionGroup", 17); // COLLISION_GROUP_PUSHAWAY
 	}
 }
 
 /** Blocks primary attack when dodgeball is enabled. */
-public Action OnPlayerRunCmd(int iClient, int &iButtons, int &iImpulse, float fVelocity[3], float fAngles[3], int &iWeapon)
+public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float velocity[3], float angles[3], int &weapon)
 {
-	if (Enabled) iButtons &= ~IN_ATTACK;
+	if (Enabled) buttons &= ~IN_ATTACK;
 	return Plugin_Continue;
 }
 
 /** Handles custom music for round start, win, and lose events. */
-public Action OnBroadcastAudio(Event hEvent, char[] strEventName, bool bDontBroadcast)
+public Action OnBroadcastAudio(Event event, char[] eventName, bool dontBroadcast)
 {
 	if (!MusicEnabled) return Plugin_Continue;
 
-	char strSound[PLATFORM_MAX_PATH];
-	hEvent.GetString("sound", strSound, sizeof(strSound));
-	int iTeam = hEvent.GetInt("team");
+	char sound[PLATFORM_MAX_PATH];
+	event.GetString("sound", sound, sizeof(sound));
+	int team = event.GetInt("team");
 
-	if (StrEqual(strSound, "Announcer.AM_RoundStartRandom"))
+	if (StrEqual(sound, "Announcer.AM_RoundStartRandom"))
 	{
 		if (!UseWebPlayer)
 		{
@@ -166,32 +224,32 @@ public Action OnBroadcastAudio(Event hEvent, char[] strEventName, bool bDontBroa
 		}
 		else
 		{
-			for (int iClient = 1; iClient <= MaxClients; iClient++)
+			for (int client = 1; client <= MaxClients; client++)
 			{
-				if (!IsValidClientEx(iClient)) continue;
-				ShowHiddenMOTDPanel(iClient, "MusicPlayerStart", WebPlayerUrl);
+				if (!IsValidClientEx(client)) continue;
+				ShowHiddenMOTDPanel(client, "MusicPlayerStart", WebPlayerUrl);
 			}
 			return Plugin_Handled;
 		}
 	}
-	else if (StrEqual(strSound, "Game.YourTeamWon"))
+	else if (StrEqual(sound, "Game.YourTeamWon"))
 	{
 		if (!Music[Music_RoundWin]) return Plugin_Continue;
 
-		for (int iClient = 1; iClient <= MaxClients; iClient++)
+		for (int client = 1; client <= MaxClients; client++)
 		{
-			if (!(IsValidClientEx(iClient) && (iTeam == GetClientTeam(iClient)))) continue;
-			EmitSoundToClient(iClient, MusicPath[Music_RoundWin]);
+			if (!(IsValidClientEx(client) && (team == GetClientTeam(client)))) continue;
+			EmitSoundToClient(client, MusicPath[Music_RoundWin]);
 		}
 		return Plugin_Handled;
 	}
-	else if (StrEqual(strSound, "Game.YourTeamLost"))
+	else if (StrEqual(sound, "Game.YourTeamLost"))
 	{
 		if (!Music[Music_RoundLose]) return Plugin_Continue;
-		for (int iClient = 1; iClient <= MaxClients; iClient++)
+		for (int client = 1; client <= MaxClients; client++)
 		{
-			if (!(IsValidClientEx(iClient) && (iTeam == GetClientTeam(iClient)))) continue;
-			EmitSoundToClient(iClient, MusicPath[Music_RoundLose]);
+			if (!(IsValidClientEx(client) && (team == GetClientTeam(client)))) continue;
+			EmitSoundToClient(client, MusicPath[Music_RoundLose]);
 		}
 		return Plugin_Handled;
 	}
@@ -200,76 +258,168 @@ public Action OnBroadcastAudio(Event hEvent, char[] strEventName, bool bDontBroa
 }
 
 /** Called when a projectile is deflected. Updates deflection count and drag state. */
-public Action OnObjectDeflected(Event hEvent, const char[] strEventName, bool bDontBroadcast)
+public void OnObjectDeflected(Event event, char[] eventName, bool dontBroadcast)
 {
-	int iEntity = hEvent.GetInt("object_entindex");
-	int iIndex  = FindRocketByEntity(iEntity);
-	if (iIndex == -1) return Plugin_Continue;
+	int entity = event.GetInt("object_entindex");
+	int index  = FindRocketByEntity(entity);
+	if (index == -1) return;
 
-	RocketEventDeflections[iIndex]++;
+	RocketEventDeflections[index]++;
 
-	int iLauncher = GetEntPropEnt(iEntity, Prop_Send, "m_hLauncher");
-	if (iLauncher != -1)
+	int launcher = GetEntPropEnt(entity, Prop_Send, "m_hLauncher");
+	if (launcher != -1)
 	{
-		SetEntPropEnt(iEntity, Prop_Send, "m_hOriginalLauncher", iLauncher);
+		SetEntPropEnt(entity, Prop_Send, "m_hOriginalLauncher", launcher);
 	}
 
-	if (RocketInstanceState[iIndex] & RocketState_Delayed)
+	if (RocketInstanceState[index] & RocketState_Delayed)
 	{
-		Internal_SetRocketState(iIndex, (RocketInstanceState[iIndex] & ~RocketState_Delayed));
-		RocketSpeed[iIndex] = CalculateRocketSpeed(RocketClass[iIndex], CalculateModifier(RocketClass[iIndex], RocketDeflections[iIndex]));
+		Internal_SetRocketState(index, (RocketInstanceState[index] & ~RocketState_Delayed));
+		RocketSpeed[index] = CalculateRocketSpeed(RocketClass[index], CalculateModifier(RocketClass[index], RocketDeflections[index]));
 	}
 
-	if (RocketInstanceFlags[iIndex] & RocketFlag_ResetBounces)
+	if (RocketInstanceFlags[index] & RocketFlag_ResetBounces)
 	{
-		RocketBounces[iIndex] = 0;
+		RocketBounces[index] = 0;
 	}
 
-	if (RocketInstanceFlags[iIndex] & RocketFlag_IsNeutral)
+	if (RocketInstanceFlags[index] & RocketFlag_IsNeutral)
 	{
-		SetEntProp(iEntity, Prop_Send, "m_iTeamNum", 1, 1);
+		SetEntProp(entity, Prop_Send, "m_iTeamNum", 1, 1);
 	}
 
-	return Plugin_Continue;
+	// Freeze m_iDeflected at 0: the client's C_TFBaseRocket::OnDataChanged()
+	// compares m_iCachedDeflect against GetDeflected(). If the networked value
+	// never changes from 0, CreateTrails() never re-fires after spawn.
+	// This is the primary mechanism that prevents particle stacking.
+	// (Verified from Valve's SDK 2013 source: tf_weaponbase_rocket.cpp)
+	SetEntProp(entity, Prop_Send, "m_iDeflected", 0);
+
+	// m_bCritical stays 0 at all times (never set server-only either).
+	// Crit damage is handled by multiplying the damage value directly.
+	// The engine's Deflected() may call SetCritical(true) if the deflector
+	// has crit boost — re-zero it unconditionally.
+	SetEntProp(entity, Prop_Send, "m_bCritical", 0, 1);
+
+	// Since CreateTrails no longer re-fires, the client won't swap the crit glow.
+	// Swap it server-side using the rocket's new team (already set by Deflected()).
+	// Only for crit rockets — non-crit rockets have no glow to swap.
+	if (RocketIsCritical[index])
+	{
+		int newTeam = GetEntProp(entity, Prop_Send, "m_iTeamNum");
+		UpdateCritGlow(index, entity, newTeam);
+	}
+
+	// --- Record event tick for deferred eye-angle read in HomingRocketThink ---
+	// The event handler does NOT read eye angles. It records the moment and the deflector.
+	// HomingRocketThink reads eye angles after the per-class "steering control" ticks
+	// have elapsed. That gap is the drag window — mouse movement during it is captured
+	// when the read finally fires.
+	RocketDragEventTick[index] = GetGameTickCount();
 }
 
 /**
- * This hook runs every server frame.
- * It's responsible for the smooth "homing" behaviour.
- * "legacy homing" is handled by the 20Hz timer OnDodgeBallGameFrame.
+ * Per-rocket think dispatch. Called from OnGameFrame() per valid rocket.
+ *
+ * Warning: this MUST stay driven from OnGameFrame, not from SDKHook_Think.
+ * SDKHook_Think fires at the entity's native think rate. For
+ * `tf_projectile_rocket` that's only the rocket's own lifetime/fuel schedule
+ * (~10 Hz at best), NOT per-tick like it is for players. Driving homing from
+ * SDKHook_Think produces ~10 Hz homing, visible sine-wave motion from the
+ * engine-gravity vs our-correction mismatch, and rockets that "fly to space"
+ * against moving targets. OnGameFrame iteration is the supported path.
+ *
+ * Dispatches:
+ *   - HomingRocketThink (per-tick, internal "think interval" gating)
+ *   - RocketLegacyThink (10 Hz gated internally)
+ *   - SharedRocketThink (10 Hz gated internally)
+ */
+void OnRocketThink(int index)
+{
+	float now = GetGameTime();
+
+	// Per-tick behaviour dispatch
+	if (RocketClassBehaviour[RocketClass[index]] == Behaviour_Homing)
+	{
+		HomingRocketThink(index);
+	}
+
+	// 10 Hz logic (legacy-behaviour think + shared think: sounds, delays, non-smooth elevation).
+	// Gated internally to preserve the original timing of these systems.
+	// FPS_LOGIC_INTERVAL = 0.1 in tfdb.inc.
+	if ((now - RocketLastLogicThink[index]) >= FPS_LOGIC_INTERVAL)
+	{
+		RocketLastLogicThink[index] = now;
+
+		if (RocketClassBehaviour[RocketClass[index]] == Behaviour_LegacyHoming)
+		{
+			RocketLegacyThink(index);
+		}
+		SharedRocketThink(index);
+	}
+}
+
+/**
+ * Per-tick iterator. Drives per-rocket OnRocketThink dispatch.
+ * Fires every server tick (66-128 Hz). This is the reliable tick source for
+ * projectile-entity logic — SDKHook_Think is NOT (see OnRocketThink docblock).
  */
 public void OnGameFrame()
 {
 	if (!Enabled || !RoundStarted) return;
 
-	int iIndex = -1;
-	while ((iIndex = FindNextValidRocket(iIndex)) != -1)
+	int index = -1;
+	while ((index = FindNextValidRocket(index)) != -1)
 	{
-		if (RocketClassBehaviour[RocketClass[iIndex]] == Behaviour_Homing)
-		{
-			HomingRocketThink(iIndex);
-		}
+		OnRocketThink(index);
 	}
 }
 
 /**
  * Cleans up client state when they disconnect.
  *
- * @param iClient   Client index that disconnected.
+ * @param client   Client index that disconnected.
  */
-public void OnClientDisconnect(int iClient)
+public void OnClientDisconnect(int client)
 {
-	StealInfo[iClient].stoleRocket = false;
-	StealInfo[iClient].rocketsStolen = 0;
+	StealInfo[client].stoleRocket = false;
+	StealInfo[client].rocketsStolen = 0;
+	PushPreventionEnabled[client] = false;
+	LockedTarget[client] = -1;
 
-	if (iClient == LastDeadClient)
+	if (client == LastDeadClient)
 	{
 		LastDeadClient = 0;
 	}
 
-	if (iClient == LastStealer)
+	if (client == LastStealer)
 	{
 		LastStealer = 0;
+	}
+
+	// Refresh cached alive counters. The disconnecting client may still be
+	// reported as in-game/alive at this moment by some calls, so a recount
+	// here may double up with player_team(disconnect=true) which fires just
+	// before — that's fine, RecountAlive is idempotent.
+	RecountAlive();
+}
+
+public void OnClientConnected(int client)
+{
+	PushPreventionEnabled[client] = true; // Default: push prevention on
+	LockedTarget[client] = -1;
+}
+
+public void OnClientPutInServer(int client)
+{
+	if (!Enabled) return;
+
+	// Hook WeaponCanUse for the FL_NOTARGET sound fix workaround.
+	// FL_NOTARGET suppresses sentry targeting sounds as a side effect;
+	// temporarily removing it during weapon pickup avoids the issue.
+	if (UsePushPrevention)
+	{
+		SDKHook(client, SDKHook_WeaponCanUse, OnWeaponCanUse);
 	}
 }
 
@@ -277,175 +427,174 @@ public void OnClientDisconnect(int iClient)
  * SDKHook callback for rocket collision detection.
  * Handles initial checks before bouncing and player collision.
  *
- * @param iEntity   The rocket entity.
- * @param iOther    The entity being touched.
- * @return          Plugin_Handled to block touch, Plugin_Continue otherwise.
+ * @param entity   The rocket entity.
+ * @param other    The entity being touched.
+ * @return         Plugin_Handled to block touch, Plugin_Continue otherwise.
  */
-public Action OnStartTouch(int iEntity, int iOther)
+public Action OnStartTouch(int entity, int other)
 {
-	int iIndex = FindRocketByEntity(iEntity);
+	int index = FindRocketByEntity(entity);
 
-	if (iIndex == -1) return Plugin_Continue;
-	if (iOther > 0 && iOther <= MaxClients)
+	if (index == -1) return Plugin_Continue;
+	if (other > 0 && other <= MaxClients)
 	{
-		if (RocketDeflections[iIndex] == 0)
+		if (RocketDeflections[index] == 0)
 		{
-			SetEntPropEnt(iEntity, Prop_Send, "m_hOwnerEntity", 0);
-			SetEntPropEnt(iEntity, Prop_Send, "m_hOriginalLauncher", -1);
-			SetEntPropEnt(iEntity, Prop_Send, "m_hLauncher", -1);
+			SetEntPropEnt(entity, Prop_Send, "m_hOwnerEntity", 0);
+			SetEntPropEnt(entity, Prop_Send, "m_hOriginalLauncher", -1);
+			SetEntPropEnt(entity, Prop_Send, "m_hLauncher", -1);
 		}
 		return Plugin_Continue;
 	}
 
-	int iClass = RocketClass[iIndex];
-	if (RocketBounces[iIndex] >= RocketClassMaxBounces[iClass])
+	int rocketClass = RocketClass[index];
+	if (RocketBounces[index] >= RocketClassMaxBounces[rocketClass])
 	{
-		if (RocketDeflections[iIndex] == 0)
+		if (RocketDeflections[index] == 0)
 		{
-			SetEntPropEnt(iEntity, Prop_Send, "m_hOwnerEntity", 0);
-			SetEntPropEnt(iEntity, Prop_Send, "m_hOriginalLauncher", -1);
-			SetEntPropEnt(iEntity, Prop_Send, "m_hLauncher", -1);
+			SetEntPropEnt(entity, Prop_Send, "m_hOwnerEntity", 0);
+			SetEntPropEnt(entity, Prop_Send, "m_hOriginalLauncher", -1);
+			SetEntPropEnt(entity, Prop_Send, "m_hLauncher", -1);
 		}
 		return Plugin_Continue;
 	}
 
-	SDKHook(iEntity, SDKHook_Touch, OnTouch);
+	SDKHook(entity, SDKHook_Touch, OnTouch);
 	return Plugin_Handled;
 }
 
-public Action OnTouch(int iEntity, int iOther)
+public Action OnTouch(int entity, int other)
 {
-	int iIndex = FindRocketByEntity(iEntity);
+	int index = FindRocketByEntity(entity);
 
-	if (iIndex == -1)
+	if (index == -1)
 	{
-		SDKUnhook(iEntity, SDKHook_Touch, OnTouch);
+		SDKUnhook(entity, SDKHook_Touch, OnTouch);
 		return Plugin_Continue;
 	}
 
-	int iClass = RocketClass[iIndex];
+	float origin[3];
+	GetEntPropVector(entity, Prop_Data, "m_vecOrigin", origin);
 
-	float vOrigin[3];
-	GetEntPropVector(iEntity, Prop_Data, "m_vecOrigin", vOrigin);
+	float angles[3];
+	GetEntPropVector(entity, Prop_Data, "m_angRotation", angles);
 
-	float vAngles[3];
-	GetEntPropVector(iEntity, Prop_Data, "m_angRotation", vAngles);
-	
-	float vVelocity[3];
-	GetEntPropVector(iEntity, Prop_Data, "m_vecAbsVelocity", vVelocity);
+	float velocity[3];
+	GetEntPropVector(entity, Prop_Data, "m_vecAbsVelocity", velocity);
 
-	Handle hTrace = TR_TraceRayFilterEx(vOrigin, vAngles, MASK_SHOT, RayType_Infinite, TEF_ExcludeEntity, iEntity);
+	Handle trace = TR_TraceRayFilterEx(origin, angles, MASK_SHOT, RayType_Infinite, TEF_ExcludeEntity, entity);
 
-	if (!TR_DidHit(hTrace))
+	if (!TR_DidHit(trace))
 	{
-		delete hTrace;
+		delete trace;
 		return Plugin_Continue;
 	}
 
-	float vNormal[3];
-	TR_GetPlaneNormal(hTrace, vNormal);
-	delete hTrace;
-	
-	float dotProduct = GetVectorDotProduct(vNormal, vVelocity);
-	ScaleVector(vNormal, dotProduct);
-	ScaleVector(vNormal, 2.0);
+	float normal[3];
+	TR_GetPlaneNormal(trace, normal);
+	delete trace;
 
-	float vBounceVec[3];
-	SubtractVectors(vVelocity, vNormal, vBounceVec);
-	int iOwner = GetEntPropEnt(iEntity, Prop_Send, "m_hOwnerEntity");
-	if (!(RocketInstanceFlags[iIndex] & RocketFlag_CrawlBounce))
+	float dotProduct = GetVectorDotProduct(normal, velocity);
+	ScaleVector(normal, dotProduct);
+	ScaleVector(normal, 2.0);
+
+	// Pure reflection — v' = v - 2(v·n)n. Magnitude preserved, no artificial
+	// dampening. Matches Oracle DB_Reborn's canonical implementation and the
+	// feel the TFDB community expects.
+	float bounceVec[3];
+	SubtractVectors(velocity, normal, bounceVec);
+
+	// Bounce ceiling — per-class cap on peak bounce arc height (HU above bounce
+	// point). Optional, 0 = disabled. Derivation: under gravity g=800, peak
+	// height h = v_z² / (2g), so max allowed v_z = sqrt(2g · h).
+	// Energy redistribution: if v_z is clamped, boost horizontal components
+	// (X,Y) to preserve total |v|. Rocket keeps speed, excess upward energy
+	// becomes forward energy. Only clamps upward bounces (v_z > 0) so ceiling
+	// hits (rocket bouncing DOWN) are unaffected.
+	int rocketClass = RocketClass[index];
+	float ceiling = RocketClassBounceCeiling[rocketClass];
+	if (ceiling > 0.0 && bounceVec[2] > 0.0)
 	{
-		if (IsValidClient(iOwner, true))
+		float maxVz = SquareRoot(2.0 * 800.0 * ceiling);  // g = 800 HU/s² (Source default)
+		if (bounceVec[2] > maxVz)
 		{
-			float fOwnerAngles[3];
-			GetClientEyeAngles(iOwner, fOwnerAngles);
-	
-			if (fOwnerAngles[0] >= RocketClassBounceForceAngle[iClass])
-				ScaleVector(vBounceVec, RocketClassBounceScale[iClass] * RocketClassBounceForceScale[iClass]);
-			else
-				ScaleVector(vBounceVec, RocketClassBounceScale[iClass]);
+			float origMagSq = bounceVec[0]*bounceVec[0] + bounceVec[1]*bounceVec[1] + bounceVec[2]*bounceVec[2];
+			float newVzSq   = maxVz * maxVz;
+			float origXYSq  = bounceVec[0]*bounceVec[0] + bounceVec[1]*bounceVec[1];
+
+			bounceVec[2] = maxVz;
+
+			// Boost horizontal components to preserve total magnitude.
+			// Skip redistribution on pure-vertical bounces (XY ≈ 0) — would divide by
+			// zero. Rocket just loses speed in that degenerate case (very rare in play).
+			if (origXYSq > 1.0)
+			{
+				float targetXYSq = origMagSq - newVzSq;
+				if (targetXYSq > 0.0)
+				{
+					float xyScale = SquareRoot(targetXYSq / origXYSq);
+					bounceVec[0] *= xyScale;
+					bounceVec[1] *= xyScale;
+				}
+			}
 		}
-		else
-		{
-			ScaleVector(vBounceVec, RocketClassBounceScale[iClass]);
-		}
+	}
+
+	float newAngles[3];
+	GetVectorAngles(bounceVec, newAngles);
+
+	float newAnglesRef[3]; CopyVectors(newAngles, newAnglesRef);
+	float bounceVecRef[3];
+	CopyVectors(bounceVec, bounceVecRef);
+
+	Action bounceResult = Forward_OnRocketBouncePre(index, entity, newAnglesRef, bounceVecRef);
+	if (bounceResult == Plugin_Stop || bounceResult == Plugin_Handled)
+	{
+		SDKUnhook(entity, SDKHook_Touch, OnTouch);
+		return Plugin_Continue;
+	}
+	else if (bounceResult == Plugin_Changed)
+	{
+		CopyVectors(newAnglesRef, newAngles);
+		CopyVectors(bounceVecRef, bounceVec);
+	}
+
+	// Pause homing — rocket flies freely with bounce velocity until
+	// HomingRocketThink re-enables it after per-class "bounce control" ticks.
+	RocketHomingPaused[index]    = true;
+	RocketBounceEventTick[index] = GetGameTickCount();
+
+	TeleportEntity(entity, NULL_VECTOR, newAngles, bounceVec);
+	RocketBounces[index]++;
+
+	if ((RocketInstanceState[index] & RocketState_Delayed) || (RocketInstanceFlags[index] & RocketFlag_KeepDirection))
+	{
+		Internal_SetRocketState(index, (RocketInstanceState[index] | RocketState_Bouncing));
 	}
 	else
 	{
-		float fBounceScale = RocketClassBounceScale[iClass];
-
-		if (IsValidClient(iOwner, true))
-		{
-			float fOwnerAngles[3];
-			GetClientEyeAngles(iOwner, fOwnerAngles);
-			if (fOwnerAngles[0] >= RocketClassBounceForceAngle[iClass])
-				fBounceScale *= RocketClassBounceForceScale[iClass];
-		}
-
-		// Crawl mode: preserve horizontal carry, suppress/clamp upward pop.
-		vBounceVec[0] *= fBounceScale;
-		vBounceVec[1] *= fBounceScale;
-		vBounceVec[2] *= fBounceScale * RocketClassCrawlBounceScale[iClass];
-
-		if (RocketClassCrawlBounceMaxUp[iClass] > 0.0 && vBounceVec[2] > RocketClassCrawlBounceMaxUp[iClass])
-			vBounceVec[2] = RocketClassCrawlBounceMaxUp[iClass];
+		float direction[3];
+		GetAngleVectors(newAngles, direction, NULL_VECTOR, NULL_VECTOR);
+		CopyVectors(direction, RocketDirection[index]);
 	}
 
-
-	float vNewAngles[3];
-	GetVectorAngles(vBounceVec, vNewAngles);
-
-	float vNewAnglesRef[3]; CopyVectors(vNewAngles, vNewAnglesRef);
-	float vBounceVecRef[3];
-	CopyVectors(vBounceVec, vBounceVecRef);
-
-	Action aResult = Forward_OnRocketBouncePre(iIndex, iEntity, vNewAnglesRef, vBounceVecRef);
-	if (aResult == Plugin_Stop || aResult == Plugin_Handled)
-	{
-		SDKUnhook(iEntity, SDKHook_Touch, OnTouch);
-		return Plugin_Continue;
-	}
-	else if (aResult == Plugin_Changed)
-	{
-		CopyVectors(vNewAnglesRef, vNewAngles);
-		CopyVectors(vBounceVecRef, vBounceVec);
-	}
-
-	TeleportEntity(iEntity, NULL_VECTOR, vNewAngles, vBounceVec);
-	RocketBounces[iIndex]++;
-	if (RocketInstanceFlags[iIndex] & RocketFlag_NoBounceDrags)
-	{
-		Internal_SetRocketState(iIndex, (RocketInstanceState[iIndex] & ~RocketState_CanDrag));
-	}
-
-	if ((RocketInstanceState[iIndex] & RocketState_Delayed) || (RocketInstanceFlags[iIndex] & RocketFlag_KeepDirection))
-	{
-		Internal_SetRocketState(iIndex, (RocketInstanceState[iIndex] | RocketState_Bouncing));
-	}
-	else
-	{
-		float fDirection[3];
-		GetAngleVectors(vNewAngles,fDirection,NULL_VECTOR,NULL_VECTOR);
-		CopyVectors(fDirection, RocketDirection[iIndex]);
-	}
-
-	Forward_OnRocketBounce(iIndex, iEntity);
-	SDKUnhook(iEntity, SDKHook_Touch, OnTouch);
+	Forward_OnRocketBounce(index, entity);
+	SDKUnhook(entity, SDKHook_Touch, OnTouch);
 
 	return Plugin_Handled;
 }
 
-public Action OnTFExplosion(const char[] strTEName, const int[] iClients, int iNumClients, float fDelay)
+public Action OnTFExplosion(const char[] teName, const int[] clients, int numClients, float delay)
 {
-	static int bIgnoreHook;
+	static int ignoreHook;
 	if (!Enabled)
 	{
 		return Plugin_Continue;
 	}
 
-	if (bIgnoreHook)
+	if (ignoreHook)
 	{
-		bIgnoreHook = false;
+		ignoreHook = false;
 		return Plugin_Continue;
 	}
 
@@ -462,8 +611,82 @@ public Action OnTFExplosion(const char[] strTEName, const int[] iClients, int iN
 	TE_WriteNum("m_nSound",    TE_ReadNum("m_nSound"));
 	TE_WriteNum("m_iCustomParticleIndex", TE_ReadNum("m_iCustomParticleIndex"));
 
-	bIgnoreHook = true;
-	TE_Send(iClients, iNumClients, fDelay);
+	ignoreHook = true;
+	TE_Send(clients, numClients, delay);
 	return Plugin_Stop;
 
+}
+
+// ============================================================================
+// Push Prevention (!ab command and WeaponCanUse workaround)
+// ============================================================================
+
+/**
+ * Console command: toggles airblast push prevention for the calling player.
+ */
+public Action CmdTogglePushPrevention(int client, int args)
+{
+	if (client == 0 || !TFDB_IsRealHuman(client))
+	{
+		ReplyToCommand(client, "Command is in-game only.");
+		return Plugin_Handled;
+	}
+
+	if (!Enabled)
+	{
+		CReplyToCommand(client, "%t", "Command_Disabled");
+		return Plugin_Handled;
+	}
+
+	if (!UsePushPrevention)
+	{
+		CReplyToCommand(client, "[TFDB] Push prevention is disabled in general.cfg.");
+		return Plugin_Handled;
+	}
+
+	if (!UsePushPreventionToggle)
+	{
+		CReplyToCommand(client, "[TFDB] Push prevention toggle is disabled in general.cfg.");
+		return Plugin_Handled;
+	}
+
+	PushPreventionEnabled[client] = !PushPreventionEnabled[client];
+
+	if (IsPlayerAlive(client))
+	{
+		int flags = GetEntityFlags(client);
+		SetEntityFlags(client, PushPreventionEnabled[client] ? (flags | FL_NOTARGET) : (flags & ~FL_NOTARGET));
+	}
+
+	CReplyToCommand(client, "%t", PushPreventionEnabled[client]
+		? "Dodgeball_AirblastPreventionCmd_Enabled"
+		: "Dodgeball_AirblastPreventionCmd_Disabled");
+
+	return Plugin_Handled;
+}
+
+/**
+ * SDKHook callback: temporarily removes FL_NOTARGET during weapon equip
+ * to avoid a sound bug where FL_NOTARGET suppresses weapon pickup sounds.
+ * Re-applies FL_NOTARGET on the next frame.
+ */
+public Action OnWeaponCanUse(int client, int weapon)
+{
+	if (!UsePushPrevention) return Plugin_Continue;
+
+	int flags = GetEntityFlags(client);
+	if (!(flags & FL_NOTARGET)) return Plugin_Continue;
+
+	SetEntityFlags(client, flags & ~FL_NOTARGET);
+	RequestFrame(Frame_RestorePushPrevention, GetClientUserId(client));
+
+	return Plugin_Continue;
+}
+
+void Frame_RestorePushPrevention(int userId)
+{
+	int client = GetClientOfUserId(userId);
+	if (client == 0 || !IsClientInGame(client) || !PushPreventionEnabled[client]) return;
+
+	SetEntityFlags(client, GetEntityFlags(client) | FL_NOTARGET);
 }
