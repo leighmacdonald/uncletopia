@@ -36,7 +36,7 @@ compile_one() {
 	local name
 	name="$(basename "$plugin" .sp)"
 	echo "Compiling $name ..."
-	spcomp64 "$plugin" -o "$OUT_DIR/$name.smx" -i "$SM_INCLUDE" -i "$LOCAL_INCLUDE"
+	spcomp64 -E "$plugin" -o "$OUT_DIR/$name.smx" -i "$SM_INCLUDE" -i "$LOCAL_INCLUDE"
 }
 
 NAME="${1:-}"
