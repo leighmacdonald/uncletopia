@@ -93,7 +93,7 @@ int
     g_iAirshotHeight = 80;
 
 // Database
-Database db; // Connection to SQL database.
+Database g_db; // Connection to SQL database.
 Handle g_hDBReconnectTimer;
 
 char g_sDBConfig[256];
@@ -614,14 +614,14 @@ public void OnClientPostAdminCheck(int client)
         {
             char steamid_dirty[31], steamid[64], query[256];
             GetClientAuthId(client, AuthId_Steam2, steamid_dirty, sizeof(steamid_dirty));
-            db.Escape(steamid_dirty, steamid, sizeof(steamid));
+            g_db.Escape(steamid_dirty, steamid, sizeof(steamid));
             strcopy(g_sPlayerSteamID[client], 32, steamid);
             if (g_bDBFunc) {
                 Format(query, sizeof(query), "SELECT rating, hitblip, wins, losses FROM mgemod_stats WHERE steamid=text_to_steam64('%s')", steamid);
             } else {
                 Format(query, sizeof(query), "SELECT rating, hitblip, wins, losses FROM mgemod_stats WHERE steamid='%s'", steamid);
             }
-            db.Query(T_SQLQueryOnConnect, query, client);
+            g_db.Query(T_SQLQueryOnConnect, query, client);
         }
     }
 
@@ -2174,8 +2174,8 @@ void CalcELO(int winner, int loser)
     int time = GetTime();
     char query[512], sCleanArenaname[128], sCleanMapName[128];
 
-    db.Escape(g_sArenaName[g_iPlayerArena[winner]], sCleanArenaname, sizeof(sCleanArenaname));
-    db.Escape(g_sMapName, sCleanMapName, sizeof(sCleanMapName));
+    g_db.Escape(g_sArenaName[g_iPlayerArena[winner]], sCleanArenaname, sizeof(sCleanArenaname));
+    g_db.Escape(g_sMapName, sCleanMapName, sizeof(sCleanMapName));
 
     if (IsValidClient(winner) && !g_bNoDisplayRating)
         MC_PrintToChat(winner, "%t", "GainedPoints", winnerscore);
@@ -2191,34 +2191,34 @@ void CalcELO(int winner, int loser)
     if (g_bDBFunc) {
         Format(query, sizeof(query), "INSERT INTO mgemod_duels (winner, loser, winnerscore, loserscore, winlimit, gametime, mapname, arenaname) VALUES (text_to_steam64('%s'), text_to_steam64('%s'), %i, %i, %i, %i, '%s', '%s')",
                 g_sPlayerSteamID[winner], g_sPlayerSteamID[loser], g_iArenaScore[arena_index][winner_team_slot], g_iArenaScore[arena_index][loser_team_slot], g_iArenaFraglimit[arena_index], time, g_sMapName, g_sArenaName[arena_index]);
-            db.Query(SQLErrorCheckCallback, query);
+            g_db.Query(SQLErrorCheckCallback, query);
 
         //winner's stats
         Format(query, sizeof(query), "UPDATE mgemod_stats SET rating=%i,wins=wins+1,lastplayed=%i WHERE steamid=text_to_steam64('%s')",
             g_iPlayerRating[winner], time, g_sPlayerSteamID[winner]);
-        db.Query(SQLErrorCheckCallback, query);
+        g_db.Query(SQLErrorCheckCallback, query);
 
         //loser's stats
         Format(query, sizeof(query), "UPDATE mgemod_stats SET rating=%i,losses=losses+1,lastplayed=%i WHERE steamid=text_to_steam64('%s')",
             g_iPlayerRating[loser], time, g_sPlayerSteamID[loser]);
-        db.Query(SQLErrorCheckCallback, query);
+        g_db.Query(SQLErrorCheckCallback, query);
 
         return;
     }
 
     Format(query, sizeof(query), "INSERT INTO mgemod_duels (winner, loser, winnerscore, loserscore, winlimit, gametime, mapname, arenaname) VALUES ('%s', '%s', %i, %i, %i, %i, '%s', '%s')",
         g_sPlayerSteamID[winner], g_sPlayerSteamID[loser], g_iArenaScore[arena_index][winner_team_slot], g_iArenaScore[arena_index][loser_team_slot], g_iArenaFraglimit[arena_index], time, g_sMapName, g_sArenaName[arena_index]);
-    db.Query(SQLErrorCheckCallback, query);
+    g_db.Query(SQLErrorCheckCallback, query);
 
     //winner's stats
     Format(query, sizeof(query), "UPDATE mgemod_stats SET rating=%i,wins=wins+1,lastplayed=%i WHERE steamid='%s'",
     g_iPlayerRating[winner], time, g_sPlayerSteamID[winner]);
-    db.Query(SQLErrorCheckCallback, query);
+    g_db.Query(SQLErrorCheckCallback, query);
 
     //loser's stats
     Format(query, sizeof(query), "UPDATE mgemod_stats SET rating=%i,losses=losses+1,lastplayed=%i WHERE steamid='%s'",
         g_iPlayerRating[loser], time, g_sPlayerSteamID[loser]);
-    db.Query(SQLErrorCheckCallback, query);
+    g_db.Query(SQLErrorCheckCallback, query);
 }
 
 void CalcELO2(int winner, int winner2, int loser, int loser2)
@@ -2247,8 +2247,8 @@ void CalcELO2(int winner, int winner2, int loser, int loser2)
     int time = GetTime();
     char query[512], sCleanArenaname[128], sCleanMapName[128];
 
-    db.Escape(g_sArenaName[g_iPlayerArena[winner]], sCleanArenaname, sizeof(sCleanArenaname));
-    db.Escape(g_sMapName, sCleanMapName, sizeof(sCleanMapName));
+    g_db.Escape(g_sArenaName[g_iPlayerArena[winner]], sCleanArenaname, sizeof(sCleanArenaname));
+    g_db.Escape(g_sMapName, sCleanMapName, sizeof(sCleanMapName));
 
     if (IsValidClient(winner) && !g_bNoDisplayRating)
         MC_PrintToChat(winner, "%t", "GainedPoints", winnerscore);
@@ -2265,53 +2265,53 @@ void CalcELO2(int winner, int winner2, int loser, int loser2)
     if (g_bDBFunc) {
         Format(query, sizeof(query), "INSERT INTO mgemod_duels_2v2 (winner, winner2, loser, loser2, winnerscore, loserscore, winlimit, gametime, mapname, arenaname) VALUES (text_to_steam64('%s'), text_to_steam64('%s'), text_to_steam64('%s'), text_to_steam64('%s'), %i, %i, %i, %i, '%s', '%s')",
                 g_sPlayerSteamID[winner], g_sPlayerSteamID[winner2], g_sPlayerSteamID[loser], g_sPlayerSteamID[loser2], g_iArenaScore[arena_index][winner_team_slot], g_iArenaScore[arena_index][loser_team_slot], g_iArenaFraglimit[arena_index], time, g_sMapName, g_sArenaName[arena_index]);
-        db.Query(SQLErrorCheckCallback, query);
+        g_db.Query(SQLErrorCheckCallback, query);
 
         //winner's stats
         Format(query, sizeof(query), "UPDATE mgemod_stats SET rating=%i,wins=wins+1,lastplayed=%i WHERE steamid=text_to_steam64('%s')",
             g_iPlayerRating[winner], time, g_sPlayerSteamID[winner]);
-        db.Query(SQLErrorCheckCallback, query);
+        g_db.Query(SQLErrorCheckCallback, query);
 
         //winner's teammate stats
         Format(query, sizeof(query), "UPDATE mgemod_stats SET rating=%i,wins=wins+1,lastplayed=%i WHERE steamid=text_to_steam64('%s')",
             g_iPlayerRating[winner2], time, g_sPlayerSteamID[winner2]);
-        db.Query(SQLErrorCheckCallback, query);
+        g_db.Query(SQLErrorCheckCallback, query);
 
         //loser's stats
         Format(query, sizeof(query), "UPDATE mgemod_stats SET rating=%i,losses=losses+1,lastplayed=%i WHERE steamid=text_to_steam64('%s')",
             g_iPlayerRating[loser], time, g_sPlayerSteamID[loser]);
-        db.Query(SQLErrorCheckCallback, query);
+        g_db.Query(SQLErrorCheckCallback, query);
 
         //loser's teammate stats
         Format(query, sizeof(query), "UPDATE mgemod_stats SET rating=%i,losses=losses+1,lastplayed=%i WHERE steamid=text_to_steam64('%s')",
             g_iPlayerRating[loser2], time, g_sPlayerSteamID[loser2]);
-        db.Query(SQLErrorCheckCallback, query);
+        g_db.Query(SQLErrorCheckCallback, query);
         return;
     }
 
     Format(query, sizeof(query), "INSERT INTO mgemod_duels_2v2 (winner, winner2, loser, loser2, winnerscore, loserscore, winlimit, gametime, mapname, arenaname) VALUES ('%s', '%s', '%s', '%s', %i, %i, %i, %i, '%s', '%s')",
         g_sPlayerSteamID[winner], g_sPlayerSteamID[winner2], g_sPlayerSteamID[loser], g_sPlayerSteamID[loser2], g_iArenaScore[arena_index][winner_team_slot], g_iArenaScore[arena_index][loser_team_slot], g_iArenaFraglimit[arena_index], time, g_sMapName, g_sArenaName[arena_index]);
-    db.Query(SQLErrorCheckCallback, query);
+    g_db.Query(SQLErrorCheckCallback, query);
 
     //winner's stats
     Format(query, sizeof(query), "UPDATE mgemod_stats SET rating=%i,wins=wins+1,lastplayed=%i WHERE steamid='%s'",
         g_iPlayerRating[winner], time, g_sPlayerSteamID[winner]);
-    db.Query(SQLErrorCheckCallback, query);
+    g_db.Query(SQLErrorCheckCallback, query);
 
     //winner's teammate stats
     Format(query, sizeof(query), "UPDATE mgemod_stats SET rating=%i,wins=wins+1,lastplayed=%i WHERE steamid='%s'",
         g_iPlayerRating[winner2], time, g_sPlayerSteamID[winner2]);
-    db.Query(SQLErrorCheckCallback, query);
+    g_db.Query(SQLErrorCheckCallback, query);
 
     //loser's stats
     Format(query, sizeof(query), "UPDATE mgemod_stats SET rating=%i,losses=losses+1,lastplayed=%i WHERE steamid='%s'",
         g_iPlayerRating[loser], time, g_sPlayerSteamID[loser]);
-    db.Query(SQLErrorCheckCallback, query);
+    g_db.Query(SQLErrorCheckCallback, query);
 
     //loser's teammate stats
     Format(query, sizeof(query), "UPDATE mgemod_stats SET rating=%i,losses=losses+1,lastplayed=%i WHERE steamid='%s'",
         g_iPlayerRating[loser2], time, g_sPlayerSteamID[loser2]);
-    db.Query(SQLErrorCheckCallback, query);
+    g_db.Query(SQLErrorCheckCallback, query);
 }
 // ====[ UTIL ]====================================================
 bool LoadSpawnPoints()
@@ -2361,8 +2361,8 @@ bool LoadSpawnPoints()
         if (!StrEqual(g_sMapName, kvmap, false)) {
             continue;
         }
-        if (!KvGotoFirstSubKey(kv)) { 
-            break; 
+        if (!KvGotoFirstSubKey(kv)) {
+            break;
         }
         do {
             g_iArenaCount++;
@@ -2456,7 +2456,7 @@ bool LoadSpawnPoints()
             g_iArenaFraglimit[g_iArenaCount] = g_iArenaMgelimit[g_iArenaCount];
             UpdateArenaName(g_iArenaCount);
         } while (KvGotoNextKey(kv));
-    
+
     } while (KvGotoNextKey(kv));
 
     if (g_iArenaCount) {
@@ -2962,7 +2962,7 @@ int Menu_Top5(Menu menu, MenuAction action, int param1, int param2)
                 char query[256];
                 Format(query, sizeof(query), "SELECT rating,name FROM mgemod_stats ORDER BY rating DESC LIMIT %i, 5", g_iELOMenuPage[param1] * 5);
                 //new data[] = {param1, param2+5, false};
-                db.Query(T_SQL_Top5, query, param1);
+                g_db.Query(T_SQL_Top5, query, param1);
             }
             //If the player selected back show the previous menu
             if (param2 == 1)
@@ -2973,14 +2973,14 @@ int Menu_Top5(Menu menu, MenuAction action, int param1, int param2)
                     char query[256];
                     Format(query, sizeof(query), "SELECT rating,name FROM mgemod_stats ORDER BY rating DESC LIMIT 5");
                     //new data[] = {param1, param2-5, true};
-                    db.Query(T_SQL_Top5, query, param1);
+                    g_db.Query(T_SQL_Top5, query, param1);
                 }
                 else
                 {
                     char query[256];
                     Format(query, sizeof(query), "SELECT rating,name FROM mgemod_stats ORDER BY rating DESC LIMIT %i, 5", g_iELOMenuPage[param1] * 5);
                     //new data[] = {param1, param2-5, false};
-                    db.Query(T_SQL_Top5, query, param1);
+                    g_db.Query(T_SQL_Top5, query, param1);
                 }
             }
         }
@@ -3173,7 +3173,7 @@ Action Command_Top5(int client, int args)
     g_iELOMenuPage[client] = 0;
     char query[256];
     Format(query, sizeof(query), "SELECT rating,name FROM mgemod_stats ORDER BY rating DESC LIMIT 5");
-    db.Query(T_SQL_Top5, query, client);
+    g_db.Query(T_SQL_Top5, query, client);
     return Plugin_Continue;
 }
 
@@ -3557,7 +3557,7 @@ Action Command_ConnectionTest(int client, int args)
 
     char query[256];
     Format(query, sizeof(query), "SELECT rating FROM mgemod_stats LIMIT 1");
-    db.Query(T_SQL_Test, query, client);
+    g_db.Query(T_SQL_Test, query, client);
 
     return Plugin_Handled;
 }
@@ -3833,18 +3833,18 @@ void PrepareSQL() // Opens the connection to the database, and creates the table
     char error[256];
 
     // initial mysql connect
-    if (db == null && SQL_CheckConfig(g_sDBConfig))
+    if (g_db == null && SQL_CheckConfig(g_sDBConfig))
     {
-        db = SQL_Connect(g_sDBConfig, /* persistent */ true, error, sizeof(error));
+        g_db = SQL_Connect(g_sDBConfig, /* persistent */ true, error, sizeof(error));
     }
 
     // failed mysql connect for whatever reason (likely no config in databases.cfg)
-    if (db == null)
+    if (g_db == null)
     {
         LogError("Cant use database config <%s> <Error: %s>, trying SQLite <storage-local>...", g_sDBConfig, error);
-        db = SQL_Connect("storage-local", true, error, sizeof(error));
+        g_db = SQL_Connect("storage-local", true, error, sizeof(error));
 
-        if (db == null)
+        if (g_db == null)
         {
             SetFailState("Could not connect to database: %s", error);
         }
@@ -3855,16 +3855,16 @@ void PrepareSQL() // Opens the connection to the database, and creates the table
     }
 
     char ident[16];
-    db.Driver.GetIdentifier(ident, sizeof(ident));
+    g_db.Driver.GetIdentifier(ident, sizeof(ident));
 
     if (StrEqual(ident, "sqlite", false)) {
         g_bDBFunc = false;
-        db.Query(SQLErrorCheckCallback, "CREATE TABLE IF NOT EXISTS mgemod_stats (rating INTEGER, steamid TEXT, name TEXT, wins INTEGER, losses INTEGER, lastplayed INTEGER, hitblip INTEGER)");
-        db.Query(SQLErrorCheckCallback, "CREATE TABLE IF NOT EXISTS mgemod_duels (winner TEXT, loser TEXT, winnerscore INTEGER, loserscore INTEGER, winlimit INTEGER, gametime INTEGER, mapname TEXT, arenaname TEXT) ");
-        db.Query(SQLErrorCheckCallback, "CREATE TABLE IF NOT EXISTS mgemod_duels_2v2 (winner TEXT, winner2 TEXT, loser TEXT, loser2 TEXT, winnerscore INTEGER, loserscore INTEGER, winlimit INTEGER, gametime INTEGER, mapname TEXT, arenaname TEXT) ");
+        g_db.Query(SQLErrorCheckCallback, "CREATE TABLE IF NOT EXISTS mgemod_stats (rating INTEGER, steamid TEXT, name TEXT, wins INTEGER, losses INTEGER, lastplayed INTEGER, hitblip INTEGER)");
+        g_db.Query(SQLErrorCheckCallback, "CREATE TABLE IF NOT EXISTS mgemod_duels (winner TEXT, loser TEXT, winnerscore INTEGER, loserscore INTEGER, winlimit INTEGER, gametime INTEGER, mapname TEXT, arenaname TEXT) ");
+        g_db.Query(SQLErrorCheckCallback, "CREATE TABLE IF NOT EXISTS mgemod_duels_2v2 (winner TEXT, winner2 TEXT, loser TEXT, loser2 TEXT, winnerscore INTEGER, loserscore INTEGER, winlimit INTEGER, gametime INTEGER, mapname TEXT, arenaname TEXT) ");
     } else if (StrEqual(ident, "pgsql", false)) {
         g_bDBFunc = true;
-        db.Query(SQLErrorCheckCallback, "CREATE OR REPLACE FUNCTION text_to_steam64(steam_id text) RETURNS bigint \
+        g_db.Query(SQLErrorCheckCallback, "CREATE OR REPLACE FUNCTION text_to_steam64(steam_id text) RETURNS bigint \
     LANGUAGE plpgsql as $func$ DECLARE parts text[]; BEGIN \
         if steam_id = 'BOT' then return 0; end if; \
         if starts_with(steam_id, '76561') then return cast(steam_id as bigint); end if; \
@@ -3872,18 +3872,18 @@ void PrepareSQL() // Opens the connection to the database, and creates the table
         return (cast(parts[3] as bigint) * 2) + 76561197960265728 + cast(parts[2] as bigint); \
     END; $func$;");
         // Not currently using foreign keys since i don't want to diverge from the base mod schema too much and hard depend on other stuff.
-        // I, however, refuse to store steamids as text, so upstream may not want this. 
+        // I, however, refuse to store steamids as text, so upstream may not want this.
         // TODO Use the native sm 64bit when its in production.
-        db.Query(SQLErrorCheckCallback, "CREATE TABLE IF NOT EXISTS mgemod_stats (rating INTEGER, steamid BIGINT, name TEXT, wins INTEGER, losses INTEGER, lastplayed INTEGER, hitblip INTEGER)");
-        db.Query(SQLErrorCheckCallback, "CREATE TABLE IF NOT EXISTS mgemod_duels (duel_id serial, winner BIGINT, loser BIGINT, winnerscore INTEGER, loserscore INTEGER, winlimit INTEGER, gametime INTEGER, mapname TEXT, arenaname TEXT) ");
-        db.Query(SQLErrorCheckCallback, "CREATE TABLE IF NOT EXISTS mgemod_duels_2v2 (duel2_id serial, winner BIGINT, winner2 BIGINT, loser BIGINT, loser2 BIGINT, winnerscore INTEGER, loserscore INTEGER, winlimit INTEGER, gametime INTEGER, mapname TEXT, arenaname TEXT) ");
+        g_db.Query(SQLErrorCheckCallback, "CREATE TABLE IF NOT EXISTS mgemod_stats (rating INTEGER, steamid BIGINT, name TEXT, wins INTEGER, losses INTEGER, lastplayed INTEGER, hitblip INTEGER)");
+        g_db.Query(SQLErrorCheckCallback, "CREATE TABLE IF NOT EXISTS mgemod_duels (duel_id serial, winner BIGINT, loser BIGINT, winnerscore INTEGER, loserscore INTEGER, winlimit INTEGER, gametime INTEGER, mapname TEXT, arenaname TEXT) ");
+        g_db.Query(SQLErrorCheckCallback, "CREATE TABLE IF NOT EXISTS mgemod_duels_2v2 (duel2_id serial, winner BIGINT, winner2 BIGINT, loser BIGINT, loser2 BIGINT, winnerscore INTEGER, loserscore INTEGER, winlimit INTEGER, gametime INTEGER, mapname TEXT, arenaname TEXT) ");
     } else if (StrEqual(ident, "mysql", false)) {
         // Untested.
         g_bDBFunc = true;
-        db.Query(SQLErrorCheckCallback, "DELIMITER // CREATE PROCEDURE text_to_steam64( IN input_steam_id VARCHAR(255), OUT output_steam_id VARCHAR(255) ) BEGIN SET output_steam_id = input_steam_id; END //// DELIMITER ;");
-        db.Query(SQLErrorCheckCallback, "CREATE TABLE IF NOT EXISTS mgemod_stats (rating INT(4) NOT NULL, steamid VARCHAR(32) NOT NULL, name VARCHAR(64) NOT NULL, wins INT(4) NOT NULL, losses INT(4) NOT NULL, lastplayed INT(11) NOT NULL, hitblip INT(2) NOT NULL) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = InnoDB ");
-        db.Query(SQLErrorCheckCallback, "CREATE TABLE IF NOT EXISTS mgemod_duels (winner VARCHAR(32) NOT NULL, loser VARCHAR(32) NOT NULL, winnerscore INT(4) NOT NULL, loserscore INT(4) NOT NULL, winlimit INT(4) NOT NULL, gametime INT(11) NOT NULL, mapname VARCHAR(64) NOT NULL, arenaname VARCHAR(32) NOT NULL) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = InnoDB ");
-        db.Query(SQLErrorCheckCallback, "CREATE TABLE IF NOT EXISTS mgemod_duels_2v2 (winner VARCHAR(32) NOT NULL, winner2 VARCHAR(32) NOT NULL, loser VARCHAR(32) NOT NULL, loser2 VARCHAR(32) NOT NULL, winnerscore INT(4) NOT NULL, loserscore INT(4) NOT NULL, winlimit INT(4) NOT NULL, gametime INT(11) NOT NULL, mapname VARCHAR(64) NOT NULL, arenaname VARCHAR(32) NOT NULL) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = InnoDB ");
+        g_db.Query(SQLErrorCheckCallback, "DELIMITER // CREATE PROCEDURE text_to_steam64( IN input_steam_id VARCHAR(255), OUT output_steam_id VARCHAR(255) ) BEGIN SET output_steam_id = input_steam_id; END //// DELIMITER ;");
+        g_db.Query(SQLErrorCheckCallback, "CREATE TABLE IF NOT EXISTS mgemod_stats (rating INT(4) NOT NULL, steamid VARCHAR(32) NOT NULL, name VARCHAR(64) NOT NULL, wins INT(4) NOT NULL, losses INT(4) NOT NULL, lastplayed INT(11) NOT NULL, hitblip INT(2) NOT NULL) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = InnoDB ");
+        g_db.Query(SQLErrorCheckCallback, "CREATE TABLE IF NOT EXISTS mgemod_duels (winner VARCHAR(32) NOT NULL, loser VARCHAR(32) NOT NULL, winnerscore INT(4) NOT NULL, loserscore INT(4) NOT NULL, winlimit INT(4) NOT NULL, gametime INT(11) NOT NULL, mapname VARCHAR(64) NOT NULL, arenaname VARCHAR(32) NOT NULL) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = InnoDB ");
+        g_db.Query(SQLErrorCheckCallback, "CREATE TABLE IF NOT EXISTS mgemod_duels_2v2 (winner VARCHAR(32) NOT NULL, winner2 VARCHAR(32) NOT NULL, loser VARCHAR(32) NOT NULL, loser2 VARCHAR(32) NOT NULL, winnerscore INT(4) NOT NULL, loserscore INT(4) NOT NULL, winlimit INT(4) NOT NULL, gametime INT(11) NOT NULL, mapname VARCHAR(64) NOT NULL, arenaname VARCHAR(32) NOT NULL) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = InnoDB ");
     } else {
         SetFailState("Invalid database driver: %s", ident);
         return;
@@ -3891,8 +3891,8 @@ void PrepareSQL() // Opens the connection to the database, and creates the table
 
     // There was no indexes/pk at all before except sqlite ROWID i guess..?, is there something im missing?
     // Removed the `LIMIT 1` queries.
-    db.Query(SQLErrorCheckCallback, "CREATE UNIQUE INDEX IF NOT EXISTS mgemod_stats_uidx ON mgemod_stats (steamid)");
-    db.Query(SQLErrorCheckCallback, "CREATE INDEX IF NOT EXISTS mgemod_stats_rating_idx ON mgemod_stats (rating)");
+    g_db.Query(SQLErrorCheckCallback, "CREATE UNIQUE INDEX IF NOT EXISTS mgemod_stats_uidx ON mgemod_stats (steamid)");
+    g_db.Query(SQLErrorCheckCallback, "CREATE INDEX IF NOT EXISTS mgemod_stats_rating_idx ON mgemod_stats (rating)");
 }
 
 void T_SQLQueryOnConnect(Database owner, DBResultSet hndl, const char[] error, any data)
@@ -3914,7 +3914,7 @@ void T_SQLQueryOnConnect(Database owner, DBResultSet hndl, const char[] error, a
     char query[512];
     char namesql_dirty[MAX_NAME_LENGTH], namesql[(MAX_NAME_LENGTH * 2) + 1];
     GetClientName(client, namesql_dirty, sizeof(namesql_dirty));
-    db.Escape(namesql_dirty, namesql, sizeof(namesql));
+    g_db.Escape(namesql_dirty, namesql, sizeof(namesql));
 
     if (hndl.FetchRow())
     {
@@ -3927,14 +3927,14 @@ void T_SQLQueryOnConnect(Database owner, DBResultSet hndl, const char[] error, a
         } else {
             Format(query, sizeof(query), "UPDATE mgemod_stats SET name='%s' WHERE steamid=%s", namesql, g_sPlayerSteamID[client]);
         }
-        db.Query(SQLErrorCheckCallback, query);
+        g_db.Query(SQLErrorCheckCallback, query);
     } else {
         if (g_bDBFunc) {
             Format(query, sizeof(query), "INSERT INTO mgemod_stats (rating, steamid, name, wins, losses, lastplayed, hitblip) VALUES (1600, text_to_steam64('%s'), '%s', 0, 0, %i, 1)", g_sPlayerSteamID[client], namesql, GetTime());
         } else {
             Format(query, sizeof(query), "INSERT INTO mgemod_stats (rating, steamid, name, wins, losses, lastplayed, hitblip) VALUES (1600, '%s', '%s', 0, 0, %i, 1)", g_sPlayerSteamID[client], namesql, GetTime());
         }
-        db.Query(SQLErrorCheckCallback, query);
+        g_db.Query(SQLErrorCheckCallback, query);
 
         g_iPlayerRating[client] = 1600;
         g_bHitBlip[client] = false;
@@ -4047,14 +4047,14 @@ void SQLDbConnTest(Database owner, DBResultSet hndl, const char[] error, any dat
                 {
                     char steamid_dirty[31], steamid[64], query[256];
                     GetClientAuthId(i, AuthId_Steam2, steamid_dirty, sizeof(steamid_dirty));
-                    db.Escape(steamid_dirty, steamid, sizeof(steamid));
+                    g_db.Escape(steamid_dirty, steamid, sizeof(steamid));
                     strcopy(g_sPlayerSteamID[i], 32, steamid);
                     if (g_bDBFunc) {
                         Format(query, sizeof(query), "SELECT rating, hitblip, wins, losses FROM mgemod_stats WHERE steamid=text_to_steam64('%s')", steamid);
                     } else {
                         Format(query, sizeof(query), "SELECT rating, hitblip, wins, losses FROM mgemod_stats WHERE steamid='%s'", steamid);
                     }
-                    db.Query(T_SQLQueryOnConnect, query, i);
+                    g_db.Query(T_SQLQueryOnConnect, query, i);
                 }
             }
 
@@ -5185,7 +5185,7 @@ Action Timer_ReconnectToDB(Handle timer)
 
     char query[256];
     Format(query, sizeof(query), "SELECT rating FROM mgemod_stats LIMIT 1");
-    db.Query(SQLDbConnTest, query);
+    g_db.Query(SQLDbConnTest, query);
 
     return Plugin_Continue;
 }
