@@ -1,0 +1,7 @@
+---
+sm_download: "https://sm.alliedmods.net/smdrop/1.13/sourcemod-1.13.0-git7176-linux.tar.gz"
+metamod_download: "https://mms.alliedmods.net/mmsdrop/1.12/mmsource-1.12.0-git1194-linux.tar.gz"
+srcds_user: "tf2server"
+srcds_homedir: "/home/tf2server"
+plugins_disabled: []
+extensions_disabled: []

@@ -1,0 +1,21 @@
+---
+galaxy_info:
+  author: uncletopia
+  description: SRCDS game server manager
+  company: uncletopia.com
+  license: MIT
+  min_ansible_version: "2.14"
+  platforms:
+    - name: Ubuntu
+      release:
+        - focal
+    - name: Debian
+      release:
+        - bookworm
+  galaxy_tags:
+    - tf2
+    - srcds
+    - game
+    - srcds
+
+dependencies: []
