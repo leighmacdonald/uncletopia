@@ -1,6 +1,3 @@
-[submodule "sm_plugins/discord"]
-	path = sm_plugins/discord
-	url = https://gitlab.com/Zipcore/Discord.git
 [submodule "sm_plugins/gbans"]
 	path = sm_plugins/gbans
 	url = https://github.com/leighmacdonald/gbans.git
@@ -14,12 +11,6 @@
 [submodule "sm_plugins/tf2centerprojectiles"]
 	path = sm_plugins/tf2centerprojectiles
 	url = https://github.com/rtldg/tf2centerprojectiles.git
-[submodule "sm_plugins/tf2attributes"]
-	path = sm_plugins/tf2attributes
-	url = https://github.com/FlaminSarge/tf2attributes.git
-[submodule "sm_plugins/tf2-comp-fixes"]
-	path = sm_plugins/tf2-comp-fixes
-	url = https://github.com/ldesgoui/tf2-comp-fixes.git
 [submodule "playbooks/roles/githubixx.ansible_role_wireguard"]
 	path = playbooks/roles/githubixx.ansible_role_wireguard
 	url = https://github.com/githubixx/ansible-role-wireguard.git
