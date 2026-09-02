@@ -98,7 +98,7 @@ int Native_GetAttributeDefinitionString(Handle hPlugin, int nParams) {
 	
 	Address pItemDef = GetEconAttributeDefinition(defindex);
 	if (pItemDef) {
-		Address pKeyValues = DereferencePointer(
+		Address pKeyValues = LoadAddressFromAddress(
 				pItemDef + offs_CEconItemAttributeDefinition_pKeyValues);
 		if (KeyValuesPtrKeyExists(pKeyValues, key)) {
 			KeyValuesPtrGetString(pKeyValues, key, buffer, maxlen, buffer);
@@ -130,7 +130,7 @@ static bool LoadEconAttributeDefinitionString(int defindex, Address offset, char
 		return false;
 	}
 	
-	LoadStringFromAddress(DereferencePointer(pAttributeDef + offset), buffer, maxlen);
+	LoadStringFromAddress(LoadAddressFromAddress(pAttributeDef + offset), buffer, maxlen);
 	return true;
 }
 

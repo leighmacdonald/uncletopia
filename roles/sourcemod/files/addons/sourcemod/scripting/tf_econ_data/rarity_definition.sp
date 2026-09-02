@@ -2,7 +2,8 @@ Address offs_CEconItemSchema_ItemRarities;
 Address offs_CEconItemSchema_iLastValidRarity;
 
 Address offs_CEconItemRarityDefinition_iValue,
-		offs_CEconItemRarityDefinition_pszName;
+		offs_CEconItemRarityDefinition_pszName,
+		sizeof_m_pMemory_CEconItemRarityDefinition;
 
 /**
  * native bool(int rarity, char[] buffer, int maxlen);
@@ -77,8 +78,8 @@ int Native_GetRarityList(Handle hPlugin, int nParams) {
  * native Address<CEconItemRarityDefinition>(int index);
  */
 int Native_GetRarityDefinitionAddress(Handle hPlugin, int nParams) {
-	int value = GetNativeCell(1);
-	return view_as<int>(GetEconRarityDefinition(value));
+	int value = GetNativeCell(2);
+	return ReturnNativeAddress(GetEconRarityDefinition(value));
 }
 
 Address GetEconRarityDefinition(int rarity) {
@@ -102,7 +103,7 @@ static void GetRarityName(Address pRarityDef, char[] buffer, int maxlen) {
 		return;
 	}
 	LoadStringFromAddress(
-				DereferencePointer(pRarityDef + offs_CEconItemRarityDefinition_pszName),
+				LoadAddressFromAddress(pRarityDef + offs_CEconItemRarityDefinition_pszName),
 				buffer, maxlen);
 }
 
@@ -115,8 +116,9 @@ static Address GetEconRarityDefinitionFromMemoryIndex(int index) {
 		return Address_Null;
 	}
 	
-	return DereferencePointer(GetEconRarityDefinitionTree() + view_as<Address>(0x04))
-			+ view_as<Address>((index * 0x34) + 0x14);
+	return LoadAddressFromAddress(GetEconRarityDefinitionTree() + offs_CUtlMap_pMemory)
+			+ (index * sizeof_m_pMemory_CEconItemRarityDefinition)
+			+ offs_CUtlMap_Data_elem_i32;
 }
 
 /**

@@ -1,4 +1,5 @@
-Address offs_CProtoBufScriptObjectDefinitionManager_PaintList;
+Address offs_CProtoBufScriptObjectDefinitionManager_PaintList, // m_arDefinitionsMaps[9].m_Tree.m_Elements.m_pMemory
+		sizeof_m_pMemory_DefinitionMap_t;
 
 int Native_GetPaintKitList(Handle hPlugin, int nParams) {
 	return MoveHandleImmediate(GetValidPaintKitProtoDefs(), hPlugin);
@@ -21,20 +22,20 @@ static ArrayList GetValidPaintKitProtoDefs() {
 }
 
 int Native_GetPaintKitDefinitionAddress(Handle hPlugin, int nParams) {
-	int protoDefIndex = GetNativeCell(1);
-	
+	int protoDefIndex = GetNativeCell(2);
+
 	int nPaintsAllocated = GetNumPaintKitsAllocated();
 	for (int i; i < nPaintsAllocated; i++) {
 		Address pPaintKitDefinition = GetPaintKitArrayEntry(i);
 		if (!pPaintKitDefinition) {
-			return view_as<int>(Address_Null);
+			break;
 		}
-		
+
 		if (protoDefIndex == GetProtoDefIndex(pPaintKitDefinition)) {
-			return view_as<int>(pPaintKitDefinition);
+			return ReturnNativeAddress(pPaintKitDefinition);
 		}
 	}
-	return view_as<int>(Address_Null);
+	return ReturnNativeAddress(Address_Null);
 }
 
 /**
@@ -42,11 +43,11 @@ int Native_GetPaintKitDefinitionAddress(Handle hPlugin, int nParams) {
  * invalid.
  */
 static Address GetPaintKitArrayEntry(int index) {
-	Address pPaintKitData = DereferencePointer(GetProtoScriptObjDefManager()
+	Address pPaintKitData = LoadAddressFromAddress(GetProtoScriptObjDefManager()
 			+ offs_CProtoBufScriptObjectDefinitionManager_PaintList);
 	
 	// array is some sort of struct size 0x10, CPaintKitDefinition* is at offset 0x0C
-	Address pPaintKitEntry = pPaintKitData + view_as<Address>(index * 0x10);
+	Address pPaintKitEntry = pPaintKitData + (index * sizeof_m_pMemory_DefinitionMap_t);
 	
 	// tested in GetValidPaintKits() to be non-zero
 	int unknown = LoadFromAddress(pPaintKitEntry, NumberType_Int32);
@@ -54,12 +55,12 @@ static Address GetPaintKitArrayEntry(int index) {
 		return Address_Null;
 	}
 	
-	return DereferencePointer(pPaintKitEntry + view_as<Address>(0x0C));
+	return LoadAddressFromAddress(pPaintKitEntry + offs_CUtlMap_Data_elem_u16); // m_Data_elem + 0
 }
 
 static int GetNumPaintKitsAllocated() {
 	// offset after GetProtoScriptObjDefManager() in CTFItemDefinition::GetValidPaintkits()
 	return LoadFromAddress(GetProtoScriptObjDefManager()
-			+ offs_CProtoBufScriptObjectDefinitionManager_PaintList 
-			+ view_as<Address>(0xE), NumberType_Int16);
+			+ offs_CProtoBufScriptObjectDefinitionManager_PaintList	// This is already at offs_CUtlMap_m_Tree_m_Elements_m_pMemory(+4/8)
+			+ (offs_CUtlMap_NumElements_u16 - offs_CUtlMap_pMemory), NumberType_Int16);
 }

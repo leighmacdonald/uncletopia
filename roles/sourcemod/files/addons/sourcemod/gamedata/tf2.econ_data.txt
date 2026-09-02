@@ -11,7 +11,9 @@
 				// function is called twice in that function
 				"library"	"server"
 				"linux"		"@_Z15GEconItemSchemav"
+				"linux64"	"@_Z15GEconItemSchemav"
 				"windows"	"\xE8\x2A\x2A\x2A\x2A\x83\xC0\x04\xC3"
+				"windows64"	"\x48\x83\xEC\x28\xE8\x2A\x2A\x2A\x2A\x48\x83\xC0\x08"
 			}
 			"CEconItemSchema::GetItemDefinition()"
 			{
@@ -19,7 +21,9 @@
 				// called in branch before unique x-ref "Item definition index %d in achievement reward %s was not found"
 				"library"	"server"
 				"linux"		"@_ZN15CEconItemSchema17GetItemDefinitionEi"
+				"linux64"	"@_ZN15CEconItemSchema17GetItemDefinitionEi"
 				"windows"	"\x55\x8B\xEC\x56\x8B\xF1\x8D\x45\x08\x50\x8D\x8E\x2A\x2A\x2A\x2A\xE8\x2A\x2A\x2A\x2A\x85\xC0"
+				"windows64"	"\x89\x54\x24\x10\x53\x48\x83\xEC\x20\x48\x8B\xD9\x48\x8D\x54\x24\x38\x48\x81\xC1\x00\x01\x00\x00"
 			}
 			"CEconItemSchema::GetAttributeDefinition()"
 			{
@@ -27,7 +31,9 @@
 				// called at some point after unique x-ref to "static_attrs"
 				"library"			"server"
 				"linux"				"@_ZN15CEconItemSchema22GetAttributeDefinitionEi"
+				"linux64"			"@_ZN15CEconItemSchema22GetAttributeDefinitionEi"
 				"windows"			"\x55\x8B\xEC\x56\x8B\xF1\x8D\x45\x08\x50\x8D\x8E\xBC\x01\x00\x00"
+				"windows64"			"\x89\x54\x24\x10\x53\x48\x83\xEC\x20\x48\x8B\xD9\x48\x8D\x54\x24\x38\x48\x81\xC1\x50\x02\x00\x00"
 			}
 			"CEconItemSchema::GetAttributeDefinitionByName()"
 			{
@@ -35,21 +41,27 @@
 				// has unique x-ref string "CEconItemSchema::GetAttributeDefinitionByName", even on Windows
 				"library"			"server"
 				"linux"				"@_ZN15CEconItemSchema28GetAttributeDefinitionByNameEPKc"
+				"linux64"			"@_ZN15CEconItemSchema28GetAttributeDefinitionByNameEPKc"
 				"windows"			"\x55\x8B\xEC\x83\xEC\x1C\x83\x7D\x08\x00"
+				"windows64"			"\x40\x55\x56\x48\x83\xEC\x78"
 			}
 			"CTFItemSchema::GetMasterMapDefByName()"
 			{
 				// called in block containing xref "Invalid NextMap list, substituting current map"
 				"library"	"server"
 				"linux"		"@_ZNK13CTFItemSchema21GetMasterMapDefByNameEPKc"
+				"linux64"	"@_ZNK13CTFItemSchema21GetMasterMapDefByNameEPKc"
 				"windows"	"\x55\x8B\xEC\x53\x56\x57\x8B\xF9\x33\xF6\x39\xB7\x60\x06\x00\x00"
+				"windows64"	"\x48\x89\x5C\x24\x2A\x48\x89\x6C\x24\x2A\x48\x89\x74\x24\x2A\x57\x48\x83\xEC\x2A\x33\xDB\x48\x8B\xEA\x48\x8B\xF9\x39\x99\x2A\x2A\x2A\x2A\x7E\x2A\x0F\x1F\x40\x2A\x0F\x1F\x84\x00\x2A\x2A\x2A\x2A\x48\x8B\x87\x2A\x2A\x2A\x2A\x48\x8D\x34\xDD\x2A\x2A\x2A\x2A\x48\x8B\xD5\x48\x8B\x0C\x06\x48\x8B\x49"
 			}
 			"TranslateWeaponEntForClass()"
 			{
 				// get x-ref to structure containing string "saxxy"
 				"library"	"server"
 				"linux"		"@_Z26TranslateWeaponEntForClassPKci"
+				"linux64"	"@_Z26TranslateWeaponEntForClassPKci"
 				"windows"	"\x55\x8B\xEC\x53\x8B\x5D\x08\x56\x57\x85\xDB\x74\x2A\x33\xFF"
+				"windows64"	"\x48\x89\x5C\x24\x2A\x48\x89\x6C\x24\x2A\x48\x89\x74\x24\x2A\x48\x89\x7C\x24\x2A\x41\x56\x48\x83\xEC\x2A\x48\x63\xEA"
 			}
 			
 			"KeyValues::GetString()"
@@ -57,14 +69,18 @@
 				// contains semi-unique x-ref "%lld" (in the windows version there's two refs to it in the function)
 				"library"	"server"
 				"linux"		"@_ZN9KeyValues9GetStringEPKcS1_"
+				"linux64"	"@_ZN9KeyValues9GetStringEPKcS1_"
 				"windows"	"\x55\x8B\xEC\x81\xEC\x40\x02\x00\x00\x53\x8B\x5D\x08"
+				"windows64"	"\x48\x89\x5C\x24\x2A\x48\x89\x6C\x24\x2A\x48\x89\x74\x24\x2A\x57\x48\x81\xEC\x2A\x2A\x2A\x2A\x49\x8B\xE8"
 			}
 			"KeyValues::FindKey()"
 			{
 				// first call in KeyValues::GetString()
 				"library"	"server"
 				"linux"		"@_ZN9KeyValues7FindKeyEPKcb"
-				"windows"	"\x55\x8B\xEC\x81\xEC\x04\x01\x00\x00\x56\x8B\x75\x08\x57\x8B\xF9"
+				"linux64"	"@_ZN9KeyValues7FindKeyEPKcb"
+				"windows"	"\x55\x8B\xEC\x81\xEC\x04\x01\x00\x00\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x0F\x84\x2A\x01\x00\x00"
+				"windows64"	"\x48\x8B\xC4\x53\x55\x56\x48\x81\xEC\x20\x01\x00\x00"
 			}
 			
 			"GetProtoScriptObjDefManager()"
@@ -74,7 +90,9 @@
 				// the windows signature here wildcards the size and checks for the subsequent "call" opcode
 				"library"	"server"
 				"linux"		"@_Z27GetProtoScriptObjDefManagerv"
+				"linux64"	"@_Z27GetProtoScriptObjDefManagerv"
 				"windows"	"\xA1\x2A\x2A\x2A\x2A\x85\xC0\x0F\x85\x2A\x2A\x2A\x2A\x53"
+				"windows64"	"\x48\x83\xEC\x2A\x48\x8B\x05\x2A\x2A\x2A\x2A\x48\x85\xC0\x0F\x85\x2A\x2A\x2A\x2A\x48\x89\x74\x24"
 			}
 			"IProtoBufScriptObjectDefinition::GetDefIndex()"
 			{
@@ -82,210 +100,335 @@
 				// offset into header is hardcoded on windows (last 0x24 byte)
 				"library"	"server"
 				"linux"		"@_ZNK31IProtoBufScriptObjectDefinition11GetDefIndexEv"
+				"linux64"	"@_ZNK31IProtoBufScriptObjectDefinition11GetDefIndexEv"
 				"windows"	"\xE8\x5B\x00\x00\x00\x8B\x40\x24\xC3"
+				"windows64"	"\x48\x83\xEC\x2A\xE8\x2A\x2A\x2A\x2A\x8B\x40"
 			}
 		}
 		
 		"Offsets"
 		{
+			"ISchemaAttributeTypeBase::BSupportsGame..."
+			{
+				// ISchemaAttributeTypeBase::BSupportsGameplayModificationAndNetworking()
+				// taken straight from tf2attributes
+				// (older versions of SourceMod had a limit on section length)
+				"windows"	"10"
+				"windows64"	"10"
+				"linux"		"11"
+				"linux64"	"11"
+			}
 			"CEconItemDefinition::m_pKeyValues"
 			{
+				// CEconItemDefinition::m_pKVItem
 				// in CEconItemDefinition::GetDefinitionString()
 				"linux"		"4"
 				"windows"	"4"
+				"linux64"	"8"
+				"windows64"	"8"
 			}
 			"CEconItemDefinition::m_u8MinLevel"
 			{
+				// CEconItemDefinition::m_unMinItemLevel
 				// in CEconItemDefinition::RollItemLevel()
 				"linux"		"17"
 				"windows"	"17"
+				"linux64"	"33"
+				"windows64"	"33"
 			}
 			"CEconItemDefinition::m_u8MaxLevel"
 			{
+				// CEconItemDefinition::m_unMaxItemLevel
 				// in CEconItemDefinition::RollItemLevel()
 				"linux"		"18"
 				"windows"	"18"
+				"linux64"	"34"
+				"windows64"	"34"
 			}
 			"CEconItemDefinition::m_u8ItemQuality"
 			{
+				// CEconItemDefinition::m_nItemQuality
 				"linux"		"19"
 				"windows"	"19"
+				"linux64"	"35"
+				"windows64"	"35"
 			}
 			"CEconItemDefinition::m_si8ItemRarity"
 			{
+				// CEconItemDefinition::m_nItemRarity
 				// byte read in IEconItemInterface::GetRarity()
 				"linux"		"21"
 				"windows"	"21"
+				"linux64"	"37"
+				"windows64"	"37"
 			}
 			"CEconItemDefinition::m_AttributeList"
 			{
+				// CEconItemDefinition::m_vecStaticAttributes
 				"linux"		"28"
 				"windows"	"28"
+				"linux64"	"48"
+				"windows64"	"48"
 			}
 			"CEconItemDefinition::m_pszLocalizedItemName"
 			{
+				// CEconItemDefinition::m_pszItemBaseName
 				// set near x-ref "Test Item %d"
 				"linux"		"52"
 				"windows"	"52"
+				"linux64"	"88"
+				"windows64"	"88"
 			}
 			"CEconItemDefinition::m_pszItemClassname"
 			{
+				// CEconItemDefinition::m_pszItemClassname
 				// x-ref "item_class" in CEconItemDefinition::BInitFromKV()
 				"linux"		"208"
 				"windows"	"208"
+				"linux64"	"360"
+				"windows64"	"360"
 			}
 			"CEconItemDefinition::m_pszItemName"
 			{
+				// CEconItemDefinition::m_pszDefinitionName
 				// offset before call to strcmp/V_stricmp in CEconItemSchema::GetItemDefinitionByName()
 				"linux"		"220"
 				"windows"	"220"
+				"linux64"	"384"
+				"windows64"	"384"
 			}
 			"CEconItemDefinition::m_bBaseItem"
 			{
+				// CEconItemDefinition::m_bBaseItem
 				// x-ref "baseitem" in CEconItemDefinition::BInitFromKV()
 				"linux"		"230"
 				"windows"	"230"
+				"linux64"	"402"
+				"windows64"	"402"
 			}
 			"CEconItemDefinition::m_bitsEquipRegionGroups"
 			{
+				// CEconItemDefinition::m_unEquipRegionMask
 				// result of CEconItemSchema::GetEquipRegionBitMaskByName() call
 				// or'd after CEconItemSchema::GetEquipRegionBitMaskByName() call in ::BInitFromKV
 				"linux"		"304"
 				"windows"	"304"
+				"linux64"	"524"
+				"windows64"	"524"
 			}
 			"CEconItemDefinition::m_bitsEquipRegionConflicts"
 			{
+				// CEconItemDefinition::m_unEquipRegionConflictMask
 				// result of CEconItemSchema::GetEquipRegionMaskByName() call
 				// or'd after CEconItemSchema::GetEquipRegionBitMaskByName() call in ::BInitFromKV
 				"linux"		"308"
 				"windows"	"308"
+				"linux64"	"528"
+				"windows64"	"528"
 			}
 			
 			"CTFItemDefinition::m_iDefaultItemSlot"
 			{
+				// CTFItemDefinition::m_iDefaultLoadoutSlot
 				"linux"		"400"
 				"windows"	"400"
+				"linux64"	"672"
+				"windows64"	"672"
 			}
 			"CTFItemDefinition::m_aiItemSlot"
 			{
+				// CTFItemDefinition::m_iLoadoutSlots[]
 				// array mapping class indices to item slots (-1 if not valid for class)
 				// x-ref "used_by_classes" in CTFItemDefinition::BInitFromKV()
 				// offset in second-to-last block before loop
 				"linux"		"512"
 				"windows"	"512"
+				"linux64"	"884"
+				"windows64"	"884"
 			}
 			
 			// DEPRECATED: this is present as a transitional period for backwards compatibility.
 			// this will be removed at some point
 			"CEconItemDefinition::m_aiItemSlot"
 			{
+				// CEconItemDefinition::m_iLoadoutSlots[]
 				"linux"		"512"
 				"windows"	"512"
 			}
 			
 			"CEconItemAttributeDefinition::m_pKeyValues"
 			{
+				// CEconItemAttributeDefinition::m_pKVAttribute
 				// set in CEconItemAttributeDefinition::BInitFromKV() after KeyValues::MakeCopy()
 				"linux"		"0"
 				"windows"	"0"
+				"linux64"	"0"
+				"windows64"	"0"
 			}
 			"CEconItemAttributeDefinition::m_iAttributeDefinitionIndex"
 			{
+				// CEconItemAttributeDefinition::m_nDefIndex
 				"linux"		"4"
 				"windows"	"4"
+				"linux64"	"8"
+				"windows64"	"8"
+			}
+			"CEconItemAttributeDefinition::m_pAttrType"
+			{
+				// CEconItemAttributeDefinition::m_pAttrType
+				"linux"		"8"
+				"windows"	"8"
+				"linux64"	"16"
+				"windows64"	"16"
 			}
 			"CEconItemAttributeDefinition::m_bHidden"
 			{
+				// CEconItemAttributeDefinition::m_bHidden
 				"linux"		"12"
 				"windows"	"12"
+				"linux64"	"24"
+				"windows64"	"24"
 			}
 			"CEconItemAttributeDefinition::m_bIsInteger"
 			{
+				// CEconItemAttributeDefinition::m_bStoredAsInteger
 				"linux"		"14"
 				"windows"	"14"
+				"linux64"	"26"
+				"windows64"	"26"
 			}
 			"CEconItemAttributeDefinition::m_pszAttributeName"
 			{
+				// CEconItemAttributeDefinition::m_pszDefinitionName
 				"linux"		"48"
 				"windows"	"48"
+				"linux64"	"72"
+				"windows64"	"72"
 			}
 			"CEconItemAttributeDefinition::m_pszAttributeClass"
 			{
+				// CEconItemAttributeDefinition::m_pszAttributeClass
 				"linux"		"52"
 				"windows"	"52"
+				"linux64"	"80"
+				"windows64"	"80"
 			}
 			
 			"CEconItemQualityDefinition::m_iValue"
 			{
+				// CEconItemQualityDefinition::m_nValue
 				// refer to CEconItemQualityDefinition::BInitFromKV()
 				"linux"		"0"
 				"windows"	"0"
+				"linux64"	"0"
+				"windows64"	"0"
 			}
 			"CEconItemQualityDefinition::m_pszName"
 			{
+				// CEconItemQualityDefinition::m_strName
 				"linux"		"4"
 				"windows"	"4"
+				"linux64"	"8"
+				"windows64"	"8"
 			}
 			
 			"CEconItemRarityDefinition::m_iValue"
 			{
+				// CEconItemRarityDefinition::m_nValue
 				// refer to CEconItemRarityDefinition::BInitFromKV()
 				"linux"		"0"
 				"windows"	"0"
+				"linux64"	"0"
+				"windows64"	"0"
 			}
 			"CEconItemRarityDefinition::m_pszName"
 			{
+				// CEconItemRarityDefinition::m_strName
 				"linux"		"8"
 				"windows"	"8"
+				"linux64"	"8"
+				"windows64"	"8"
 			}
 			
 			"CEconItemSchema::m_ItemRarities"
 			{
+				// CEconItemSchema::m_mapRarities
 				// offset into `ebx` in CEconItemSchema::GetRarityDefinition() on linux
 				"linux"		"124"
 				"windows"	"124"
+				"linux64"	"160"
+				"windows64"	"160"
 			}
 			"CEconItemSchema::m_iLastValidRarity"
 			{
+				// CEconItemSchema::m_mapRarities.m_LastAlloc
 				// offset into `ecx` inside second block within CEconItemSchema::GetRarityDefinitionByMapIndex() on linux
 				"linux"		"152"
 				"windows"	"152"
+				"linux64"	"196"
+				"windows64"	"196"
 			}
 			"CEconItemSchema::m_ItemQualities"
 			{
+				// CEconItemSchema::m_mapQualities
 				// CUtlRBTree<...>
 				// offset into `ebx` in CEconItemSchema::GetQualityDefinition() on linux
 				"linux"		"160"
 				"windows"	"160"
+				"linux64"	"208"
+				"windows64"	"208"
 			}
 			"CEconItemSchema::m_ItemList"
 			{
-				// CUtlVector (?) with struct (int defindex, CEconItemDefinition*, int unknown)
+				// CEconItemSchema::m_mapItems.m_memNodes
+				// CUtlMemory (?) with struct (int defindex, CEconItemDefinition*, int unknown)
 				// in CEconItemSchema::GetItemDefinitionByName(), dereferenced inside loop
 				"linux"		"232"
 				"windows"	"232"
+				"linux64"	"312"
+				"windows64"	"312"
 			}
 			"CEconItemSchema::m_nItemCount"
 			{
+				// CEconItemSchema::m_mapItems.m_nMaxElement
 				// in CEconItemSchema::GetItemDefinitionByName(), in the beginning block
 				// this doesn't line up with the usual CUtlVector struct /shrug
 				"linux"		"252"
 				"windows"	"252"
+				"linux64"	"336"
+				"windows64"	"336"
 			}
 			"CEconItemSchema::m_AttributeMap"
 			{
+				// CEconItemSchema::m_mapAttributes.m_tree.m_pMemory
 				// accessed in loop at CEconItemSchema::GetAttributeDefinitionByName
 				"linux"		"448"
 				"windows"	"448"
+				"linux64"	"600"
+				"windows64"	"600"
 			}
 			"CEconItemSchema::m_EquipRegions"
 			{
+				// CEconItemSchema::m_vecEquipRegionsList
 				// the smaller of the two offsets in CEconItemSchema::GetEquipRegionIndexByName()
 				"linux"		"968"
 				"windows"	"968"
+				"linux64"	"1320"
+				"windows64"	"1320"
+			}
+			"CEconItemSchema::m_mapAttributeControlledParticleSystems"
+			{
+				// CEconItemSchema::m_mapAttributeControlledParticleSystems
+				// CUtlMap<int, attachedparticlesystem_t > using unsigned short indexes
+				// can be validated on linux as being the first add/lea offset at the start of ::BInitAttributeControlledParticleSystems()
+				"linux"		"880"
+				"windows"	"880"
+				"linux64"	"1184"
+				"windows64"	"1184"
 			}
 			"CEconItemSchema::m_ParticleSystemTree"
 			{
+				// DEPRECATED: this is present as a transitional period for backwards compatibility as m_mapAttributeControlledParticleSystems - 4
 				// a CUtlRBTree instance
 				// the underlying map's ::Insert function is accessed close to the end of ::BInitAttributeControlledParticleSystems()
 				// subtract by 4 to get the offset of the CUtlRBTree itself
@@ -294,51 +437,73 @@
 			}
 			"CEconItemSchema::m_CosmeticUnusualEffectList"
 			{
+				// CEconItemSchema::m_vecAttributeControlledParticleSystemsCosmetics
 				// a CUtlVector, referenced in CEconItemSchema::BInitAttributeControlledParticleSystems()
 				// we specify the offsets of all three lists in case any offset changes independently
 				// (e.g., Valve adds a new list in between one of the others, for some weird reason)
 				"linux"		"908"
 				"windows"	"908"
+				"linux64"	"1224"
+				"windows64"	"1224"
 			}
 			"CEconItemSchema::m_WeaponUnusualEffectList"
 			{
+				// CEconItemSchema::m_vecAttributeControlledParticleSystemsWeapons
 				// a CUtlVector, referenced in CEconItemSchema::BInitAttributeControlledParticleSystems()
 				"linux"		"928"
 				"windows"	"928"
+				"linux64"	"1256"
+				"windows64"	"1256"
 			}
 			"CEconItemSchema::m_TauntUnusualEffectList"
 			{
+				// CEconItemSchema::m_vecAttributeControlledParticleSystemsTaunts
 				// a CUtlVector, referenced in CEconItemSchema::BInitAttributeControlledParticleSystems()
 				"linux"		"948"
 				"windows"	"948"
+				"linux64"	"1288"
+				"windows64"	"1288"
 			}
 			
 			"CTFItemSchema::m_ItemSlotNames"
 			{
+				// CTFItemSchema::m_vecClassLoadoutStrings
 				// used in CTFItemDefinition::BInitFromKV() in the same block that "head" and "misc" are referenced
 				// on Windows, "misc" is a unique subroutine x-ref
 				"linux"		"1432"
 				"windows"	"1432"
+				"linux64"	"1968"
+				"windows64"	"1968"
 			}
 			
 			// attachedparticlesystem_t is initialized in CEconItemSchema::BInitAttributeControlledParticleSystems()
 			"attachedparticlesystem_t::m_pszParticleSystem"
 			{
+				// attachedparticlesystem_t::nSystemID
 				"linux"		"12"
 				"windows"	"12"
+				"linux64"	"16"
+				"windows64"	"16"
 			}
 			"attachedparticlesystem_t::m_iAttributeValue"
 			{
+				// attachedparticlesystem_t::pszControlPoints
 				"linux"		"24"
 				"windows"	"24"
+				"linux64"	"32"
+				"windows64"	"32"
 			}
 			
 			"CProtoBufScriptObjectDefinitionManager::m_PaintList"
 			{
+				// CProtoBufScriptObjectDefinitionManager::m_arDefinitionsMaps[].m_Tree.m_Elements.m_pMemory
 				// some sort of struct of size 0x10 with a CPaintKitDefinition* at 0x0C
 				// offset in block before CPaintKitDefinition::CanApplyToItem() call in CTFItemDefinition::GetValidPaintkits()
+				// m_arDefinitionsMaps[9].m_Tree.m_Elements.m_pMemory
 				"linux"		"268"
 				"windows"	"268"
+				"linux64"	"392"
+				"windows64"	"392"
 			}
 			
 			"sizeof(static_attrib_t)"
@@ -346,6 +511,8 @@
 				// used for iterating over the attribute list
 				"linux"		"8"
 				"windows"	"8"
+				"linux64"	"16"
+				"windows64"	"16"
 			}
 			"sizeof(CEconItemAttributeDefinition)"
 			{
@@ -353,6 +520,35 @@
 				// this does not include the members of the map itself
 				"linux"		"68"
 				"windows"	"68"
+				"linux64"	"104"
+				"windows64"	"104"
+			}
+			"sizeof(attachedparticlesystem_t)"
+			{
+				// used for iterating over the particle systems map
+				// this does not include the members of the map itself
+				"linux"		"52"
+				"windows"	"52"
+				"linux64"	"88"
+				"windows64"	"88"
+			}
+			"sizeof(CEconItemRarityDefinition)"
+			{
+				// used for iterating over the particle systems map
+				// this does not include the members of the map itself
+				"linux"		"32"
+				"windows"	"32"
+				"linux64"	"56"
+				"windows64"	"56"
+			}
+			"sizeof(CEconItemQualityDefinition)"
+			{
+				// used for iterating over the particle systems map
+				// this does not include the members of the map itself
+				"linux"		"16"
+				"windows"	"16"
+				"linux64"	"32"
+				"windows64"	"32"
 			}
 		}
 	}
