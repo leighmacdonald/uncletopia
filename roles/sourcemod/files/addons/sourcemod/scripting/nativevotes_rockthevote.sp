@@ -12,7 +12,7 @@
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU General Public License, version 3.0, as published by the
  * Free Software Foundation.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
@@ -90,16 +90,16 @@ public void OnPluginStart()
 {
 	LoadTranslations("common.phrases");
 	LoadTranslations("rockthevote.phrases");
-	
+
 	g_Cvar_Needed = CreateConVar("sm_rtv_needed", "0.60", "Percentage of players needed to rockthevote (Def 60%)", 0, true, 0.05, true, 1.0);
 	g_Cvar_MinPlayers = CreateConVar("sm_rtv_minplayers", "0", "Number of players required before RTV will be enabled.", 0, true, 0.0, true, float(MAXPLAYERS));
 	g_Cvar_InitialDelay = CreateConVar("sm_rtv_initialdelay", "30.0", "Time (in seconds) before first RTV can be held", 0, true, 0.00);
 	g_Cvar_Interval = CreateConVar("sm_rtv_interval", "240.0", "Time (in seconds) after a failed RTV before another can be held", 0, true, 0.00);
 	g_Cvar_ChangeTime = CreateConVar("sm_rtv_changetime", "0", "When to change the map after a succesful RTV: 0 - Instant, 1 - RoundEnd, 2 - MapEnd", _, true, 0.0, true, 2.0);
 	g_Cvar_RTVPostVoteAction = CreateConVar("sm_rtv_postvoteaction", "0", "What to do with RTV's after a mapvote has completed. 0 - Allow, success = instant change, 1 - Deny", _, true, 0.0, true, 1.0);
-	
+
 	RegConsoleCmd("sm_rtv", Command_RTV);
-	
+
 	AutoExecConfig(true, "rtv");
 }
 
@@ -114,10 +114,10 @@ public void OnAllPluginsLoaded()
 	{
 		LogMessage("Unloading rockthevote to prevent conflicts...");
 		ServerCommand("sm plugins unload rockthevote");
-		
+
 		char oldPath[PLATFORM_MAX_PATH];
 		char newPath[PLATFORM_MAX_PATH];
-		
+
 		BuildPath(Path_SM, oldPath, sizeof(oldPath), "plugins/rockthevote.smx");
 		BuildPath(Path_SM, newPath, sizeof(newPath), "plugins/disabled/rockthevote.smx");
 		if (RenameFile(newPath, oldPath))
@@ -125,19 +125,19 @@ public void OnAllPluginsLoaded()
 			LogMessage("Moving rockthevote to disabled.");
 		}
 	}
-	
-	g_NativeVotes = LibraryExists(LIBRARY) && 
-		GetFeatureStatus(FeatureType_Native, "NativeVotes_AreVoteCommandsSupported") == FeatureStatus_Available && 
+
+	g_NativeVotes = LibraryExists(LIBRARY) &&
+		GetFeatureStatus(FeatureType_Native, "NativeVotes_AreVoteCommandsSupported") == FeatureStatus_Available &&
 		NativeVotes_AreVoteCommandsSupported();
-		
+
 	if (g_NativeVotes)
 		RegisterVoteHandler();
 }
 
 public void OnLibraryAdded(const char[] name)
 {
-	if (StrEqual(name, LIBRARY, false) && 
-		GetFeatureStatus(FeatureType_Native, "NativeVotes_AreVoteCommandsSupported") == FeatureStatus_Available && 
+	if (StrEqual(name, LIBRARY, false) &&
+		GetFeatureStatus(FeatureType_Native, "NativeVotes_AreVoteCommandsSupported") == FeatureStatus_Available &&
 		NativeVotes_AreVoteCommandsSupported())
 	{
 		g_NativeVotes = true;
@@ -170,26 +170,26 @@ public void OnMapStart()
 	g_Votes = 0;
 	g_VotesNeeded = 0;
 	g_InChange = false;
-	
+
 	/* Handle late load */
 	for (int i=1; i<=MaxClients; i++)
 	{
 		if (IsClientConnected(i))
 		{
-			OnClientConnected(i);	
-		}	
+			OnClientConnected(i);
+		}
 	}
 }
 
 public void OnMapEnd()
 {
 	g_Warmup = false;
-	g_CanRTV = false;	
+	g_CanRTV = false;
 	g_RTVAllowed = false;
 }
 
 public void OnConfigsExecuted()
-{	
+{
 	g_CanRTV = true;
 	g_RTVAllowed = false;
 	g_RTVTime = GetTime() + g_Cvar_Interval.IntValue;
@@ -200,12 +200,12 @@ public void OnClientConnected(int client)
 {
 	if(IsFakeClient(client))
 		return;
-	
+
 	g_Voted[client] = false;
 
 	g_Voters++;
 	g_VotesNeeded = RoundToFloor(float(g_Voters) * g_Cvar_Needed.FloatValue);
-	
+
 	return;
 }
 
@@ -213,33 +213,33 @@ public void OnClientDisconnect(int client)
 {
 	if(IsFakeClient(client))
 		return;
-	
+
 	if(g_Voted[client])
 	{
 		g_Votes--;
 	}
-	
+
 	g_Voters--;
-	
+
 	g_VotesNeeded = RoundToFloor(float(g_Voters) * g_Cvar_Needed.FloatValue);
-	
+
 	if (!g_CanRTV)
 	{
-		return;	
+		return;
 	}
-	
-	if (g_Votes && 
-		g_Voters && 
-		g_Votes >= g_VotesNeeded && 
-		g_RTVAllowed ) 
+
+	if (g_Votes &&
+		g_Voters &&
+		g_Votes >= g_VotesNeeded &&
+		g_RTVAllowed )
 	{
 		if (g_Cvar_RTVPostVoteAction.IntValue == 1 && HasEndOfMapVoteFinished())
 		{
 			return;
 		}
-		
+
 		StartRTV();
-	}	
+	}
 }
 
 public void OnClientSayCommand_Post(int client, const char[] command, const char[] sArgs)
@@ -248,13 +248,13 @@ public void OnClientSayCommand_Post(int client, const char[] command, const char
 	{
 		return;
 	}
-	
+
 	if (strcmp(sArgs, "rtv", false) == 0 || strcmp(sArgs, "rockthevote", false) == 0)
 	{
 		ReplySource old = SetCmdReplySource(SM_REPLY_TO_CHAT);
-		
+
 		AttemptRTV(client);
-		
+
 		SetCmdReplySource(old);
 	}
 }
@@ -265,9 +265,9 @@ public Action Command_RTV(int client, int args)
 	{
 		return Plugin_Handled;
 	}
-	
+
 	AttemptRTV(client);
-	
+
 	return Plugin_Handled;
 }
 
@@ -297,13 +297,13 @@ void AttemptRTV(int client, bool isVoteMenu=false)
 		}
 		return;
 	}
-		
+
 	if (!CanMapChooserStartVote())
 	{
 		ReplyToCommand(client, "[SM] %t", "RTV Started");
 		return;
 	}
-	
+
 	if (GetClientCount(true) < g_Cvar_MinPlayers.IntValue)
 	{
 		ReplyToCommand(client, "[SM] %t", "Minimal Players Not Met");
@@ -311,9 +311,9 @@ void AttemptRTV(int client, bool isVoteMenu=false)
 		{
 			NativeVotes_DisplayCallVoteFail(client, NativeVotesCallFail_Loading);
 		}
-		return;			
+		return;
 	}
-	
+
 	if (g_Voted[client])
 	{
 		ReplyToCommand(client, "[SM] %t", "Already Voted", g_Votes, g_VotesNeeded);
@@ -322,34 +322,36 @@ void AttemptRTV(int client, bool isVoteMenu=false)
 			NativeVotes_DisplayCallVoteFail(client, NativeVotesCallFail_AlreadyActive);
 		}
 		return;
-	}	
-	
+	}
+
 	char name[MAX_NAME_LENGTH];
 	GetClientName(client, name, sizeof(name));
-	
+
 	g_Votes++;
 	g_Voted[client] = true;
-	
+
 	PrintToChatAll("[SM] %t", "RTV Requested", name, g_Votes, g_VotesNeeded);
-	
+
 	if (g_Votes >= g_VotesNeeded)
 	{
 		StartRTV();
-	}	
+	}
 }
 
 public Action Timer_DelayRTV(Handle timer)
 {
 	g_RTVAllowed = true;
+
+	return Plugin_Continue;
 }
 
 void StartRTV()
 {
 	if (g_InChange)
 	{
-		return;	
+		return;
 	}
-	
+
 	if (EndOfMapVoteEnabled() && HasEndOfMapVoteFinished())
 	{
 		/* Change right now then */
@@ -357,25 +359,25 @@ void StartRTV()
 		if (GetNextMap(map, sizeof(map)))
 		{
 			GetMapDisplayName(map, map, sizeof(map));
-			
+
 			PrintToChatAll("[SM] %t", "Changing Maps", map);
 			CreateTimer(5.0, Timer_ChangeMap, _, TIMER_FLAG_NO_MAPCHANGE);
 			g_InChange = true;
-			
+
 			ResetRTV();
-			
+
 			g_RTVAllowed = false;
 		}
-		return;	
+		return;
 	}
-	
+
 	if (CanMapChooserStartVote())
 	{
 		MapChange when = view_as<MapChange>(g_Cvar_ChangeTime.IntValue);
 		InitiateMapChooserVote(when);
-		
+
 		ResetRTV();
-		
+
 		g_RTVAllowed = false;
 		g_RTVTime = GetTime() + g_Cvar_Interval.IntValue;
 
@@ -386,7 +388,7 @@ void StartRTV()
 void ResetRTV()
 {
 	g_Votes = 0;
-			
+
 	for (int i=1; i<=MAXPLAYERS; i++)
 	{
 		g_Voted[i] = false;
@@ -396,15 +398,15 @@ void ResetRTV()
 public Action Timer_ChangeMap(Handle hTimer)
 {
 	g_InChange = false;
-	
+
 	LogMessage("RTV changing map manually");
-	
+
 	char map[PLATFORM_MAX_PATH];
 	if (GetNextMap(map, sizeof(map)))
-	{	
+	{
 		ForceChangeLevel(map, "RTV after mapvote");
 	}
-	
+
 	return Plugin_Stop;
 }
 
@@ -412,7 +414,7 @@ void RegisterVoteHandler()
 {
 	if (!g_NativeVotes)
 		return;
-		
+
 	if (!g_RegisteredMenusChangeLevel)
 	{
 		NativeVotes_RegisterVoteCommand(NativeVotesOverride_ChgLevel, Menu_RTV);
@@ -426,10 +428,10 @@ void RemoveVoteHandler()
 	{
 		if (g_NativeVotes)
 			NativeVotes_UnregisterVoteCommand(NativeVotesOverride_ChgLevel, Menu_RTV);
-			
+
 		g_RegisteredMenusChangeLevel = false;
 	}
-		
+
 }
 
 public Action Menu_RTV(int client, NativeVotesOverride overrideType, const char[] voteArgument)
@@ -438,18 +440,18 @@ public Action Menu_RTV(int client, NativeVotesOverride overrideType, const char[
 	{
 		return Plugin_Handled;
 	}
-	
+
 	if (strlen(voteArgument) == 0)
 	{
 		NativeVotes_DisplayCallVoteFail(client, NativeVotesCallFail_SpecifyMap);
 		return Plugin_Handled;
 	}
-	
+
 	ReplySource old = SetCmdReplySource(SM_REPLY_TO_CHAT);
-	
+
 	AttemptRTV(client, true);
-	
+
 	SetCmdReplySource(old);
-	
+
 	return Plugin_Handled;
 }
