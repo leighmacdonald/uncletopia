@@ -17,7 +17,10 @@ Address offs_CEconItemDefinition_pKeyValues,
 Address offs_CEconItemDefinition_aiItemSlot,
 		offs_CTFItemDefinition_iDefaultItemSlot;
 
+Address offs_CEconItemAttributeDefinition_m_pAttrType;
 Address sizeof_static_attrib_t;
+
+IntMap g_imapAttrIsNetworked;
 
 // in CEconItemDefinition, defindex is at 0x08 (we never use this information though)
 
@@ -95,7 +98,7 @@ int Native_GetItemSlot(Handle hPlugin, int nParams) {
 	}
 	
 	return LoadFromAddress(pItemDef + offs_CEconItemDefinition_aiItemSlot +
-			view_as<Address>(playerClass * 4), NumberType_Int32);
+			(playerClass * 4), NumberType_Int32);
 }
 
 /**
@@ -227,19 +230,35 @@ int Native_GetItemStaticAttributes(Handle hPlugin, int nParams) {
 	
 	// get size from CUtlVector
 	int nAttribs = LoadFromAddress(
-			pItemDef + offs_CEconItemDefinition_AttributeList + view_as<Address>(0x0C),
+			pItemDef + offs_CEconItemDefinition_AttributeList + offs_CUtlVector_m_size,
 			NumberType_Int32);
-	Address pAttribList = DereferencePointer(pItemDef + offs_CEconItemDefinition_AttributeList);
+	Address pAttribList = LoadAddressFromAddress(pItemDef + offs_CEconItemDefinition_AttributeList);
 	
 	// struct { attribute_defindex, value } // (TF2)
 	ArrayList attributeList = new ArrayList(2, nAttribs);
+	bool bNetworked;
+
 	for (int i; i < nAttribs; i++) {
 		Address pStaticAttrib = pAttribList
-				+ view_as<Address>(i * view_as<int>(sizeof_static_attrib_t));
+				+ (i * sizeof_static_attrib_t);
 		
 		int attrIndex = LoadFromAddress(pStaticAttrib, NumberType_Int16);
-		any attrValue = LoadFromAddress(pStaticAttrib + view_as<Address>(0x04),
-				NumberType_Int32);
+
+		if (!g_imapAttrIsNetworked.GetValue(attrIndex, bNetworked)) {
+			Address pDefType =	LoadAddressFromAddress(GetEconAttributeDefinition(attrIndex)
+					+ offs_CEconItemAttributeDefinition_m_pAttrType);
+
+			bNetworked = IsNetworkedRuntimeAttribute(pDefType);
+			g_imapAttrIsNetworked.SetValue(attrIndex, bNetworked);
+		}
+
+		int attrValue;
+		if (!bNetworked) {
+			attrValue = view_as<int>(LoadAddressFromAddress(pStaticAttrib + Address_PointerSize));
+		} else {
+			int val = LoadFromAddress(pStaticAttrib + Address_PointerSize, NumberType_Int32);
+			attrValue = val;
+		}
 		
 		attributeList.Set(i, attrIndex, 0);
 		attributeList.Set(i, attrValue, 1);
@@ -269,7 +288,7 @@ int Native_GetItemDefinitionString(Handle hPlugin, int nParams) {
 	
 	Address pItemDef = GetEconItemDefinition(defindex);
 	if (pItemDef) {
-		Address pKeyValues = DereferencePointer(pItemDef + offs_CEconItemDefinition_pKeyValues);
+		Address pKeyValues = LoadAddressFromAddress(pItemDef + offs_CEconItemDefinition_pKeyValues);
 		if (KeyValuesPtrKeyExists(pKeyValues, key)) {
 			KeyValuesPtrGetString(pKeyValues, key, buffer, maxlen, buffer);
 		}
@@ -314,6 +333,6 @@ static bool LoadEconItemDefinitionString(int defindex, Address offset, char[] bu
 		return false;
 	}
 	
-	LoadStringFromAddress(DereferencePointer(pItemDef + offset), buffer, maxlen);
+	LoadStringFromAddress(LoadAddressFromAddress(pItemDef + offset), buffer, maxlen);
 	return true;
 }

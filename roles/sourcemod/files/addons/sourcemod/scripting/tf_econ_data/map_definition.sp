@@ -1,3 +1,5 @@
+Address offs_MapDef_t_m_nDefIndex; // 12/24 (0x0C/0x18)
+
 /**
  * native int(const char[] name);
  */
@@ -12,5 +14,5 @@ int Native_GetMapDefinitionIndex(Handle hPlugin, int nParams) {
 	if (!pMapDef) {
 		return 0;
 	}
-	return LoadFromAddress(pMapDef + view_as<Address>(0xC), NumberType_Int32);
+	return LoadFromAddress(pMapDef + offs_MapDef_t_m_nDefIndex, NumberType_Int32);
 }
