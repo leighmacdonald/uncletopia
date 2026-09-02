@@ -11,7 +11,7 @@
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU General Public License, version 3.0, as published by the
  * Free Software Foundation.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
@@ -95,7 +95,7 @@ public Action CallVoteTestHandler(int client, NativeVotesOverride overrideType)
 	ReplySource old = SetCmdReplySource(SM_REPLY_TO_CHAT);
 
 	ReplyToCommand(client, "Attempted to call Restart vote");
-	
+
 	SetCmdReplySource(old);
 
 	return Plugin_Handled;
@@ -107,7 +107,7 @@ public Action CallVoteAdminVisHandler(int client, NativeVotesOverride overrideTy
 	{
 		return Plugin_Continue;
 	}
-	
+
 	return Plugin_Handled;
 }
 
@@ -116,50 +116,50 @@ public Action CallVoteAdminTestHandler(int client, NativeVotesOverride overrideT
 	ReplySource old = SetCmdReplySource(SM_REPLY_TO_CHAT);
 
 	ReplyToCommand(client, "Attempted to call Admin-protected Scramble vote");
-	
+
 	SetCmdReplySource(old);
-	
+
 	return Plugin_Handled;
 }
 
 public Action CallKickVoteHandler(int client, NativeVotesOverride overrideType, const char[] voteArgument, NativeVotesKickType kickType, int target)
 {
 	ReplySource old = SetCmdReplySource(SM_REPLY_TO_CHAT);
-	
+
 	int targetClient = GetClientOfUserId(target);
-	
+
 	char sKickType[32];
 	NativeVotesType voteType = GetKickVoteTypeFromKickType(kickType, sKickType, sizeof(sKickType));
-	
+
 	if (voteType == NativeVotesType_None)
 	{
 		ReplyToCommand(client, "No kick type found");
 		return Plugin_Handled;
 	}
-	
+
 	if (targetClient == 0)
 	{
 		NativeVotes_DisplayCallVoteFail(client, NativeVotesCallFail_PlayerNotFound, target);
 		ReplyToCommand(client, "Attempted to call Kick (%s) vote on unknown userid %d", sKickType, target);
 		return Plugin_Handled;
 	}
-	
+
 	if (!CanUserTarget(client, targetClient))
 	{
 		NativeVotes_DisplayCallVoteFail(client, NativeVotesCallFail_CantKickAdmin, target);
 		ReplyToCommand(client, "Attempted to call Kick (%s) vote on %N, but they have a higher immunity level than you.", sKickType, targetClient);
 		return Plugin_Handled;
 	}
-	
+
 	ReplyToCommand(client, "Calling Kick (%s) vote on %N", sKickType, targetClient);
-	
+
 	NativeVote vote = new NativeVote(KickVoteHandler, voteType);
 	vote.Initiator = client;
 	vote.SetTarget(targetClient);
 	vote.DisplayVoteToAll(20);
-	
+
 	SetCmdReplySource(old);
-	
+
 	return Plugin_Handled;
 }
 
@@ -171,11 +171,11 @@ public int KickVoteHandler(NativeVote vote, MenuAction action, int param1, int p
 		{
 			vote.Close();
 		}
-		
+
 		case MenuAction_VoteEnd:
 		{
 			int target = vote.GetTarget();
-			
+
 			if (param1 == NATIVEVOTES_VOTE_YES)
 			{
 				if (target == 0)
@@ -194,7 +194,7 @@ public int KickVoteHandler(NativeVote vote, MenuAction action, int param1, int p
 				PrintToChatAll("Kick vote failed.");
 			}
 		}
-		
+
 		case MenuAction_VoteCancel:
 		{
 			if (param1 == VoteCancel_NoVotes)
@@ -209,6 +209,8 @@ public int KickVoteHandler(NativeVote vote, MenuAction action, int param1, int p
 			}
 		}
 	}
+
+	return 0;
 }
 
 NativeVotesType GetKickVoteTypeFromKickType(NativeVotesKickType kickType, char[] sKickType, int maxlength)
@@ -222,31 +224,31 @@ NativeVotesType GetKickVoteTypeFromKickType(NativeVotesKickType kickType, char[]
 			strcopy(sKickType, maxlength, "Generic");
 			voteType = NativeVotesType_Kick;
 		}
-		
+
 		case NativeVotesKickType_Idle:
 		{
 			strcopy(sKickType, maxlength, "Idle");
 			voteType = NativeVotesType_KickIdle;
 		}
-		
+
 		case NativeVotesKickType_Scamming:
 		{
 			strcopy(sKickType, maxlength, "Scamming");
 			voteType = NativeVotesType_KickScamming;
 		}
-		
+
 		case NativeVotesKickType_Cheating:
 		{
 			strcopy(sKickType, maxlength, "Cheating");
 			voteType = NativeVotesType_KickCheating;
 		}
-		
+
 		default:
 		{
 			strcopy(sKickType, maxlength, "");
 			voteType = NativeVotesType_None;
 		}
 	}
-	
+
 	return voteType;
 }
