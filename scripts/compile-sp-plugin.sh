@@ -28,6 +28,18 @@ if [ ! -d "$LOCAL_INCLUDE" ]; then
 	exit 1
 fi
 
+SKIP_E_FLAG=("tf2attributes" "tf2attributes_example" "tf2attributes_test")
+
+should_skip_e_flag() {
+	local plugin_name="$1"
+	for skip in "${SKIP_E_FLAG[@]}"; do
+		if [[ "$plugin_name" == "$skip" ]]; then
+			return 0
+		fi
+	done
+	return 1
+}
+
 OUT_DIR="$(mktemp -d)"
 trap "rm -rf $OUT_DIR" EXIT
 
@@ -36,7 +48,15 @@ compile_one() {
 	local name
 	name="$(basename "$plugin" .sp)"
 	echo "Compiling $name ..."
-	spcomp64 -E "$plugin" -o "$OUT_DIR/$name.smx" -i "$SM_INCLUDE" -i "$LOCAL_INCLUDE"
+
+	local extra_flags=()
+	if should_skip_e_flag "$name"; then
+		echo "  (skipping -E flag)"
+	else
+		extra_flags+=("-E")
+	fi
+	echo spcomp64 "${extra_flags[@]}" "$plugin" -o "$OUT_DIR/$name.smx" -i "$SM_INCLUDE" -i "$LOCAL_INCLUDE"
+	spcomp64 "${extra_flags[@]}" "$plugin" -o "$OUT_DIR/$name.smx" -i "$SM_INCLUDE" -i "$LOCAL_INCLUDE"
 }
 
 NAME="${1:-}"
