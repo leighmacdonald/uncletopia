@@ -21,15 +21,15 @@ sv_logecho 1
 // Must be enabled for sm-sentry-error-logger...
 sv_logfile 1
 sv_log_onefile 0
-{% if log.net_enable %}
+{% if srcds_log_net_enable %}
 // net log enabled
 sv_logsecret {{ item.log_secret }}
-{% for host in log.net_hosts %}
+{% for host in srcds_log_net_hosts %}
 logaddress_add {{ host }}
 {% endfor %}
 {% endif %}
 
-sv_rcon_whitelist_address {{ metrics_host|default("") }}
+sv_rcon_whitelist_address {{ metrics_hostname }}
 
 tf_medieval 0
 tf_medieval_autorp 0
@@ -176,8 +176,8 @@ sm_cvar sm_engipve_spy_capblock_time 20
 
 sm_cvar mp_waitingforplayers_time {% if item.config|default("all") == "all_plus" %}60{% else %}35{% endif %}
 
-{% if sentry_dsn != "" %}
-ce_sentry_dsn_url "{{ sentry_dsn }}"
+{% if sourcemod_sentry_dsn != "" %}
+ce_sentry_dsn_url "{{ sourcemod_sentry_dsn   }}"
 ce_environment {{ sentry_ce_environment|default("production") }}
 ce_region {{ sentry_ce_region|default("world") }}
 ce_type {{ item.config }}
@@ -203,7 +203,7 @@ sm_nomotd_rememberclass {{ sm_nomotd_rememberclass|default(1) }}
 sm_nomotd_rememberclass_force {{ sm_nomotd_rememberclass_force|default(0) }}
 
 
-{% if item.stv_enable|default(stv_enable) %}
+{% if item.stv_enable|default(srcds_stv_enable) %}
 tv_enable 1
 tv_autorecord 0
 tv_maxclients 5
@@ -213,11 +213,11 @@ tv_delay 0
 tv_maxrate 0
 tv_port "{{ srcds_base_port + (loop0 * 10) + 1 }}"
 tv_allow_camera_man 1
-tv_password "{{ stv_password }}"
+tv_password "{{ srcds_stv_password }}"
 // Hostname
 tv_name "{{ item.name }} | STV"
 // In-game name
-tv_title "{{ stv_name }}"
+tv_title "{{ srcds_stv_name }}"
 tv_snapshotrate {{ tv_snapshotrate|default(64) }}
 {% endif %}
 

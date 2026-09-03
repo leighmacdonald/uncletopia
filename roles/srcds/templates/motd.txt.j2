@@ -1,7 +1,7 @@
 {% if item.config == 'pve' %}
-{{ motd_pve }}
+{{ srcds_motd['pve'] }}
 {% elif item.config == 'dodgeball' %}
-{{ motd_dodgeball }}
+{{ srcds_motd['dodgeball'] }}
 {% else %}
-{{ motd }}
+{{ srcds_motd['default'] }}
 {% endif %}
