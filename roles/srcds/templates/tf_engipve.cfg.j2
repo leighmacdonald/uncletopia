@@ -2,18 +2,18 @@ UncleDanePVE
 {
 	Names
 	{
-{% for name in pve.names %}
+{% for name in sourcemod_pve.names %}
 		"{{ loop.index }}"  "{{ name }}"
 {% endfor %}
 	}
-    Count {{ pve.bot_count }}
+    Count {{ sourcemod_pve.bot_count }}
 	Difficulty 3
 	Class "engineer"
 
 	// Specify custom player attributes for bots.
 	Attributes
 	{
-{% for attr, value in pve.bot_attrs.items() %}
+{% for attr, value in sourcemod_pve.bot_attrs.items() %}
 		"{{ attr }}"               {{ value }}
 {% endfor %}
 	}

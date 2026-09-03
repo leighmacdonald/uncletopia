@@ -1,6 +1,6 @@
 #!/bin/bash
 
-{% for name in config[item.config].sourcemod_plugins_disabled %}
+{% for name in srcds_config[item.config].plugins_disabled %}
 D=./tf/addons/sourcemod/plugins/{{ name }}
 if test -f "$D"; then
     echo "Disabling plugin $D"
@@ -8,7 +8,7 @@ if test -f "$D"; then
 fi
 {% endfor %}
 
-{% for name in config[item.config].plugins_enabled %}
+{% for name in srcds_config[item.config].plugins_enabled %}
 E=./tf/addons/sourcemod/plugins/disabled/{{ name }}
 if test -f "$E"; then
     echo "Enabling plugin $E"
@@ -16,7 +16,7 @@ if test -f "$E"; then
 fi
 {% endfor %}
 
-{% for name in config[item.config].sourcemod_extensions_disabled %}
+{% for name in srcds_config[item.config].extensions_disabled %}
 E=./tf/addons/sourcemod/extensions/{{ name }}
 if test -f "$E"; then
     echo "Disabling extension $E"
@@ -33,7 +33,7 @@ bash "./srcds_run" -game "{{srcds_steam_app}}" -console \
   +clientport "{{ srcds_base_port + (loop0 * 10) + 2 }}" \
   {% if item.srcds_max_players|default(srcds_max_players) > 33 %}-unrestricted_maxplayers{% endif %} \
   +maxplayers {{ item.srcds_max_players|default(srcds_max_players) }} \
-  +map "{% if item.curated_pool|default("") == "" %}{{ map_rotation[item.config|default("all")] | random }}{% elif item.curated_pool == "247_badwater"  %}pl_badwater{% else %}{{ map_rotation[item.curated_pool|default("all")] | random }}{% endif %}" \
+  +map "{% if item.curated_pool|default("") == "" %}{{ srcds_map_rotation[item.config|default("all")] | random }}{% elif item.curated_pool == "247_badwater"  %}pl_badwater{% else %}{{ srcds_map_rotation[item.curated_pool|default("all")] | random }}{% endif %}" \
   +sv_setsteamaccount "{{ item.gslt }}" \
   -auto_update \
   -steam_dir ~/steamcmd/ \

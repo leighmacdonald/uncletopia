@@ -606,5 +606,5 @@
   loop: "{{ services }}"
   loop_control:
     index_var: loop0
-  when: ansible_distribution == 'Ubuntu'
+  when: ansible_facts["distribution"] == 'Ubuntu'
   tags: cron
