@@ -10,7 +10,7 @@
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU General Public License, version 3.0, as published by the
  * Free Software Foundation.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
@@ -53,23 +53,21 @@ enum ImplodePart
  */
 stock int ExplodeStringToArrayList(const char[] text, const char[] split, ArrayList buffers, int maxStringLength)
 {
-	int reloc_idx, idx, total;
-	
+	int reloc_idx, idx;
+
 	if (buffers == null || !split[0])
 	{
 		return 0;
 	}
-	
+
 	char[] item = new char[maxStringLength];
 	while ((idx = SplitString(text[reloc_idx], split, item, maxStringLength)) != -1)
 	{
 		reloc_idx += idx;
-		++total;
 		buffers.PushString(item);
 	}
-	++total;
 	buffers.PushString(text[reloc_idx]);
-	
+
 	return buffers.Length;
 }
 
@@ -90,7 +88,7 @@ stock int GetArrayListImplodeSize(ArrayList strings, int joinLength, int valueMa
 
 	int numStrings = 0;
 	int size = 0;
-	
+
 	numStrings = strings.Length;
 
 	for (int i=0; i<numStrings; i++)
@@ -106,7 +104,7 @@ stock int GetArrayListImplodeSize(ArrayList strings, int joinLength, int valueMa
 	}
 	// for string terminator
 	size += 1;
-	
+
 	return size;
 }
 
@@ -125,7 +123,7 @@ stock int ImplodeArrayListStrings(ArrayList strings, const char[] join, char[] b
 	int total, length, part_length;
 	int join_length = strlen(join);
 	int numStrings;
-	
+
 	if (strings == null)
 	{
 		ThrowError("ArrayList is not initialized.");
@@ -172,22 +170,22 @@ stock int ImplodeArrayListStrings(ArrayList strings, const char[] join, char[] b
 stock int ExplodeStringToStringMap(const char[] text, const char[] split, StringMap buffers, int maxStringLength, ImplodePart part, const char[] keyValueSeparator="")
 {
 	int reloc_idx, idx, total;
-	
+
 	if (buffers == null || !split[0])
 	{
 		return 0;
 	}
-	
+
 	if (part == ImplodePart_Both && !keyValueSeparator[0])
 	{
 		ThrowError("keyValueSeparator must be specified if using both parts");
 	}
-	
+
 	if (buffers == null)
 	{
 		buffers = new StringMap();
 	}
-	
+
 	char[] item = new char[maxStringLength];
 	while ((idx = SplitString(text[reloc_idx], split, item, maxStringLength)) > -1)
 	{
@@ -195,7 +193,7 @@ stock int ExplodeStringToStringMap(const char[] text, const char[] split, String
 		++total;
 		AssignExplodeStringMap(buffers, item, maxStringLength, part, keyValueSeparator);
 	}
-	
+
 	++total;
 	AssignExplodeStringMap(buffers, text[reloc_idx], maxStringLength, part, keyValueSeparator);
 	return total;
@@ -212,7 +210,7 @@ stock static void AssignExplodeStringMap(StringMap buffers, const char[] item, i
 		{
 			buffers.SetString(item, item);
 		}
-		
+
 		case ImplodePart_Both:
 		{
 			char[][] inner = new char[2][maxStringLength];
@@ -238,24 +236,24 @@ stock int GetStringMapImplodeSize(StringMap strings, int joinLength, ImplodePart
 	{
 		ThrowError("StringMap is not initialized.");
 	}
-	
+
 	int numStrings = 0;
 	int size = 0;
-	
+
 	numStrings = strings.Size;
 
 	StringMapSnapshot snapshot = strings.Snapshot();
-	
+
 	for (int i=0; i<numStrings; i++)
 	{
 		int len = snapshot.KeyBufferSize(i);
-		
+
 		if (part != ImplodePart_Value)
 		{
 			// subtract 1 for the nul terminator
 			size += len-1;
 		}
-		
+
 		if (part == ImplodePart_Both)
 		{
 			size += keyValueSeparatorLength;
@@ -265,7 +263,7 @@ stock int GetStringMapImplodeSize(StringMap strings, int joinLength, ImplodePart
 		{
 			char[] key = new char[len];
 			snapshot.GetKey(i, key, len);
-			
+
 			char[] value = new char[valueMaxLength];
 			strings.GetString(key, value, valueMaxLength);
 			size += strlen(value);
@@ -278,9 +276,9 @@ stock int GetStringMapImplodeSize(StringMap strings, int joinLength, ImplodePart
 	}
 	// for string terminator
 	size += 1;
-	
+
 	delete snapshot;
-	
+
 	return size;
 }
 
@@ -301,20 +299,20 @@ stock int ImplodeStringMapToString(StringMap strings, const char[] join, char[] 
 	int total, length, part_length;
 	int join_length = strlen(join);
 	int numStrings;
-	
+
 	if (strings == null)
 	{
 		ThrowError("StringMap is not initialized.");
 	}
-	
+
 	if (part == ImplodePart_Both && !keyValueSeparator[0])
 	{
 		ThrowError("keyValueSeparator must be specified if using both parts");
 	}
-	
+
 	numStrings = strings.Size;
 	StringMapSnapshot snapshot = strings.Snapshot();
-	
+
 	for (int i=0; i<numStrings; i++)
 	{
 		int len = snapshot.KeyBufferSize(i);
@@ -326,13 +324,13 @@ stock int ImplodeStringMapToString(StringMap strings, const char[] join, char[] 
 			length = strcopy(buffer[total], maxLength-total, key);
 			total += length;
 		}
-			
+
 		if (part == ImplodePart_Both)
 		{
 			length = strcopy(buffer[total], maxLength-total, keyValueSeparator);
 			total += length;
 		}
-		
+
 		if (part != ImplodePart_Key)
 		{
 			char[] value = new char[maxLength];
@@ -340,25 +338,25 @@ stock int ImplodeStringMapToString(StringMap strings, const char[] join, char[] 
 			length = strcopy(buffer[total], maxLength-total, value);
 			total += length;
 		}
-		
+
 		if (length < part_length)
 		{
 			break;
 		}
-		
+
 		if (i != numStrings-1)
 		{
 			length = strcopy(buffer[total], maxLength-total, join);
 			total += length;
-			
+
 			if (length < join_length)
 			{
 				break;
 			}
 		}
 	}
-	
+
 	delete snapshot;
-	
+
 	return total;
 }
