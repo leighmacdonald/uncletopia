@@ -12,9 +12,7 @@ bool KeyValuesPtrKeyExists(Address pKeyValues, const char[] key) {
 	if (!pKeyValues) {
 		return false;
 	}
-	Address ret = Address_Null;
-	SDKCall(g_SDKCallGetKeyValuesFindKey, pKeyValues, ret, key, false);
-	return ret != Address_Null;
+	return !!SDKCall(g_SDKCallGetKeyValuesFindKey, pKeyValues, key, false);
 }
 
 /**

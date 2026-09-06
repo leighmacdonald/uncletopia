@@ -5,8 +5,7 @@ Address offs_CEconItemSchema_ParticleSystemTree,
 
 // known members of attachedparticlesystem_t
 Address offs_attachedparticlesystem_pszParticleSystem,
-		offs_attachedparticlesystem_iAttributeValue,
-		sizeof_m_pMemory_attachedparticlesystem_t; // sizeof(UtlRBTreeLinks_t) + sizeof(Node_t)
+		offs_attachedparticlesystem_iAttributeValue;
 
 // enum values for tree elements -- these should be moved when we have more CUtlRBTree accessors
 enum TreeElement {
@@ -27,9 +26,11 @@ enum TFEconParticleSet {
 	NUM_ECON_PARTICLE_SETS
 };
 
+#define ATTACHED_PARTICLE_SYSTEM_STRUCT_SIZE 0x40
+
 /**
  * native ArrayList<int>(TFEconParticleSet particleSet);
- *
+ * 
  * Returns a list of particle indices included in the given particle set.
  */
 int Native_GetParticleAttributeList(Handle hPlugin, int nParams) {
@@ -59,12 +60,12 @@ static ArrayList GetParticleAttributeList(TFEconParticleSet particleSet) {
 	}
 	
 	int nParticles = LoadFromAddress(
-			pParticleVector + offs_CUtlVector_m_size, NumberType_Int32);
-	Address pParticleData = LoadAddressFromAddress(GetParticleListAddress(particleSet));
+			pParticleVector + view_as<Address>(0x0C), NumberType_Int32);
+	Address pParticleData = DereferencePointer(GetParticleListAddress(particleSet));
 	
 	ArrayList list = new ArrayList();
 	for (int i; i < nParticles; i++) {
-		Address pParticleID = pParticleData + (i * 0x04); // CUtlVector< int >
+		Address pParticleID = pParticleData + view_as<Address>(i * 0x04);
 		int value = LoadFromAddress(pParticleID, NumberType_Int32);
 		list.Push(value);
 	}
@@ -106,7 +107,7 @@ int Native_GetParticleAttributeSystemName(Handle hPlugin, int nParams) {
 	
 	char[] buffer = new char[maxlen];
 	
-	Address pParticleName = LoadAddressFromAddress(
+	Address pParticleName = DereferencePointer(
 			pParticleSystemEntry + offs_attachedparticlesystem_pszParticleSystem);
 	LoadStringFromAddress(pParticleName, buffer, maxlen);
 	
@@ -124,8 +125,8 @@ int Native_GetParticleAttributeSystemName(Handle hPlugin, int nParams) {
  * Address_Null if invalid.
  */
 int Native_GetParticleAttributeAddress(Handle hPlugin, int nParams) {
-	int attrValue = GetNativeCell(2);
-	return ReturnNativeAddress(FindParticleSystemByAttributeValue(attrValue));
+	int attrValue = GetNativeCell(1);
+	return view_as<int>(FindParticleSystemByAttributeValue(attrValue));
 }
 
 static Address FindParticleSystemByAttributeValue(int attributeValue) {
@@ -154,7 +155,8 @@ static int GetParticleSystemPtrAttributeValue(Address pParticleSystemEntry) {
 // implementation of CUtlRBTree<>::FirstInorder()
 static int GetFirstParticleSystem() {
 	// get root left child of CUtlRBTree
-	int index = LoadFromAddress(GetParticleSystemTree() + offs_CUtlMap_Root, NumberType_Int16);
+	int index = LoadFromAddress(GetParticleSystemTree() + view_as<Address>(0x14),
+			NumberType_Int16);
 	if (index == 0xFFFF) {
 		return -1;
 	}
@@ -195,10 +197,10 @@ static int GetParticleSystemTreeElement(int index, TreeElement elem) {
 			return LoadFromAddress(pTree, NumberType_Int16);
 		}
 		case Tree_RightChild: {
-			return LoadFromAddress(pTree + 0x02, NumberType_Int16);
+			return LoadFromAddress(pTree + view_as<Address>(0x02), NumberType_Int16);
 		}
 		case Tree_Parent: {
-			return LoadFromAddress(pTree + 0x04, NumberType_Int16);
+			return LoadFromAddress(pTree + view_as<Address>(0x04), NumberType_Int16);
 		}
 	}
 	return 0xFFFF;
@@ -212,8 +214,8 @@ static bool IsParticleSystemRightChild(int index) {
 // get address of attachedparticlesystem_t in CUtlRBTree by index
 static Address GetAttachedParticleSystemEntry(int index) {
 	Address pParticleSystemTree = GetParticleSystemTree();
-	Address pParticleData = LoadAddressFromAddress(pParticleSystemTree + offs_CUtlMap_pMemory);
-	return pParticleData + (index * sizeof_m_pMemory_attachedparticlesystem_t);
+	Address pParticleData = DereferencePointer(pParticleSystemTree + view_as<Address>(0x08));
+	return pParticleData + view_as<Address>(index * ATTACHED_PARTICLE_SYSTEM_STRUCT_SIZE);
 }
 
 static Address GetParticleSystemTree() {

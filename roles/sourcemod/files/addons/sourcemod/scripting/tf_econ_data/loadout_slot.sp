@@ -60,8 +60,8 @@ static bool TranslateLoadoutSlotIndexToName(int index, char[] buffer, int maxlen
 	 * CTFItemSchema::ItemSlotNames is a CUtlVector<char*>, so deref to get to the underlying
 	 * memory then do an array access
 	 */
-	Address pItemSlotData = LoadAddressFromAddress(pItemSlotNames);
-	Address pItemSlotEntry = LoadAddressFromAddress(pItemSlotData + (index * Address_PointerSize));
+	Address pItemSlotData = DereferencePointer(pItemSlotNames);
+	Address pItemSlotEntry = DereferencePointer(pItemSlotData + view_as<Address>(0x04 * index));
 	
 	bool bNull;
 	LoadStringFromAddress(pItemSlotEntry, buffer, maxlen, bNull);
@@ -81,6 +81,6 @@ static int GetLoadoutSlotCount() {
 		return 0;
 	}
 	
-	return LoadFromAddress(pSchema + offs_CTFItemSchema_ItemSlotNames + offs_CUtlVector_m_size,
+	return LoadFromAddress(pSchema + offs_CTFItemSchema_ItemSlotNames + view_as<Address>(0x0C),
 			NumberType_Int32);
 }
