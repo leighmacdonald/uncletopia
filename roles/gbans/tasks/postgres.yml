@@ -21,13 +21,12 @@
     build:
       path: "build/postgres"
     name: postgres-gbans
-    tag: latest
     source: build
 
 - name: Create gbans-postgres container
   community.docker.docker_container:
     name: gbans-postgres
-    image: postgres-gbans:latest
+    image: postgres-gbans
     restart: true
     recreate: true
     pull: false

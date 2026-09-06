@@ -2,30 +2,30 @@
 {
     "crash"
     {
-        "url"   "{{ discord.crash_webhook }}"
+        "url"   "{{ sourcemod_discord.crash_webhook }}"
     }
     "stac"
     {
-        "url"   "{{ discord.stac_webhook }}"
+        "url"   "{{ sourcemod_discord.stac_webhook }}"
     }
     "calladmin"
     {
-        "url"   "{{ discord.calladmin_webhook|default(discord.stac_webhook) }}"
+        "url"   "{{ sourcemod_discord.calladmin_webhook|default(sourcemod_discord.stac_webhook) }}"
     }
     "sourcebans"
     {
-        "url"   "{{ discord.stac_webhook }}/slack"
+        "url"   "{{ sourcemod_discord.stac_webhook }}/slack"
     }
     "sourcecomms"
     {
-        "url"   "{{ discord.stac_webhook }}/slack"
+        "url"   "{{ sourcemod_discord.stac_webhook }}/slack"
     }
     "test_discord"
     {
-        "url"   "{{ discord.stac_webhook }}"
+        "url"   "{{ sourcemod_discord.stac_webhook }}"
     }
     "test_slack"
     {
-        "url"   "{{ discord.stac_webhook }}/slack"
+        "url"   "{{ sourcemod_discord.stac_webhook }}/slack"
     }
 }

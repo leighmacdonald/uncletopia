@@ -45,7 +45,7 @@
 
 - name: Install a list of packages (<24.04)
   become: true
-  when: ansible_distribution == 'Ubuntu' and ansible_distribution_version != "24.04"
+  when: ansible_facts["distribution"] == 'Ubuntu' and ansible_facts["distribution_version"] != "24.04"
   ansible.builtin.apt:
     pkg:
       - lib32z1
@@ -62,16 +62,21 @@
       - tmux
 
 # Required for libncurses5:i386
-- name: Add specified repository into sources list
+- name: Add Ubuntu focal-security repository for libncurses5 (24.04)
   become: true
-  when: ansible_distribution == 'Ubuntu' and ansible_distribution_version == "24.04"
-  ansible.builtin.apt_repository:
-    repo: deb https://security.ubuntu.com/ubuntu focal-security main universe
+  when: ansible_facts["distribution"] == 'Ubuntu' and ansible_facts["distribution_version"] == "24.04"
+  ansible.builtin.deb822_repository:
+    name: focal-security
+    types: [deb]
+    uris: https://security.ubuntu.com/ubuntu
+    suites: [focal-security]
+    components: [main, universe]
     state: present
+    install_python_debian: true
 
 - name: Install a list of packages (24.04)
   become: true
-  when: ansible_distribution == 'Ubuntu' and ansible_distribution_version == "24.04"
+  when: ansible_facts["distribution"] == 'Ubuntu' and ansible_facts["distribution_version"] == "24.04"
   ansible.builtin.apt:
     update_cache: true
     pkg:
@@ -601,5 +606,5 @@
   loop: "{{ services }}"
   loop_control:
     index_var: loop0
-  when: ansible_distribution == 'Ubuntu'
+  when: ansible_facts["distribution"] == 'Ubuntu'
   tags: cron

@@ -18,7 +18,7 @@ ConVar g_cvarAllText;
 EngineVersion g_engine = Engine_Unknown;
 
 #define PLUGIN_VERSION "0.5"
-public Plugin myinfo = 
+public Plugin myinfo =
 {
 	name = "Tidy Chat",
 	author = "linux_lover",
@@ -41,14 +41,14 @@ public void OnPluginStart()
 	g_cvarArenaMaxStreak = CreateConVar("sm_tidychat_arena_maxstreak", "1", "0/1 Tidy (arena) team scramble messages");
 	g_cvarCvar = CreateConVar("sm_tidychat_cvar", "1", "0/1 Tidy cvar messages");
 	g_cvarAllText = CreateConVar("sm_tidychat_alltext", "0", "0/1 Tidy all chat messages from plugins");
-	
+
 	// Mod independant hooks
 	HookEvent("player_connect_client", Event_PlayerConnect, EventHookMode_Pre);
 	HookEvent("player_disconnect", Event_PlayerDisconnect, EventHookMode_Pre);
 	HookEvent("player_team", Event_PlayerTeam, EventHookMode_Pre);
 	HookEvent("server_cvar", Event_Cvar, EventHookMode_Pre);
 	HookUserMessage(GetUserMessageId("TextMsg"), UserMsg_TextMsg, true);
-	
+
 	g_engine = GetEngineVersion();
 
 	// TF2 dependant hooks
@@ -56,7 +56,7 @@ public void OnPluginStart()
 	{
 		HookUserMessage(GetUserMessageId("VoiceSubtitle"), UserMsg_VoiceSubtitle, true);
 		HookEvent("arena_match_maxstreak", Event_MaxStreak, EventHookMode_Pre);
-	}	
+	}
 }
 
 public Action Event_PlayerConnect(Event event, const char[] name, bool dontBroadcast)
@@ -65,7 +65,7 @@ public Action Event_PlayerConnect(Event event, const char[] name, bool dontBroad
 	{
 		event.BroadcastDisabled = true;
 	}
-	
+
 	return Plugin_Continue;
 }
 
@@ -75,7 +75,7 @@ public Action Event_PlayerDisconnect(Event event, const char[] name, bool dontBr
 	{
 		event.BroadcastDisabled = true;
 	}
-	
+
 	return Plugin_Continue;
 }
 
@@ -88,7 +88,7 @@ public Action Event_PlayerTeam(Event event, const char[] name, bool dontBroadcas
 			event.BroadcastDisabled = true;
 		}
 	}
-	
+
 	return Plugin_Continue;
 }
 
@@ -98,7 +98,7 @@ public Action Event_MaxStreak(Event event, const char[] name, bool dontBroadcast
 	{
 		event.BroadcastDisabled = true;
 	}
-	
+
 	return Plugin_Continue;
 }
 
@@ -108,7 +108,7 @@ public Action Event_Cvar(Event event, const char[] name, bool dontBroadcast)
 	{
 		event.BroadcastDisabled = true;
 	}
-	
+
 	return Plugin_Continue;
 }
 
@@ -118,7 +118,7 @@ public Action UserMsg_VoiceSubtitle(UserMsg msg_id, BfRead msg, const int[] play
 	{
 		return Plugin_Handled;
 	}
-	
+
 	return Plugin_Continue;
 }
 
@@ -147,6 +147,6 @@ public Action UserMsg_TextMsg(UserMsg msg_id, BfRead msg, const int[] players, i
 			}
 		}
 	}
-	
+
 	return Plugin_Continue;
 }

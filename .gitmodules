@@ -1,49 +1,9 @@
-[submodule "sm_plugins/discord"]
-	path = sm_plugins/discord
-	url = https://gitlab.com/Zipcore/Discord.git
-[submodule "sm_plugins/accelerator"]
-	path = sm_plugins/accelerator
-	url = https://github.com/asherkin/accelerator.git
-[submodule "sm_plugins/gbans"]
-	path = sm_plugins/gbans
-	url = https://github.com/leighmacdonald/gbans.git
-	branch = v0.7.34
-[submodule "sm_plugins/edict-limiter"]
-	path = sm_plugins/edict-limiter
-	url = https://github.com/sapphonie/tf2-edict-limiter
-[submodule "sm_plugins/tf2_econ_data"]
-	path = sm_plugins/tf2_econ_data
-	url = https://github.com/nosoop/SM-TFEconData
-[submodule "sm_plugins/tf2centerprojectiles"]
-	path = sm_plugins/tf2centerprojectiles
-	url = https://github.com/rtldg/tf2centerprojectiles.git
-[submodule "sm_plugins/tf2attributes"]
-	path = sm_plugins/tf2attributes
-	url = https://github.com/FlaminSarge/tf2attributes.git
-[submodule "sm_plugins/tf2-comp-fixes"]
-	path = sm_plugins/tf2-comp-fixes
-	url = https://github.com/ldesgoui/tf2-comp-fixes.git
 [submodule "playbooks/roles/githubixx.ansible_role_wireguard"]
 	path = playbooks/roles/githubixx.ansible_role_wireguard
 	url = https://github.com/githubixx/ansible-role-wireguard.git
 [submodule "sm_plugins/sm-ugc-blocker"]
 	path = sm_plugins/sm-ugc-blocker
 	url = https://github.com/DosMike/SM-UGC-Blocker.git
-[submodule "sm_plugins/stac"]
-	path = sm_plugins/stac
-	url = https://github.com/leighmacdonald/StAC-tf2.git
 [submodule "sm_plugins/skipmotd"]
 	path = sm_plugins/skipmotd
 	url = https://github.com/gcommer/skipmotd
-[submodule "sm_plugins/TF2_EngineerPVE"]
-	path = sm_plugins/TF2_EngineerPVE
-	url = https://github.com/MoonlyDays/TF2_EngineerPVE.git
-[submodule "sm_plugins/HalloweenCosmeticEnabler"]
-	path = sm_plugins/HalloweenCosmeticEnabler
-	url = https://github.com/Mikusch/HalloweenCosmeticEnabler
-[submodule "sm_plugins/TF2-Dodgeball-Modified"]
-	path = sm_plugins/TF2-Dodgeball-Modified-UDL
-	url = https://github.com/Silorak/TF2-Dodgeball-Modified-UDL.git
-[submodule "sm_plugins/mge"]
-	path = sm_plugins/mge
-	url = git@github.com:leighmacdonald/MGEMod.git

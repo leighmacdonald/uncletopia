@@ -1,0 +1,13 @@
+---
+gbans_web_image: ghcr.io/leighmacdonald/gbans:v0.7.46
+gbans_web_port: 6006
+gbans_database_dsn: postgresql://gbans:gbans@gbans-postgres/gbans
+gbans_general_steam_key: "{{ steam_key }}"
+gbans_stv_enable: 1
+gbans_stv_finishmap: "1"
+gbans_stv_ignorebots: "1"
+gbans_stv_minplayers: "1"
+gbans_stv_path: "stv_demos/active"
+gbans_stv_path_complete: "stv_demos/complete"
+gbans_stv_timestart: "-1"
+gbans_stv_timestop: "-1"

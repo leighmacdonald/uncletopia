@@ -1,5 +1,5 @@
 // Hostname for server.
-hostname "{{ item.name | default(srcds_hostname) }}"
+hostname "{{ item.name }}"
 
 tf_classlimit {{ item.tf_classlimit|default(3) }}
 sv_vote_issue_classlimits_allowed 0
@@ -13,7 +13,7 @@ tf_autobalance_dead_candidates_maxtime 0
 tf_autobalance_force_candidates_maxtime 0
 tf_autobalance_xp_bonus 0
 
-sv_tags "{{ item.sv_tags|default(sv_tags) }}"
+sv_tags "{{ item.sv_tags|default(srcds_sv_tags) }}"
 
 sv_rcon_banpenalty 1440
 sv_rcon_minfailures 5
@@ -26,12 +26,12 @@ sv_lan 0
 sv_region {{ srcds_region }}
 
 // Custom maps
-sv_downloadurl "{{ fastdl_url }}"
+sv_downloadurl "{{ srcds_fastdl_url }}"
 sv_allowupload 0
 sv_allowdownload 0
 
 // Allow user modifications
-sv_pure {{ sv_pure }}
+sv_pure {{ srcds_sv_pure }}
 sv_pure_kick_clients 0
 sv_allow_wait_command 1
 
@@ -45,4 +45,3 @@ sv_voicecodec steam
 mp_idlemaxtime 3
 
 sv_visiblemaxplayers {{ item.sv_visiblemaxplayers|default(24) }}
-

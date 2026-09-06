@@ -16,3 +16,6 @@ roles/cloudalchemy.*
 *.dll
 /.ansible/
 .direnv
+.sourcemod
+.venv
+AGENT*

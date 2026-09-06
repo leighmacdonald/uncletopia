@@ -9,6 +9,7 @@ exclude_paths:
   - hosts.yml
   - .ansible-lint
   - sm_plugins/*
+  - roles/srcds/defaults/main.yml  # vars match group_vars/tf2.yml naming convention
 
 kinds:
   - tasks: "*/tasks/*.yml"

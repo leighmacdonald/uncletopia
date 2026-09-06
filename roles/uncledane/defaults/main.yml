@@ -1,0 +1,4 @@
+---
+uncledane_web_image: ghcr.io/leighmacdonald/uncledane-web:v1.2.0
+uncledane_web_port: 8003
+uncledane_config_path: /etc/uncledane.yaml

@@ -1,0 +1,20 @@
+---
+galaxy_info:
+  author: uncletopia
+  description: GBans service (ban management)
+  company: uncletopia.com
+  license: MIT
+  min_ansible_version: "2.14"
+  platforms:
+    - name: Ubuntu
+      release:
+        - focal
+    - name: Debian
+      release:
+        - bookworm
+  galaxy_tags:
+    - gbans
+    - bans
+    - moderation
+
+dependencies: []

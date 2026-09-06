@@ -400,6 +400,8 @@ stock int json_extract_string_size(
     bool is_array
 )
 {
+    if (is_array) {} // Fix not used warning w/o changing signature (not sure why this exists in the first place)
+
     int length = 1; // for NULL terminator
 
     // store initial quote

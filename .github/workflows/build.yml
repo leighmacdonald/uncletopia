@@ -23,20 +23,11 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
-      - name: Setup SourcePawn Compiler
-        uses: rumblefrog/setup-sp@master
+      - name: Install Nix
+        uses: cachix/install-nix-action@v31
         with:
-          version: "1.13.x"
+          extra_nix_config: |
+            experimental-features = nix-command flakes
 
-      - name: Ensure plugin builds
-        working-directory: ./roles/sourcemod/files/addons/sourcemod/scripting
-        run: |
-          for file in *.sp; do
-            f=${file%.*}
-            echo -e "\nCompiling $file... to ../plugins/${f}.smx"
-            spcomp -w234 -O2 -v2 -i include $file -o ../plugins/$f.smx
-          done
-
-          echo "===OUT FILES==="
-          ls
-          echo version = ${{ steps.setup_sp.outputs.plugin-version }}
+      - name: Compile SourceMod plugins
+        run: nix develop -c scripts/compile-sp-plugin.sh

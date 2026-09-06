@@ -3,7 +3,7 @@
  * =============================================================================
  * NativeVotes Kick Vote Immunity
  * Causes TF2 kick votes to fail against people who the current user can't target.
- * 
+ *
  * Inspired by psychonic's [TF2] Basic Votekick Immunity
  *
  * NativeVotes Kick Vote Immunity (C)2014 Powerlord (Ross Bemrose).
@@ -13,7 +13,7 @@
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU General Public License, version 3.0, as published by the
  * Free Software Foundation.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
@@ -68,7 +68,7 @@ public void OnPluginStart()
 	HookConVarChange(g_Cvar_Votes, Cvar_CheckEnable);
 	HookConVarChange(g_Cvar_KickVote, Cvar_CheckEnable);
 	HookConVarChange(g_Cvar_KickVoteMvM, Cvar_CheckEnable);
-	
+
 	LoadTranslations("common.phrases");
 	CreateConVar("nativevotes_kickvote_immunity_version", VERSION, "NativeVotes Kickvote Immunity version", FCVAR_NOTIFY|FCVAR_DONTRECORD|FCVAR_SPONLY);
 }
@@ -120,7 +120,7 @@ public void Cvar_CheckEnable(ConVar convar, const char[] oldValue, const char[] 
 {
 	if (!g_bMapActive)
 		return;
-		
+
 	CheckStatus();
 }
 
@@ -129,7 +129,7 @@ void CheckStatus()
 	bool bIsMvM = IsMvM();
 	if (g_bRegistered)
 	{
-		if (!g_Cvar_Votes.BoolValue || 
+		if (!g_Cvar_Votes.BoolValue ||
 			(bIsMvM && !g_Cvar_KickVoteMvM.BoolValue) ||
 			(!bIsMvM && !g_Cvar_KickVote.BoolValue)
 		)
@@ -164,6 +164,6 @@ public Action KickVoteHandler(int client, NativeVotesOverride overrideType, cons
 		PrintToChat(client, "%t", "Unable to target");
 		return Plugin_Stop;
 	}
-		
+
 	return Plugin_Continue;
 }

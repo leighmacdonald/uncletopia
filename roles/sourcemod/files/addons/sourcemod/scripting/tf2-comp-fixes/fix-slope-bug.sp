@@ -49,7 +49,7 @@ static MRESReturn Detour_CTFGameMovement_SetGroundEntity(Address self, Handle pa
 
     GetEntPropVector(player, Prop_Data, "m_vecAbsVelocity", abs_velocity);
 
-    if (1 > plane[2] > 0.7 && GetVectorDotProduct(abs_velocity, plane) < 0.0) {
+    if (1.0 > plane[2] > 0.7 && GetVectorDotProduct(abs_velocity, plane) < 0.0) {
         float predicted_velocity[3];
 
         ClipVelocity(abs_velocity, plane, predicted_velocity);

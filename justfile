@@ -11,6 +11,14 @@ lint:
 deps:
     @ansible-galaxy collection install -r requirements.yml
 
+# Compile sourcemod plugins under roles/sourcemod, outputting .smx artifacts
+# into roles/sourcemod/files/addons/sourcemod/plugins. No argument compiles
+# all top-level plugins; a plugin name compiles just that one.
+# Usage: just spcompile [PluginName]
+# Example: just spcompile EdictLimiter
+spcompile name="":
+    @scripts/compile-sp-plugin.sh "{{name}}"
+
 adduser:
     @ansible-playbook -u root -i {{ inventory }} --forks {{ forks }} {{ playbook_path }}/adduser.yml
 

@@ -11,7 +11,7 @@
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU General Public License, version 3.0, as published by the
  * Free Software Foundation.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
@@ -31,7 +31,7 @@
  *
  * Version: $Id$
  */
- 
+
 #include <sourcemod>
 #include <nativevotes>
 
@@ -44,7 +44,7 @@
 
 TopMenu hTopMenu;
 
-public Plugin myinfo = 
+public Plugin myinfo =
 {
 	name = "NativeVotes Basic Commands",
 	author = "Powerlord and AlliedModders LLC",
@@ -57,7 +57,7 @@ public void OnPluginStart()
 {
 	LoadTranslations("core.phrases");
 	LoadTranslations("common.phrases");
-	
+
 	AddCommandListener(Command_CancelVote, "sm_cancelvote");
 	AddCommandListener(Command_ReVote, "sm_revote");
 }
@@ -70,7 +70,7 @@ bool PerformCancelVote(int client)
 	}
 
 	ShowActivity2(client, "[NV] ", "%t", "Cancelled Vote");
-	
+
 	NativeVotes_Cancel();
 	return true;
 }
@@ -84,11 +84,11 @@ public Action Command_CancelVote(int client, const char[] command, int argc)
 			// Let basecommands handle it
 			return Plugin_Continue;
 		}
-		
+
 		ReplyToCommand(client, "%t", "No Access");
 		return Plugin_Stop;
 	}
-	
+
 	if (PerformCancelVote(client))
 	{
 		return Plugin_Stop;
@@ -99,7 +99,7 @@ public Action Command_CancelVote(int client, const char[] command, int argc)
 	}
 }
 
-public void AdminMenu_CancelVote(Handle topmenu, 
+public void AdminMenu_CancelVote(Handle topmenu,
 							  TopMenuAction action,
 							  TopMenuObject object_id,
 							  int param,
@@ -113,7 +113,7 @@ public void AdminMenu_CancelVote(Handle topmenu,
 	else if (action == TopMenuAction_SelectOption)
 	{
 		PerformCancelVote(param);
-		RedisplayAdminMenu(topmenu, param);	
+		RedisplayAdminMenu(topmenu, param);
 	}
 	else if (action == TopMenuAction_DrawOption)
 	{
@@ -127,12 +127,12 @@ public Action Command_ReVote(int client, const char[] command, int argc)
 	{
 		return Plugin_Continue;
 	}
-	
+
 	if (!NativeVotes_IsVoteInProgress())
 	{
 		return Plugin_Continue;
 	}
-	
+
 	if (!NativeVotes_IsClientInVotePool(client))
 	{
 		if (IsVoteInProgress())
@@ -140,11 +140,11 @@ public Action Command_ReVote(int client, const char[] command, int argc)
 			// Let basecommands handle it
 			return Plugin_Continue;
 		}
-		
+
 		ReplyToCommand(client, "[NV] %t", "Cannot participate in vote");
 		return Plugin_Stop;
 	}
-	
+
 	if (NativeVotes_RedrawClientVote(client))
 	{
 		return Plugin_Stop;
@@ -154,23 +154,23 @@ public Action Command_ReVote(int client, const char[] command, int argc)
 		ReplyToCommand(client, "[NV] %t", "Cannot change vote");
 		return Plugin_Stop;
 	}
-	
+
 	return Plugin_Continue;
 }
 
 public void OnAdminMenuReady(Handle aTopMenu)
 {
 	TopMenu topmenu = TopMenu.FromHandle(aTopMenu);
-	
+
 	/* Block us from being called twice */
 	if (topmenu == hTopMenu)
 	{
 		return;
 	}
-	
+
 	/* Save the Handle */
 	hTopMenu = topmenu;
-	
+
 	TopMenuObject voting_commands = hTopMenu.FindCategory(ADMINMENU_VOTINGCOMMANDS);
 
 	if (voting_commands != INVALID_TOPMENUOBJECT)

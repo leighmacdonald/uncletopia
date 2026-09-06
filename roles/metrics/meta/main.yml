@@ -1,0 +1,21 @@
+---
+galaxy_info:
+  author: uncletopia
+  description: Monitoring stack (Prometheus, Grafana, Alertmanager)
+  company: uncletopia.com
+  license: MIT
+  min_ansible_version: "2.14"
+  platforms:
+    - name: Ubuntu
+      release:
+        - focal
+    - name: Debian
+      release:
+        - bookworm
+  galaxy_tags:
+    - monitoring
+    - prometheus
+    - grafana
+    - alertmanager
+
+dependencies: []
