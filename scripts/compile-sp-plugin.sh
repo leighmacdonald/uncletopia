@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Compile SourceMod plugins (test-compile only, no .smx artifacts kept).
+# Compile SourceMod plugins into roles/sourcemod/files/addons/sourcemod/plugins.
 # Usage: ./scripts/compile-sp-plugin.sh [PluginName]
 # No argument compiles all top-level plugins in the scripting folder.
 # Example: ./scripts/compile-sp-plugin.sh EdictLimiter
@@ -40,8 +40,8 @@ should_skip_e_flag() {
 	return 1
 }
 
-OUT_DIR="$(mktemp -d)"
-trap "rm -rf $OUT_DIR" EXIT
+OUT_DIR="$(cd "$SCRIPT_DIR/../roles/sourcemod/files/addons/sourcemod/plugins" && pwd)"
+mkdir -p "$OUT_DIR"
 
 compile_one() {
 	local plugin="$1"
@@ -66,7 +66,7 @@ if [ -z "$NAME" ]; then
 		compile_one "$plugin"
 		count=$((count + 1))
 	done
-	echo "Compiled $count plugins successfully"
+	echo "Compiled $count plugins successfully to $OUT_DIR"
 	exit 0
 fi
 

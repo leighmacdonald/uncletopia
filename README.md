@@ -3,6 +3,8 @@
 This repo contains [Ansible](https://docs.ansible.com) playbooks and roles for
 configuring and administering the uncletopia server cluster.
 
+
+
 ## Roles
 
 There is several roles that can be installed. Some are just additional tools that are hosted by us (bd-api, tf2bdd, uncledane) 
@@ -50,8 +52,31 @@ Note that all plugins which to not comply with sourcemods newer syntax `newdecls
 required changes.
 
 There is no pre-existing compiled plugins, you will need to compile anything you need yourself if you use any of these. We compile all plugins during
-the deployment stage.
+the deployment stage. Extensions remain pre-compiled in-tree assets.
 
+If you want to compile the plugins for yourself, you can checkout the repository and load the nix flake dev shell environment. If you dont 
+supply a plugin name to the `just spcompile` command, it will compile all plugins. An example of compiling a single plugin is shown below.
+
+```
+$ git clone https://github.com/uncletopia/uncletopia && cd uncletopia
+$ nix develop
+Requirement already satisfied: ansible-dev-tools in ./.venv/lib/python3.13/site-packages (26.8.0)
+....
+Successfully installed ansible-lint-26.8.0 filelock-3.32.4 platformdirs-4.11.3 yamllint-1.38.0
+
+$ just spcompile tf_engipve
+Compiling tf_engipve ...
+spcomp64 -E /projects/uncletopia/roles/sourcemod/files/addons/sourcemod/scripting/tf_engipve.sp -o /projects/uncletopia/roles/sourcemod/files/addons/sourcemod/plugins/tf_engipve.smx -i /nix/store/1zf9nfnjcrxi6xh44mqvzkzq434rwx84-sourcemod-1.12.0-git7253/addons/sourcemod/scripting/include -i /projects/uncletopia/roles/sourcemod/files/addons/sourcemod/scripting/include
+SourcePawn Compiler 1.12.0.7253
+Copyright (c) 1997-2006 ITB CompuPhase
+Copyright (c) 2004-2024 AlliedModders LLC
+
+Code size:         22728 bytes
+Data size:         6168 bytes
+Stack/heap size:      16768 bytes
+Total requirements:   45664 bytes
+Compiled tf_engipve.smx successfully to /projects/uncletopia/roles/sourcemod/files/addons/sourcemod/plugins
+```
 ### srcds
 
 Installs the baseline SRCDS instance using steamcmd (dd will work too, but it was disabled temporarily due to an auth problem and needs to be re-enabled).
@@ -79,13 +104,6 @@ These are largely in the order they should be executed in except for, adduser.ym
 ### adduser.yml (once)
 
 Creates the user used for running the services. This only should be run once. A new user will be created and will be used for future playbooks instead as root logins over ssh will be disabled. 
-
-### vpn.yml
-
-Setups a P2P wireguard based vpn network. These playbooks and services are designed to listen and otherwise use internal vpn network traffic
-everywhere possible. This is not strictly required, but not using a vpn is 100% untested/unsupported and will require fixing things yourself.
-
-Note: This required the `python3-netaddr` package to be installed on the *ansible controller host*.
 
 ### system.yml
 

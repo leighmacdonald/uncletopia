@@ -18,3 +18,4 @@ roles/cloudalchemy.*
 .direnv
 .sourcemod
 .venv
+AGENT*
