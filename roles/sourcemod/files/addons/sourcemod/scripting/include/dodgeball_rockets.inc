@@ -117,7 +117,7 @@ void CreateRocket(int spawnerEntity, int spawnerClass, int team, int rocketClass
 	if (TestFlags(flags, RocketFlag_CustomModel))
 	{
 		SetEntityModel(entity, RocketClassModel[rocketClass]);
-		UpdateRocketSkin(entity, team, TestFlags(flags, RocketFlag_IsNeutral));
+		UpdateRocketSkin(entity, team, view_as<bool>(TestFlags(flags, RocketFlag_IsNeutral)));
 	}
 
 	if (TestFlags(flags, RocketFlag_OnSpawnCmd))
@@ -288,7 +288,7 @@ void UpdateCritGlow(int index, int entity, int team)
 bool IsValidRocket(int index)
 {
 	if (!((index >= 0) && RocketIsValid[index])) return false;
-	
+
 	if (EntRefToEntIndex(RocketEntity[index]) != -1) return true;
 
 	// Rocket entity was destroyed by the engine (shot down, exploded, etc.)
@@ -395,8 +395,8 @@ bool ProcessDeflection(int index, int entity, int rocketClass, RocketFlags flags
 		GetClientEyeAngles(client, viewAngles);
 		GetAngleVectors(viewAngles, direction, NULL_VECTOR, NULL_VECTOR);
 		CopyVectors(direction, RocketDirection[index]);
-		UpdateRocketSkin(entity, team, TestFlags(flags, RocketFlag_IsNeutral));
-		
+		UpdateRocketSkin(entity, team, view_as<bool>(TestFlags(flags, RocketFlag_IsNeutral)));
+
 		if (RocketIsCritical[index])
 		{
 			UpdateCritGlow(index, entity, team);
@@ -705,7 +705,7 @@ void RocketLegacyThink(int index)
 		target = SelectTarget(targetTeam, index);
 
 		if (!IsValidClient(target, true)) return;
-		
+
 		RocketTarget[index] = EntIndexToEntRef(target);
 		EmitRocketSound(RocketSound_Alert, rocketClass, entity, target, flags);
 
@@ -909,13 +909,13 @@ void CheckStolenRocket(int client, int index)
 	// Guard clauses - each condition is clear and prevents potential crashes
 	if (target == -1) return;                                        // Invalid target entity
 	if (!IsValidClient(target, true)) return;                        // Target not valid/alive
-	if (target == client) return;                                    // Can't steal from yourself  
+	if (target == client) return;                                    // Can't steal from yourself
 	if (StealInfo[client].stoleRocket) return;                       // Already processed a steal this round
 	if (RocketInstanceState[index] & RocketState_Delayed) return;    // Delayed rockets exempt from steal check
 	if (GetEntitiesDistance(target, client) <= CvarStealDistance.FloatValue) return;  // Too close to target
-	
+
 	// Team check: if enabled, only count as steal if on same team as target
-	if ((RocketInstanceFlags[index] & RocketFlag_StealTeamCheck) && 
+	if ((RocketInstanceFlags[index] & RocketFlag_StealTeamCheck) &&
 	    (GetClientTeam(target) != GetClientTeam(client))) return;
 
 	// All conditions met - this is a steal
@@ -957,7 +957,7 @@ void CheckRoundDelays(int index)
 
 	int target = EntRefToEntIndex(RocketTarget[index]);
 	float timeToCheck = RocketDeflections[index] == 0 ? LastSpawnTime[index] : RocketLastDeflectionTime[index];
-	
+
 	if (target == -1 || (GetGameTime() - timeToCheck) < g_CacheDelayPreventionTime) return;
 
 	if (!(RocketInstanceState[index] & RocketState_Delayed))
@@ -986,8 +986,8 @@ void CheckRoundDelays(int index)
 	}
 }
 
-public Action OnRocketTakeDamage(int victim, int &attacker, int &inflictor, 
-                                  float &damage, int &damagetype, int &weapon, 
+public Action OnRocketTakeDamage(int victim, int &attacker, int &inflictor,
+                                  float &damage, int &damagetype, int &weapon,
                                   float damageForce[3], float damagePosition[3])
 {
 	int index = FindRocketByEntity(inflictor);
