@@ -1,6 +1,5 @@
 Address offs_CEconItemQualityDefinition_iValue,
-		offs_CEconItemQualityDefinition_pszName,
-		sizeof_m_pMemory_CEconItemQualityDefinition;
+		offs_CEconItemQualityDefinition_pszName;
 
 /**
  * native bool(int quality, char[] buffer, int maxlen);
@@ -46,7 +45,7 @@ int Native_TranslateQualityNameToValue(Handle hPlugin, int nParams) {
 		char buffer[32];
 		Address pQualityDef = GetEconQualityDefinitionFromMemoryIndex(i);
 		Address pszName =
-				LoadAddressFromAddress(pQualityDef + offs_CEconItemQualityDefinition_pszName);
+				DereferencePointer(pQualityDef + offs_CEconItemQualityDefinition_pszName);
 		LoadStringFromAddress(pszName, buffer, sizeof(buffer));
 		if (StrEqual(input, buffer, caseSensitive)) {
 			return GetEconQualityValue(pQualityDef);
@@ -110,7 +109,7 @@ static void GetEconQualityName(Address pQualityDef, char[] buffer, int maxlen) {
 	}
 	
 	LoadStringFromAddress(
-			LoadAddressFromAddress(pQualityDef + offs_CEconItemQualityDefinition_pszName),
+			DereferencePointer(pQualityDef + offs_CEconItemQualityDefinition_pszName),
 			buffer, maxlen);
 	return;
 }
@@ -135,9 +134,8 @@ static Address GetEconQualityDefinitionFromMemoryIndex(int index) {
 	 * This array access can be checked against the call made to
 	 * CEconItemQualityDefinition::BInitFromKV() within CEconItemSchema::BInitQualities().
 	 */
-	return LoadAddressFromAddress(GetEconQualityDefinitionTree() + offs_CUtlMap_pMemory)
-			+ (index * sizeof_m_pMemory_CEconItemQualityDefinition)
-			+ offs_CUtlMap_Data_elem_i32; // m_Data_elem + 0 CEconItemQualityDefinition::m_nValue
+	return DereferencePointer(GetEconQualityDefinitionTree() + view_as<Address>(0x04))
+			+ view_as<Address>((index * 0x24) + 0x14);
 }
 
 /**
@@ -146,7 +144,7 @@ static Address GetEconQualityDefinitionFromMemoryIndex(int index) {
 static int GetEconQualityDefinitionCount() {
 	Address pItemQualityTree = GetEconQualityDefinitionTree();
 	return pItemQualityTree?
-			LoadFromAddress(pItemQualityTree + offs_CUtlMap_nAllocationCount, NumberType_Int32) :
+			LoadFromAddress(pItemQualityTree + view_as<Address>(0x08), NumberType_Int32) :
 			0;
 }
 

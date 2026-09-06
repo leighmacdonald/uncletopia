@@ -8,11 +8,11 @@ Address offs_CEconItemSchema_EquipRegions;
 /**
  * I'm not going to bother putting these in gamedata for now.  It's a struct.
  */
-Address offs_CEconItemSchema_EquipRegion_pszName = 0x00,
-		offs_CEconItemSchema_EquipRegion_iGroup, // 4/8 (0x04/0x08)
-		offs_CEconItemSchema_EquipRegion_bitsRegionMask; // 8/12 (0x08/0x0C)
+Address offs_CEconItemSchema_EquipRegion_pszName = view_as<Address>(0x00),
+		offs_CEconItemSchema_EquipRegion_iGroup = view_as<Address>(0x04),
+		offs_CEconItemSchema_EquipRegion_bitsRegionMask = view_as<Address>(0x08);
 
-Address sizeof_EquipRegion; // 12/16 (0x0C/0x10)
+int sizeof_EquipRegion = 0x0C;
 
 /**
  * native StringMap<int>();
@@ -31,14 +31,14 @@ int Native_GetEquipRegionGroups(Handle hPlugin, int nParams) {
 	Address pEquipRegions = pSchema + offs_CEconItemSchema_EquipRegions;
 	
 	int nEquipRegions = LoadFromAddress(
-			pEquipRegions + offs_CUtlVector_m_size, NumberType_Int32);
+			pEquipRegions + view_as<Address>(0x0C), NumberType_Int32);
 	
-	Address pEquipRegionData = LoadAddressFromAddress(pEquipRegions);
+	Address pEquipRegionData = DereferencePointer(pEquipRegions);
 	for (int i; i < nEquipRegions; i++) {
 		char equipRegion[32];
 		
-		Address pEquipRegionEntry = pEquipRegionData + (i * sizeof_EquipRegion);
-		Address pName = LoadAddressFromAddress(
+		Address pEquipRegionEntry = pEquipRegionData + view_as<Address>(i * sizeof_EquipRegion);
+		Address pName = DereferencePointer(
 				pEquipRegionEntry + offs_CEconItemSchema_EquipRegion_pszName);
 		LoadStringFromAddress(pName, equipRegion, sizeof(equipRegion));
 		
@@ -72,14 +72,14 @@ int Native_GetEquipRegionMask(Handle hPlugin, int nParams) {
 	// CUtlVector lookup
 	Address pEquipRegions = pSchema + offs_CEconItemSchema_EquipRegions;
 	int nEquipRegions = LoadFromAddress(
-			pEquipRegions + offs_CUtlVector_m_size, NumberType_Int32);
+			pEquipRegions + view_as<Address>(0x0C), NumberType_Int32);
 	
-	Address pEquipRegionData = LoadAddressFromAddress(pEquipRegions);
+	Address pEquipRegionData = DereferencePointer(pEquipRegions);
 	for (int i; i < nEquipRegions; i++) {
 		char equipRegion[64];
 		
-		Address pEquipRegionEntry = pEquipRegionData + (i * sizeof_EquipRegion);
-		Address pName = LoadAddressFromAddress(
+		Address pEquipRegionEntry = pEquipRegionData + view_as<Address>(i * sizeof_EquipRegion);
+		Address pName = DereferencePointer(
 				pEquipRegionEntry + offs_CEconItemSchema_EquipRegion_pszName);
 		LoadStringFromAddress(pName, equipRegion, sizeof(equipRegion));
 		
