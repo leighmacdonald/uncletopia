@@ -4142,7 +4142,7 @@ Action Event_PlayerHurt(Event event, const char[] name, bool dontBroadcast)
 
         if (g_bPlayerTakenDirectHit[victim])
         {
-            bool isVictimInAir = !(GetEntityFlags(victim) & (FL_ONGROUND));
+            bool isVictimInAir = !view_as<bool>((GetEntityFlags(victim) & (FL_ONGROUND)));
 
             if (isVictimInAir)
             {
