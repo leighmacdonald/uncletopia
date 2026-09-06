@@ -1,6 +1,6 @@
 ---
-#sourcemod_sm_download: "https://github.com/alliedmodders/sourcemod/releases/download/1.13.0.7453/sourcemod-1.13.0-git7453-linux.tar.gz"
-#sourcemod_metamod_download: "https://github.com/alliedmodders/metamod-source/releases/download/2.0.0.1411/mmsource-2.0.0-git1411-linux.tar.gz"
+# sourcemod_sm_download: "https://github.com/alliedmodders/sourcemod/releases/download/1.13.0.7453/sourcemod-1.13.0-git7453-linux.tar.gz"
+# sourcemod_metamod_download: "https://github.com/alliedmodders/metamod-source/releases/download/2.0.0.1411/mmsource-2.0.0-git1411-linux.tar.gz"
 sourcemod_sm_download: "https://github.com/alliedmodders/sourcemod/releases/download/1.12.0.7253/sourcemod-1.12.0-git7253-linux.tar.gz"
 sourcemod_metamod_download: "https://github.com/alliedmodders/metamod-source/releases/download/2.0.0.1411/mmsource-2.0.0-git1411-linux.tar.gz"
 # sourcemod_sm_download: "https://github.com/alliedmodders/sourcemod/releases/download/1.13.0.7456/sourcemod-1.13.0-git7456-linux.tar.gz"
