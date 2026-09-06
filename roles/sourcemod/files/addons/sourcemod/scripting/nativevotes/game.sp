@@ -2605,7 +2605,7 @@ stock static void CSGO_DisplayVoteSetup(int client, ArrayList hVoteTypes)
 		char voteIssue[128];
 
 		CallVoteListData voteData;
-		hVoteTypes.GetArray(i, voteData.CallVoteList_VoteType);
+		hVoteTypes.GetArray(i, voteData, sizeof(CallVoteListData));
 
 		Game_OverrideTypeToVoteString(voteData.CallVoteList_VoteType, voteIssue, sizeof(voteIssue));
 

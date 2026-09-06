@@ -8,7 +8,7 @@
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU General Public License, version 3.0, as published by the
  * Free Software Foundation.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
@@ -28,7 +28,7 @@
  *
  * Version: $Id$
  */
- 
+
 #include <menus>
 #include <sourcemod>
 
@@ -156,16 +156,16 @@ enum NativeVotesFailType
 
 /**
  * Reasons a callvote command failed.
- * 
+ *
  * This will mainly be used by VoteCommand overrides, although it is available to all games
  * as a convenience.
- * 
+ *
  * Note:
  * 0-1 match for all games.
  * 2-14 match for TF2 and CS:GO
  * 15 is different for TF2 and CS:GO as they were added after the vote system was copied.
  * 16+ are exclusive to TF2.
- * 
+ *
  * UPDATE: Starting in 2015, this list is no longer a direct one-to-one with the values the game uses.
  * This is because CS:GO changed a bunch of their values.
  * Plugins that use NativeVotesCallFail_Warmup WILL need to be recompiled as it has been assigned a new number
@@ -214,15 +214,15 @@ enum NativeVotesKickType
 	NativeVotesKickType_Generic,			/**< Generic kick vote type.  The only type available on L4D/L4D2 */
 	NativeVotesKickType_Idle,				/**< TF2/CS:GO: Client chose Idle from the list */
 	NativeVotesKickType_Scamming,			/**< TF2/CS:GO: Client chose Scamming from the list */
-	NativeVotesKickType_Cheating,			/**< TF2/CS:GO: Client chose Cheating from the list */	
+	NativeVotesKickType_Cheating,			/**< TF2/CS:GO: Client chose Cheating from the list */
 }
 
 /**
  * Types of votes that can be overridden in the client vote menu
- * 
+ *
  * Note that menus use the same command for enable and disable votes,
  * so their overrides reflect this
- * 
+ *
  * Only TF2 supports this feature
  */
 enum NativeVotesOverride
@@ -253,19 +253,19 @@ methodmap NativeVote < KeyValues
 	//						also the only default actions.
 	public native NativeVote(NativeVotes_Handler handler, NativeVotesType voteType,
 	                           MenuAction actions=NATIVEVOTES_ACTIONS_DEFAULT);
-	
+
 	// Frees all handles related to a vote.
 	//
 	// THIS MUST BE CALLED TO AVOID HANDLE LEAKS
 	public native void Close();
-	
+
 	// Appends a new item to the end of a vote.  Only valid for Multiple Choice votes
 	//
 	// @param info				Item information string.
 	// @return					True on success, false on failure.
 	// @error					Item limit reached or if the vote is not multiple choice.
 	public native bool AddItem(const char[] info, const char[] display);
-	
+
 	// Inserts an item into the menu before a certain position; the new item will
 	// be at the given position and all next items pushed forward.
 	//
@@ -274,19 +274,19 @@ methodmap NativeVote < KeyValues
 	// @return					True on success, false on failure.
 	// @error					Invalid vote position or if the vote is not multiple choice.
 	public native bool InsertItem(int position, const char[] info, const char[] display);
-	
+
 	// Removes an item from the menu.
 	//
 	// @param position			Position, starting from 0.
 	// @return					True on success, false on failure.
 	// @error					Invalid vote position or if the vote is not multiple choice.
 	public native bool RemoveItem(int position);
-	
+
 	// Removes all items from a vote.
 	//
 	// @error					If the vote is not multiple choice.
 	public native void RemoveAllItems();
-	
+
 	// Retrieves information about a vote item.
 	//
 	// @param position			Position, starting from 0.
@@ -297,26 +297,26 @@ methodmap NativeVote < KeyValues
 	// @return					True on success, false if position is invalid.
 	public native bool GetItem(int position, char[] infoBuf, int infoBufLen,
 							char[] dispBuf="", int dispBufLen=0);
-	
+
 	// Sets the vote's details for votes that support details
 	// If this is a custom vote, use SetTitle to set the vote's title.
 	//
 	// @param fmt 				Message string format
 	// @param ...					Message string arguments.
 	public native void SetDetails(const char[] fmt, any ...);
-	
+
 	// Returns the text of a vote's details if set.
 	//
 	// @param buffer				Buffer to store details.
 	// @param maxlength			Maximum length of the buffer.
 	public native void GetDetails(char[] buffer, int maxlength);
-	
+
 	// Sets a custom vote's default title/instruction message.
 	//
 	// @param fmt 				Message string format
 	// @param ...					Message string arguments.
 	public native void SetTitle(const char[] fmt, any ...);
-	
+
 	// Return the text of a custom vote's title.
 	// If not set, returns Details instead.
 	//     This behavior is for compatibility with NativeVotes 0.8.0 and below.
@@ -324,12 +324,12 @@ methodmap NativeVote < KeyValues
 	// @param buffer				Buffer to store title.
 	// @param maxlength			Maximum length of the buffer.
 	public native void GetTitle(char[] buffer, int maxlength);
-	
+
 	// Sets the target userid for vote
 	// This should be used instead of SetArgument for votes that target players
-	// 
+	//
 	// Also sets target SteamID
-	// 
+	//
 	// @param userid				Client index of target player or 0 to clear target
 	// @param setDetails			If true, also sets vote details to client's name
 	public native void SetTarget(int client, bool setDetails=true);
@@ -338,7 +338,7 @@ methodmap NativeVote < KeyValues
 	//
 	// @return					Client index of target player, 0 for client disconnected, or -1 for no target.
 	public native int GetTarget();
-	
+
 	// Get the SteamID2 of a vote's target
 	// Useful if the target has disconnected from the server during a vote.
 	// This was added in specifically for Kick/Ban votes
@@ -347,8 +347,8 @@ methodmap NativeVote < KeyValues
 	// @param maxlength			Maximum length of the buffer.
 	public native void GetTargetSteam(char[] buffer, int maxlength);
 
-	// Broadcasts a vote to a list of clients.  The most selected item will be 
-	// returned through MenuAction_VoteEnd.  On a tie, a random item will be returned 
+	// Broadcasts a vote to a list of clients.  The most selected item will be
+	// returned through MenuAction_VoteEnd.  On a tie, a random item will be returned
 	// from a list of the tied items.
 	//
 	// Note that MenuAction_VoteStart, MenuAction_VoteCancel, MenuAction_VoteEnd, and MenuAction_End are all
@@ -362,7 +362,7 @@ methodmap NativeVote < KeyValues
 	// 							vote session in progress.
 	// @error					A vote is already in progress.
 	public native bool DisplayVote(int[] clients, int numClients, int time, int flags=0);
-	
+
 	// Sends a vote menu to all clients.  See NativeVotes_Display() for more information.
 	//
 	// @param time				Maximum time to leave vote on the screen.
@@ -374,7 +374,7 @@ methodmap NativeVote < KeyValues
 	{
 		int total = 0;
 		int[] players = new int[MaxClients];
-		
+
 		for (int i = 1; i <= MaxClients; i++)
 		{
 			if (!IsClientInGame(i) || IsFakeClient(i))
@@ -383,7 +383,7 @@ methodmap NativeVote < KeyValues
 		}
 		return this.DisplayVote(players, total, time, flags);
 	}
-	
+
 	// Display default vote passed screen for this vote type
 	//
 	// You MUST call one of the DisplayPass* or DisplayFail functions
@@ -395,7 +395,7 @@ methodmap NativeVote < KeyValues
 	// @param fmt 				Message string format
 	// @param ...					Message string arguments.
 	public native void DisplayPass(const char[] fmt="", any ...);
-	
+
 	// Display vote passed screen with custom text to a single client
 	//
 	// You MUST call one of the DisplayPass* or DisplayFail functions
@@ -404,20 +404,20 @@ methodmap NativeVote < KeyValues
 	//
 	// You should favor DisplayPassCustom over this function as you must send a
 	// DisplayPass to all clients
-	// 
+	//
 	// The format string/any args are the item that won the vote.
 	//
 	// @param client				Client to display pass screen to.
 	// @param fmt					A format string.
 	// @param ...					Variable number of format parameters
 	public native void DisplayPassCustomToOne(int client, const char[] fmt, any ...);
-	
+
 	// Display vote passed screen with custom text to all clients
 	//
 	// You MUST call one of the DisplayPass* or DisplayFail functions
 	// to hide the vote screen for users who didn't vote, and to clear out their selection
 	// for the next vote.
-	// 
+	//
 	// The format string/any args are the item that won the vote.
 	//
 	// @param fmt					A format string.
@@ -425,18 +425,18 @@ methodmap NativeVote < KeyValues
 	public void DisplayPassCustom(const char[] fmt, any ...)
 	{
 		char buffer[192];
-		
+
 		for (int i = 1; i <= MaxClients; ++i)
 		{
 			if (!IsClientInGame(i) || IsFakeClient(i))
 				continue;
-				
+
 			SetGlobalTransTarget(i);
 			VFormat(buffer, sizeof(buffer), fmt, 3);
 			this.DisplayPassCustomToOne(i, "%s", buffer);
 		}
 	}
-	
+
 	// Display vote passed screen with a custom type.
 	//
 	// A sample usage of this would be if Extend won an RTV vote: vote.DisplayPassEx(NativeVotesPass_Extend, map);
@@ -444,20 +444,20 @@ methodmap NativeVote < KeyValues
 	// You MUST call one of the DisplayPass* or DisplayFail functions
 	// to hide the vote screen for users who didn't vote, and to clear out their selection
 	// for the next vote.
-	// 
+	//
 	// The format string/any args are the item that won the vote.
 	//
 	// @param passType				The pass screen to display
 	// @param fmt					A format string.
 	// @param ...					Variable number of format parameters
 	public native void DisplayPassEx(NativeVotesPassType passType, const char[] fmt="", any ...);
-	
+
 	// Display vote failure screen to all users in a vote.
 	//
 	// You MUST call one of the DisplayPass* or DisplayFail functions
 	// to hide the vote screen for users who didn't vote, and to clear out their selection
 	// for the next vote.
-	// 
+	//
 	// @param reason			Vote failure reason from NativeVotesFailType enum
 	public native void DisplayFail(NativeVotesFailType reason=NativeVotesFail_Generic);
 
@@ -470,20 +470,20 @@ methodmap NativeVote < KeyValues
 		public native get();
 		public native set(int value);
 	}
-	
+
 	// Sets whether or not the vote has a "no vote" button in slot 1 for
 	// multiple choice votes.
 	// By default, votes do not have a no vote button.
 	property bool NoVoteButton {
 		public native set(bool value);
 	}
-	
+
 	// Sets an advanced vote handling callback.  If this callback is set,
 	// MenuAction_VoteEnd will not be called.
 	property NativeVotes_VoteHandler VoteResultCallback {
 		public native set(NativeVotes_VoteHandler handler);
 	}
-	
+
 	// Returns the number of items in a vote.
 	property int ItemCount {
 		public native get();
@@ -493,7 +493,7 @@ methodmap NativeVote < KeyValues
 	property NativeVotesType VoteType {
 		public native get();
 	}
-	
+
 	// Get or set the team this vote is for
 	// NATIVEVOTES_ALL_TEAMS is used for all teams.
 	property int Team {
@@ -513,14 +513,14 @@ methodmap NativeVote < KeyValues
 
 /**
  * Is a specific vote type supported by this game?
- * 
+ *
  * @param voteType			Vote type
  */
 native bool NativeVotes_IsVoteTypeSupported(NativeVotesType voteType);
 
 /**
  * Creates a new, empty vote.
- * 
+ *
  * @param handler			Function which will receive vote actions.
  * @param voteType		Vote type, cannot be changed after set
  * @param actions			Optionally set which actions to receive.  VoteStart,
@@ -534,9 +534,9 @@ native NativeVote NativeVotes_Create(NativeVotes_Handler handler, NativeVotesTyp
 
 /**
  * Frees all handles related to a vote.
- * 
+ *
  * THIS MUST BE CALLED TO AVOID HANDLE LEAKS
- * 
+ *
  * @param vote				Vote handle
  */
 native void NativeVotes_Close(Handle vote);
@@ -593,13 +593,13 @@ native void NativeVotes_RemoveAllItems(Handle vote);
  * @return					True on success, false if position is invalid.
  * @error					Invalid Handle
  */
-native bool NativeVotes_GetItem(Handle vote, 
+native bool NativeVotes_GetItem(Handle vote,
 						int position,
-						char[] infoBuf, 
+						char[] infoBuf,
 						int infoBufLen,
 						char[] dispBuf="",
 						int dispBufLen=0);
-						
+
 /**
  * Returns the number of items in a vote.
  *
@@ -655,9 +655,9 @@ native void NativeVotes_GetTitle(Handle vote, char[] buffer, int maxlength);
 /**
  * Sets the target userid for vote
  * This should be used instead of SetArgument for votes that target players
- * 
+ *
  * Also sets target SteamID
- * 
+ *
  * @param vote				Vote Handle.
  * @param userid			Client index of target player or 0 to clear target
  * @param setDetails		If true, also sets vote details to client's name
@@ -695,7 +695,7 @@ native bool NativeVotes_IsVoteInProgress();
 
 /**
  * Returns a style's maximum items
- * 
+ *
  * @return Maximum items
  */
 native int NativeVotes_GetMaxItems();
@@ -704,7 +704,7 @@ native int NativeVotes_GetMaxItems();
  * Sets a vote's option flags.
  *
  * If a certain bit is not supported, it will be stripped before being set.
- * 
+ *
  * NOTE: Only MENUFLAG_BUTTON_NOVOTE is supported by NativeVotes
  *
  * @param vote				Vote Handle.
@@ -728,7 +728,7 @@ native int NativeVotes_GetOptionFlags(Handle vote);
  * Sets whether or not the vote has a "no vote" button in slot 1 for
  * multiple choice votes.
  * By default, votes do not have a no vote button.
- * 
+ *
  * @param vote		NativeVotes Handle
  * @param button		True to enable the button, false to remove it.
  * @return			True if allowed; false on failure.
@@ -745,7 +745,7 @@ native void NativeVotes_Cancel();
 
 /**
  * Called when a vote action is completed.
- * 
+ *
  * This is a clone of the SM 1.6 MenuHandler for future compatibility.
  *
  * @param vote			The vote being acted upon.
@@ -757,11 +757,11 @@ typedef NativeVotes_Handler = function int (NativeVote vote, MenuAction action, 
 
 /**
  * Callback for when a vote has ended and results are available.
- * 
+ *
  * Due to SourceMod Forward limitations in plugins, multi-dimension arrays can't be passed
  * to forwards.  This means we have to split the client_info and item_info arrays into
  * their components.
- * 
+ *
  * @param vote			The vote being voted on.
  * @param num_votes		Number of votes tallied in total.
  * @param num_clients		Number of clients who could vote.
@@ -772,7 +772,7 @@ typedef NativeVotes_Handler = function int (NativeVote vote, MenuAction action, 
  * @param item_votes		Array of vote vote counts. Parallel with item_indexes.
  */
 typedef NativeVotes_VoteHandler = function void (NativeVote vote,
-							int num_votes, 
+							int num_votes,
 							int num_clients,
 							const int[] client_indexes,
 							const int[] client_votes,
@@ -782,13 +782,13 @@ typedef NativeVotes_VoteHandler = function void (NativeVote vote,
 /**
  * Function to convert client/vote arrays into their two-dimensional versions,
  * which can then be passed to a standard vote handler.
- * 
+ *
  * client_info and item_info are the resulting arrays.
- * 
+ *
  * Note: When declaring client_info and item_info, you'll probably want to declare them like this:
  * new client_info[num_clients][2];
  * new item_info[num_items][2];
- * 
+ *
  * NOTE: This should only be used to execute shared logic or logic that knows that the resulting
  * vote data is from NativeVotes.
  *
@@ -808,7 +808,7 @@ stock void NativeVotes_FixResults(int num_clients,
 							int num_items,
 							const int[] item_indexes,
 							const int[] item_votes,
-							int[][] client_info, 
+							int[][] client_info,
 							int[][] item_info)
 {
 	for (int i = 0; i < num_clients; ++i)
@@ -816,7 +816,7 @@ stock void NativeVotes_FixResults(int num_clients,
 		client_info[i][VOTEINFO_CLIENT_INDEX] = client_indexes[i];
 		client_info[i][VOTEINFO_CLIENT_ITEM] = client_votes[i];
 	}
-	
+
 	for (int i = 0; i < num_items; ++i)
 	{
 		item_info[i][VOTEINFO_ITEM_INDEX] = item_indexes[i];
@@ -844,8 +844,8 @@ native void NativeVotes_SetResultCallback(Handle vote, NativeVotes_VoteHandler c
 native int NativeVotes_CheckVoteDelay();
 
 /**
- * Returns whether a client is in the pool of clients allowed 
- * to participate in the current vote.  This is determined by 
+ * Returns whether a client is in the pool of clients allowed
+ * to participate in the current vote.  This is determined by
  * the client list passed to NativeVotes_Display().
  *
  * @param client			Client index.
@@ -859,16 +859,16 @@ native bool NativeVotes_IsClientInVotePool(int client);
  *
  * @param client			Client index.
  * @param revotes			True to allow revotes, false otherwise.
- * @return					True on success, false if the client is in the vote pool 
+ * @return					True on success, false if the client is in the vote pool
  *							but cannot vote again.
- * @error					No vote in progress, client is not in the voting pool, 
+ * @error					No vote in progress, client is not in the voting pool,
  *							or client index is invalid.
  */
 native bool NativeVotes_RedrawClientVote(int client, bool revotes=true);
 
 /**
  * Retrieve the vote type
- * 
+ *
  * @param vote				NativeVotes Handle.
  * @return					The built in vote type
  * @error					Invalid Handle
@@ -877,9 +877,9 @@ native NativeVotesType NativeVotes_GetType(Handle vote);
 
 /**
  * Set the team this vote is for, or NATIVEVOTES_ALL_TEAMS for all teams.
- * 
+ *
  * Defaults to NATIVEVOTES_ALL_TEAMS if not explicitly set.
- * 
+ *
  * @param vote				NativeVotes Handle.
  * @param team				Team number this vote is for
  * @error					Invalid Handle
@@ -888,7 +888,7 @@ native void NativeVotes_SetTeam(Handle vote, int team);
 
 /**
  * Retrieve the team this vote is for
- * 
+ *
  * @param vote				NativeVotes Handle.
  * @return					Team index or NATIVEVOTES_ALL_TEAMS for all teams.
  * @error					Invalid Handle
@@ -898,9 +898,9 @@ native int NativeVotes_GetTeam(Handle vote);
 /**
  * Set the client index of the player who initiated the vote.
  * Use NATIVEVOTES_SERVER_INDEX if initiated by the server itself.
- * 
+ *
  * Defaults to NATIVEVOTES_SERVER_INDEX if not explicitly set.
- * 
+ *
  * @param vote				NativeVotes Handle.
  * @param client			Client who initiated the vote or NATIVEVOTES_SERVER_INDEX
  * @error					Invalid Handle
@@ -908,9 +908,9 @@ native int NativeVotes_GetTeam(Handle vote);
 native void NativeVotes_SetInitiator(Handle vote, int client);
 
 /**
- * Retrieve the client index of the player who initiated the vote or NATIVEVOTES_SERVER_INDEX if 
+ * Retrieve the client index of the player who initiated the vote or NATIVEVOTES_SERVER_INDEX if
  * initiated by the server itself.
- * 
+ *
  * @param					Vote handle
  * @return					Client index or NATIVEVOTES_SERVER_INDEX
  * @error					Invalid Handle
@@ -918,8 +918,8 @@ native void NativeVotes_SetInitiator(Handle vote, int client);
 native int NativeVotes_GetInitiator(Handle vote);
 
 /**
- * Broadcasts a vote to a list of clients.  The most selected item will be 
- * returned through MenuAction_VoteEnd.  On a tie, a random item will be returned 
+ * Broadcasts a vote to a list of clients.  The most selected item will be
+ * returned through MenuAction_VoteEnd.  On a tie, a random item will be returned
  * from a list of the tied items.
  *
  * Note that MenuAction_VoteStart, MenuAction_VoteCancel, MenuAction_VoteEnd, and MenuAction_End are all
@@ -948,14 +948,14 @@ stock bool NativeVotes_DisplayToAll(Handle vote, int time)
 {
 	int total = 0;
 	int[] players = new int[MaxClients];
-	
+
 	for (int i=1; i<=MaxClients; i++)
 	{
 		if (!IsClientInGame(i) || IsFakeClient(i))
 			continue;
 		players[total++] = i;
 	}
-	
+
 	return NativeVotes_Display(vote, players, total, time);
 }
 
@@ -976,14 +976,14 @@ stock bool NativeVotes_DisplayToTeam(Handle vote, int team, int time)
 
 	int total;
 	int[] players = new int[MaxClients];
-	
+
 	for (int i=1; i<=MaxClients; i++)
 	{
 		if (!IsClientInGame(i) || IsFakeClient(i) || (GetClientTeam(i) != team))
 			continue;
 		players[total++] = i;
 	}
-	
+
 	return NativeVotes_Display(vote, players, total, time);
 }
 
@@ -1001,14 +1001,14 @@ stock bool NativeVotes_DisplayToAllNonSpectators(Handle vote, int time)
 {
 	int total;
 	int[] players = new int[MaxClients];
-	
+
 	for (int i=1; i<=MaxClients; i++)
 	{
 		if (!IsClientInGame(i) || IsFakeClient(i) || (GetClientTeam(i) < 2))
 			continue;
 		players[total++] = i;
 	}
-	
+
 	return NativeVotes_Display(vote, players, total, time);
 }
 
@@ -1018,7 +1018,7 @@ stock bool NativeVotes_DisplayToAllNonSpectators(Handle vote, int time)
  * You MUST call one of the NativeVotes_DisplayPass* or NativeVotes_DisplayFail functions
  * to hide the vote screen for users who didn't vote, and to clear out their selection
  * for the next vote.
- * 
+ *
  * The format string/any args are a Valve format string or the item that won the vote.
  *
  * @param vote				Vote handle
@@ -1033,10 +1033,10 @@ native void NativeVotes_DisplayPass(Handle vote, const char[] fmt="", any ...);
  * You MUST call one of the NativeVotes_DisplayPass* or NativeVotes_DisplayFail functions
  * to hide the vote screen for users who didn't vote, and to clear out their selection
  * for the next vote.
- * 
+ *
  * You should favor DisplayPassCustom over this function as you must send a
  * NativeVotes_DisplayPass to all clients
- * 
+ *
  * The format string/any args are a Valve format string or the item that won the vote.
  *
  * @param vote				Vote handle
@@ -1052,9 +1052,9 @@ native void NativeVotes_DisplayPassCustomToOne(Handle vote, int client, const ch
  * You MUST call one of the NativeVotes_DisplayPass* or NativeVotes_DisplayFail functions
  * to hide the vote screen for users who didn't vote, and to clear out their selection
  * for the next vote.
- * 
+ *
  * The format string/any args are a Valve format string or the item that won the vote.
- * 
+ *
  * @param vote				Vote handle
  * @param fmt 				Message string format
  * @param ...				Message string arguments.
@@ -1062,7 +1062,7 @@ native void NativeVotes_DisplayPassCustomToOne(Handle vote, int client, const ch
 stock void NativeVotes_DisplayPassCustom(Handle vote, const char[] fmt, any ...)
 {
 	char buffer[192];
-	
+
 	for (int i = 1; i <= MaxClients; ++i)
 	{
 		if (IsClientInGame(i) && !IsFakeClient(i))
@@ -1082,9 +1082,9 @@ stock void NativeVotes_DisplayPassCustom(Handle vote, const char[] fmt, any ...)
  * You MUST call one of the NativeVotes_DisplayPass* or NativeVotes_DisplayFail functions
  * to hide the vote screen for users who didn't vote, and to clear out their selection
  * for the next vote.
- * 
+ *
  * The format string/any args are a Valve format string or the item that won the vote.
- * 
+ *
  * @param vote				Vote handle
  * @param passType			The pass screen to display
  * @param fmt 				Message string format
@@ -1099,10 +1099,10 @@ native void NativeVotes_DisplayPassEx(Handle vote, NativeVotesPassType passType,
  *
  * Don't confuse this function with NativeVotes_DisplayPassEx, as that function properly adjusts the state on the vote
  *   Handle, while this function doesn't.
- * 
+ *
  * @param client			client to display to
  * @param passType			The pass screen to display
- * @param team				Which team to show this to? Likely you want one of 
+ * @param team				Which team to show this to? Likely you want one of
  * 							NATIVEVOTES_ALL_TEAMS, NATIVEVOTES_TEAM_1, or NATIVEVOTES_TEAM_2
  * @param fmt 				Message string format
  * @param ...				Message string arguments.
@@ -1116,11 +1116,11 @@ native void NativeVotes_DisplayRawPassToOne(int client, NativeVotesPassType pass
  *
  * Don't confuse this function with NativeVotes_DisplayPassEx, as that function properly adjusts the state on the vote
  *   Handle, while this function doesn't.
- * 
+ *
  * The format string/any args are a Valve format string or the item that won the vote.
- * 
+ *
  * @param passType			The pass screen to display
- * @param team				Which team to show this to? Likely you want one of 
+ * @param team				Which team to show this to? Likely you want one of
  * 							NATIVEVOTES_ALL_TEAMS, NATIVEVOTES_TEAM_1, or NATIVEVOTES_TEAM_2
  * @param fmt 				Message string format
  * @param ...				Message string arguments.
@@ -1128,7 +1128,7 @@ native void NativeVotes_DisplayRawPassToOne(int client, NativeVotesPassType pass
 stock void NativeVotes_DisplayRawPassToAll(NativeVotesPassType passType, int team=NATIVEVOTES_ALL_TEAMS, const char[] fmt="", any ...)
 {
 	char buffer[192];
-	
+
 	for (int i = 1; i <= MaxClients; ++i)
 	{
 		if (IsClientInGame(i) && !IsFakeClient(i))
@@ -1137,7 +1137,7 @@ stock void NativeVotes_DisplayRawPassToAll(NativeVotesPassType passType, int tea
 			VFormat(buffer, sizeof(buffer), fmt, 4);
 			NativeVotes_DisplayRawPassToOne(i, passType, team, "%s", buffer);
 		}
-	}	
+	}
 }
 
 /**
@@ -1147,20 +1147,20 @@ stock void NativeVotes_DisplayRawPassToAll(NativeVotesPassType passType, int tea
  *
  * Don't confuse this function with NativeVotes_DisplayPassEx, as that function properly adjusts the state on the vote
  *   Handle, while this function doesn't.
- * 
+ *
  * The format string/any args are a Valve format string or the item that won the vote.
- * 
+ *
  * @param clients			List of clients to display to
  * @param numClients		Number of clients to send this to.
  * @param passType			The pass screen to display
  * @param details			Normally the item that won the vote. Also used for custom vote winners
- * @param team				Which team to show this to? Likely you want one of 
+ * @param team				Which team to show this to? Likely you want one of
  * 							NATIVEVOTES_ALL_TEAMS, NATIVEVOTES_TEAM_1, or NATIVEVOTES_TEAM_2
  */
 stock void NativeVotes_DisplayRawPass(int[] clients, int numClients, NativeVotesPassType passType, int team=NATIVEVOTES_ALL_TEAMS, const char[] fmt="", any ...)
 {
 	char buffer[192];
-	
+
 	for (int i = 0; i <= numClients; ++i)
 	{
 		if (IsClientInGame(clients[i]) && !IsFakeClient(clients[i]))
@@ -1169,7 +1169,7 @@ stock void NativeVotes_DisplayRawPass(int[] clients, int numClients, NativeVotes
 			VFormat(buffer, sizeof(buffer), fmt, 4);
 			NativeVotes_DisplayRawPassToOne(clients[i], passType, team, "%s", buffer);
 		}
-	}	
+	}
 }
 
 /**
@@ -1177,9 +1177,9 @@ stock void NativeVotes_DisplayRawPass(int[] clients, int numClients, NativeVotes
  *
  * Don't confuse this function with NativeVotes_DisplayPassCustomToOne, as that function properly adjusts the state on the vote
  *   Handle, while this function doesn't.
- * 
+ *
  * @param client			client to display to
- * @param team				Which team to show this to? Likely you want one of 
+ * @param team				Which team to show this to? Likely you want one of
  * 							NATIVEVOTES_ALL_TEAMS, NATIVEVOTES_TEAM_1, or NATIVEVOTES_TEAM_2
  * @param fmt 				Message string format
  * @param ...				Message string arguments.
@@ -1191,8 +1191,8 @@ native void NativeVotes_DisplayRawPassCustomToOne(int client, int team, const ch
  *
  * Don't confuse this function with NativeVotes_DisplayPassCustom, as that function properly adjusts the state on the vote
  *   Handle, while this function doesn't.
- * 
- * @param team				Which team to show this to? Likely you want one of 
+ *
+ * @param team				Which team to show this to? Likely you want one of
  * 							NATIVEVOTES_ALL_TEAMS, NATIVEVOTES_TEAM_1, or NATIVEVOTES_TEAM_2
  * @param fmt 				Message string format
  * @param ...				Message string arguments.
@@ -1200,7 +1200,7 @@ native void NativeVotes_DisplayRawPassCustomToOne(int client, int team, const ch
 stock void NativeVotes_DisplayRawPassCustomToAll(int team, const char[] fmt, any ...)
 {
 	char buffer[192];
-	
+
 	for (int i = 1; i <= MaxClients; ++i)
 	{
 		if (!IsClientInGame(i) || IsFakeClient(i))
@@ -1216,8 +1216,8 @@ stock void NativeVotes_DisplayRawPassCustomToAll(int team, const char[] fmt, any
  *
  * Don't confuse this function with NativeVotes_DisplayPassCustom, as that function properly adjusts the state on the vote
  *   Handle, while this function doesn't.
- * 
- * @param team				Which team to show this to? Likely you want one of 
+ *
+ * @param team				Which team to show this to? Likely you want one of
  * 							NATIVEVOTES_ALL_TEAMS, NATIVEVOTES_TEAM_1, or NATIVEVOTES_TEAM_2
  * @param fmt 				Message string format
  * @param ...				Message string arguments.
@@ -1225,7 +1225,7 @@ stock void NativeVotes_DisplayRawPassCustomToAll(int team, const char[] fmt, any
 stock void NativeVotes_DisplayRawPassCustom(int[] clients, int numClients, int team, const char[] fmt, any ...)
 {
 	char buffer[192];
-	
+
 	for (int i = 0; i <= numClients; ++i)
 	{
 		if (!IsClientInGame(clients[i]) || IsFakeClient(clients[i]))
@@ -1242,7 +1242,7 @@ stock void NativeVotes_DisplayRawPassCustom(int[] clients, int numClients, int t
  * You MUST call one of the NativeVotes_DisplayPass* or NativeVotes_DisplayFail functions
  * to hide the vote screen for users who didn't vote, and to clear out their selection
  * for the next vote.
- * 
+ *
  * @param vote				Vote handle
  * @param reason			Vote failure reason from NativeVotesFailType enum
  */
@@ -1255,9 +1255,9 @@ native void NativeVotes_DisplayFail(Handle vote, NativeVotesFailType reason=Nati
  *
  * Don't confuse this function with NativeVotes_DisplayFail, as that function properly adjusts the state on the vote
  *   Handle, while this function doesn't.
- * 
+ *
  * @param reason			Vote failure reason from NativeVotesFailType enum
- * @param team				Which team to show this to? Likely you want one of 
+ * @param team				Which team to show this to? Likely you want one of
  * 							NATIVEVOTES_ALL_TEAMS, NATIVEVOTES_TEAM_1, or NATIVEVOTES_TEAM_2
  */
 native void NativeVotes_DisplayRawFail(int[] clients, int numClients, NativeVotesFailType reason=NativeVotesFail_Generic, int team=NATIVEVOTES_ALL_TEAMS);
@@ -1266,23 +1266,23 @@ native void NativeVotes_DisplayRawFail(int[] clients, int numClients, NativeVote
  * Display vote failure screen to all clients.
  *
  * This version is used to display the vote failure screen when a vote isn't actually running.
- * 
+ *
  * @param reason				Vote failure reason from NativeVotesFailType enum
- * @param team				Which team to show this to? Likely you want one of 
+ * @param team				Which team to show this to? Likely you want one of
  * 							NATIVEVOTES_ALL_TEAMS, NATIVEVOTES_TEAM_1, or NATIVEVOTES_TEAM_2
  */
 stock void NativeVotes_DisplayRawFailToAll(NativeVotesFailType reason=NativeVotesFail_Generic, int team=NATIVEVOTES_ALL_TEAMS)
 {
 	int total = 0;
 	int[] players = new int[MaxClients];
-	
+
 	for (int i=1; i<=MaxClients; i++)
 	{
 		if (!IsClientInGame(i) || IsFakeClient(i))
 			continue;
 		players[total++] = i;
 	}
-	
+
 	NativeVotes_DisplayRawFail(players, total, reason, team);
 	return;
 }
@@ -1291,28 +1291,28 @@ stock void NativeVotes_DisplayRawFailToAll(NativeVotesFailType reason=NativeVote
  * Display vote failure screen to one client.
  *
  * This version is used to display the vote failure screen when a vote isn't actually running.
- * 
+ *
  * @param client				client to display to
  * @param reason				Vote failure reason from NativeVotesFailType enum
- * @param team				Which team to show this to? Likely you want one of 
+ * @param team				Which team to show this to? Likely you want one of
  * 							NATIVEVOTES_ALL_TEAMS, NATIVEVOTES_TEAM_1, or NATIVEVOTES_TEAM_2
  */
 stock void NativeVotes_DisplayRawFailToOne(int client, NativeVotesFailType reason=NativeVotesFail_Generic, int team=NATIVEVOTES_ALL_TEAMS)
 {
 	int players[1];
-	
+
 	players[0] = client;
-	
+
 
 	NativeVotes_DisplayRawFail(players, 1, reason, team);
 	return;
 }
 
 /**
- * Quick stock to determine whether voting is allowed.  This doesn't let you 
- * fine-tune a reason for not voting, so it's not recommended for lazily 
+ * Quick stock to determine whether voting is allowed.  This doesn't let you
+ * fine-tune a reason for not voting, so it's not recommended for lazily
  * telling clients that voting isn't allowed.
- * 
+ *
  * @return				True if voting is allowed, false if voting is in progress
  *						or the cooldown is active.
  */
@@ -1322,25 +1322,25 @@ stock bool NativeVotes_IsNewVoteAllowed()
 	{
 		return false;
 	}
-	
+
 	return true;
 }
 /**
  * Forward for "callvote" handling
- * 
+ *
  * If a vote is already running, callvote will silently fail and this function will never be called.
  * This is standard in-game behavior to prevent callvote from interfering with running votes.
- * 
+ *
  * You should respond to this by starting a vote, calling NativeVotes_DisplayCallVoteFail, or printing a message in chat
  * (for votes that require more than one person to use it).
- * 
+ *
  * The callvote panel always vanishes when a user chooses an option, so NativeVotes_DisplayCallVoteFail isn't mandatory.
  */
 typeset NativeVotes_CallVoteHandler
 {
 	/**
 	 * For kick votes
-	 * 
+	 *
 	 * @param client		Client running callvote.
 	 * @param voteCommand	The vote command used.
 	 * @param voteArgument	Vote argument or blank if the vote type has no argument.
@@ -1349,39 +1349,39 @@ typeset NativeVotes_CallVoteHandler
 	 * @return				Plugin_Continue to allow the server itself (or another plugin) to process the callvote
 	 * 						Plugin_Handled if you processed this vote type
 	 * 						Plugin_Stop to block the vote type (not recommended)
-	 */	
+	 */
 	function Action (int client, NativeVotesOverride overrideType, const char[] voteArgument, NativeVotesKickType kickType, int target);
-	
+
 	/**
 	 * For votes whose args you want to see
-	 * 
+	 *
 	 * @param client		Client running callvote.
 	 * @param voteCommand	The vote command used.
 	 * @param voteArgument	Vote argument or blank if the vote type has no argument.
 	 * @return				Plugin_Continue to allow the server itself (or another plugin) to process the callvote
 	 * 						Plugin_Handled if you processed this vote type
 	 * 						Plugin_Stop to block the vote type (not recommended)
-	 */	
+	 */
 	function Action (int client, NativeVotesOverride overrideType, const char[] voteArgument);
-	
+
 	/**
 	 * For votes whose args you DON'T want to see
-	 * 
+	 *
 	 * @param client		Client running callvote.
 	 * @param voteCommand	The vote command used.
 	 * @return				Plugin_Continue to allow the server itself (or another plugin) to process the callvote
 	 * 						Plugin_Handled if you processed this vote type
 	 * 						Plugin_Stop to block the vote type (not recommended)
-	 */	
+	 */
 	function Action (int client, NativeVotesOverride overrideType);
 }
 
 /**
  * Forward for "callvote" visibility check.
  * This forward is called once for each registered vote command
- * 
+ *
  * Note: If other plugins have the same vote name registered, they may block it.
- * 
+ *
  * @param client		Client running callvote.
  * @param voteCommand	The vote command used.
  * @return				Plugin_Continue will show the vote.
@@ -1393,7 +1393,7 @@ typedef NativeVotes_CallVoteVisCheck = function Action (int client, NativeVotesO
 
 /**
  * Are vote commands supported by this game?
- * 
+ *
  * @return			true if they are supported, false if not.
  *                     As of this writing, only TF2 will return true
  */
@@ -1401,9 +1401,9 @@ native bool NativeVotes_AreVoteCommandsSupported();
 
 /**
  * Register a vote command for the callvote command.
- * 
+ *
  * This function is only relevant to TF2.
- * 
+ *
  * @param overrideType		Type of vote to hook in the menu.
  * @param callHandler		Handler to register
  * @param visHandler		Optional Handler to determine if this vote is visible to a player
@@ -1411,10 +1411,10 @@ native bool NativeVotes_AreVoteCommandsSupported();
 native void NativeVotes_RegisterVoteCommand(NativeVotesOverride overrideType, NativeVotes_CallVoteHandler callHandler, NativeVotes_CallVoteVisCheck visHandler=INVALID_FUNCTION);
 
 /**
- * Unregister a vote command for the callvote command 
- * 
+ * Unregister a vote command for the callvote command
+ *
  * This function is only relevant to TF2.
- * 
+ *
  * @param overrideType		Type of vote to hook in the menu.
  * @param callHandler		Handler to register
  * @param visHandler		Optional Handler to determine if this vote is visible to a player
@@ -1425,7 +1425,7 @@ native void NativeVotes_UnregisterVoteCommand(NativeVotesOverride overrideType, 
  * Send a call vote fail screen to a user
  * Used to respond to a callvote with invalid arguments or for other reasons
  * (such as trying to target an admin for a kick/ban vote)
- * 
+ *
  * @param client		The client to display the fail screen to
  * @param reason		A vote call fail reason
  * @param time			For NativeVotesCallFail_Recent, the number of seconds until client can call any votes.
@@ -1439,7 +1439,7 @@ native void NativeVotes_DisplayCallVoteFail(int client, NativeVotesCallFailType 
  * This only works on games that support vote commands (i.e. TF2)
  *
  * This callback will be called the first time a user opens the vote menu
- * 
+ *
  * It is recommended that a nominations plugin be in charge of this.
  *
  * The StringMap should use display name as the key and the mapcycle-style name as the value
@@ -1455,7 +1455,7 @@ forward Action NativeVotes_OverrideMaps(StringMap mapList);
 /**
  * Redraws the vote title from inside a MenuAction_Display callback
  * Not supported on L4D
- * 
+ *
  * @param text			Vote title to draw
  * @error 				If called from outside MenuAction_Display
  * @return				Plugin_Changed if the change is allowed, Plugin_Continue if it isn't.
@@ -1465,7 +1465,7 @@ native Action NativeVotes_RedrawVoteTitle(const char[] text);
 /**
  * Redraws the vote text from inside a MenuAction_DisplayItem callback.
  * Only supported on multiple-choice votes
- * 
+ *
  * @param text			Vote text to draw.
  * @error 				If called from outside MenuAction_DisplayItem
  * @return				Plugin_Changed if the change is allowed, Plugin_Continue if it isn't.
@@ -1488,7 +1488,7 @@ stock void NativeVotes_GetInfo(int param2, int &winningVotes, int &totalVotes)
 /**
  * Do not edit below this line!
  */
-public SharedPlugin __pl_nativevotes = 
+public SharedPlugin __pl_nativevotes =
 {
 	name = "nativevotes",
 	file = "nativevotes.smx",
