@@ -4,7 +4,7 @@
  * NativeVotes
  * NativeVotes is a voting API plugin for L4D, L4D2, TF2, and CS:GO.
  * Based on the SourceMod voting API
- * 
+ *
  * NativeVotes (C) 2011-2014 Ross Bemrose (Powerlord). All rights reserved.
  * SourceMod (C)2004-2008 AlliedModders LLC.  All rights reserved.
  * =============================================================================
@@ -12,7 +12,7 @@
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU General Public License, version 3.0, as published by the
  * Free Software Foundation.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
@@ -51,7 +51,7 @@ bool Data_GetItemInfo(KeyValues vote, int item, char[] choice, int choiceSize)
 	{
 		return false;
 	}
-	
+
 	ArrayList array = view_as<ArrayList>(vote.GetNum(INFO, view_as<int>(INVALID_HANDLE)));
 
 	// Shouldn't happen, but just in case...
@@ -59,7 +59,7 @@ bool Data_GetItemInfo(KeyValues vote, int item, char[] choice, int choiceSize)
 	{
 		return false;
 	}
-	
+
 	array.GetString(item, choice, choiceSize);
 	return true;
 }
@@ -70,7 +70,7 @@ bool Data_GetItemDisplay(KeyValues vote, int item, char[] choice, int choiceSize
 	{
 		return false;
 	}
-	
+
 	ArrayList array = view_as<ArrayList>(vote.GetNum(DISPLAY, view_as<int>(INVALID_HANDLE)));
 
 	// Shouldn't happen, but just in case...
@@ -78,7 +78,7 @@ bool Data_GetItemDisplay(KeyValues vote, int item, char[] choice, int choiceSize
 	{
 		return false;
 	}
-	
+
 	array.GetString(item, choice, choiceSize);
 	return true;
 }
@@ -90,7 +90,7 @@ int Data_GetItemCount(KeyValues vote)
 	{
 		return 0;
 	}
-	
+
 	return array.Length;
 }
 
@@ -156,7 +156,7 @@ void Data_GetTargetSteam(KeyValues vote, char[] steamId, int maxlength)
 
 void Data_SetTargetSteam(KeyValues vote, const char[] steamId)
 {
-	vote.SetString("target_steam", steamId);	
+	vote.SetString("target_steam", steamId);
 }
 
 NativeVotesType Data_GetType(KeyValues vote)
@@ -168,7 +168,7 @@ Handle Data_GetHandler(KeyValues vote)
 {
 	if (vote == null)
 		return null;
-	
+
 	return view_as<Handle>(vote.GetNum("handler_callback"));
 }
 
@@ -176,7 +176,7 @@ Handle Data_GetResultCallback(KeyValues vote)
 {
 	if (vote == null)
 		return null;
-	
+
 	return view_as<Handle>(vote.GetNum("result_callback"));
 }
 
@@ -190,14 +190,14 @@ void Data_SetFlags(KeyValues vote, int flags)
 	if (flags & MENUFLAG_BUTTON_NOVOTE)
 	{
 		NativeVotesType voteType = Data_GetType(vote);
-		
+
 		// Strip novote if this is a YesNo vote
 		if (Game_IsVoteTypeYesNo(voteType))
 		{
 			flags &= ~MENUFLAG_BUTTON_NOVOTE;
 		}
 	}
-	
+
 	vote.SetNum("flags", flags);
 }
 
@@ -205,7 +205,7 @@ NativeVote Data_CreateVote(NativeVotesType voteType, MenuAction actions)
 {
 	Handle handler = CreateForward(ET_Single, Param_Cell, Param_Cell, Param_Cell, Param_Cell);
 	Handle voteResults = CreateForward(ET_Ignore, Param_Cell, Param_Cell, Param_Cell, Param_Array, Param_Array, Param_Cell, Param_Array, Param_Array);
-	
+
 	KeyValues vote = CreateKeyValues("NativeVote");
 
 	vote.SetNum("handler_callback", view_as<int>(handler));
@@ -226,10 +226,10 @@ NativeVote Data_CreateVote(NativeVotesType voteType, MenuAction actions)
 	}
 	vote.SetNum("flags", 0);
 	vote.SetString("custom_title", "");
-	
+
 	vote.SetNum(INFO, view_as<int>(new ArrayList(ByteCountToCells(INFO_LENGTH))));
 	vote.SetNum(DISPLAY, view_as<int>(new ArrayList(ByteCountToCells(INFO_LENGTH))));
-	
+
 	return view_as<NativeVote>(vote);
 }
 
@@ -242,17 +242,17 @@ bool Data_AddItem(KeyValues vote, const char[] info, const char[] display)
 {
 	ArrayList infoArray = view_as<ArrayList>(vote.GetNum(INFO, view_as<int>(INVALID_HANDLE)));
 	ArrayList displayArray = view_as<ArrayList>(vote.GetNum(DISPLAY, view_as<int>(INVALID_HANDLE)));
-	
+
 	if (infoArray == null || displayArray == null ||
 		infoArray.Length >= Game_GetMaxItems() ||
 		displayArray.Length >= Game_GetMaxItems())
 	{
 		return false;
 	}
-	
+
 	infoArray.PushString(info);
 	displayArray.PushString(display);
-	
+
 	return true;
 }
 
@@ -260,7 +260,7 @@ bool Data_InsertItem(KeyValues vote, int position, const char[] info, const char
 {
 	ArrayList infoArray = view_as<ArrayList>(vote.GetNum(INFO, view_as<int>(INVALID_HANDLE)));
 	ArrayList displayArray = view_as<ArrayList>(vote.GetNum(DISPLAY, view_as<int>(INVALID_HANDLE)));
-	
+
 	if (infoArray == null || displayArray == null ||
 		infoArray.Length >= Game_GetMaxItems() ||
 		displayArray.Length >= Game_GetMaxItems() ||
@@ -268,13 +268,13 @@ bool Data_InsertItem(KeyValues vote, int position, const char[] info, const char
 	{
 		return false;
 	}
-	
+
 	infoArray.ShiftUp(position);
 	displayArray.ShiftUp(position);
 
 	infoArray.SetString(position, info);
 	displayArray.SetString(position, display);
-	
+
 	return true;
 }
 
@@ -282,13 +282,13 @@ bool Data_RemoveItem(KeyValues vote, int position)
 {
 	ArrayList infoArray = view_as<ArrayList>(vote.GetNum(INFO, view_as<int>(INVALID_HANDLE)));
 	ArrayList displayArray = view_as<ArrayList>(vote.GetNum(DISPLAY, view_as<int>(INVALID_HANDLE)));
-	
+
 	if (infoArray == null || displayArray == null ||
 		position >= infoArray.Length || position < 0)
 	{
 		return false;
 	}
-	
+
 	infoArray.Erase(position);
 	displayArray.Erase(position);
 
@@ -299,7 +299,7 @@ void Data_RemoveAllItems(KeyValues vote)
 {
 	ArrayList infoArray = view_as<ArrayList>(vote.GetNum(INFO, view_as<int>(INVALID_HANDLE)));
 	ArrayList displayArray = view_as<ArrayList>(vote.GetNum(DISPLAY, view_as<int>(INVALID_HANDLE)));
-	
+
 	infoArray.Clear();
 	displayArray.Clear();
 }
@@ -310,30 +310,30 @@ void Data_CloseVote(KeyValues vote)
 	{
 		return;
 	}
-	
+
 	Handle handler = Data_GetHandler(vote);
 	if (handler != null)
 	{
 		delete handler;
 	}
-	
+
 	Handle voteResults = Data_GetResultCallback(vote);
 	if (voteResults != null)
 	{
 		delete voteResults;
 	}
-	
+
 	ArrayList infoArray = view_as<ArrayList>(vote.GetNum(INFO, view_as<int>(INVALID_HANDLE)));
 	if (infoArray != null)
 	{
 		delete infoArray;
 	}
-	
+
 	ArrayList displayArray = view_as<ArrayList>(vote.GetNum(DISPLAY, view_as<int>(INVALID_HANDLE)));
 	if (displayArray != null)
 	{
 		delete displayArray;
 	}
-	
+
 	delete vote;
 }

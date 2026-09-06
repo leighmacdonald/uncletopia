@@ -12,7 +12,7 @@
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU General Public License, version 3.0, as published by the
  * Free Software Foundation.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
@@ -34,7 +34,7 @@
  */
 
 #pragma semicolon 1
-
+#pragma newdecls required
 #include <sourcemod>
 #undef REQUIRE_PLUGIN
 #include <adminmenu>
@@ -42,7 +42,7 @@
 
 #define VERSION "1.5.3"
 
-public Plugin:myinfo =
+public Plugin myinfo =
 {
 	name = "NativeVotes Basic Votes",
 	author = "Powerlord and AlliedModders LLC",
@@ -54,62 +54,60 @@ public Plugin:myinfo =
 #define VOTE_NO "###no###"
 #define VOTE_YES "###yes###"
 
-//new Handle:g_hVoteMenu = INVALID_HANDLE;
+ConVar g_Cvar_Limits[3] = {null, ...};
+// ConVar g_Cvar_VoteSay = null;
 
-new Handle:g_Cvar_Limits[3] = {INVALID_HANDLE, ...};
-//new Handle:g_Cvar_VoteSay = INVALID_HANDLE;
-
-enum voteType
+enum VoteType
 {
-	map,
-	kick,
-	ban,
-	question
+	VoteType_Map,
+	VoteType_Kick,
+	VoteType_Ban,
+	VoteType_Question
 }
 
-new voteType:g_voteType = voteType:question;
+VoteType g_voteType = VoteType_Question;
 
-// Menu API does not provide us with a way to pass multiple peices of data with a single
+// Menu API does not provide us with a way to pass multiple pieces of data with a single
 // choice, so some globals are used to hold stuff.
 //
 #define VOTE_CLIENTID	0
 #define VOTE_USERID	1
-new g_voteClient[2];		/* Holds the target's client id and user id */
+int g_voteClient[2];		/* Holds the target's client id and user id */
 
 #define VOTE_NAME	0
 #define VOTE_AUTHID	1
 #define	VOTE_IP		2
-new String:g_voteInfo[3][65];	/* Holds the target's name, authid, and IP */
+char g_voteInfo[3][65];	/* Holds the target's name, authid, and IP */
 
-new String:g_voteArg[256];	/* Used to hold ban/kick reasons or vote questions */
+char g_voteArg[256];	/* Used to hold ban/kick reasons or vote questions */
 
 
-new Handle:hTopMenu = INVALID_HANDLE;
+TopMenu hTopMenu;
 
 // NativeVotes
-new bool:g_NativeVotes;
+bool g_NativeVotes;
 
-//new g_Cvar_NativeVotesMenu = INVALID_HANDLE;
+// ConVar g_Cvar_NativeVotesMenu;
 
 #include "nativevotes-basevotes/votekick.sp"
 #include "nativevotes-basevotes/voteban.sp"
 #include "nativevotes-basevotes/votemap.sp"
 
-public OnPluginStart()
+public void OnPluginStart()
 {
 	LoadTranslations("common.phrases");
 	LoadTranslations("basevotes.phrases");
 	LoadTranslations("plugin.basecommands");
 	LoadTranslations("basebans.phrases");
-	
+
 	RegAdminCmd("sm_votemap", Command_Votemap, ADMFLAG_VOTE|ADMFLAG_CHANGEMAP, "sm_votemap <mapname> [mapname2] ... [mapname5] ");
 	RegAdminCmd("sm_votekick", Command_Votekick, ADMFLAG_VOTE|ADMFLAG_KICK, "sm_votekick <player> [reason]");
 	RegAdminCmd("sm_voteban", Command_Voteban, ADMFLAG_VOTE|ADMFLAG_BAN, "sm_voteban <player> [reason]");
 	RegAdminCmd("sm_vote", Command_Vote, ADMFLAG_VOTE, "sm_vote <question> [Answer1] [Answer2] ... [Answer5]");
 
 	/*
-	g_Cvar_Show = FindConVar("sm_vote_show");
-	if (g_Cvar_Show == INVALID_HANDLE)
+	ConVar g_Cvar_Show = FindConVar("sm_vote_show");
+	if (g_Cvar_Show == null)
 	{
 		g_Cvar_Show = CreateConVar("sm_vote_show", "1", "Show player's votes? Default on.", 0, true, 0.0, true, 1.0);
 	}
@@ -119,234 +117,213 @@ public OnPluginStart()
 	g_Cvar_Limits[1] = CreateConVar("sm_vote_kick", "0.60", "percent required for successful kick vote.", 0, true, 0.05, true, 1.0);
 	g_Cvar_Limits[2] = CreateConVar("sm_vote_ban", "0.60", "percent required for successful ban vote.", 0, true, 0.05, true, 1.0);
 	CreateConVar("nativevotes_basevotes_version", VERSION, "NativeVotes Basic Votes version", FCVAR_NOTIFY|FCVAR_DONTRECORD|FCVAR_SPONLY);
-	
-	g_SelectedMaps = CreateArray(PLATFORM_MAX_PATH);
-	
-	g_MapList = CreateMenu(MenuHandler_Map, MenuAction_DrawItem|MenuAction_Display);
-	SetMenuTitle(g_MapList, "%T", "Please select a map", LANG_SERVER);
-	SetMenuExitBackButton(g_MapList, true);
-	
-	decl String:mapListPath[PLATFORM_MAX_PATH];
+
+	g_SelectedMaps = new ArrayList(ByteCountToCells(PLATFORM_MAX_PATH));
+
+	g_MapList = new Menu(MenuHandler_Map, MenuAction_DrawItem|MenuAction_Display);
+	g_MapList.SetTitle("%T", "Please select a map", LANG_SERVER);
+	g_MapList.ExitBackButton = true;
+
+	char mapListPath[PLATFORM_MAX_PATH];
 	BuildPath(Path_SM, mapListPath, sizeof(mapListPath), "configs/adminmenu_maplist.ini");
 	SetMapListCompatBind("sm_votemap menu", mapListPath);
 }
 
-public OnAllPluginsLoaded()
+public void OnAllPluginsLoaded()
 {
-	if (FindPluginByFile("basevotes.smx") != INVALID_HANDLE)
+	if (FindPluginByFile("basevotes.smx") != null)
 	{
 		SetFailState("This plugin replaces basevotes.  You cannot run both at once.");
 	}
-	
+
 	/* Account for late loading */
-	new Handle:topmenu;
-	if (LibraryExists("adminmenu") && ((topmenu = GetAdminTopMenu()) != INVALID_HANDLE))
+	TopMenu topmenu;
+	if (LibraryExists("adminmenu") && ((topmenu = GetAdminTopMenu()) != null))
 	{
 		OnAdminMenuReady(topmenu);
 	}
-	
+
 	g_NativeVotes = LibraryExists("nativevotes") && NativeVotes_IsVoteTypeSupported(NativeVotesType_Custom_YesNo);
 }
 
-public OnLibraryAdded(const String:name[])
+public void OnLibraryAdded(const char[] name)
 {
-	new Handle:topmenu;
-	if (StrEqual(name, "adminmenu") && ((topmenu = GetAdminTopMenu()) != INVALID_HANDLE))
+	TopMenu topmenu;
+	if (StrEqual(name, "adminmenu") && ((topmenu = GetAdminTopMenu()) != null))
 	{
 		OnAdminMenuReady(topmenu);
 	}
-	else
-	if (StrEqual(name, "nativevotes") && NativeVotes_IsVoteTypeSupported(NativeVotesType_Custom_YesNo))
+	else if (StrEqual(name, "nativevotes") && NativeVotes_IsVoteTypeSupported(NativeVotesType_Custom_YesNo))
 	{
 		g_NativeVotes = true;
 	}
 }
 
-public OnLibraryRemoved(const String:name[])
+public void OnLibraryRemoved(const char[] name)
 {
 	if (StrEqual(name, "adminmenu"))
 	{
-		hTopMenu = INVALID_HANDLE;
+		hTopMenu = null;
 	}
-	else
-	if (StrEqual(name, "nativevotes"))
+	else if (StrEqual(name, "nativevotes"))
 	{
 		g_NativeVotes = false;
 	}
 }
 
-public OnConfigsExecuted()
+public void OnConfigsExecuted()
 {
 	g_mapCount = LoadMapList(g_MapList);
 }
 
-public OnAdminMenuReady(Handle:topmenu)
+public void OnAdminMenuReady(Handle aTopMenu)
 {
+	TopMenu topmenu = TopMenu.FromHandle(aTopMenu);
+
 	/* Block us from being called twice */
 	if (topmenu == hTopMenu)
 	{
 		return;
 	}
-	
+
 	/* Save the Handle */
 	hTopMenu = topmenu;
-	
+
 	/* Build the "Voting Commands" category */
-	new TopMenuObject:voting_commands = FindTopMenuCategory(hTopMenu, ADMINMENU_VOTINGCOMMANDS);
+	TopMenuObject voting_commands = hTopMenu.FindCategory(ADMINMENU_VOTINGCOMMANDS);
 
 	if (voting_commands != INVALID_TOPMENUOBJECT)
 	{
-		AddToTopMenu(hTopMenu,
-			"sm_votekick",
-			TopMenuObject_Item,
-			AdminMenu_VoteKick,
-			voting_commands,
-			"sm_votekick",
-			ADMFLAG_VOTE|ADMFLAG_KICK);
-			
-		AddToTopMenu(hTopMenu,
-			"sm_voteban",
-			TopMenuObject_Item,
-			AdminMenu_VoteBan,
-			voting_commands,
-			"sm_voteban",
-			ADMFLAG_VOTE|ADMFLAG_BAN);
-			
-		AddToTopMenu(hTopMenu,
-			"sm_votemap",
-			TopMenuObject_Item,
-			AdminMenu_VoteMap,
-			voting_commands,
-			"sm_votemap",
-			ADMFLAG_VOTE|ADMFLAG_CHANGEMAP);
+		hTopMenu.AddItem("sm_votekick", AdminMenu_VoteKick, voting_commands, "sm_votekick", ADMFLAG_VOTE|ADMFLAG_KICK);
+		hTopMenu.AddItem("sm_voteban", AdminMenu_VoteBan, voting_commands, "sm_voteban", ADMFLAG_VOTE|ADMFLAG_BAN);
+		hTopMenu.AddItem("sm_votemap", AdminMenu_VoteMap, voting_commands, "sm_votemap", ADMFLAG_VOTE|ADMFLAG_CHANGEMAP);
 	}
 }
 
-public Action:Command_Vote(client, args)
+public Action Command_Vote(int client, int args)
 {
 	if (args < 1)
 	{
 		ReplyToCommand(client, "[SM] Usage: sm_vote <question> [Answer1] [Answer2] ... [Answer5]");
-		return Plugin_Handled;	
+		return Plugin_Handled;
 	}
-	
+
 	if (Internal_IsVoteInProgress())
 	{
 		ReplyToCommand(client, "[SM] %t", "Vote in Progress");
 		return Plugin_Handled;
 	}
-		
+
 	if (!TestVoteDelay(client))
 	{
 		return Plugin_Handled;
 	}
-	
-	decl String:text[256];
+
+	char text[256];
 	GetCmdArgString(text, sizeof(text));
 
-	decl String:answers[5][64];
-	new answerCount;	
-	new len = BreakString(text, g_voteArg, sizeof(g_voteArg));
-	new pos = len;
-	
+	char answers[5][64];
+	int answerCount;
+	int len = BreakString(text, g_voteArg, sizeof(g_voteArg));
+	int pos = len;
+
 	while (args > 1 && pos != -1 && answerCount < 5)
-	{	
+	{
 		pos = BreakString(text[len], answers[answerCount], sizeof(answers[]));
 		answerCount++;
-		
+
 		if (pos != -1)
 		{
 			len += pos;
-		}	
+		}
 	}
 
 	LogAction(client, -1, "\"%L\" initiated a generic vote.", client);
 	ShowActivity2(client, "[SM] ", "%t", "Initiate Vote", g_voteArg);
-	
-	g_voteType = voteType:question;
-	new Handle:voteMenu;
-    
+
+	g_voteType = VoteType_Question;
+
 	if (g_NativeVotes && (answerCount < 2 || NativeVotes_IsVoteTypeSupported(NativeVotesType_Custom_Mult)) )
 	{
-		new NativeVotesType:nVoteType = answerCount < 2 ? NativeVotesType_Custom_YesNo : NativeVotesType_Custom_Mult;
-		
-		voteMenu = NativeVotes_Create(Handler_NativeVoteCallback, nVoteType, MenuAction:MENU_ACTIONS_ALL);
-		NativeVotes_SetTitle(voteMenu, g_voteArg);
-		
+		NativeVotesType nVoteType = answerCount < 2 ? NativeVotesType_Custom_YesNo : NativeVotesType_Custom_Mult;
+
+		NativeVote voteMenu = NativeVotes_Create(Handler_NativeVoteCallback, nVoteType, MENU_ACTIONS_ALL);
+		voteMenu.SetTitle(g_voteArg);
+
 		if (answerCount >= 2)
 		{
-			for (new i = 0; i < answerCount; i++)
+			for (int i = 0; i < answerCount; i++)
 			{
-				NativeVotes_AddItem(voteMenu, answers[i], answers[i]);
-			}	
+				voteMenu.AddItem(answers[i], answers[i]);
+			}
 		}
-		
-		//NativeVotes_SetInitiator(voteMenu, client);
-		NativeVotes_DisplayToAll(voteMenu, 20);
+
+		//voteMenu.SetInitiator(client);
+		voteMenu.DisplayVoteToAll(20);
 	}
 	else
 	{
-		voteMenu = CreateMenu(Handler_VoteCallback, MenuAction:MENU_ACTIONS_ALL);
-		SetMenuTitle(voteMenu, "%s?", g_voteArg);
-		
+		Menu voteMenu = new Menu(Handler_VoteCallback, MENU_ACTIONS_ALL);
+		voteMenu.SetTitle("%s?", g_voteArg);
+
 		if (answerCount < 2)
 		{
-			AddMenuItem(voteMenu, VOTE_YES, "Yes");
-			AddMenuItem(voteMenu, VOTE_NO, "No");
+			voteMenu.AddItem(VOTE_YES, "Yes");
+			voteMenu.AddItem(VOTE_NO, "No");
 		}
 		else
 		{
-			for (new i = 0; i < answerCount; i++)
+			for (int i = 0; i < answerCount; i++)
 			{
-				AddMenuItem(voteMenu, answers[i], answers[i]);
-			}	
+				voteMenu.AddItem(answers[i], answers[i]);
+			}
 		}
-		
-		SetMenuExitButton(voteMenu, false);
-		VoteMenuToAll(voteMenu, 20);		
+
+		voteMenu.ExitButton = false;
+		voteMenu.DisplayVoteToAll(20);
 	}
-	return Plugin_Handled;	
+	return Plugin_Handled;
 }
 
-public Handler_VoteCallback(Handle:menu, MenuAction:action, param1, param2)
+public int Handler_VoteCallback(Menu menu, MenuAction action, int param1, int param2)
 {
 	switch (action)
 	{
 		case MenuAction_End:
 		{
 			//VoteMenuClose();
-			CloseHandle(menu);
+			delete menu;
 		}
-		
+
 		case MenuAction_Display:
 		{
-			if (g_voteType != voteType:question)
+			if (g_voteType != VoteType_Question)
 			{
-				decl String:title[64];
-				GetMenuTitle(menu, title, sizeof(title));
-				
-				decl String:buffer[255];
+				char title[64];
+				menu.GetTitle(title, sizeof(title));
+
+				char buffer[255];
 				Format(buffer, sizeof(buffer), "%T", title, param1, g_voteInfo[VOTE_NAME]);
 
-				new Handle:panel = Handle:param2;
-				SetPanelTitle(panel, buffer);
+				Panel panel = view_as<Panel>(param2);
+				panel.SetTitle(buffer);
 			}
 		}
-		
+
 		case MenuAction_DisplayItem:
 		{
-			decl String:display[64];
-			GetMenuItem(menu, param2, "", 0, _, display, sizeof(display));
-		 
+			char display[64];
+			menu.GetItem(param2, "", 0, _, display, sizeof(display));
+
 			if (strcmp(display, "No") == 0 || strcmp(display, "Yes") == 0)
 			{
-				decl String:buffer[255];
+				char buffer[255];
 				Format(buffer, sizeof(buffer), "%T", display, param1);
 
 				return RedrawMenuItem(buffer);
 			}
 		}
-		
+
 		case MenuAction_VoteCancel:
 		{
 			if (param1 == VoteCancel_NoVotes)
@@ -354,31 +331,32 @@ public Handler_VoteCallback(Handle:menu, MenuAction:action, param1, param2)
 				PrintToChatAll("[SM] %t", "No Votes Cast");
 			}
 		}
-		
+
 		case MenuAction_VoteEnd:
 		{
-			decl String:item[64], String:display[64];
-			new Float:percent, Float:limit, votes, totalVotes;
+			char item[64], display[64];
+			float percent, limit;
+			int votes, totalVotes;
 
 			GetMenuVoteInfo(param2, votes, totalVotes);
-			GetMenuItem(menu, param1, item, sizeof(item), _, display, sizeof(display));
-			
+			menu.GetItem(param1, item, sizeof(item), _, display, sizeof(display));
+
 			if (strcmp(item, VOTE_NO) == 0 && param1 == 1)
 			{
 				votes = totalVotes - votes; // Reverse the votes to be in relation to the Yes option.
 			}
-			
+
 			percent = GetVotePercent(votes, totalVotes);
-			
-			if (g_voteType != voteType:question)
+
+			if (g_voteType != VoteType_Question)
 			{
-				limit = GetConVarFloat(g_Cvar_Limits[g_voteType]);
+				limit = g_Cvar_Limits[g_voteType].FloatValue;
 			}
-			
+
 			/* :TODO: g_voteClient[userid] needs to be checked */
 
 			// A multi-argument vote is "always successful", but have to check if its a Yes/No vote.
-			if ((strcmp(item, VOTE_YES) == 0 && FloatCompare(percent,limit) < 0 && param1 == 0) || (strcmp(item, VOTE_NO) == 0 && param1 == 1))
+			if ((strcmp(item, VOTE_YES) == 0 && percent < limit && param1 == 0) || (strcmp(item, VOTE_NO) == 0 && param1 == 1))
 			{
 				/* :TODO: g_voteClient[userid] should be used here and set to -1 if not applicable.
 				 */
@@ -388,14 +366,14 @@ public Handler_VoteCallback(Handle:menu, MenuAction:action, param1, param2)
 			else
 			{
 				PrintToChatAll("[SM] %t", "Vote Successful", RoundToNearest(100.0*percent), totalVotes);
-				
+
 				switch (g_voteType)
 				{
-					case (voteType:question):
+					case VoteType_Question:
 					{
 						if (strcmp(item, VOTE_NO) == 0 || strcmp(item, VOTE_YES) == 0)
 						{
-							for (new i = 1; i <= MaxClients; i++)
+							for (int i = 1; i <= MaxClients; i++)
 							{
 								if (IsClientInGame(i) && !IsFakeClient(i))
 								{
@@ -409,40 +387,40 @@ public Handler_VoteCallback(Handle:menu, MenuAction:action, param1, param2)
 							PrintToChatAll("[SM] %t", "Vote End", g_voteArg, item);
 						}
 					}
-					
-					case (voteType:map):
+
+					case VoteType_Map:
 					{
 						LogAction(-1, -1, "Changing map to %s due to vote.", item);
 						PrintToChatAll("[SM] %t", "Changing map", item);
-						new Handle:dp;
+						DataPack dp;
 						CreateDataTimer(5.0, Timer_ChangeMap, dp);
-						WritePackString(dp, item);		
+						dp.WriteString(item);
 					}
-						
-					case (voteType:kick):
+
+					case VoteType_Kick:
 					{
 						if (g_voteArg[0] == '\0')
 						{
 							strcopy(g_voteArg, sizeof(g_voteArg), "Votekicked");
 						}
-						
+
 						if (GetClientOfUserId(g_voteClient[VOTE_USERID]) > 0 && !IsClientInKickQueue(g_voteClient[VOTE_CLIENTID]))
 						{
-							PrintToChatAll("[SM] %t", "Kicked target", "_s", g_voteInfo[VOTE_NAME]);					
+							PrintToChatAll("[SM] %t", "Kicked target", "_s", g_voteInfo[VOTE_NAME]);
 							LogAction(-1, g_voteClient[VOTE_CLIENTID], "Vote kick successful, kicked \"%L\" (reason \"%s\")", g_voteClient[VOTE_CLIENTID], g_voteArg);
 
 							KickClient(g_voteClient[VOTE_CLIENTID], "%s", g_voteArg);
 						}
-						
+
 					}
-						
-					case (voteType:ban):
+
+					case VoteType_Ban:
 					{
 						if (g_voteArg[0] == '\0')
 						{
 							strcopy(g_voteArg, sizeof(g_voteArg), "Votebanned");
 						}
-						
+
 						if (GetClientOfUserId(g_voteClient[VOTE_USERID]) > 0)
 						{
 							PrintToChatAll("[SM] %t", "Banned player", g_voteInfo[VOTE_NAME], 30);
@@ -460,256 +438,256 @@ public Handler_VoteCallback(Handle:menu, MenuAction:action, param1, param2)
 			}
 		}
 	}
-	
+
 	return 0;
 }
 
-public Handler_NativeVoteCallback(Handle:menu, MenuAction:action, param1, param2)
+public int Handler_NativeVoteCallback(NativeVote vote, MenuAction action, int param1, int param2)
 {
 	switch (action)
 	{
-		
+
 		case MenuAction_End:
 		{
-			NativeVotes_Close(menu);
+			vote.Close();
 		}
-		
+
 		case MenuAction_Display:
 		{
-			new NativeVotesType:nVoteType = NativeVotes_GetType(menu);
-			if (g_voteType != voteType:question && (nVoteType == NativeVotesType_Custom_YesNo || nVoteType == NativeVotesType_Custom_Mult))
+			NativeVotesType nVoteType = vote.VoteType;
+			if (g_voteType != VoteType_Question && (nVoteType == NativeVotesType_Custom_YesNo || nVoteType == NativeVotesType_Custom_Mult))
 			{
-				decl String:title[64];
-				NativeVotes_GetTitle(menu, title, sizeof(title));
-				
-				decl String:buffer[255];
+				char title[64];
+				vote.GetTitle(title, sizeof(title));
+
+				char buffer[255];
 				Format(buffer, sizeof(buffer), "%T", title, param1, g_voteInfo[VOTE_NAME]);
 
-				return _:NativeVotes_RedrawVoteTitle(buffer);
+				return view_as<int>(NativeVotes_RedrawVoteTitle(buffer));
 			}
 		}
-		
+
 		case MenuAction_VoteCancel:
 		{
 			if (param1 == VoteCancel_NoVotes)
 			{
-				NativeVotes_DisplayFail(menu, NativeVotesFail_NotEnoughVotes);
+				vote.DisplayFail(NativeVotesFail_NotEnoughVotes);
 				PrintToChatAll("[SM] %t", "No Votes Cast");
 			}
 			else
 			{
-				NativeVotes_DisplayFail(menu, NativeVotesFail_Generic);
+				vote.DisplayFail(NativeVotesFail_Generic);
 			}
 		}
-		
+
 		case MenuAction_VoteEnd:
 		{
-			decl String:item[64], String:display[64];
-			new Float:percent, Float:limit, votes, totalVotes;
-			
-			new NativeVotesType:nVoteType = NativeVotes_GetType(menu);
+			char item[64], display[64];
+			float percent, limit;
+			int votes, totalVotes;
+
+			NativeVotesType nVoteType = vote.VoteType;
 
 			NativeVotes_GetInfo(param2, votes, totalVotes);
-			NativeVotes_GetItem(menu, param1, item, sizeof(item), display, sizeof(display));
-			
+			vote.GetItem(param1, item, sizeof(item), display, sizeof(display));
+
 			if (nVoteType == NativeVotesType_Custom_YesNo && param1 == NATIVEVOTES_VOTE_NO)
 			{
 				votes = totalVotes - votes; // Reverse the votes to be in relation to the Yes option.
 			}
-			
+
 			percent = GetVotePercent(votes, totalVotes);
-			
-			if (g_voteType != voteType:question)
+
+			if (g_voteType != VoteType_Question)
 			{
-				limit = GetConVarFloat(g_Cvar_Limits[g_voteType]);
+				limit = g_Cvar_Limits[g_voteType].FloatValue;
 			}
-			
+
 			/* :TODO: g_voteClient[userid] needs to be checked */
 
 			// A multi-argument vote is "always successful", but have to check if its a Yes/No vote.
-			if ((nVoteType != NativeVotesType_NextLevelMult && nVoteType != NativeVotesType_Custom_Mult) && ((param1 == NATIVEVOTES_VOTE_YES && FloatCompare(percent,limit) < 0) || (param1 == NATIVEVOTES_VOTE_NO)))
+			if ((nVoteType != NativeVotesType_NextLevelMult && nVoteType != NativeVotesType_Custom_Mult) && ((param1 == NATIVEVOTES_VOTE_YES && percent < limit) || (param1 == NATIVEVOTES_VOTE_NO)))
 			{
 				/* :TODO: g_voteClient[userid] should be used here and set to -1 if not applicable.
 				 */
-				NativeVotes_DisplayFail(menu, NativeVotesFail_Loses);
+				vote.DisplayFail(NativeVotesFail_Loses);
 				LogAction(-1, -1, "Vote failed.");
 				PrintToChatAll("[SM] %t", "Vote Failed", RoundToNearest(100.0*limit), RoundToNearest(100.0*percent), totalVotes);
 			}
 			else
 			{
 				PrintToChatAll("[SM] %t", "Vote Successful", RoundToNearest(100.0*percent), totalVotes);
-				
+
 				switch (g_voteType)
 				{
-					case (voteType:question):
+					case VoteType_Question:
 					{
 						if (nVoteType == NativeVotesType_Custom_YesNo)
 						{
-							for (new i = 1; i <= MaxClients; i++)
+							for (int i = 1; i <= MaxClients; i++)
 							{
 								if (IsClientInGame(i) && !IsFakeClient(i))
 								{
 									Format(item, sizeof(item), "%T", display, i);
 									PrintToChat(i, "[SM] %t", "Vote End", g_voteArg, item);
-									NativeVotes_DisplayPassCustomToOne(menu, i, "%t", "Vote End", g_voteArg, item);
+									vote.DisplayPassCustomToOne(i, "%t", "Vote End", g_voteArg, item);
 								}
 							}
 						}
 						else
 						{
 							PrintToChatAll("[SM] %t", "Vote End", g_voteArg, item);
-							NativeVotes_DisplayPassCustom(menu, "%t", "Vote End", g_voteArg, item);
+							vote.DisplayPassCustom("%t", "Vote End", g_voteArg, item);
 						}
 					}
-					
-					case (voteType:map):
+
+					case VoteType_Map:
 					{
 						if (nVoteType == NativeVotesType_ChgLevel)
 						{
-							NativeVotes_GetDetails(menu, item, sizeof(item));
+							vote.GetDetails(item, sizeof(item));
 						}
-						
-						//NativeVotes_DisplayPass(menu, item);
-						NativeVotes_DisplayPassEx(menu, NativeVotesPass_ChgLevel, item);
+
+						//vote.DisplayPass(item);
+						vote.DisplayPassEx(NativeVotesPass_ChgLevel, item);
 						LogAction(-1, -1, "Changing map to %s due to vote.", item);
 						PrintToChatAll("[SM] %t", "Changing map", item);
-						new Handle:dp;
+						DataPack dp;
 						CreateDataTimer(5.0, Timer_ChangeMap, dp);
-						WritePackString(dp, item);		
+						dp.WriteString(item);
 					}
-						
-					case (voteType:kick):
+
+					case VoteType_Kick:
 					{
 						if (g_voteArg[0] == '\0')
 						{
 							strcopy(g_voteArg, sizeof(g_voteArg), "Votekicked");
 						}
-						
+
 						if (GetClientOfUserId(g_voteClient[VOTE_USERID]) > 0 && !IsClientInKickQueue(g_voteClient[VOTE_CLIENTID]))
 						{
 							PrintToChatAll("[SM] %t", "Kicked target", "_s", g_voteInfo[VOTE_NAME]);
 							LogAction(-1, g_voteClient[VOTE_CLIENTID], "Vote kick successful, kicked \"%L\" (reason \"%s\")", g_voteClient[VOTE_CLIENTID], g_voteArg);
-							
+
 							KickClient(g_voteClient[VOTE_CLIENTID], "%s", g_voteArg);
-							NativeVotes_DisplayPass(menu, g_voteInfo[VOTE_NAME]);
+							vote.DisplayPass(g_voteInfo[VOTE_NAME]);
 						}
 					}
-						
-					case (voteType:ban):
+
+					case VoteType_Ban:
 					{
 						if (g_voteArg[0] == '\0')
 						{
 							strcopy(g_voteArg, sizeof(g_voteArg), "Votebanned");
 						}
-						
+
 						if (GetClientOfUserId(g_voteClient[VOTE_USERID]) > 0)
 						{
 							PrintToChatAll("[SM] %t", "Banned player", g_voteInfo[VOTE_NAME], 30);
 							LogAction(-1, g_voteClient[VOTE_CLIENTID], "Vote ban successful, banned \"%L\" (minutes \"30\") (reason \"%s\")", g_voteClient[VOTE_CLIENTID], g_voteArg);
-							
+
 							BanClient(g_voteClient[VOTE_CLIENTID],
 							30,
 							BANFLAG_AUTO,
 							g_voteArg,
 							"Banned by vote",
 							"sm_voteban");
-							
-							NativeVotes_DisplayPassCustom(menu, "[SM] %t", "Banned player", g_voteInfo[VOTE_NAME], 30);
+
+							vote.DisplayPassCustom("[SM] %t", "Banned player", g_voteInfo[VOTE_NAME], 30);
 						}
 					}
 				}
 			}
 		}
 	}
-	
+
 	return 0;
 }
 
 /*
-VoteSelect(Handle:menu, param1, param2 = 0)
+void VoteSelect(Menu menu, int param1, int param2 = 0)
 {
 	if (GetConVarInt(g_Cvar_VoteShow) == 1)
 	{
-		decl String:voter[64], String:junk[64], String:choice[64];
+		char voter[64], junk[64], choice[64];
 		GetClientName(param1, voter, sizeof(voter));
-		GetMenuItem(menu, param2, junk, sizeof(junk), _, choice, sizeof(choice));
+		menu.GetItem(param2, junk, sizeof(junk), _, choice, sizeof(choice));
 		PrintToChatAll("[SM] %T", "Vote Select", LANG_SERVER, voter, choice);
 	}
 }
 */
 
 /*
-VoteMenuClose()
+void VoteMenuClose()
 {
-	CloseHandle(g_hVoteMenu);
-	g_hVoteMenu = INVALID_HANDLE;
+	delete g_hVoteMenu;
 }
 */
 
-Float:GetVotePercent(votes, totalVotes)
+float GetVotePercent(int votes, int totalVotes)
 {
 	return float(votes) / float(totalVotes);
 }
 
-bool:TestVoteDelay(client)
+bool TestVoteDelay(int client)
 {
- 	new delay = Internal_CheckVoteDelay();
-	
- 	if (delay > 0)
- 	{
- 		if (delay > 60)
- 		{
- 			ReplyToCommand(client, "[SM] %t", "Vote Delay Minutes", delay % 60);
- 		}
- 		else
- 		{
- 			ReplyToCommand(client, "[SM] %t", "Vote Delay Seconds", delay);
- 		}
- 		
+	int delay = Internal_CheckVoteDelay();
+
+	if (delay > 0)
+	{
+		if (delay > 60)
+		{
+			ReplyToCommand(client, "[SM] %t", "Vote Delay Minutes", delay / 60);
+		}
+		else
+		{
+			ReplyToCommand(client, "[SM] %t", "Vote Delay Seconds", delay);
+		}
+
 		if (g_NativeVotes)
 		{
 			NativeVotes_DisplayCallVoteFail(client, NativeVotesCallFail_Recent, delay);
 		}
-		
- 		return false;
- 	}
- 	
+
+		return false;
+	}
+
 	return true;
 }
 
-public Action:Timer_ChangeMap(Handle:timer, Handle:dp)
+public Action Timer_ChangeMap(Handle timer, DataPack dp)
 {
-	decl String:mapname[65];
-	
-	ResetPack(dp);
-	ReadPackString(dp, mapname, sizeof(mapname));
-	
+	char mapname[65];
+
+	dp.Reset();
+	dp.ReadString(mapname, sizeof(mapname));
+
 	ForceChangeLevel(mapname, "sm_votemap Result");
-	
+
 	return Plugin_Stop;
 }
 
-bool:Internal_IsVoteInProgress()
+bool Internal_IsVoteInProgress()
 {
 	if (g_NativeVotes)
 	{
 		return NativeVotes_IsVoteInProgress();
 	}
-	
-	return IsVoteInProgress();	
+
+	return IsVoteInProgress();
 }
 
-Internal_CheckVoteDelay()
+int Internal_CheckVoteDelay()
 {
 	if (g_NativeVotes)
 	{
 		return NativeVotes_CheckVoteDelay();
 	}
-	
-	return CheckVoteDelay();	
+
+	return CheckVoteDelay();
 }
 
-bool:Internal_IsNewVoteAllowed()
+bool Internal_IsNewVoteAllowed()
 {
 	if (g_NativeVotes)
 	{

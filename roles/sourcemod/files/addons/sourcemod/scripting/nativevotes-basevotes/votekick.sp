@@ -11,7 +11,7 @@
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU General Public License, version 3.0, as published by the
  * Free Software Foundation.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
@@ -32,7 +32,7 @@
  * Version: $Id$
  */
 
-DisplayVoteKickMenu(client, target)
+void DisplayVoteKickMenu(int client, int target)
 {
 	g_voteClient[VOTE_CLIENTID] = target;
 	g_voteClient[VOTE_USERID] = GetClientUserId(target);
@@ -41,47 +41,47 @@ DisplayVoteKickMenu(client, target)
 
 	LogAction(client, target, "\"%L\" initiated a kick vote against \"%L\"", client, target);
 	ShowActivity(client, "%t", "Initiated Vote Kick", g_voteInfo[VOTE_NAME]);
-	
-	g_voteType = voteType:kick;
-	
+
+	g_voteType = VoteType_Kick;
+
 	if (g_NativeVotes)
 	{
-		new Handle:voteMenu = NativeVotes_Create(Handler_NativeVoteCallback, NativeVotesType_Kick, MenuAction:MENU_ACTIONS_ALL);
+		NativeVote voteMenu = NativeVotes_Create(Handler_NativeVoteCallback, NativeVotesType_Kick, MENU_ACTIONS_ALL);
 		// No title, builtin type
-		NativeVotes_SetTarget(voteMenu, target);
-		NativeVotes_DisplayToAll(voteMenu, 20);
+		voteMenu.SetTarget(target);
+		voteMenu.DisplayVoteToAll(20);
 	}
 	else
 	{
-		new Handle:voteMenu = CreateMenu(Handler_VoteCallback, MenuAction:MENU_ACTIONS_ALL);
-		SetMenuTitle(voteMenu, "Votekick Player");
-		AddMenuItem(voteMenu, VOTE_YES, "Yes");
-		AddMenuItem(voteMenu, VOTE_NO, "No");
-		SetMenuExitButton(voteMenu, false);
-		VoteMenuToAll(voteMenu, 20);
+		Menu voteMenu = new Menu(Handler_VoteCallback, MENU_ACTIONS_ALL);
+		voteMenu.SetTitle("Votekick Player");
+		voteMenu.AddItem(VOTE_YES, "Yes");
+		voteMenu.AddItem(VOTE_NO, "No");
+		voteMenu.ExitButton = false;
+		voteMenu.DisplayVoteToAll(20);
 	}
 }
 
-DisplayKickTargetMenu(client)
+void DisplayKickTargetMenu(int client)
 {
-	new Handle:menu = CreateMenu(MenuHandler_Kick);
-	
-	decl String:title[100];
+	Menu menu = new Menu(MenuHandler_Kick);
+
+	char title[100];
 	Format(title, sizeof(title), "%T:", "Kick vote", client);
-	SetMenuTitle(menu, title);
-	SetMenuExitBackButton(menu, true);
-	
+	menu.SetTitle(title);
+	menu.ExitBackButton = true;
+
 	AddTargetsToMenu(menu, client, false, false);
-	
-	DisplayMenu(menu, client, MENU_TIME_FOREVER);
+
+	menu.Display(client, MENU_TIME_FOREVER);
 }
 
-public AdminMenu_VoteKick(Handle:topmenu, 
-							  TopMenuAction:action,
-							  TopMenuObject:object_id,
-							  param,
-							  String:buffer[],
-							  maxlength)
+public void AdminMenu_VoteKick(TopMenu topmenu,
+							  TopMenuAction action,
+							  TopMenuObject object_id,
+							  int param,
+							  char[] buffer,
+							  int maxlength)
 {
 	if (action == TopMenuAction_DisplayOption)
 	{
@@ -92,31 +92,31 @@ public AdminMenu_VoteKick(Handle:topmenu,
 		DisplayKickTargetMenu(param);
 	}
 	else if (action == TopMenuAction_DrawOption)
-	{	
+	{
 		/* disable this option if a vote is already running */
 		buffer[0] = !IsNewVoteAllowed() ? ITEMDRAW_IGNORE : ITEMDRAW_DEFAULT;
 	}
 }
 
-public MenuHandler_Kick(Handle:menu, MenuAction:action, param1, param2)
+public int MenuHandler_Kick(Menu menu, MenuAction action, int param1, int param2)
 {
 	if (action == MenuAction_End)
 	{
-		CloseHandle(menu);
+		delete menu;
 	}
 	else if (action == MenuAction_Cancel)
 	{
-		if (param2 == MenuCancel_ExitBack && hTopMenu != INVALID_HANDLE)
+		if (param2 == MenuCancel_ExitBack && hTopMenu)
 		{
-			DisplayTopMenu(hTopMenu, param1, TopMenuPosition_LastCategory);
+			hTopMenu.Display(param1, TopMenuPosition_LastCategory);
 		}
 	}
 	else if (action == MenuAction_Select)
 	{
-		decl String:info[32], String:name[32];
-		new userid, target;
-		
-		GetMenuItem(menu, param2, info, sizeof(info), _, name, sizeof(name));
+		char info[32], name[32];
+		int userid, target;
+
+		menu.GetItem(param2, info, sizeof(info), _, name, sizeof(name));
 		userid = StringToInt(info);
 
 		if ((target = GetClientOfUserId(userid)) == 0)
@@ -133,38 +133,40 @@ public MenuHandler_Kick(Handle:menu, MenuAction:action, param1, param2)
 			DisplayVoteKickMenu(param1, target);
 		}
 	}
+
+	return 0;
 }
 
-public Action:Command_Votekick(client, args)
+public Action Command_Votekick(int client, int args)
 {
 	if (args < 1)
 	{
 		ReplyToCommand(client, "[SM] Usage: sm_votekick <player> [reason]");
-		return Plugin_Handled;	
+		return Plugin_Handled;
 	}
-	
+
 	if (Internal_IsVoteInProgress())
 	{
 		ReplyToCommand(client, "[SM] %t", "Vote in Progress");
 		return Plugin_Handled;
-	}	
-	
+	}
+
 	if (!TestVoteDelay(client))
 	{
 		return Plugin_Handled;
 	}
-	
-	decl String:text[256], String:arg[64];
+
+	char text[256], arg[64];
 	GetCmdArgString(text, sizeof(text));
-	
-	new len = BreakString(text, arg, sizeof(arg));
-	
-	new target = FindTarget(client, arg);
+
+	int len = BreakString(text, arg, sizeof(arg));
+
+	int target = FindTarget(client, arg);
 	if (target == -1)
 	{
 		return Plugin_Handled;
 	}
-	
+
 	if (len != -1)
 	{
 		strcopy(g_voteArg, sizeof(g_voteArg), text[len]);
@@ -173,8 +175,8 @@ public Action:Command_Votekick(client, args)
 	{
 		g_voteArg[0] = '\0';
 	}
-	
+
 	DisplayVoteKickMenu(client, target);
-	
+
 	return Plugin_Handled;
 }
