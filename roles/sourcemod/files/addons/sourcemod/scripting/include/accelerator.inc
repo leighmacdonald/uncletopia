@@ -1,7 +1,7 @@
 /**
  * Accelerator's SourcePawn include file
  */
-
+ 
 #if defined _accelerator_included
  #endinput
 #endif
