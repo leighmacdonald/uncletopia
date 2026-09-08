@@ -5,6 +5,10 @@ inventory := "prod.hosts"
 
 all: site
 
+update-ansible:
+    nix flake update && nix flake archive
+    ansible-galaxy collection install -r requirements.yml --upgrade
+
 lint:
     @ansible-lint --exclude sm_plugins --exclude watcher --exclude roles/*/files
 
@@ -17,7 +21,7 @@ deps:
 # Usage: just spcompile [PluginName]
 # Example: just spcompile EdictLimiter
 spcompile name="":
-    @scripts/compile-sp-plugin.sh "{{name}}"
+    @scripts/compile-sp-plugin.sh "{{ name }}"
 
 adduser:
     @ansible-playbook -u root -i {{ inventory }} --forks {{ forks }} {{ playbook_path }}/adduser.yml
