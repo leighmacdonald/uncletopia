@@ -1,275 +1,293 @@
-#include <sourcemod>
-#include <SteamWorks>
+#pragma semicolon 1
+#pragma newdecls required
 
-#define PLUGIN_VERSION "1.0"
+#include <ripext>
+#include <sourcemod>
+
+#define PLUGIN_VERSION "2.0.0"
+
+#define WEBHOOK_MAXLEN 64
+#define URL_MAXLEN 512
+#define MSG_MAXLEN 4096
 
 ArrayList g_aMsgs = null;
 ArrayList g_aWebhook = null;
 
-Handle g_hTimer = null;
+Handle g_hTimer = INVALID_HANDLE;
 
-bool g_bSending;
-bool g_bSlowdown;
+bool g_bSending = false;
+bool g_bSlowdown = false;
 
-public Plugin myinfo =
-{
-	name = "Discord API",
-	author = ".#Zipcore, Credits: Shavit, bara, ImACow and Phire",
-	description = "This plugin lets you send messages to discord and slack",
-	version = PLUGIN_VERSION,
-	url = "www.zipcore.net"
+public Plugin myinfo = {
+    name = "Discord API (ripext)",
+    author = ".#Zipcore, Credits: Shavit, bara, ImACow and Phire, leighmacdonald",
+    description = "This plugin lets you send messages to discord and slack",
+    version = PLUGIN_VERSION,
+    url = "https://github.com/leighmacdonald/sm-discord" // originally from www.zipcore.net
 };
 
-public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
-{
-	CreateNative("Discord_SendMessage", Native_SendMessage);
+public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max) {
+    CreateNative("Discord_SendMessage", Native_SendMessage);
 
-	RegPluginLibrary("discord");
+    RegPluginLibrary("discord");
 
-	return APLRes_Success;
+    return APLRes_Success;
 }
 
-public void OnPluginStart()
-{
-	CreateConVar("discord_version", PLUGIN_VERSION, "Discord API version", FCVAR_DONTRECORD|FCVAR_SPONLY|FCVAR_REPLICATED|FCVAR_NOTIFY);
+public void OnPluginStart() {
+    CreateConVar("discord_version", PLUGIN_VERSION, "Discord API version",
+                 FCVAR_DONTRECORD | FCVAR_SPONLY | FCVAR_REPLICATED | FCVAR_NOTIFY);
 
-	RegAdminCmd("sm_testdiscord", Command_Test, ADMFLAG_ROOT, "Sends a test msg.");
+    RegAdminCmd("sm_testdiscord", Command_Test, ADMFLAG_ROOT, "Sends a test msg.");
 }
 
-public void OnMapStart()
-{
-	RestartMessageTimer(false);
+public void OnMapStart() {
+    RestartMessageTimer(false);
 }
 
-public void OnMapEnd()
-{
-	g_hTimer = null;
+public void OnMapEnd() {
+    if (g_hTimer != INVALID_HANDLE) {
+        delete g_hTimer;
+        g_hTimer = INVALID_HANDLE;
+    }
+    g_bSending = false;
 }
 
-public Action Command_Test(int client, int args)
-{
-	if(args < 2)
-	{
-		ReplyToCommand(client, "sm_testdiscord <webhook> <message>");
-		return Plugin_Handled;
-	}
+public Action Command_Test(int client, int args) {
+    if (args < 2) {
+        ReplyToCommand(client, "sm_testdiscord <webhook> <message>");
+        return Plugin_Handled;
+    }
 
-	char sWebhook[64];
-	GetCmdArg(1, sWebhook, sizeof(sWebhook));
+    char sWebhook[WEBHOOK_MAXLEN];
+    GetCmdArg(1, sWebhook, sizeof(sWebhook));
 
-	char sMessage[4096];
-	GetCmdArg(2, sMessage, sizeof(sMessage));
+    char sMessage[MSG_MAXLEN];
+    GetCmdArg(2, sMessage, sizeof(sMessage));
 
-	char sBuffer[512];
-	if (args >= 2)
-	{
-		for (int i = 3; i <= args; i++)
-		{
-			GetCmdArg(i, sBuffer, sizeof(sBuffer));
-			Format(sMessage, sizeof(sMessage), "%s %s", sMessage, sBuffer);
-		}
-	}
+    char sBuffer[URL_MAXLEN];
+    for (int i = 3; i <= args; i++) {
+        GetCmdArg(i, sBuffer, sizeof(sBuffer));
+        Format(sMessage, sizeof(sMessage), "%s %s", sMessage, sBuffer);
+    }
 
-	char sUrl[512];
-	if(!GetWebHook(sWebhook, sUrl, sizeof(sUrl)))
-	{
-		ReplyToCommand(client, "Error: Webhook: %s - Url: %s", sWebhook, sUrl);
-		return Plugin_Handled;
-	}
+    char sUrl[URL_MAXLEN];
+    if (!GetWebHook(sWebhook, sUrl, sizeof(sUrl))) {
+        ReplyToCommand(client, "Error: Webhook: %s - Url: %s", sWebhook, sUrl);
+        return Plugin_Handled;
+    }
 
-	StoreMsg(sWebhook, sMessage);
-	ReplyToCommand(client, "Message Send: Webhook: %s - Message: %s", sWebhook, sMessage);
+    StoreMsg(sWebhook, sMessage);
+    ReplyToCommand(client, "Message Send: Webhook: %s - Message: %s", sWebhook, sMessage);
 
-	return Plugin_Handled;
+    return Plugin_Handled;
 }
 
-public int Native_SendMessage(Handle plugin, int numParams)
-{
-	char sWebhook[64]
-	GetNativeString(1, sWebhook, sizeof(sWebhook));
+public any Native_SendMessage(Handle plugin, int numParams) {
+    char sWebhook[WEBHOOK_MAXLEN];
+    GetNativeString(1, sWebhook, sizeof(sWebhook));
 
-	char sMessage[4096];
-	GetNativeString(2, sMessage, sizeof(sMessage));
+    char sMessage[MSG_MAXLEN];
+    GetNativeString(2, sMessage, sizeof(sMessage));
 
-	char sUrl[512];
-	if(!GetWebHook(sWebhook, sUrl, sizeof(sUrl)))
-	{
-		LogError("Webhook config not found or invalid! Webhook: %s Url: %s", sWebhook, sUrl);
-		LogError("Message: %s", sMessage);
-		return 1;
-	}
+    char sUrl[URL_MAXLEN];
+    if (!GetWebHook(sWebhook, sUrl, sizeof(sUrl))) {
+        LogError("Webhook config not found or invalid! Webhook: %s Url: %s", sWebhook, sUrl);
+        LogError("Message: %s", sMessage);
+        return 1;
+    }
 
-	StoreMsg(sWebhook, sMessage);
+    StoreMsg(sWebhook, sMessage);
 
-	return 0;
+    return 0;
 }
 
-void StoreMsg(char sWebhook[64], char sMessage[4096])
-{
-	char sUrl[512];
-	if(!GetWebHook(sWebhook, sUrl, sizeof(sUrl)))
-	{
-		LogError("Webhook config not found or invalid! Webhook: %s Url: %s", sWebhook, sUrl);
-		LogError("Message: %s", sMessage);
-		return;
-	}
+void StoreMsg(const char[] sWebhook, const char[] sMessage) {
+    char sUrl[URL_MAXLEN];
+    if (!GetWebHook(sWebhook, sUrl, sizeof(sUrl))) {
+        LogError("Webhook config not found or invalid! Webhook: %s Url: %s", sWebhook, sUrl);
+        LogError("Message: %s", sMessage);
+        return;
+    }
 
-	// If the message dosn't start with a '{' it's not for a JSON formated message, lets fix that!
-	if(StrContains(sMessage, "{") != 0)
-		Format(sMessage, sizeof(sMessage), "{\"content\":\"%s\"}", sMessage);
+    if (g_aWebhook == null) {
+        g_aWebhook = new ArrayList(WEBHOOK_MAXLEN);
+        g_aMsgs = new ArrayList(MSG_MAXLEN);
+    }
 
-	// Re-Format for Slack
-	if(StrContains(sUrl, "slack") != -1)
-		ReplaceString(sMessage, sizeof(sMessage), "\"content\":", "\"text\":");
-
-	if (g_aWebhook == null)
-	{
-		g_aWebhook = new ArrayList(64);
-		g_aMsgs = new ArrayList(4096);
-	}
-
-	g_aWebhook.PushString(sWebhook);
-	g_aMsgs.PushString(sMessage);
+    g_aWebhook.PushString(sWebhook);
+    g_aMsgs.PushString(sMessage);
 }
 
-public Action Timer_SendNextMessage(Handle timer, any data)
-{
-	SendNextMsg();
-	return Plugin_Continue;
+public Action Timer_SendNextMessage(Handle timer, any data) {
+    SendNextMsg();
+    return Plugin_Continue;
 }
 
-void SendNextMsg()
-{
-	// We are still waiting for a reply from our last msg
-	if(g_bSending)
-		return;
+void SendNextMsg() {
+    // Still waiting for the previous request to complete.
+    if (g_bSending) {
+        return;
+    }
 
-	// Nothing to send
-	if(g_aWebhook == null || g_aWebhook.Length < 1)
-		return;
+    // Nothing to send.
+    if (g_aWebhook == null || g_aWebhook.Length < 1) {
+        return;
+    }
 
-	char sWebhook[64]
-	g_aWebhook.GetString(0, sWebhook, sizeof(sWebhook));
+    char sWebhook[WEBHOOK_MAXLEN];
+    g_aWebhook.GetString(0, sWebhook, sizeof(sWebhook));
 
-	char sMessage[4096];
-	g_aMsgs.GetString(0, sMessage, sizeof(sMessage));
+    char sMessage[MSG_MAXLEN];
+    g_aMsgs.GetString(0, sMessage, sizeof(sMessage));
 
-	char sUrl[512];
-	if(!GetWebHook(sWebhook, sUrl, sizeof(sUrl)))
-	{
-		LogError("Webhook config not found or invalid! Webhook: %s Url: %s", sWebhook, sUrl);
-		LogError("Message: %s", sMessage);
-		return;
-	}
+    char sUrl[URL_MAXLEN];
+    if (!GetWebHook(sWebhook, sUrl, sizeof(sUrl)) || sUrl[0] == '\0') {
+        LogError("Webhook config not found or invalid! Webhook: %s Url: %s", sWebhook, sUrl);
+        LogError("Message: %s", sMessage);
+        DropNextMsg();
+        SendNextMsg();
+        return;
+    }
 
-	Handle hRequest = SteamWorks_CreateHTTPRequest(k_EHTTPMethodPOST, sUrl);
-	if(!hRequest || !SteamWorks_SetHTTPCallbacks(hRequest, view_as<SteamWorksHTTPRequestCompleted>(OnRequestComplete))
-				|| !SteamWorks_SetHTTPRequestRawPostBody(hRequest, "application/json", sMessage, strlen(sMessage))
-				|| !SteamWorks_SendHTTPRequest(hRequest))
-	{
-		delete hRequest;
-		LogError("SendNextMsg: Failed To Send Message");
-		return;
-	}
+    bool bSlack = StrContains(sUrl, "slack") != -1;
 
-	// Don't Send new messages aslong we wait for a reply from this one
-	g_bSending = true;
+    JSONObject obj = BuildPayload(sMessage, bSlack);
+    if (obj == null) {
+        // BuildPayload already logged the reason; the API would never accept it.
+        DropNextMsg();
+        SendNextMsg();
+        return;
+    }
+
+    // sUrl is non-empty here (checked above); a malformed URL surfaces as a transport failure in the callback.
+    HTTPRequest request = new HTTPRequest(sUrl);
+    request.Timeout = 10;
+    // The request handle is closed automatically once the request completes.
+    request.Post(obj, OnRipComplete);
+    delete obj;
+
+    // Don't send new messages as long as we wait for a reply to this one (Discord rate limits).
+    g_bSending = true;
 }
 
-public int OnRequestComplete(Handle hRequest, bool bFailed, bool bRequestSuccessful, EHTTPStatusCode eStatusCode)
-{
-	// This should not happen!
-	if(bFailed || !bRequestSuccessful)
-	{
-		LogError("[OnRequestComplete] Request failed");
-	}
-	// Seems like the API is busy or too many message send recently
-	else if(eStatusCode == k_EHTTPStatusCode429TooManyRequests || eStatusCode == k_EHTTPStatusCode500InternalServerError)
-	{
-		if(!g_bSlowdown)
-			RestartMessageTimer(true);
-	}
-	// Wrong msg format, API doesn't like it
-	else if(eStatusCode == k_EHTTPStatusCode400BadRequest)
-	{
-		char sMessage[4096];
-		g_aMsgs.GetString(0, sMessage, sizeof(sMessage));
+// Builds the JSON body for a queued message. Returns null on failure.
+JSONObject BuildPayload(const char[] sMessage, bool bSlack) {
+    // Pre-formatted JSON payload (embeds etc. from sourcebans/calladmin) — pass it through.
+    if (sMessage[0] == '{') {
+        JSONObject obj = JSONObject.FromString(sMessage);
+        if (obj == null) {
+            LogError("[discord] Dropping malformed JSON payload: \"%s\"", sMessage);
+        }
+        return obj;
+    }
 
-		LogError("[OnRequestComplete] Bad Request! Error Code: [400]. Check your message, the API doesn't like it! Message: \"%s\"", sMessage);
-
-		// Remove it, the API will never accept it like this.
-		g_aWebhook.Erase(0);
-		g_aMsgs.Erase(0);
-	}
-	else if(eStatusCode == k_EHTTPStatusCode200OK || eStatusCode == k_EHTTPStatusCode204NoContent)
-	{
-		if(g_bSlowdown)
-			RestartMessageTimer(false);
-
-		g_aWebhook.Erase(0);
-		g_aMsgs.Erase(0);
-	}
-	// Unknown error
-	else
-	{
-		LogError("[OnRequestComplete] Error Code: [%d]", eStatusCode);
-
-		g_aWebhook.Erase(0);
-		g_aMsgs.Erase(0);
-	}
-
-	delete hRequest;
-	g_bSending = false;
-	return 0;
+    // Plain text — let ripext handle JSON escaping (quotes/newlines break manual string formatting).
+    JSONObject obj = new JSONObject();
+    if (obj == null) {
+        LogError("[discord] Failed to allocate JSON payload");
+        return null;
+    }
+    obj.SetString(bSlack ? "text" : "content", sMessage);
+    return obj;
 }
 
-void RestartMessageTimer(bool slowdown)
-{
-	g_bSlowdown = slowdown;
-
-	if(g_hTimer != null)
-		delete g_hTimer;
-
-	g_hTimer = CreateTimer(g_bSlowdown ? 1.0 : 0.1, Timer_SendNextMessage, _, TIMER_REPEAT|TIMER_FLAG_NO_MAPCHANGE);
+void DropNextMsg() {
+    if (g_aWebhook != null && g_aWebhook.Length > 0) {
+        g_aWebhook.Erase(0);
+        g_aMsgs.Erase(0);
+    }
 }
 
-bool GetWebHook(const char[] sWebhook, char[] sUrl, int iLength)
-{
-	KeyValues kv = new KeyValues("Discord");
+void OnRipComplete(HTTPResponse response, any value, const char[] error) {
+    // Transport-level failure (DNS, timeout, no route) — response is null, keep the message queued.
+    if (response == null) {
+        LogError("[discord] Request failed: %s", error);
+        if (!g_bSlowdown) {
+            RestartMessageTimer(true);
+        }
+        g_bSending = false;
+        return;
+    }
 
-	char sFile[PLATFORM_MAX_PATH];
-	BuildPath(Path_SM, sFile, sizeof(sFile), "configs/discord.cfg");
+    HTTPStatus status = response.Status;
+    if (status == HTTPStatus_TooManyRequests || status == HTTPStatus_InternalServerError) {
+        // API is busy or too many messages sent recently — back off and retry the same message.
+        if (!g_bSlowdown) {
+            RestartMessageTimer(true);
+        }
+    } else if (status == HTTPStatus_BadRequest) {
+        // Wrong msg format, API doesn't like it.
+        char sMessage[MSG_MAXLEN];
+        g_aMsgs.GetString(0, sMessage, sizeof(sMessage));
 
-	if (!FileExists(sFile))
-	{
-		SetFailState("[GetWebHook] \"%s\" not found!", sFile);
-		return false;
-	}
+        LogError("[discord] Bad Request! Error Code: [400]. Check your message, the API doesn't like it! Message: \"%s\"",
+                 sMessage);
 
-	kv.ImportFromFile(sFile);
+        // Remove it, the API will never accept it like this.
+        DropNextMsg();
+    } else if (status == HTTPStatus_OK || status == HTTPStatus_NoContent) {
+        if (g_bSlowdown) {
+            RestartMessageTimer(false);
+        }
 
-	if (!kv.GotoFirstSubKey())
-	{
-		SetFailState("[GetWebHook] Can't find webhook for \"%s\"!", sFile);
-		return false;
-	}
+        DropNextMsg();
+    } else {
+        // Unknown error.
+        LogError("[discord] Error Code: [%d]", view_as<int>(status));
 
-	char sBuffer[64];
+        DropNextMsg();
+    }
 
-	do
-	{
-		kv.GetSectionName(sBuffer, sizeof(sBuffer));
+    g_bSending = false;
+    // Pump the next queued message immediately instead of waiting for the next timer tick.
+    SendNextMsg();
+}
 
-		if(StrEqual(sBuffer, sWebhook, false))
-		{
-			kv.GetString("url", sUrl, iLength);
-			delete kv;
-			return true;
-		}
-	}
-	while (kv.GotoNextKey());
+void RestartMessageTimer(bool slowdown) {
+    g_bSlowdown = slowdown;
 
-	delete kv;
+    if (g_hTimer != INVALID_HANDLE) {
+        delete g_hTimer;
+        g_hTimer = INVALID_HANDLE;
+    }
 
-	return false;
+    g_hTimer = CreateTimer(slowdown ? 1.0 : 0.1, Timer_SendNextMessage, _, TIMER_REPEAT | TIMER_FLAG_NO_MAPCHANGE);
+}
+
+bool GetWebHook(const char[] sWebhook, char[] sUrl, int iLength) {
+    KeyValues kv = new KeyValues("Discord");
+
+    char sFile[PLATFORM_MAX_PATH];
+    BuildPath(Path_SM, sFile, sizeof(sFile), "configs/discord.cfg");
+
+    if (!FileExists(sFile)) {
+        delete kv;
+        SetFailState("[GetWebHook] \"%s\" not found!", sFile);
+        return false;
+    }
+
+    kv.ImportFromFile(sFile);
+
+    if (!kv.GotoFirstSubKey()) {
+        delete kv;
+        SetFailState("[GetWebHook] Can't find webhook for \"%s\"!", sFile);
+        return false;
+    }
+
+    char sBuffer[WEBHOOK_MAXLEN];
+
+    do {
+        kv.GetSectionName(sBuffer, sizeof(sBuffer));
+
+        if (StrEqual(sBuffer, sWebhook, false)) {
+            kv.GetString("url", sUrl, iLength);
+            delete kv;
+            return true;
+        }
+    } while (kv.GotoNextKey());
+
+    delete kv;
+
+    return false;
 }

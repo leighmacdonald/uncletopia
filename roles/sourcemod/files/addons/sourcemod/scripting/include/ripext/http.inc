@@ -218,7 +218,7 @@ methodmap HTTPRequest < Handle
 	}
 }
 
-methodmap HTTPResponse
+methodmap HTTPResponse __nullable__
 {
 	// Retrieves an HTTP header from the response.
 	//

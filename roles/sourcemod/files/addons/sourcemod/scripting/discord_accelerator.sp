@@ -7,7 +7,7 @@
 #include <discord>
 
 #define MSG_CRASH "{\"username\":\"{HOOKNAME}\", \"content\":\"{MENTION} {CRASHMESSAGE} ({SERVERNAME}) > {CRASHURL}{CRASHID}\"}"
-#define DEFAULT_URL "https://crash.limetech.org/?id="
+#define DEFAULT_URL "https://crash.uncletopia.com/?id="
 #define PLUGIN_VERSION "1.0"
 #define URL_ENTRY "MinidumpUrl"
 
@@ -17,7 +17,7 @@ ConVar g_cServerName = null;
 ConVar g_cWebhook = null;
 ConVar g_cCrashMessage = null;
 
-public Plugin myinfo = 
+public Plugin myinfo =
 {
     name = "Discord: Accelerator",
     author = "Prefix",
@@ -29,12 +29,12 @@ public Plugin myinfo =
 public void OnPluginStart()
 {
     CreateConVar("discord_accelerator_version", PLUGIN_VERSION, "Discord Accelerator version", FCVAR_DONTRECORD|FCVAR_SPONLY|FCVAR_REPLICATED|FCVAR_NOTIFY);
-    
+
     g_cMention = CreateConVar("discord_accelerator_mention", "", "Role ID ir User ID to mention.\nYou can get Role ID or User ID by making \\@User or \\@Group\nIf you want to mention group add & before ID");
     g_cHookName = CreateConVar("discord_accelerator_hookname", "Captain Crash", "What nickname hook will have.");
     g_cServerName = CreateConVar("discord_accelerator_servername", "", "Short server name");
-    g_cWebhook = CreateConVar("discord_accelerator_webhook", "accelerator", "Config key from configs/discord.cfg."); 
-    g_cCrashMessage = CreateConVar("discord_accelerator_message", "Server crashed", "Information text that server crashed in message."); 
+    g_cWebhook = CreateConVar("discord_accelerator_webhook", "crash", "Config key from configs/discord.cfg.");
+    g_cCrashMessage = CreateConVar("discord_accelerator_message", "Server crashed", "Information text that server crashed in message.");
     AutoExecConfig(true, "discord_accelerator");
 }
 
@@ -58,7 +58,7 @@ public void OnCrashUpdated(int num, const char [] crashId)
         ReplaceString(sMSG, sizeof(sMSG), "{HOOKNAME}", sHookName);
     else
         ReplaceString(sMSG, sizeof(sMSG), "\"username\":\"{HOOKNAME}\",", "");
-        
+
     char sServerName[65];
     g_cServerName.GetString(sServerName, sizeof(sServerName));
     if (strlen(sHookName) > 1) {
@@ -91,7 +91,7 @@ void SendMessage(char[] sMessage)
 {
     char sWebhook[32];
     g_cWebhook.GetString(sWebhook, sizeof(sWebhook));
-    Discord_SendMessage(sWebhook, sMessage);    
+    Discord_SendMessage(sWebhook, sMessage);
 }
 
 bool GetFromCoreFile(const char[] entry, char[] value, int maxlength)

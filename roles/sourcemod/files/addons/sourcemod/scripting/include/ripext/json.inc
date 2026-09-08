@@ -35,7 +35,7 @@ stock int JSON_REAL_PRECISION(int n)
 }
 
 // Generic type for encoding JSON.
-methodmap JSON < Handle
+methodmap JSON __nullable__ < Handle
 {
 	// Writes the JSON string representation to a file.
 	//
