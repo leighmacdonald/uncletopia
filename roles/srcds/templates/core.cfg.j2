@@ -7,7 +7,7 @@
     * If unset, your crash reports will be uploaded anonymously and you will not be
     * able to see all of the information.
     */
-    "MinidumpAccount"	"{{ srcds_mini_dump_steamid }}"
+    "MinidumpAccount"	"{{ srcds_mini_dump_steamid|default('') }}"
 
     /**
     * Controls which binaries will be eligible to be processed for symbols and uploaded.
@@ -36,15 +36,15 @@
     /**
     * URL to upload crash dumps to. Should not be changed.
     */
-    "MinidumpUrl"	"http://crash.limetech.org/submit"
+    "MinidumpUrl"	"{{ srcds_mini_dump_url|default('http://crash.limetech.org') }}/submit"
 
     /**
     * URL to upload processed symbols to. Should not be changed.
     */
-    "MinidumpSymbolUrl"	"http://crash.limetech.org/symbols/submit"
+    "MinidumpSymbolUrl"	"{{ srcds_mini_dump_url|default('http://crash.limetech.org') }}/symbols/submit"
 
     /**
     * URL to upload binaries to. Should not be changed.
     */
-    "MinidumpBinaryUrl"	"http://crash.limetech.org/binary/submit"
+    "MinidumpBinaryUrl"	"{{ srcds_mini_dump_url|default('http://crash.limetech.org') }}/binary/submit"
 }
