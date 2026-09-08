@@ -77,7 +77,6 @@ public Action ForceSendPlayerAFK(int client, int args)
 		{
 			SendToSpec(target_list[i], false);
 		}
-		
 
 		PrintToChatAll("[SPEC] Some players as been moved to spectator, reason : '%s' !", arg2);
 	}
