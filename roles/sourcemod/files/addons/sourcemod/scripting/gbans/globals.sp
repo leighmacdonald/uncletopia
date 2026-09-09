@@ -15,6 +15,13 @@ ConVar gb_core_server_key;
 ConVar gb_disable_autoteam;
 ConVar gb_hide_connections;
 
+// Rejoin grace (map-change incumbent protection)
+ConVar gb_rejoin_grace;
+ConVar gb_rejoin_debug;
+StringMap g_ReturningPlayers = null;
+StringMap g_RejoinAdminSnapshot = null;
+int g_MapStartTime = 0;
+
 // STV options
 ConVar gb_stv_enable;
 ConVar gb_auto_record;

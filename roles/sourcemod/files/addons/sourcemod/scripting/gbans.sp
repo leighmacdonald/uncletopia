@@ -12,6 +12,7 @@
 #include <autoexecconfig>
 #include <sourcetvmanager>
 #include <tf2_stocks>
+#include <afk_manager>
 
 #include "gbans/globals.sp"
 #include "gbans/admins.sp"
@@ -82,10 +83,24 @@ public void OnPluginStart()
 	gb_stv_path = AutoExecConfig_CreateConVar("gb_stv_path", "stv_demos/active", "Path to store currently recording demos", FCVAR_NONE);
 	gb_stv_path_complete = AutoExecConfig_CreateConVar("gb_stv_path_complete", "stv_demos/complete", "Path to store complete demos", FCVAR_NONE);
 
+	// Rejoin grace (map-change incumbent protection)
+	gb_rejoin_grace = AutoExecConfig_CreateConVar("gb_rejoin_grace", "120", "Seconds after map start where returning players are prioritized over newcomers (0 disables)", FCVAR_NONE, true, 0.0, true, 600.0);
+	gb_rejoin_debug = AutoExecConfig_CreateConVar("gb_rejoin_debug", "1", "Verbose logging for rejoin grace decisions", FCVAR_NONE, true, 0.0, true, 1.0);
+
 	AutoExecConfig_ExecuteFile();
 	AutoExecConfig_CleanFile();
 
 	//BuildPath(Path_SM, logFile, sizeof(logFile), "logs/gbans.log");
+
+	if (g_ReturningPlayers == null)
+	{
+		g_ReturningPlayers = new StringMap();
+	}
+	if (g_RejoinAdminSnapshot == null)
+	{
+		g_RejoinAdminSnapshot = new StringMap();
+	}
+	g_MapStartTime = 0;
 
 	if(LateLoaded)
 	{
@@ -161,6 +176,7 @@ public void OnClientDisconnect_Post(int client)
 
 public void OnMapEnd()
 {
+	Connect_OnMapEnd();
 	if(gIsRecording)
 	{
 		StopRecord();
@@ -171,6 +187,7 @@ public void OnMapEnd()
 
 public void OnMapStart()
 {
+	Connect_OnMapStart();
 	reloadAdmins(true);
 }
 
