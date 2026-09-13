@@ -20,3 +20,4 @@ roles/cloudalchemy.*
 .venv
 AGENT*
 .zed/
+new/
