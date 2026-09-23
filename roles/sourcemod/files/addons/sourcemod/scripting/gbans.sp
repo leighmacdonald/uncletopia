@@ -155,16 +155,6 @@ public void OnConfigsExecuted()
 	CreateTimer(300.0, Timer_CheckStatus, _, TIMER_REPEAT);
 
 	StopRecord();
-
-	if(!gStvMapChanged)
-	{
-// STV does not function until a map change has occurred.
-		gbLog("Restarting map to enabled STV");
-		gStvMapChanged = true;
-		char mapName[128];
-		GetCurrentMap(mapName, sizeof mapName);
-		ForceChangeLevel(mapName, "Enable STV");
-	}
 }
 
 

@@ -250,69 +250,69 @@ public Action AFKM_OnAFKEvent(const char[] name, int client)
 }
 
 
-public bool OnClientPreConnectEx(const char[] name, char password[255], const char[] ip, const char[] steamID, char rejectReason[255]  )
-{
-	gbLog("OnClientPreConnectEx: %s : %s : %s : %s", name, password, ip, steamID);
+// public bool OnClientPreConnectEx(const char[] name, char password[255], const char[] ip, const char[] steamID, char rejectReason[255]  )
+// {
+// 	gbLog("OnClientPreConnectEx: %s : %s : %s : %s", name, password, ip, steamID);
 
-	char norm[32];
-	NormalizeRejoinSteamID(steamID, norm, sizeof(norm));
-	bool debug = gb_rejoin_debug != null && gb_rejoin_debug.BoolValue;
+// 	char norm[32];
+// 	NormalizeRejoinSteamID(steamID, norm, sizeof(norm));
+// 	bool debug = gb_rejoin_debug != null && gb_rejoin_debug.BoolValue;
 
-	// 1. Admins (reservation/root) always get in, never kick. They bypass
-	// the rejoin queue and sv_visiblemaxplayers; the engine owns the final
-	// slot decision (reserved slots / MaxClients).
-	if (IsAdminSteamID(steamID, norm))
-	{
-		return true;
-	}
+// 	// 1. Admins (reservation/root) always get in, never kick. They bypass
+// 	// the rejoin queue and sv_visiblemaxplayers; the engine owns the final
+// 	// slot decision (reserved slots / MaxClients).
+// 	if (IsAdminSteamID(steamID, norm))
+// 	{
+// 		return true;
+// 	}
 
-	// 2. Returning incumbents win the race during the grace window.
-	if (IsReturningSteamID(norm))
-	{
-		if (debug)
-		{
-			gbLog("Returning player %s (%s) prioritized", name, steamID);
-		}
-		if (CountRealClients() >= MaxClients)
-		{
-			int victim = selectKickClient(false);
-			if (victim)
-			{
-				KickClientEx(victim, "%s", "Slot reserved for returning player, please retry");
-				gbLog("Returning %s (%s) displaced newcomer %d", name, steamID, victim);
-			}
-			else
-			{
-				gbLog("Returning %s (%s) joined full server, no newcomer victim", name, steamID);
-			}
-		}
-		return true;
-	}
+// 	// 2. Returning incumbents win the race during the grace window.
+// 	if (IsReturningSteamID(norm))
+// 	{
+// 		if (debug)
+// 		{
+// 			gbLog("Returning player %s (%s) prioritized", name, steamID);
+// 		}
+// 		if (CountRealClients() >= MaxClients)
+// 		{
+// 			int victim = selectKickClient(false);
+// 			if (victim)
+// 			{
+// 				KickClientEx(victim, "%s", "Slot reserved for returning player, please retry");
+// 				gbLog("Returning %s (%s) displaced newcomer %d", name, steamID, victim);
+// 			}
+// 			else
+// 			{
+// 				gbLog("Returning %s (%s) joined full server, no newcomer victim", name, steamID);
+// 			}
+// 		}
+// 		return true;
+// 	}
 
-	// 3. Newcomers get in when there is space.
-	if (CountRealClients() < MaxClients)
-	{
-		return true;
-	}
+// 	// 3. Newcomers get in when there is space.
+// 	if (CountRealClients() < MaxClients)
+// 	{
+// 		return true;
+// 	}
 
-	// 4. Full server: reject newcomers with retry so incumbents win the race.
-	if (IsGraceActive())
-	{
-		int remaining = gb_rejoin_grace.IntValue - (GetTime() - g_MapStartTime);
-		if (remaining < 5)
-		{
-			remaining = 5;
-		}
-		Format(rejectReason, 255, "Server is reserving slots for returning players, please retry in ~%d seconds", remaining);
-		gbLog("Rejected newcomer %s (%s): grace active, %ds remaining", name, steamID, remaining);
-	}
-	else
-	{
-		Format(rejectReason, 255, "%s", "Server is full, please try again");
-		gbLog("Rejected newcomer %s (%s): server full", name, steamID);
-	}
-	return false;
-}
+// 	// 4. Full server: reject newcomers with retry so incumbents win the race.
+// 	if (IsGraceActive())
+// 	{
+// 		int remaining = gb_rejoin_grace.IntValue - (GetTime() - g_MapStartTime);
+// 		if (remaining < 5)
+// 		{
+// 			remaining = 5;
+// 		}
+// 		Format(rejectReason, 255, "Server is reserving slots for returning players, please retry in ~%d seconds", remaining);
+// 		gbLog("Rejected newcomer %s (%s): grace active, %ds remaining", name, steamID, remaining);
+// 	}
+// 	else
+// 	{
+// 		Format(rejectReason, 255, "%s", "Server is full, please try again");
+// 		gbLog("Rejected newcomer %s (%s): server full", name, steamID);
+// 	}
+// 	return false;
+// }
 
 
 // Victim selection for making room for a returning incumbent.
