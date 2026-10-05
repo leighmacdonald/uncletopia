@@ -2,5 +2,23 @@
 - name: Build srcds instances
   hosts: tf2
   strategy: free
+  pre_tasks:
+    - name: Clean existing sourcemod build directory
+      ansible.builtin.file:
+        path: ~/build_sourcemod/
+        state: absent
+      tags:
+        - never
+        - clean
+
+    - name: Clean existing deployed addons
+      ansible.builtin.file:
+        path: /home/tf2server/srcds-{{ item.server_name_short }}/
+        state: absent
+      loop: "{{ services }}"
+      tags:
+        - never
+        - clean
+
   roles:
     - srcds
