@@ -30,6 +30,11 @@ sv_downloadurl "{{ srcds_fastdl_url }}"
 sv_allowupload 0
 sv_allowdownload 0
 
+// Reenable wallbugs
+sv_wallbug {{ sv_wallbug|default(1) }}
+// No longer broken
+sv_parallel_sendsnapshot {{ sv_parallel_sendsnapshot|default(1) }}
+
 // Allow user modifications
 sv_pure {{ srcds_sv_pure }}
 sv_pure_kick_clients 0

@@ -320,7 +320,6 @@ srcds_config:
         "waitingdoors.smx",
       ]
 
-
 srcds_motd:
   default: |
     Welcome to Uncletopia! If you enjoyed your time here, remember to add this server to your favorites via the server browser!
@@ -651,7 +650,6 @@ srcds_map_rotation:
     - pl_snowycoast
     - pl_swiftwater_final1
     - pl_upward
-
 
 srcds_whitelist:
   april_idiots: |
