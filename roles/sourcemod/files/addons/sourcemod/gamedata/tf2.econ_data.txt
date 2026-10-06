@@ -42,7 +42,7 @@
 				"library"			"server"
 				"linux"				"@_ZN15CEconItemSchema28GetAttributeDefinitionByNameEPKc"
 				"linux64"			"@_ZN15CEconItemSchema28GetAttributeDefinitionByNameEPKc"
-				"windows"			"\x55\x8B\xEC\x83\xEC\x1C\x83\x7D\x08\x00"
+				"windows"			"\x55\x8B\xEC\x8B\x45\x08\x56\x8B\xF1\x57\x85\xC0"
 				"windows64"			"\x40\x55\x56\x48\x83\xEC\x78"
 			}
 			"CTFItemSchema::GetMasterMapDefByName()"
@@ -51,7 +51,7 @@
 				"library"	"server"
 				"linux"		"@_ZNK13CTFItemSchema21GetMasterMapDefByNameEPKc"
 				"linux64"	"@_ZNK13CTFItemSchema21GetMasterMapDefByNameEPKc"
-				"windows"	"\x55\x8B\xEC\x53\x56\x57\x8B\xF9\x33\xF6\x39\xB7\x60\x06\x00\x00"
+				"windows"	"\x55\x8B\xEC\x53\x56\x57\x8B\xF9\x33\xF6\x39\xB7\x84\x06\x00\x00"
 				"windows64"	"\x48\x89\x5C\x24\x2A\x48\x89\x6C\x24\x2A\x48\x89\x74\x24\x2A\x57\x48\x83\xEC\x2A\x33\xDB\x48\x8B\xEA\x48\x8B\xF9\x39\x99\x2A\x2A\x2A\x2A\x7E\x2A\x0F\x1F\x40\x2A\x0F\x1F\x84\x00\x2A\x2A\x2A\x2A\x48\x8B\x87\x2A\x2A\x2A\x2A\x48\x8D\x34\xDD\x2A\x2A\x2A\x2A\x48\x8B\xD5\x48\x8B\x0C\x06\x48\x8B\x49"
 			}
 			"TranslateWeaponEntForClass()"
@@ -63,7 +63,7 @@
 				"windows"	"\x55\x8B\xEC\x53\x8B\x5D\x08\x56\x57\x85\xDB\x74\x2A\x33\xFF"
 				"windows64"	"\x48\x89\x5C\x24\x2A\x48\x89\x6C\x24\x2A\x48\x89\x74\x24\x2A\x48\x89\x7C\x24\x2A\x41\x56\x48\x83\xEC\x2A\x48\x63\xEA"
 			}
-			
+
 			"KeyValues::GetString()"
 			{
 				// contains semi-unique x-ref "%lld" (in the windows version there's two refs to it in the function)
@@ -82,7 +82,7 @@
 				"windows"	"\x55\x8B\xEC\x81\xEC\x04\x01\x00\x00\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x0F\x84\x2A\x01\x00\x00"
 				"windows64"	"\x48\x8B\xC4\x53\x55\x56\x48\x81\xEC\x20\x01\x00\x00"
 			}
-			
+
 			"GetProtoScriptObjDefManager()"
 			{
 				// start from CQuestDefinition::BPostDataLoaded() with xref "Invalid loaner item name %s in %d: %s"
@@ -105,7 +105,7 @@
 				"windows64"	"\x48\x83\xEC\x2A\xE8\x2A\x2A\x2A\x2A\x8B\x40"
 			}
 		}
-		
+
 		"Offsets"
 		{
 			"ISchemaAttributeTypeBase::BSupportsGame..."
@@ -226,7 +226,7 @@
 				"linux64"	"528"
 				"windows64"	"528"
 			}
-			
+
 			"CTFItemDefinition::m_iDefaultItemSlot"
 			{
 				// CTFItemDefinition::m_iDefaultLoadoutSlot
@@ -246,7 +246,7 @@
 				"linux64"	"884"
 				"windows64"	"884"
 			}
-			
+
 			// DEPRECATED: this is present as a transitional period for backwards compatibility.
 			// this will be removed at some point
 			"CEconItemDefinition::m_aiItemSlot"
@@ -255,7 +255,7 @@
 				"linux"		"512"
 				"windows"	"512"
 			}
-			
+
 			"CEconItemAttributeDefinition::m_pKeyValues"
 			{
 				// CEconItemAttributeDefinition::m_pKVAttribute
@@ -313,7 +313,7 @@
 				"linux64"	"80"
 				"windows64"	"80"
 			}
-			
+
 			"CEconItemQualityDefinition::m_iValue"
 			{
 				// CEconItemQualityDefinition::m_nValue
@@ -331,7 +331,7 @@
 				"linux64"	"8"
 				"windows64"	"8"
 			}
-			
+
 			"CEconItemRarityDefinition::m_iValue"
 			{
 				// CEconItemRarityDefinition::m_nValue
@@ -349,7 +349,7 @@
 				"linux64"	"8"
 				"windows64"	"8"
 			}
-			
+
 			"CEconItemSchema::m_ItemRarities"
 			{
 				// CEconItemSchema::m_mapRarities
@@ -402,8 +402,8 @@
 			{
 				// CEconItemSchema::m_mapAttributes.m_tree.m_pMemory
 				// accessed in loop at CEconItemSchema::GetAttributeDefinitionByName
-				"linux"		"448"
-				"windows"	"448"
+				"linux"		"484"
+				"windows"	"484"
 				"linux64"	"600"
 				"windows64"	"600"
 			}
@@ -411,8 +411,8 @@
 			{
 				// CEconItemSchema::m_vecEquipRegionsList
 				// the smaller of the two offsets in CEconItemSchema::GetEquipRegionIndexByName()
-				"linux"		"968"
-				"windows"	"968"
+				"linux"		"1004"
+				"windows"	"1004"
 				"linux64"	"1320"
 				"windows64"	"1320"
 			}
@@ -432,8 +432,8 @@
 				// a CUtlRBTree instance
 				// the underlying map's ::Insert function is accessed close to the end of ::BInitAttributeControlledParticleSystems()
 				// subtract by 4 to get the offset of the CUtlRBTree itself
-				"linux"		"876"
-				"windows"	"876"
+				"linux"		"912"
+				"windows"	"912"
 			}
 			"CEconItemSchema::m_CosmeticUnusualEffectList"
 			{
@@ -441,8 +441,8 @@
 				// a CUtlVector, referenced in CEconItemSchema::BInitAttributeControlledParticleSystems()
 				// we specify the offsets of all three lists in case any offset changes independently
 				// (e.g., Valve adds a new list in between one of the others, for some weird reason)
-				"linux"		"908"
-				"windows"	"908"
+				"linux"		"944"
+				"windows"	"944"
 				"linux64"	"1224"
 				"windows64"	"1224"
 			}
@@ -450,8 +450,8 @@
 			{
 				// CEconItemSchema::m_vecAttributeControlledParticleSystemsWeapons
 				// a CUtlVector, referenced in CEconItemSchema::BInitAttributeControlledParticleSystems()
-				"linux"		"928"
-				"windows"	"928"
+				"linux"		"964"
+				"windows"	"964"
 				"linux64"	"1256"
 				"windows64"	"1256"
 			}
@@ -459,23 +459,23 @@
 			{
 				// CEconItemSchema::m_vecAttributeControlledParticleSystemsTaunts
 				// a CUtlVector, referenced in CEconItemSchema::BInitAttributeControlledParticleSystems()
-				"linux"		"948"
-				"windows"	"948"
+				"linux"		"984"
+				"windows"	"984"
 				"linux64"	"1288"
 				"windows64"	"1288"
 			}
-			
+
 			"CTFItemSchema::m_ItemSlotNames"
 			{
 				// CTFItemSchema::m_vecClassLoadoutStrings
 				// used in CTFItemDefinition::BInitFromKV() in the same block that "head" and "misc" are referenced
 				// on Windows, "misc" is a unique subroutine x-ref
-				"linux"		"1432"
-				"windows"	"1432"
+				"linux"		"1468"
+				"windows"	"1468"
 				"linux64"	"1968"
 				"windows64"	"1968"
 			}
-			
+
 			// attachedparticlesystem_t is initialized in CEconItemSchema::BInitAttributeControlledParticleSystems()
 			"attachedparticlesystem_t::m_pszParticleSystem"
 			{
@@ -493,7 +493,7 @@
 				"linux64"	"32"
 				"windows64"	"32"
 			}
-			
+
 			"CProtoBufScriptObjectDefinitionManager::m_PaintList"
 			{
 				// CProtoBufScriptObjectDefinitionManager::m_arDefinitionsMaps[].m_Tree.m_Elements.m_pMemory
@@ -505,7 +505,7 @@
 				"linux64"	"392"
 				"windows64"	"392"
 			}
-			
+
 			"sizeof(static_attrib_t)"
 			{
 				// used for iterating over the attribute list
