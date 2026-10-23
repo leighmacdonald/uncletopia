@@ -66,9 +66,4 @@
       - "/etc/caddy:/etc/caddy"
     env:
       ACME_AGREE: "true"
-    ports:
-      - "127.0.0.1:2019:2019"
-      - "{{ (caddy_service_ip | default(caddy_ip)) }}:443:443"
-      - "{{ (caddy_service_ip | default(caddy_ip)) }}:80:80"
-      - "[{{ caddy_service_ip6 }}]:443:443"
-      - "[{{ caddy_service_ip6 }}]:80:80"
+    ports: "{{ caddy_ports + (caddy_ports_ipv6 if caddy_service_ip6 else []) }}"

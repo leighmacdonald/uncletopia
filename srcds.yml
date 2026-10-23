@@ -3,6 +3,18 @@
   hosts: tf2
   strategy: free
   pre_tasks:
+    - name: Stop existing srcds instances
+      become: true
+      ansible.builtin.systemd:
+        name: "srcds-{{ item.server_name_short }}"
+        state: stopped
+      loop: "{{ services }}"
+      # unit does not exist on fresh hosts
+      ignore_errors: true  # noqa ignore-errors
+      tags:
+        - never
+        - clean
+
     - name: Clean existing sourcemod build directory
       ansible.builtin.file:
         path: ~/build_sourcemod/

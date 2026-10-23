@@ -200,8 +200,9 @@ void DropNextMsg() {
 }
 
 void OnRipComplete(HTTPResponse response, any value, const char[] error) {
-    // Transport-level failure (DNS, timeout, no route) — response is null, keep the message queued.
-    if (response == null) {
+    // Transport-level failure (DNS, timeout, no route) — ripext reports
+    // HTTPStatus_Invalid with the curl error in `error`. Keep the message queued.
+    if (response.Status == HTTPStatus_Invalid) {
         LogError("[discord] Request failed: %s", error);
         if (!g_bSlowdown) {
             RestartMessageTimer(true);

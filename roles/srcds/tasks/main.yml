@@ -573,26 +573,40 @@
     index_var: loop0
   tags: cron
 
-- name: Configure logrotate
+- name: Remove legacy srcds logrotate config
   become: true
-  ansible.builtin.copy:
-    dest: /etc/logrotate.d/srcds-{{ item.server_name_short }}
-    mode: "0770"
-    content: |
-      /home/{{ srcds_user }}/srcds-{{ item.server_name_short }}/tf/logs/*
-      {
-        daily
-        missingok
-        compress
-        delaycompress
-        maxage 3
-        notifempty
-        rotate 3
-        size 100M
-      }
+  ansible.builtin.file:
+    path: /etc/logrotate.d/srcds-{{ item.server_name_short }}
+    state: absent
   loop: "{{ services }}"
   loop_control:
     index_var: loop0
+  tags: cron
+
+- name: Purge legacy rotated srcds logs
+  become: true
+  ansible.builtin.command:
+    cmd: "find /home/{{ srcds_user }}/srcds-{{ item.server_name_short }}/tf/logs -type f -name '*.log.*' -delete"
+  loop: "{{ services }}"
+  loop_control:
+    index_var: loop0
+  changed_when: false
+  failed_when: false
+  tags: cron
+
+- name: Cron clean-logs
+  become: true
+  ansible.builtin.cron:
+    name: "srcds-clean-logs-{{ item.server_name_short }}"
+    weekday: "*"
+    minute: "0"
+    hour: "5"
+    month: "*"
+    job: "find /home/{{ srcds_user }}/srcds-{{ item.server_name_short }}/tf/logs -type f \\( -mtime +7 -o -name '*.log*' \\) -delete"
+  loop: "{{ services }}"
+  loop_control:
+    index_var: loop0
+  tags: cron
 
 - name: Cron clean-stv
   become: true

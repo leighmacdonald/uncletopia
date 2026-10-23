@@ -2,7 +2,7 @@
 #pragma tabsize 4
 #pragma newdecls required
 
-#define PLUGIN_VERSION "0.7.45"
+#define PLUGIN_VERSION "0.8.6"
 
 #define MAX_SCORES 256
 
@@ -10,18 +10,10 @@
 ConVar gb_core_host;
 ConVar gb_core_port;
 ConVar gb_core_server_key;
-
 // In Game Tweaks
 ConVar gb_disable_autoteam;
 ConVar gb_hide_connections;
-
-// Rejoin grace (map-change incumbent protection)
-ConVar gb_rejoin_grace;
-ConVar gb_rejoin_debug;
-StringMap g_ReturningPlayers = null;
-StringMap g_RejoinAdminSnapshot = null;
-int g_MapStartTime = 0;
-
+ConVar gb_seed_promo_minplayers;
 // STV options
 ConVar gb_stv_enable;
 ConVar gb_auto_record;
@@ -34,12 +26,14 @@ ConVar gb_stv_path;
 ConVar gb_stv_path_complete;
 
 // Reports command
-int gReportSourceId = -1;
-int gReportTargetId = -1;
-bool gReportWaitingForReason = false;
+int          gReportSourceId         = -1;
+int          gReportTargetId         = -1;
+bool         gReportWaitingForReason = false;
 GB_BanReason gReportTargetReason;
-int gReportStartedAtTime = -1;
+int          gReportStartedAtTime = -1;
 
-// Stv
 bool gIsRecording = false;
-bool gIsManual = false;
+bool gIsManual    = false;
+// jwt returned and used once authenticated
+char gToken[1024] = "";
+bool gLateLoaded;

@@ -37,7 +37,7 @@
     restart_policy: unless-stopped
     shm_size: 8g
     volumes:
-      - gbans_db:/var/lib/postgresql/data
+      - gbans_db:/var/lib/postgresql
     env:
       POSTGRES_DB: gbans
       POSTGRES_PASSWORD: gbans
@@ -84,7 +84,7 @@
 - name: Create gbans-postgres_exporter container (gbans)
   community.docker.docker_container:
     name: gbans-postgres_exporter
-    image: quay.io/prometheuscommunity/postgres-exporter:v0.14.0
+    image: quay.io/prometheuscommunity/postgres-exporter:latest
     restart_policy: unless-stopped
     comparisons:
       networks: strict

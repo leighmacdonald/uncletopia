@@ -7,5 +7,12 @@ caddy_network_name: caddy_net
 caddy_user_dir: /home/tf2server/caddy
 caddy_dockerfile_dest: /home/tf2server/caddy/Dockerfile
 caddy_image_name: caddy-uncletopia
-caddy_service_ip: "{{ ansible_default_ipv4.address }}"
-caddy_service_ip6: "{{ ansible_default_ipv4.address }}"
+caddy_service_ip: "{{ service_ip | default(ip | default(ansible_facts['default_ipv4']['address'])) }}"
+caddy_service_ip6: "{{ service_ip6 | default('') }}"
+caddy_ports:
+  - "127.0.0.1:2019:2019"
+  - "{{ caddy_service_ip }}:443:443"
+  - "{{ caddy_service_ip }}:80:80"
+caddy_ports_ipv6:
+  - "[{{ caddy_service_ip6 }}]:443:443"
+  - "[{{ caddy_service_ip6 }}]:80:80"

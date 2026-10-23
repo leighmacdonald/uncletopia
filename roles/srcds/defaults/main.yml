@@ -58,6 +58,7 @@ srcds_config:
         "sourcescramble_manager.smx",
         "connect.smx",
         "tf2items_manager.smx",
+        "SendToSpec.smx",
       ]
 
   247_odyssey:
@@ -94,6 +95,7 @@ srcds_config:
         "sourcescramble_manager.smx",
         "connect.smx",
         "tf2items_manager.smx",
+        "SendToSpec.smx",
       ]
 
   247_upward:
@@ -130,6 +132,7 @@ srcds_config:
         "sourcescramble_manager.smx",
         "connect.smx",
         "tf2items_manager.smx",
+        "SendToSpec.smx",
       ]
 
   247_badwater:
@@ -166,6 +169,7 @@ srcds_config:
         "sourcescramble_manager.smx",
         "connect.smx",
         "tf2items_manager.smx",
+        "SendToSpec.smx",
       ]
 
   247_dustbowl:
@@ -202,6 +206,7 @@ srcds_config:
         "sourcescramble_manager.smx",
         "connect.smx",
         "tf2items_manager.smx",
+        "SendToSpec.smx",
       ]
 
   pve:
@@ -235,6 +240,8 @@ srcds_config:
         "connect.smx",
         "stopwatch.smx",
         "enablewhitelist.smx",
+        "stac.smx",
+        "SendToSpec.smx",
       ]
 
   mge:
@@ -273,6 +280,7 @@ srcds_config:
         "sourcescramble_manager.smx",
         "connect.smx",
         "tf2items_manager.smx",
+        "SendToSpec.smx",
       ]
   dodgeball:
     extensions_disabled: ["sourcescramble.ext.so"]
@@ -318,6 +326,7 @@ srcds_config:
         "unusedvoicelines.smx",
         "votescramble.smx",
         "waitingdoors.smx",
+        "SendToSpec.smx",
       ]
 
 srcds_motd:

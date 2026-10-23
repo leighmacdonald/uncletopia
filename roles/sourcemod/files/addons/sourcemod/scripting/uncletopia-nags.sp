@@ -14,7 +14,7 @@ public Plugin myinfo = {
     name        = "Uncletopia Nags",
     author      = "VIORA",
     description = "Provide players with timely and relevant updates.",
-    version     = "0.2.1",
+    version     = "0.2.2",
     url         = "https://github.com/crescentrose/uncletopia-nags"
 };
 
@@ -135,6 +135,10 @@ public Action LongMapAlert(Handle timer) {
         "{unusual}This match has now lasted for %d minutes.{default} Remember: You can type {unusual}!rtv{default} in chat to vote to change the map.",
         RoundFloat(RTV_TIMER / 60)
     );
+
+    // the engine frees the handle once we return Plugin_Stop, so clear it now
+    // while it is still valid, or CleanupTimer will kill a stale handle on the next OnMapStart
+    CleanupTimer(g_longMapTimer);
 
     return Plugin_Stop;
 }

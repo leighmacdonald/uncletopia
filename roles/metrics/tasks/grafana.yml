@@ -63,7 +63,7 @@
 - name: Create grafana_image_renderer container
   community.docker.docker_container:
     name: grafana_image_renderer
-    image: grafana/grafana-image-renderer:4.6.0
+    image: grafana/grafana-image-renderer
     restart: true
     recreate: true
     restart_policy: unless-stopped

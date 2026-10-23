@@ -1,25 +1,25 @@
 #if defined _stvmngr_included
- #endinput
+#endinput
 #endif
 #define _stvmngr_included
 
 // Some guidelines from the SDK about director camera shot durations
-#define MIN_SHOT_LENGTH				4.0  // minimum time of a cut (seconds)
-#define MAX_SHOT_LENGTH				8.0  // maximum time of a cut (seconds)
-#define DEF_SHOT_LENGTH				6.0  // average time of a cut (seconds)
+#define MIN_SHOT_LENGTH 4.0 // minimum time of a cut (seconds)
+#define MAX_SHOT_LENGTH 8.0 // maximum time of a cut (seconds)
+#define DEF_SHOT_LENGTH 6.0 // average time of a cut (seconds)
 
 enum SourceTVBroadcastTarget {
-	// Send message to all spectators including proxies.
-	BTarget_Everyone = 0,
-	// Send message only to locally connected spectators.
-	BTarget_OnlyLocal
+    // Send message to all spectators including proxies.
+    BTarget_Everyone = 0,
+    // Send message only to locally connected spectators.
+    BTarget_OnlyLocal
 };
 
 /**
  * Get the current amount of running SourceTV instances.
  * Can usually only be 1 at max except for CSGO, which can have 2.
  *
- * @return SourceTV instance number count. 
+ * @return SourceTV instance number count.
  */
 native int SourceTV_GetServerInstanceCount();
 
@@ -48,11 +48,11 @@ native int SourceTV_GetSelectedServerInstance();
  */
 forward void SourceTV_OnServerStart(int instance);
 
- /**
-  * Called when a SourceTV server instance is shutdown.
-  *
-  * @param instance	The SourceTV instance number.
-  */
+/**
+ * Called when a SourceTV server instance is shutdown.
+ *
+ * @param instance	The SourceTV instance number.
+ */
 forward void SourceTV_OnServerShutdown(int instance);
 
 /**
@@ -97,7 +97,7 @@ native int SourceTV_GetBotIndex();
  * Get stats of the local SourceTV instance.
  * Returns only the stats of this server, don't include relays.
  *
- * You have to subtract the proxy count from the spectator count to 
+ * You have to subtract the proxy count from the spectator count to
  * get the real spectator count, because the proxies take one spectator slot
  * on the SourceTV server.
  *
@@ -106,14 +106,14 @@ native int SourceTV_GetBotIndex();
  * @param specs Number of currently connected SourceTV spectators.
  * @return True if stats were retrieved, false otherwise.
  */
-native bool SourceTV_GetLocalStats(int &proxies, int &slots, int &specs);
+native bool SourceTV_GetLocalStats(int& proxies, int& slots, int& specs);
 
 /**
  * Get stats of this SourceTV network.
  * Only the current Master Proxy can give accurate numbers.
  * Relay proxies only get updates from the master from time to time.
  *
- * You have to subtract the proxy count from the spectator count to 
+ * You have to subtract the proxy count from the spectator count to
  * get the real spectator count, because the proxies take one spectator slot
  * on the SourceTV server.
  *
@@ -122,7 +122,7 @@ native bool SourceTV_GetLocalStats(int &proxies, int &slots, int &specs);
  * @param specs Number of currently connected SourceTV spectators on all servers.
  * @return True if stats were retrieved, false otherwise.
  */
-native bool SourceTV_GetGlobalStats(int &proxies, int &slots, int &specs);
+native bool SourceTV_GetGlobalStats(int& proxies, int& slots, int& specs);
 
 /**
  * Current broadcasted tick. Can be lower than the actual server tick,
@@ -148,7 +148,7 @@ native float SourceTV_GetDelay();
  * @param ...	Variable number of format string arguments.
  * @return	True if message was sent, false otherwise.
  */
-native bool SourceTV_BroadcastScreenMessage(SourceTVBroadcastTarget target, const char[] format, any ...);
+native bool SourceTV_BroadcastScreenMessage(SourceTVBroadcastTarget target, const char[] format, any...);
 
 /**
  * Prints text to the console of all connected SourceTV spectators.
@@ -157,7 +157,7 @@ native bool SourceTV_BroadcastScreenMessage(SourceTVBroadcastTarget target, cons
  * @param ...	Variable number of format string arguments.
  * @return	True if message was sent, false otherwise.
  */
-native bool SourceTV_BroadcastConsoleMessage(const char[] format, any ...);
+native bool SourceTV_BroadcastConsoleMessage(const char[] format, any...);
 
 /**
  * Print a chat message to all SourceTV spectators.
@@ -167,8 +167,7 @@ native bool SourceTV_BroadcastConsoleMessage(const char[] format, any ...);
  * @param ...	Variable number of format string arguments.
  * @return	True if message was sent, false otherwise.
  */
-native bool SourceTV_BroadcastChatMessage(SourceTVBroadcastTarget target, const char[] format, any ...);
-
+native bool SourceTV_BroadcastChatMessage(SourceTVBroadcastTarget target, const char[] format, any...);
 
 /********************************************************************************
  * SourceTV Director control
@@ -201,7 +200,8 @@ native void SourceTV_GetViewOrigin(float view[3]);
  * @return True if shot was created, false otherwise.
  * @error Invalid target entity.
  */
-native bool SourceTV_ForceFixedCameraShot(float[] pos, float[] angle, int iTarget, float fov, float fDuration = DEF_SHOT_LENGTH);
+native bool SourceTV_ForceFixedCameraShot(float[] pos, float[] angle, int iTarget, float fov,
+                                          float fDuration = DEF_SHOT_LENGTH);
 
 /**
  * Force the auto director to show a player.
@@ -216,10 +216,8 @@ native bool SourceTV_ForceFixedCameraShot(float[] pos, float[] angle, int iTarge
  * @return True if shot was created, false otherwise.
  * @error Invalid target1 or target2 entity
  */
-native bool SourceTV_ForceChaseCameraShot(int iTarget1, int iTarget2, int distance, int phi, int theta, bool bInEye, float fDuration = DEF_SHOT_LENGTH);
-
-
-
+native bool SourceTV_ForceChaseCameraShot(int iTarget1, int iTarget2, int distance, int phi, int theta, bool bInEye,
+                                          float fDuration = DEF_SHOT_LENGTH);
 
 /********************************************************************************
  * SourceTV demo recording
@@ -273,7 +271,7 @@ native int SourceTV_GetRecordingTick();
  *
  * @return True if message was printed, false otherwise.
  */
-native bool SourceTV_PrintToDemoConsole(const char[] format, any ...);
+native bool SourceTV_PrintToDemoConsole(const char[] format, any...);
 
 /**
  * Called when a SourceTV demo starts being recorded.
@@ -293,9 +291,6 @@ forward void SourceTV_OnStartRecording(int instance, const char[] filename);
  * @param recordingtick	The tick length of the demo.
  */
 forward void SourceTV_OnStopRecording(int instance, const char[] filename, int recordingtick);
-
-
-
 
 /********************************************************************************
  * SourceTV spectator client handling
@@ -376,7 +371,7 @@ native void SourceTV_GetClientPassword(int client, char[] password, int maxlen);
 
 /**
  * Kick a SourceTV spectator client.
- * 
+ *
  * @param client	The spectator client index.
  * @param sReason	The kick reason.
  * @error	Invalid client index or not connected.
@@ -385,35 +380,35 @@ native void SourceTV_KickClient(int client, const char[] sReason);
 
 /**
  * Print a message to a single client's chat.
- * 
+ *
  * @param client	The spectator client index.
  * @param format	The format string.
  * @param ...	Variable number of format string arguments.
  * @error	Invalid client index or not connected.
  */
-native void SourceTV_PrintToChat(int client, const char[] format, any ...);
+native void SourceTV_PrintToChat(int client, const char[] format, any...);
 
 /**
  * Print a message to a single client's console.
- * 
+ *
  * @param client	The spectator client index.
  * @param format	The format string.
  * @param ...	Variable number of format string arguments.
  * @error	Invalid client index or not connected.
  */
-native void SourceTV_PrintToConsole(int client, const char[] format, any ...);
+native void SourceTV_PrintToConsole(int client, const char[] format, any...);
 
 /**
  * Change the stream title only for one spectator.
  * This is like tv_title but for a single client.
  * Gets overwritten when tv_title gets changed.
- * 
+ *
  * @param client	The spectator client index.
  * @param format	The format string.
  * @param ...	Variable number of format string arguments.
  * @error	Invalid client index or not connected.
  */
-native void SourceTV_SetClientTVTitle(int client, const char[] format, any ...);
+native void SourceTV_SetClientTVTitle(int client, const char[] format, any...);
 
 /**
  * Called when a spectator wants to connect to the SourceTV server.
@@ -426,18 +421,19 @@ native void SourceTV_SetClientTVTitle(int client, const char[] format, any ...);
  * @param rejectReason	Buffer to write the reject reason to, if you want to reject the client from connecting.
  * @return True to allow the client to connect, false to reject him with the given reason.
  */
-forward bool SourceTV_OnSpectatorPreConnect(const char[] name, char password[255], const char[] ip, char rejectReason[255]);
+forward bool SourceTV_OnSpectatorPreConnect(const char[] name, char password[255], const char[] ip,
+                                            char rejectReason[255]);
 
 /**
  * Called when a spectator client connected to the SourceTV server.
- * 
+ *
  * @param client	The spectator client index.
  */
 forward void SourceTV_OnSpectatorConnected(int client);
 
 /**
  * Called when a spectator client is about to disconnect.
- * 
+ *
  * @param client	The spectator client index.
  * @param reason	The reason for the disconnect. Can be overwritten.
  */
@@ -445,7 +441,7 @@ forward void SourceTV_OnSpectatorDisconnect(int client, char reason[255]);
 
 /**
  * Called after a spectator client disconnected.
- * 
+ *
  * @param client	The spectator client index.
  * @param reason	The reason for the disconnect.
  */
@@ -453,7 +449,7 @@ forward void SourceTV_OnSpectatorDisconnected(int client, const char reason[255]
 
 /**
  * Called when a spectator client is entering the game.
- * 
+ *
  * @param client	The spectator client index.
  */
 forward void SourceTV_OnSpectatorPutInServer(int client);
@@ -483,61 +479,61 @@ forward void SourceTV_OnSpectatorChatMessage_Post(int client, const char[] messa
 /**
  * Do not edit below this line!
  */
-public Extension __ext_stvmngr = 
-{
-	name = "SourceTV Manager",
-	file = "sourcetvmanager.ext",
+public
+Extension __ext_stvmngr = {
+    name = "SourceTV Manager",
+    file = "sourcetvmanager.ext",
 #if defined AUTOLOAD_EXTENSIONS
-	autoload = 1,
+    autoload = 1,
 #else
-	autoload = 0,
+    autoload = 0,
 #endif
 #if defined REQUIRE_EXTENSIONS
-	required = 1,
+    required = 1,
 #else
-	required = 0,
+    required = 0,
 #endif
 };
 
 #if !defined REQUIRE_EXTENSIONS
-public void __ext_stvmngr_SetNTVOptional()
-{
-	MarkNativeAsOptional("SourceTV_GetServerInstanceCount");
-	MarkNativeAsOptional("SourceTV_SelectServerInstance");
-	MarkNativeAsOptional("SourceTV_GetSelectedServerInstance");
-	MarkNativeAsOptional("SourceTV_IsActive");
-	MarkNativeAsOptional("SourceTV_IsMasterProxy");
-	MarkNativeAsOptional("SourceTV_GetServerIP");
-	MarkNativeAsOptional("SourceTV_GetServerPort");
-	MarkNativeAsOptional("SourceTV_GetBotIndex");
-	MarkNativeAsOptional("SourceTV_GetLocalStats");
-	MarkNativeAsOptional("SourceTV_GetGlobalStats");
-	MarkNativeAsOptional("SourceTV_GetBroadcastTick");
-	MarkNativeAsOptional("SourceTV_GetDelay");
-	MarkNativeAsOptional("SourceTV_BroadcastScreenMessage");
-	MarkNativeAsOptional("SourceTV_BroadcastConsoleMessage");
-	MarkNativeAsOptional("SourceTV_BroadcastChatMessage");
-	MarkNativeAsOptional("SourceTV_GetViewEntity");
-	MarkNativeAsOptional("SourceTV_GetViewOrigin");
-	MarkNativeAsOptional("SourceTV_ForceFixedCameraShot");
-	MarkNativeAsOptional("SourceTV_ForceChaseCameraShot");
-	MarkNativeAsOptional("SourceTV_StartRecording");
-	MarkNativeAsOptional("SourceTV_StopRecording");
-	MarkNativeAsOptional("SourceTV_IsRecording");
-	MarkNativeAsOptional("SourceTV_GetDemoFileName");
-	MarkNativeAsOptional("SourceTV_GetRecordingTick");
-	MarkNativeAsOptional("SourceTV_PrintToDemoConsole");
-	MarkNativeAsOptional("SourceTV_GetSpectatorCount");
-	MarkNativeAsOptional("SourceTV_GetMaxClients");
-	MarkNativeAsOptional("SourceTV_GetClientCount");
-	MarkNativeAsOptional("SourceTV_IsClientConnected");
-	MarkNativeAsOptional("SourceTV_IsClientProxy");
-	MarkNativeAsOptional("SourceTV_GetClientName");
-	MarkNativeAsOptional("SourceTV_GetClientIP");
-	MarkNativeAsOptional("SourceTV_GetClientPassword");
-	MarkNativeAsOptional("SourceTV_KickClient");
-	MarkNativeAsOptional("SourceTV_PrintToChat");
-	MarkNativeAsOptional("SourceTV_PrintToConsole");
-	MarkNativeAsOptional("SourceTV_SetClientTVTitle");
+public
+void __ext_stvmngr_SetNTVOptional() {
+    MarkNativeAsOptional("SourceTV_GetServerInstanceCount");
+    MarkNativeAsOptional("SourceTV_SelectServerInstance");
+    MarkNativeAsOptional("SourceTV_GetSelectedServerInstance");
+    MarkNativeAsOptional("SourceTV_IsActive");
+    MarkNativeAsOptional("SourceTV_IsMasterProxy");
+    MarkNativeAsOptional("SourceTV_GetServerIP");
+    MarkNativeAsOptional("SourceTV_GetServerPort");
+    MarkNativeAsOptional("SourceTV_GetBotIndex");
+    MarkNativeAsOptional("SourceTV_GetLocalStats");
+    MarkNativeAsOptional("SourceTV_GetGlobalStats");
+    MarkNativeAsOptional("SourceTV_GetBroadcastTick");
+    MarkNativeAsOptional("SourceTV_GetDelay");
+    MarkNativeAsOptional("SourceTV_BroadcastScreenMessage");
+    MarkNativeAsOptional("SourceTV_BroadcastConsoleMessage");
+    MarkNativeAsOptional("SourceTV_BroadcastChatMessage");
+    MarkNativeAsOptional("SourceTV_GetViewEntity");
+    MarkNativeAsOptional("SourceTV_GetViewOrigin");
+    MarkNativeAsOptional("SourceTV_ForceFixedCameraShot");
+    MarkNativeAsOptional("SourceTV_ForceChaseCameraShot");
+    MarkNativeAsOptional("SourceTV_StartRecording");
+    MarkNativeAsOptional("SourceTV_StopRecording");
+    MarkNativeAsOptional("SourceTV_IsRecording");
+    MarkNativeAsOptional("SourceTV_GetDemoFileName");
+    MarkNativeAsOptional("SourceTV_GetRecordingTick");
+    MarkNativeAsOptional("SourceTV_PrintToDemoConsole");
+    MarkNativeAsOptional("SourceTV_GetSpectatorCount");
+    MarkNativeAsOptional("SourceTV_GetMaxClients");
+    MarkNativeAsOptional("SourceTV_GetClientCount");
+    MarkNativeAsOptional("SourceTV_IsClientConnected");
+    MarkNativeAsOptional("SourceTV_IsClientProxy");
+    MarkNativeAsOptional("SourceTV_GetClientName");
+    MarkNativeAsOptional("SourceTV_GetClientIP");
+    MarkNativeAsOptional("SourceTV_GetClientPassword");
+    MarkNativeAsOptional("SourceTV_KickClient");
+    MarkNativeAsOptional("SourceTV_PrintToChat");
+    MarkNativeAsOptional("SourceTV_PrintToConsole");
+    MarkNativeAsOptional("SourceTV_SetClientTVTitle");
 }
 #endif

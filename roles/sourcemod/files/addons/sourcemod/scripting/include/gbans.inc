@@ -19,10 +19,6 @@
 #define PERMISSION_MOD 50
 #define PERMISSION_ADMIN 100
 
-#define HTTP_STATUS_OK 200
-#define HTTP_STATUS_CREATED 201
-#define HTTP_STATUS_CONFLICT 409
-
 public
 SharedPlugin __pl_gbans = {name = "gbans", file = "gbans.smx",
 #if defined REQUIRE_PLUGIN
@@ -64,3 +60,15 @@ enum GB_BanReason {
 native bool
 GB_BanClient(int adminId, int targetId, GB_BanReason reason, int duration, int banType = BSBanned,
              const char[] note = "");
+
+/**
+ * Ban a client flagged by anticheat (e.g. StAC)
+ *
+ * The ban is permanent and recorded with a custom reason so the detection
+ * text is preserved.
+ *
+ * @param targetId Client idx of ban target
+ * @param reason Free form reason for the ban, must be at least 10 characters
+ * @return success status
+ */
+native bool GB_BanClientAC(int targetId, const char[] reason);

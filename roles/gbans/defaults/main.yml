@@ -1,5 +1,5 @@
 ---
-gbans_web_image: ghcr.io/leighmacdonald/gbans:v0.7.46
+gbans_web_image: ghcr.io/leighmacdonald/gbans:v0.8.5
 gbans_web_port: 6006
 gbans_database_dsn: postgresql://gbans:gbans@gbans-postgres/gbans
 gbans_general_steam_key: "{{ steam_key }}"

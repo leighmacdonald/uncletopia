@@ -259,7 +259,7 @@ stock ConVar AutoExecConfig_CreateConVar(const char[] name, const char[] default
 		// We only add this convar if it doesn't exist, or the file doesn't exist and it should be auto-generated
 		if (g_iLastFindResult == AUTOEXEC_FIND_NOT_FOUND || (g_iLastFindResult == AUTOEXEC_FIND_FILE_NOT_FOUND && g_bCreateFile))
 		{
-			g_iLastAppendResult = AutoExecConfig_AppendValue(name, defaultValue, description, flags, hasMin, min, hasMax, max);
+			g_iLastAppendResult = AutoExecConfig_AppendValue(name, defaultValue, description, hasMin, min, hasMax, max);
 		}
 	}
 
@@ -368,10 +368,9 @@ stock static int AutoExecConfig_FormatFileName(char[] buffer, int size, char[] f
  * @param max                 Maximum floating point value that the convar can have if hasMax is true.
  * @return                    Returns one of the AUTOEXEC_APPEND values
 */
-stock int AutoExecConfig_AppendValue(const char[] name, const char[] defaultValue, const char[] description, int flags, bool hasMin, float min, bool hasMax, float max)
-{
-    if (flags == flags) {} // Disable flags warning since we dont want to change the signature
 
+stock int AutoExecConfig_AppendValue(const char[] name, const char[] defaultValue, const char[] description, bool hasMin, float min, bool hasMax, float max)
+{
 	// No config set
 	if (strlen(g_sConfigFile) < 1)
 	{
