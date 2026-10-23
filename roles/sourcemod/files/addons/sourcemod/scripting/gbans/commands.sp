@@ -122,13 +122,20 @@ void onCmdSeedReceived(HTTPResponse response, any clientId) {
 
 /**
  * Every 10 minutes, advertise the /seed command to real players when the
- * server is below gb_seed_promo_minplayers non-bot players.
+ * server is below gb_seed_promo_minplayers non-bot players. The notice is
+ * sent at most once per map; gSeedPromoSent is reset in OnMapStart.
  */
 public
 Action Timer_CheckSeedPromo(Handle timer) {
+    if (gSeedPromoSent) {
+        return Plugin_Handled;
+    }
+
     if (GetRealClientCount() >= GetConVarInt(gb_seed_promo_minplayers)) {
         return Plugin_Handled;
     }
+
+    gSeedPromoSent = true;
 
     for (int i = 1; i <= MaxClients; i++) {
         if (isValidClient(i)) {

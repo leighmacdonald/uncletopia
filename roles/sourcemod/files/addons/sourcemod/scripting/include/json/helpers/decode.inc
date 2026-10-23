@@ -430,6 +430,8 @@ stock int json_extract_string_size(
         length += 1;
     }
 
+    if (is_array) {} //noop compile fix
+
     return length;
 }
 

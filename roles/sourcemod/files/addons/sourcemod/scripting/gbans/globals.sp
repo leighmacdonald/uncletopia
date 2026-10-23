@@ -2,7 +2,7 @@
 #pragma tabsize 4
 #pragma newdecls required
 
-#define PLUGIN_VERSION "0.8.6"
+#define PLUGIN_VERSION "0.8.7"
 
 #define MAX_SCORES 256
 
@@ -34,6 +34,8 @@ int          gReportStartedAtTime = -1;
 
 bool gIsRecording = false;
 bool gIsManual    = false;
+// set once the /seed promo has been broadcast this map; reset in OnMapStart
+bool gSeedPromoSent = false;
 // jwt returned and used once authenticated
 char gToken[1024] = "";
 bool gLateLoaded;

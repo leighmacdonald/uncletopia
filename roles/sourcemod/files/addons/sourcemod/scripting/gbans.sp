@@ -169,7 +169,10 @@ void OnMapEnd() {
 }
 
 public
-void OnMapStart() { reloadAdmins(true); }
+void OnMapStart() {
+    reloadAdmins(true);
+    gSeedPromoSent = false;
+}
 
 public
 APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max) {
