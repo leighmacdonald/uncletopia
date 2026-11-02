@@ -602,7 +602,7 @@
     minute: "0"
     hour: "5"
     month: "*"
-    job: "find /home/{{ srcds_user }}/srcds-{{ item.server_name_short }}/tf/logs -type f \\( -mtime +7 -o -name '*.log*' \\) -delete"
+    job: "find /home/{{ srcds_user }}/srcds-{{ item.server_name_short }}/tf/logs -type f \\( -mtime +7 -name '*.log*' \\) -delete"
   loop: "{{ services }}"
   loop_control:
     index_var: loop0

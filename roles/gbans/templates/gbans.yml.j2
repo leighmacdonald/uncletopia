@@ -1,25 +1,25 @@
 # The (decimal) SteamID64 for the primary admin. Use https://www.steamidfinder.com/ if you don't know it.
-owner: "{{ gbans_web.owner }}"
+owner: "{{ gbans_web_owner }}"
 steam_key: "{{ steam_key }}"
 # The URL people will use to access the site. Be sure to check the schema!
-external_url: "{{ gbans_web.external_url }}"
+external_url: "{{ gbans_web_external_url }}"
 
 # Listen on this IP address. 0.0.0.0 will bind to all available interfaces. 127.0.0.1 can be used if using a reverse
 # proxy, or a specific IP can be assigned if you have failover IPs.
-http_host: "{{ gbans_web.http_host }}"
+http_host: "{{ gbans_web_host }}"
 # Listen on this port
-http_port: "{{ gbans_web.http_port }}"
+http_port: "{{ gbans_web_port }}"
 # The path the frontend files are in. DO NOT change if using the official Docker image.
-http_static_path: "{{ gbans_web.http_port }}"
+http_static_path: "{{ gbans_web_port }}"
 # Encryption key for JWT. https://numbergenerator.org/random-64-digit-hex-codes-generator is a good option.
-http_cookie_key: "{{ gbans_web.http_cookie_key }}"
-http_client_timeout: "{{ gbans_web.http_client_timeout|default(10) }}"
+http_cookie_key: "{{ gbans_web_http_cookie_key }}"
+http_client_timeout: "{{ gbans_web_client_timeout|default(10) }}"
 # Used to let JS and cookies work properly. At a minimum, requires the same address as in
 # general.external_url.
 http_cors_origins:
-{% for origin in gbans_web.http_cors_origins %}
+{% for origin in gbans_web_cors_origins %}
   - "{{ origin }}"
 {% endfor %}
 
-database_dsn: "{{ gbans_web.database_dsn }}"
-database_log_queries: "{{ gbans_web.database_log_queries }}"
+database_dsn: "{{ gbans_database_dsn }}"
+database_log_queries: "{{ gbans_database_log_queries }}"

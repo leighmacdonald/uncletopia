@@ -18,8 +18,8 @@
 
 - name: Create gbans-service
   community.docker.docker_container:
-    name: gbans-service
-    image: "{{ gbans_web.image }}"
+    name: "{{ gbans_container_name }}"
+    image: "{{ gbans_container_image }}"
     restart: true
     recreate: true
     pull: true
@@ -35,11 +35,20 @@
       - gbans_cache_data:/app/.cache
       - /etc/gbans.yml:/app/gbans.yml
     env:
-      GBANS_DATABASE_DSN: "{{ gbans_web.database_dsn }}"
+      GBANS_DATABASE_DSN: "{{ gbans_database_dsn }}"
       GBANS_GENERAL_STEAM_KEY: "{{ steam_key }}"
     ports:
       - 127.0.0.1:6006:6006
       - 27715:27715/udp
+
+- name: Enable UDP Log port
+  become: true
+  community.general.ufw:
+    rule: allow
+    port: "{{ gbans_log_port }}"
+    proto: udp
+    src: "{{ gbans_log_network }}"
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
 
 - name: Generate /gbans.conf
   ansible.builtin.template:

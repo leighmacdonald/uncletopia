@@ -1,7 +1,17 @@
 ---
-gbans_web_image: ghcr.io/leighmacdonald/gbans:v0.8.6
+gbans_container_name: "gbans-service"
+gbans_container_image: ghcr.io/leighmacdonald/gbans:v0.8.8
+gbans_web_host: "0.0.0.0"
 gbans_web_port: 6006
+gbans_log_port: 27715
+gbans_log_network: "100.69.69.0/24"
+# gbans_web_owner: ""
+# gbans_web_external_url: ""
+# gbans_web_http_cookie_key
+gbans_web_cors_origins: []
+gbans_web_client_timeout: 10
 gbans_database_dsn: postgresql://gbans:gbans@gbans-postgres/gbans
+gbans_database_log_queries: false
 gbans_general_steam_key: "{{ steam_key }}"
 gbans_stv_enable: 1
 gbans_stv_finishmap: "1"
