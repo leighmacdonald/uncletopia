@@ -44,17 +44,22 @@ void checkCrashStatus() {
 
     strcopy(g_reported_crash_id, sizeof(g_reported_crash_id), g_crash_id[crash_id_index]);
 
-    JSONObject obj = new JSONObject();
+    JSON_Object obj = new JSON_Object();
     obj.SetString("crashId", g_reported_crash_id);
 
     postHTTPRequest("/connect/discord.v1.DiscordService/SendMessageCrash", obj, onCrashRespReceived);
 }
 
-void onCrashRespReceived(HTTPResponse response, any value) {
-    if (response.Status != HTTPStatus_OK) {
-        PrintRPCError(response);
+void onCrashRespReceived(Handle request, bool failure, bool successful, EHTTPStatusCode status, any value1,
+                         any value2) {
+    if (status != k_EHTTPStatusCode200OK) {
+        PrintRPCError(request, failure, status);
+        delete request;
+
         return;
     }
+
+    delete request;
 
     WriteFileLine(g_crash_log_handle, "%s", g_reported_crash_id);
     FlushFile(g_crash_log_handle);

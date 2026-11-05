@@ -91,7 +91,7 @@ bool ban(int sourceId, int targetId, GB_BanReason reason, int duration, int banT
     char validUntil[32];
     FormatValidUntil(duration, validUntil, sizeof validUntil);
 
-    JSONObject obj = new JSONObject();
+    JSON_Object obj = new JSON_Object();
     if (hasSource) {
         obj.SetString("sourceId", sourceSid);
     }
@@ -118,19 +118,28 @@ bool ban(int sourceId, int targetId, GB_BanReason reason, int duration, int banT
     return true;
 }
 
-void onBanRespReceived(HTTPResponse response, any clientId) {
-    if (response.Status != HTTPStatus_OK) {
-        if (response.Status == HTTPStatus_Conflict) {
+void onBanRespReceived(Handle request, bool failure, bool successful, EHTTPStatusCode status, any clientId,
+                       any unused) {
+    if (status != k_EHTTPStatusCode200OK) {
+        if (!failure && status == k_EHTTPStatusCode409Conflict) {
             ReplyToCommand(clientId, "Duplicate ban");
+            delete request;
+
             return;
         }
-        PrintRPCError(response);
+        PrintRPCError(request, failure, status);
         ReplyToCommand(clientId, "Unhandled error response");
+        delete request;
+
         return;
     }
 
-    JSONObject data   = view_as<JSONObject>(response.Data);
-    JSONObject banObj = view_as<JSONObject>(data.Get("ban"));
-    int        banId  = banObj.GetInt("banId");
+    JSON_Object data   = GetResponseJSON(request);
+    JSON_Object banObj = data != null ? data.GetObject("ban") : null;
+    int         banId  = banObj != null ? banObj.GetInt("banId") : -1;
+
+    json_cleanup_and_delete(data);
+    delete request;
+
     ReplyToCommand(clientId, "User banned (#%d)", banId);
 }

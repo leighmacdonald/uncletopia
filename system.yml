@@ -16,14 +16,26 @@
       register: result_i386_check
       changed_when: result_i386_check.rc == 1
       failed_when: result_i386_check.rc > 1
-      when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+      when: ansible_facts["distribution"] in ['Debian', 'Ubuntu']
 
     - name: Add liquorix PPA repository
-      ansible.builtin.apt_repository:
-        repo: "ppa:damentz/liquorix"
+      ansible.builtin.deb822_repository:
+        name: damentz-liquorix
+        types:
+          - deb
+        uris: https://ppa.launchpadcontent.net/damentz/liquorix/ubuntu
+        suites: "{{ ansible_facts['distribution_release'] }}"
+        components:
+          - main
+        # PPA signing key (fingerprint of "Launchpad PPA for Steven Barrett")
+        signed_by: https://keyserver.ubuntu.com/pks/lookup?op=get&search=0xA7654D8BAB1824F4D8F4E9D19352A0B69B72E6DF
         state: present
-        filename: "zen-repo"
       register: liquorix_ppa_added
+
+    - name: Remove legacy liquorix PPA .list file
+      ansible.builtin.file:
+        path: /etc/apt/sources.list.d/zen-repo.list
+        state: absent
 
     - name: Update apt cache after adding liquorix PPA
       ansible.builtin.apt:
@@ -46,26 +58,35 @@
         dest: /etc/apt/keyrings/docker.asc
         mode: "0644"
 
-    - name: Add docker apt key from file
+    - name: Add docker apt repository
       become: true
       become_user: root
-      ansible.builtin.apt_key:
-        file: /etc/apt/keyrings/docker.asc
+      ansible.builtin.deb822_repository:
+        name: docker
+        types:
+          - deb
+        uris: https://download.docker.com/linux/ubuntu
+        suites: focal
+        components:
+          - stable
+        architectures:
+          - amd64
+        signed_by: /etc/apt/keyrings/docker.asc
         state: present
 
-    - name: Add specified repository into sources list
+    - name: Remove legacy docker repository .list file
       become: true
       become_user: root
-      ansible.builtin.apt_repository:
-        repo: deb https://download.docker.com/linux/ubuntu focal stable
-        state: present
+      ansible.builtin.file:
+        path: /etc/apt/sources.list.d/download_docker_com_linux_ubuntu.list
+        state: absent
 
     - name: Enable i386 architecture # noqa no-changed-when
       ansible.builtin.command: dpkg --add-architecture i386
       when: result_i386_check.rc == 1
 
     - name: Install gpg & dd dependencies
-      when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+      when: ansible_facts["distribution"] in ['Debian', 'Ubuntu']
       ansible.builtin.apt:
         update_cache: true
         cache_valid_time: 3600
@@ -91,6 +112,69 @@
           - docker-buildx-plugin
           - rsync
           - cron
+
+    - name: Install unattended-upgrades
+      when: ansible_facts["distribution"] in ['Debian', 'Ubuntu']
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 3600
+        state: present
+        name: unattended-upgrades
+
+    # Installs security (and, via the override below, liquorix/docker) updates
+    # daily; the upgrade itself runs on the distro default timer (~06:00 local
+    # + randomized delay), the reboot is pinned to 07:00 local.
+    - name: Enable daily unattended-upgrades
+      when: ansible_facts["distribution"] in ['Debian', 'Ubuntu']
+      ansible.builtin.copy:
+        dest: /etc/apt/apt.conf.d/20auto-upgrades
+        mode: "0644"
+        content: |
+          APT::Periodic::Update-Package-Lists "1";
+          APT::Periodic::Unattended-Upgrade "1";
+          APT::Periodic::AutocleanInterval "7";
+
+    - name: Configure unattended-upgrades (auto reboot at 07:00 localtime)
+      when: ansible_facts["distribution"] in ['Debian', 'Ubuntu']
+      ansible.builtin.copy:
+        dest: /etc/apt/apt.conf.d/99uncletopia-unattended-upgrades
+        mode: "0644"
+        content: |
+          // Managed by Ansible (system.yml) - do not edit on this host.
+
+          // Reboot automatically when an upgrade (e.g. a kernel) requires it.
+          // The time is interpreted in the host's local timezone, which is set
+          // from the `timezone` variable at the top of this play.
+          Unattended-Upgrade::Automatic-Reboot "true";
+          Unattended-Upgrade::Automatic-Reboot-Time "07:00";
+
+          // These are headless game servers; don't let a stray SSH session block
+          // a pending security reboot.
+          Unattended-Upgrade::Automatic-Reboot-WithUsers "true";
+
+          // Keep /boot from filling up with old liquorix kernels.
+          Unattended-Upgrade::Remove-Unused-Kernel-Packages "true";
+          Unattended-Upgrade::Remove-Unused-Dependencies "true";
+
+          Unattended-Upgrade::SyslogEnable "true";
+
+          // Ubuntu's default origin list only covers *-security. Kernels come
+          // from the liquorix PPA and the container runtime from the Docker
+          // repo, so allow those to upgrade unattended as well.
+          Unattended-Upgrade::Origins-Pattern {
+                  "origin=LP-PPA-damentz";
+                  "origin=Docker";
+          };
+
+    - name: Enable unattended-upgrades timers
+      when: ansible_facts["distribution"] in ['Debian', 'Ubuntu']
+      ansible.builtin.systemd:
+        name: "{{ item }}"
+        enabled: true
+        state: started
+      loop:
+        - apt-daily.timer
+        - apt-daily-upgrade.timer
 
     - name: Create rcon directory if it does not exist
       ansible.builtin.file:

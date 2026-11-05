@@ -4,8 +4,6 @@
 
 #include "common.sp"
 #include "globals.sp"
-#include "ripext/http"
-#include "ripext/json"
 
 public
 Action onCmdVersion(int clientId, int args) {
@@ -44,7 +42,7 @@ Action onCmdMod(int clientId, int argc) {
     char serverName[PLATFORM_MAX_PATH];
     GetConVarString(gb_core_host, serverName, sizeof serverName);
 
-    JSONObject obj = new JSONObject();
+    JSON_Object obj = new JSON_Object();
     obj.SetString("steamId", authId);
     obj.SetString("name", name);
     obj.SetString("reason", reason);
@@ -55,13 +53,19 @@ Action onCmdMod(int clientId, int argc) {
     return Plugin_Handled;
 }
 
-void onPingModRespReceived(HTTPResponse response, any clientId) {
-    if (response.Status != HTTPStatus_OK) {
-        PrintRPCError(response);
+void onPingModRespReceived(Handle request, bool failure, bool successful, EHTTPStatusCode status, any clientId,
+                           any unused) {
+    if (status != k_EHTTPStatusCode200OK) {
+        PrintRPCError(request, failure, status);
+        delete request;
+
         ReplyToCommand(clientId, "Failed to alert the moderators, please try again later");
 
         return;
     }
+
+    delete request;
+
     ReplyToCommand(clientId, "Mods have been alerted, thanks!");
 }
 
@@ -77,7 +81,7 @@ Action onCmdSeed(int clientId, int argc) {
     // final status is delivered from onCmdSeedReceived once the server responds.
     ReplyToCommand(clientId, "Seed request submitted, waiting for confirmation...");
 
-    JSONObject obj = new JSONObject();
+    JSON_Object obj = new JSON_Object();
     obj.SetString("steamId", authId);
 
     postHTTPRequest("/connect/sourcemod.v1.PluginService/SMSeed", obj, onCmdSeedReceived, clientId);
@@ -85,34 +89,40 @@ Action onCmdSeed(int clientId, int argc) {
     return Plugin_Handled;
 }
 
-void onCmdSeedReceived(HTTPResponse response, any clientId) {
+void onCmdSeedReceived(Handle request, bool failure, bool successful, EHTTPStatusCode status, any clientId,
+                       any unused) {
     // Deliver the final status via chat. ReplyToCommand is only reliable from
     // within a command handler, but this callback fires asynchronously once the
     // server responds. PrintToChat is a safe no-op if the player disconnected
     // while the request was in flight.
-    switch (response.Status) {
-    case HTTPStatus_TooManyRequests: {
+    switch (status) {
+    case k_EHTTPStatusCode429TooManyRequests: {
+        delete request;
         PrintToChat(clientId, "Please wait before making new seed requests (5min cooldown)");
         return;
     }
-    case HTTPStatus_OK: {
+    case k_EHTTPStatusCode200OK: {
+        delete request;
         PrintToChat(clientId, "Mods have been alerted, thanks!");
         return;
     }
-    case HTTPStatus_Unauthorized: {
-        PrintRPCError(response);
+    case k_EHTTPStatusCode401Unauthorized: {
+        PrintRPCError(request, failure, status);
+        delete request;
         authenticateServer();
         PrintToChat(clientId, "Server authentication expired, re-authenticating. Please try again shortly.");
         return;
     }
     default: {
-        PrintRPCError(response);
+        PrintRPCError(request, failure, status);
 
         char reason[256];
-        if (GetRPCErrorMessage(response, reason, sizeof reason)) {
+        if (GetRPCErrorMessage(request, status, reason, sizeof reason)) {
+            delete request;
             PrintToChat(clientId, "Seed request failed: %s", reason);
         } else {
-            PrintToChat(clientId, "Seed request failed (HTTP %d), check the server logs for details", response.Status);
+            delete request;
+            PrintToChat(clientId, "Seed request failed (HTTP %d), check the server logs for details", status);
         }
 
         return;
@@ -154,6 +164,7 @@ Action onCmdHelp(int clientId, int argc) {
     ReplyToCommand(clientId, "gb_mod <reason> -- Ping a moderator");
     ReplyToCommand(clientId, "seed -- Send a seed request to discord");
     ReplyToCommand(clientId, "report -- Report a player");
+    ReplyToCommand(clientId, "stats -- View your current stats");
     ReplyToCommand(clientId, "gb_reload -- Reload admins");
     ReplyToCommand(clientId, "gb_stv_record -- Start a SourceTV demo");
     ReplyToCommand(clientId, "gb_stv_stoprecord -- Stop the current SourceTV demo");
@@ -262,45 +273,45 @@ Action onCmdAdmins(int clientId, int argc) {
         return Plugin_Handled;
     }
 
-    postHTTPRequest("/connect/sourcemod.v1.PluginService/SMGroups", new JSONObject(), onCmdAdminsGroupsResp, clientId);
+    postHTTPRequest("/connect/sourcemod.v1.PluginService/SMGroups", new JSON_Object(), onCmdAdminsGroupsResp, clientId);
 
     return Plugin_Handled;
 }
 
-void onCmdAdminsGroupsResp(HTTPResponse response, any value) {
+void onCmdAdminsGroupsResp(Handle request, bool failure, bool successful, EHTTPStatusCode status, any value,
+                           any unused) {
     int clientId = view_as<int>(value);
     if (!isValidClient(clientId)) {
         clientId = 0;
     }
 
-    if (response.Status != HTTPStatus_OK) {
-        PrintRPCError(response);
+    if (status != k_EHTTPStatusCode200OK) {
+        PrintRPCError(request, failure, status);
+        delete request;
+
         reply(clientId, "[GB] Failed to fetch groups from gbans");
         return;
     }
 
-    JSONObject obj = view_as<JSONObject>(response.Data);
+    JSON_Object obj    = GetResponseJSON(request);
+    JSON_Array  groups = obj != null ? view_as<JSON_Array>(obj.GetObject("groups")) : null;
+    int         count  = groups != null ? groups.Length : 0;
 
-    JSONArray groups;
-    if (obj.HasKey("groups")) {
-        groups = view_as<JSONArray>(obj.Get("groups"));
-    } else {
-        groups = new JSONArray();
-    }
+    char name[80];
+    char flags[24];
+    char line[96];
 
-    JSONObject group;
-    char       name[80];
-    char       flags[24];
-    char       line[96];
-
-    Format(line, sizeof line, "[GB] Groups (%d):", groups.Length);
+    Format(line, sizeof line, "[GB] Groups (%d):", count);
     reply(clientId, line);
 
     Format(line, sizeof line, "[GB]   %-24s %-21s %3s", "NAME", "FLAGS", "IMM");
     reply(clientId, line);
 
-    for (int i = 0; i < groups.Length; i++) {
-        group = view_as<JSONObject>(groups.Get(i));
+    for (int i = 0; i < count; i++) {
+        JSON_Object group = groups.GetObject(i);
+        if (group == null) {
+            continue;
+        }
 
         group.GetString("name", name, sizeof name);
         if (strlen(name) > 24) {
@@ -319,59 +330,52 @@ void onCmdAdminsGroupsResp(HTTPResponse response, any value) {
 
         Format(line, sizeof line, "[GB]   %-24s %-21s %3d", name, flags, immunity);
         reply(clientId, line);
-
-        delete group;
     }
 
-    delete groups;
+    json_cleanup_and_delete(obj);
+    delete request;
 
-    postHTTPRequest("/connect/sourcemod.v1.PluginService/SMUsers", new JSONObject(), onCmdAdminsUsersResp, clientId);
+    postHTTPRequest("/connect/sourcemod.v1.PluginService/SMUsers", new JSON_Object(), onCmdAdminsUsersResp, clientId);
 }
 
-void onCmdAdminsUsersResp(HTTPResponse response, any value) {
+void onCmdAdminsUsersResp(Handle request, bool failure, bool successful, EHTTPStatusCode status, any value,
+                          any unused) {
     int clientId = view_as<int>(value);
     if (!isValidClient(clientId)) {
         clientId = 0;
     }
 
-    if (response.Status != HTTPStatus_OK) {
-        PrintRPCError(response);
+    if (status != k_EHTTPStatusCode200OK) {
+        PrintRPCError(request, failure, status);
+        delete request;
+
         reply(clientId, "[GB] Failed to fetch admins from gbans");
         return;
     }
 
-    JSONObject obj = view_as<JSONObject>(response.Data);
+    JSON_Object obj        = GetResponseJSON(request);
+    JSON_Array  users      = obj != null ? view_as<JSON_Array>(obj.GetObject("users")) : null;
+    JSON_Array  userGroups = obj != null ? view_as<JSON_Array>(obj.GetObject("userGroups")) : null;
+    int         count      = users != null ? users.Length : 0;
 
-    JSONArray users;
-    if (obj.HasKey("users")) {
-        users = view_as<JSONArray>(obj.Get("users"));
-    } else {
-        users = new JSONArray();
-    }
+    char name[80];
+    char identity[80];
+    char id[24];
+    char flags[24];
+    char groups[64];
+    char line[256];
 
-    JSONArray userGroups;
-    if (obj.HasKey("userGroups")) {
-        userGroups = view_as<JSONArray>(obj.Get("userGroups"));
-    } else {
-        userGroups = new JSONArray();
-    }
-
-    JSONObject user;
-    char       name[80];
-    char       identity[80];
-    char       id[24];
-    char       flags[24];
-    char       groups[64];
-    char       line[256];
-
-    Format(line, sizeof line, "[GB] Admins (%d):", users.Length);
+    Format(line, sizeof line, "[GB] Admins (%d):", count);
     reply(clientId, line);
 
     Format(line, sizeof line, "[GB]   %-20s %-17s %-21s %3s %s", "NAME", "IDENTITY", "FLAGS", "IMM", "GROUPS");
     reply(clientId, line);
 
-    for (int i = 0; i < users.Length; i++) {
-        user = view_as<JSONObject>(users.Get(i));
+    for (int i = 0; i < count; i++) {
+        JSON_Object user = users.GetObject(i);
+        if (user == null) {
+            continue;
+        }
 
         user.GetString("name", name, sizeof name);
         if (strlen(name) > 20) {
@@ -399,25 +403,23 @@ void onCmdAdminsUsersResp(HTTPResponse response, any value) {
 
         Format(line, sizeof line, "[GB]   %-20s %-17s %-21s %3d %s", name, identity, flags, immunity, groups);
         reply(clientId, line);
-
-        delete user;
     }
 
-    delete users;
-    delete userGroups;
+    json_cleanup_and_delete(obj);
+    delete request;
 }
 
 // Builds the sourcemod flag string for the gbans permissions JSON array held
 // on obj under field (e.g. "permissions").
-stock void permissionSetToFlags(JSONObject obj, const char[] field, char[] flags, int flagsLen) {
+stock void permissionSetToFlags(JSON_Object obj, const char[] field, char[] flags, int flagsLen) {
     int bits = 0;
 
     if (obj.HasKey(field)) {
-        JSONArray perms = view_as<JSONArray>(obj.Get(field));
+        JSON_Array perms = view_as<JSON_Array>(obj.GetObject(field));
 
         char      perm[40];
         AdminFlag flag;
-        for (int i = 0; i < perms.Length; i++) {
+        for (int i = 0; perms != null && i < perms.Length; i++) {
             if (!perms.GetString(i, perm, sizeof perm)) {
                 continue;
             }
@@ -426,8 +428,6 @@ stock void permissionSetToFlags(JSONObject obj, const char[] field, char[] flags
                 bits |= 1 << view_as<int>(flag);
             }
         }
-
-        delete perms;
     }
 
     FlagBitsToString(bits, flags, flagsLen);
@@ -435,13 +435,20 @@ stock void permissionSetToFlags(JSONObject obj, const char[] field, char[] flags
 
 // Comma-separated names of the groups the admin (matched by gbans id string)
 // belongs to.
-stock void userGroupNames(const char[] adminId, JSONArray userGroups, char[] names, int namesLen) {
+stock void userGroupNames(const char[] adminId, JSON_Array userGroups, char[] names, int namesLen) {
     names[0] = '\0';
+
+    if (userGroups == null) {
+        return;
+    }
 
     char id[24];
     char groupName[80];
     for (int i = 0; i < userGroups.Length; i++) {
-        JSONObject ug = view_as<JSONObject>(userGroups.Get(i));
+        JSON_Object ug = userGroups.GetObject(i);
+        if (ug == null) {
+            continue;
+        }
 
         ug.GetString("adminId", id, sizeof id);
         if (StrEqual(id, adminId)) {
@@ -452,7 +459,5 @@ stock void userGroupNames(const char[] adminId, JSONArray userGroups, char[] nam
             }
             StrCat(names, namesLen, groupName);
         }
-
-        delete ug;
     }
 }

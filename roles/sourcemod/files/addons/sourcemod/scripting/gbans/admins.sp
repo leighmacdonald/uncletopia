@@ -6,7 +6,6 @@
 #pragma newdecls required
 
 #include "globals.sp"
-#include "ripext"
 
 // Are we already running admin update
 bool gQueuedAdminUpdate = false;
@@ -107,16 +106,16 @@ bool PermissionToFlag(const char[] perm, AdminFlag &flag) {
 // Applies a group's permission set to a sourcemod group. The protobuf JSON
 // mapping omits empty repeated fields, so the key is absent for groups with
 // no permissions.
-void ApplyGroupPermissions(GroupId grp, JSONObject group) {
+void ApplyGroupPermissions(GroupId grp, JSON_Object group) {
     if (!group.HasKey("permissions")) {
         return;
     }
 
-    JSONArray permissions = view_as<JSONArray>(group.Get("permissions"));
+    JSON_Array permissions = view_as<JSON_Array>(group.GetObject("permissions"));
 
     char      perm[40];
     AdminFlag flag;
-    for (int i = 0; i < permissions.Length; i++) {
+    for (int i = 0; permissions != null && i < permissions.Length; i++) {
         if (!permissions.GetString(i, perm, sizeof perm)) {
             continue;
         }
@@ -124,23 +123,21 @@ void ApplyGroupPermissions(GroupId grp, JSONObject group) {
             grp.SetFlag(flag, true);
         }
     }
-
-    delete permissions;
 }
 
 // Applies a user's permission set to a sourcemod admin. The protobuf JSON
 // mapping omits empty repeated fields, so the key is absent for admins with
 // no permissions.
-void ApplyUserPermissions(AdminId adm, JSONObject user) {
+void ApplyUserPermissions(AdminId adm, JSON_Object user) {
     if (!user.HasKey("permissions")) {
         return;
     }
 
-    JSONArray permissions = view_as<JSONArray>(user.Get("permissions"));
+    JSON_Array permissions = view_as<JSON_Array>(user.GetObject("permissions"));
 
     char      perm[40];
     AdminFlag flag;
-    for (int i = 0; i < permissions.Length; i++) {
+    for (int i = 0; permissions != null && i < permissions.Length; i++) {
         if (!permissions.GetString(i, perm, sizeof perm)) {
             continue;
         }
@@ -148,8 +145,6 @@ void ApplyUserPermissions(AdminId adm, JSONObject user) {
             adm.SetFlag(flag, true);
         }
     }
-
-    delete permissions;
 }
 
 public
@@ -171,33 +166,45 @@ void OnRebuildAdminCache(AdminCachePart part) {
 }
 
 void RebuildGroups() {
-    postHTTPRequest("/connect/sourcemod.v1.PluginService/SMGroups", new JSONObject(), onRebuildGroups);
+    postHTTPRequest("/connect/sourcemod.v1.PluginService/SMGroups", new JSON_Object(), onRebuildGroups);
 }
 
-void onRebuildGroups(HTTPResponse response, any value) {
-    if (response.Status != HTTPStatus_OK) {
-        LogError("Invalid response code reading user groups: %d", response.Status);
+void onRebuildGroups(Handle request, bool failure, bool successful, EHTTPStatusCode status, any value1, any value2) {
+    if (status != k_EHTTPStatusCode200OK) {
+        PrintRPCError(request, failure, status);
+        LogError("Invalid response code reading user groups: %d", status);
         gQueuedAdminUpdate = false;
+        delete request;
+
         return;
     }
 
-    JSONObject groupObj = view_as<JSONObject>(response.Data);
+    JSON_Object groupObj = GetResponseJSON(request);
+    if (groupObj == null) {
+        LogError("Failed to parse user groups response");
+        gQueuedAdminUpdate = false;
+        delete request;
+
+        return;
+    }
 
     /* The protobuf JSON mapping omits empty repeated fields, so the key may
      * be absent when there are no groups; the rebuild continues either way. */
     int numGroups = 0;
 
     if (groupObj.HasKey("groups")) {
-        JSONArray groups = view_as<JSONArray>(groupObj.Get("groups"));
+        JSON_Array groups = view_as<JSON_Array>(groupObj.GetObject("groups"));
 
-        numGroups = groups.Length;
+        numGroups = groups != null ? groups.Length : 0;
 
-        JSONObject group;
-        char       name[128];
-        int        immunity;
+        char name[128];
+        int  immunity;
 
         for (int i = 0; i < numGroups; i++) {
-            group = view_as<JSONObject>(groups.Get(i));
+            JSON_Object group = groups.GetObject(i);
+            if (group == null) {
+                continue;
+            }
 
             group.GetString("name", name, sizeof name);
             immunity = group.GetInt("immunityLevel");
@@ -212,21 +219,19 @@ void onRebuildGroups(HTTPResponse response, any value) {
 
             /* Set the immunity level this group has */
             grp.ImmunityLevel = immunity;
-
-            delete group;
         }
-
-        delete groups;
     }
 
     if (groupObj.HasKey("immunities")) {
-        JSONArray  immunities = view_as<JSONArray>(groupObj.Get("immunities"));
-        JSONObject groupImmunity;
+        JSON_Array immunities = view_as<JSON_Array>(groupObj.GetObject("immunities"));
 
-        int numImmunities = immunities.Length;
+        int numImmunities = immunities != null ? immunities.Length : 0;
 
         for (int i = 0; i < numImmunities; i++) {
-            groupImmunity = view_as<JSONObject>(immunities.Get(i));
+            JSON_Object groupImmunity = immunities.GetObject(i);
+            if (groupImmunity == null) {
+                continue;
+            }
 
             char    groupName[128];
             char    otherName[128];
@@ -241,12 +246,11 @@ void onRebuildGroups(HTTPResponse response, any value) {
             }
 
             grp.AddGroupImmunity(other);
-
-            delete groupImmunity;
         }
-
-        delete immunities;
     }
+
+    json_cleanup_and_delete(groupObj);
+    delete request;
 
     LogMessage("Loaded %d groups", numGroups);
 
@@ -254,46 +258,43 @@ void onRebuildGroups(HTTPResponse response, any value) {
 }
 
 void RebuildUsers() {
-    postHTTPRequest("/connect/sourcemod.v1.PluginService/SMUsers", new JSONObject(), onRebuildUsers);
+    postHTTPRequest("/connect/sourcemod.v1.PluginService/SMUsers", new JSON_Object(), onRebuildUsers);
 }
 
-void onRebuildUsers(HTTPResponse response, any value) {
-    if (response.Status != HTTPStatus_OK) {
-        LogError("Invalid response code reading users: %d", response.Status);
+void onRebuildUsers(Handle request, bool failure, bool successful, EHTTPStatusCode status, any value1, any value2) {
+    if (status != k_EHTTPStatusCode200OK) {
+        PrintRPCError(request, failure, status);
+        LogError("Invalid response code reading users: %d", status);
         gQueuedAdminUpdate = false;
+        delete request;
+
         return;
     }
 
-    JSONObject usersObj = view_as<JSONObject>(response.Data);
+    JSON_Object usersObj = GetResponseJSON(request);
+    if (usersObj == null) {
+        LogError("Failed to parse users response");
+        gQueuedAdminUpdate = false;
+        delete request;
+
+        return;
+    }
 
     /* The protobuf JSON mapping omits empty repeated fields, so the keys may
-     * be absent when there are no admins; use empty arrays in that case. */
-    JSONArray users;
-    if (usersObj.HasKey("users")) {
-        users = view_as<JSONArray>(usersObj.Get("users"));
-    } else {
-        users = new JSONArray();
-    }
+     * be absent when there are no admins. */
+    JSON_Array users      = view_as<JSON_Array>(usersObj.GetObject("users"));
+    JSON_Array userGroups = view_as<JSON_Array>(usersObj.GetObject("userGroups"));
 
-    JSONArray userGroups;
-    if (usersObj.HasKey("userGroups")) {
-        userGroups = view_as<JSONArray>(usersObj.Get("userGroups"));
-    } else {
-        userGroups = new JSONArray();
-    }
+    char    authtype[16];
+    char    identity[80];
+    char    password[80];
+    char    name[80];
+    int     immunity;
+    AdminId adm;
+    GroupId grp;
 
-    JSONObject user;
-    JSONObject userGroup;
-    char       authtype[16];
-    char       identity[80];
-    char       password[80];
-    char       name[80];
-    int        immunity;
-    AdminId    adm;
-    GroupId    grp;
-
-    int numUsers      = users.Length;
-    int numUserGroups = userGroups.Length;
+    int numUsers      = users != null ? users.Length : 0;
+    int numUserGroups = userGroups != null ? userGroups.Length : 0;
 
     /* Keep track of a mapping from admin DB IDs to internal AdminIds to
      * enable group lookups en masse.
@@ -304,7 +305,10 @@ void onRebuildUsers(HTTPResponse response, any value) {
     char      key[24];
 
     for (int i = 0; i < numUsers; i++) {
-        user = view_as<JSONObject>(users.Get(i));
+        JSON_Object user = users.GetObject(i);
+        if (user == null) {
+            continue;
+        }
 
         user.GetString("authType", authtype, sizeof authtype);
         user.GetString("identity", identity, sizeof identity);
@@ -338,13 +342,14 @@ void onRebuildUsers(HTTPResponse response, any value) {
         ApplyUserPermissions(adm, user);
 
         adm.ImmunityLevel = immunity;
-
-        delete user;
     }
 
     char group[80];
     for (int i = 0; i < numUserGroups; i++) {
-        userGroup = view_as<JSONObject>(userGroups.Get(i));
+        JSON_Object userGroup = userGroups.GetObject(i);
+        if (userGroup == null) {
+            continue;
+        }
 
         userGroup.GetString("adminId", key, sizeof key);
         userGroup.GetString("groupName", group, sizeof group);
@@ -358,13 +363,11 @@ void onRebuildUsers(HTTPResponse response, any value) {
 
             adm.InheritGroup(grp);
         }
-
-        delete userGroup;
     }
 
     delete htAdmins;
-    delete users;
-    delete userGroups;
+    json_cleanup_and_delete(usersObj);
+    delete request;
 
     LogMessage("Loaded %d users into %d groups", numUsers, numUserGroups);
 
@@ -372,34 +375,40 @@ void onRebuildUsers(HTTPResponse response, any value) {
 }
 
 void RebuildOverrides() {
-    postHTTPRequest("/connect/sourcemod.v1.PluginService/SMOverrides", new JSONObject(), onRebuildOverrides);
+    postHTTPRequest("/connect/sourcemod.v1.PluginService/SMOverrides", new JSON_Object(), onRebuildOverrides);
 }
 
-void onRebuildOverrides(HTTPResponse response, any value) {
-    if (response.Status != HTTPStatus_OK) {
-        PrintRPCError(response);
+void onRebuildOverrides(Handle request, bool failure, bool successful, EHTTPStatusCode status, any value1, any value2) {
+    if (status != k_EHTTPStatusCode200OK) {
+        PrintRPCError(request, failure, status);
         gQueuedAdminUpdate = false;
+        delete request;
+
         return;
     }
 
-    JSONObject overridesObj = view_as<JSONObject>(response.Data);
-    if (!overridesObj.HasKey("overrides")) {
+    JSON_Object overridesObj = GetResponseJSON(request);
+    if (overridesObj == null || !overridesObj.HasKey("overrides")) {
         gQueuedAdminUpdate = false;
+        json_cleanup_and_delete(overridesObj);
+        delete request;
+
         return;
     }
 
-    JSONArray  overrides = view_as<JSONArray>(overridesObj.Get("overrides"));
-    JSONObject override;
-    JSONArray  permissions;
+    JSON_Array overrides = view_as<JSON_Array>(overridesObj.GetObject("overrides"));
 
-    int numOverrides = overrides.Length;
+    int numOverrides = overrides != null ? overrides.Length : 0;
 
     char type[48];
     char name[64];
     int  flagBits;
 
     for (int i = 0; i < numOverrides; i++) {
-        override = view_as<JSONObject>(overrides.Get(i));
+        JSON_Object override = overrides.GetObject(i);
+        if (override == null) {
+            continue;
+        }
 
         override.GetString("overrideType", type, sizeof type);
         override.GetString("name", name, sizeof name);
@@ -409,11 +418,11 @@ void onRebuildOverrides(HTTPResponse response, any value) {
          * means ADMFLAG_NONE - anyone may use the command. */
         flagBits = 0;
         if (override.HasKey("permissions")) {
-            permissions = view_as<JSONArray>(override.Get("permissions"));
+            JSON_Array permissions = view_as<JSON_Array>(override.GetObject("permissions"));
 
             char      perm[40];
             AdminFlag flag;
-            for (int j = 0; j < permissions.Length; j++) {
+            for (int j = 0; permissions != null && j < permissions.Length; j++) {
                 if (!permissions.GetString(j, perm, sizeof perm)) {
                     continue;
                 }
@@ -421,8 +430,6 @@ void onRebuildOverrides(HTTPResponse response, any value) {
                     flagBits |= 1 << view_as<int>(flag);
                 }
             }
-
-            delete permissions;
         }
 
         if (StrEqual(type, "OVERRIDE_TYPE_GROUP")) {
@@ -430,11 +437,10 @@ void onRebuildOverrides(HTTPResponse response, any value) {
         } else {
             AddCommandOverride(name, Override_Command, flagBits);
         }
-
-        delete override;
     }
 
-    delete overrides;
+    json_cleanup_and_delete(overridesObj);
+    delete request;
 
     gQueuedAdminUpdate = false;
 }

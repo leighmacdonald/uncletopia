@@ -23,7 +23,7 @@
         - never
         - clean
 
-    - name: Clean existing deployed addons
+    - name: Clean existing deployed game instance
       ansible.builtin.file:
         path: /home/tf2server/srcds-{{ item.server_name_short }}/
         state: absent

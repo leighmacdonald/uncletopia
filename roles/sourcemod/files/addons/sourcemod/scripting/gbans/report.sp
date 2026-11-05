@@ -93,7 +93,7 @@ bool report(int sourceId, int targetId, GB_BanReason reason, const char[] reason
         Format(description, sizeof description, "In-game report: %s", reasonName);
     }
 
-    JSONObject obj = new JSONObject();
+    JSON_Object obj = new JSON_Object();
     obj.SetString("sourceId", sourceSid);
     obj.SetString("targetId", targetSid);
     obj.SetString("description", description);
@@ -114,26 +114,39 @@ bool report(int sourceId, int targetId, GB_BanReason reason, const char[] reason
     return true;
 }
 
-void onReportRespReceived(HTTPResponse response, any clientId) {
-    if (response.Status != HTTPStatus_OK) {
-        if (response.Status == HTTPStatus_Conflict) {
+void onReportRespReceived(Handle request, bool failure, bool successful, EHTTPStatusCode status, any clientId,
+                          any unused) {
+    if (status != k_EHTTPStatusCode200OK) {
+        if (!failure && status == k_EHTTPStatusCode409Conflict) {
             PrintToChat(clientId, "[Report] User has already been reported, thanks.");
             resetReportStatus();
+            delete request;
+
             return;
         }
 
-        LogError("Invalid report response status: %d", response.Status);
+        PrintRPCError(request, failure, status);
 
         PrintToChat(clientId, "[Report] Error creating report");
         resetReportStatus();
+        delete request;
         return;
     }
 
-    JSONObject data             = view_as<JSONObject>(response.Data);
-    JSONObject reportWithAuthor = view_as<JSONObject>(data.Get("report"));
-    JSONObject createdReport    = view_as<JSONObject>(reportWithAuthor.Get("report"));
+    JSON_Object data             = GetResponseJSON(request);
+    JSON_Object reportWithAuthor = data != null ? data.GetObject("report") : null;
+    JSON_Object createdReport    = reportWithAuthor != null ? reportWithAuthor.GetObject("report") : null;
+    int         reportId         = createdReport != null ? createdReport.GetInt("reportId") : -1;
 
-    int reportId = createdReport.GetInt("reportId");
+    json_cleanup_and_delete(data);
+    delete request;
+
+    if (reportId <= 0) {
+        PrintToChat(clientId, "[Report] Error creating report");
+        resetReportStatus();
+
+        return;
+    }
 
     char path[PLATFORM_MAX_PATH];
     Format(path, sizeof path, "/report/%d", reportId);
@@ -177,9 +190,6 @@ public
 int MenuHandler_Target(Menu menu, MenuAction action, int clientId, int selectedId) {
     if (action == MenuAction_Cancel) {
         resetReportStatus();
-        CloseHandle(menu);
-    } else if (action == MenuAction_End) {
-        CloseHandle(menu);
     } else if (action == MenuAction_Select) {
         int  userId, targetId;
         char sTargetUserID[30];
@@ -204,9 +214,6 @@ public
 int MenuHandler_Reason(Menu menu, MenuAction action, int clientId, int selectedId) {
     if (action == MenuAction_Cancel) {
         resetReportStatus();
-        CloseHandle(menu);
-    } else if (action == MenuAction_End) {
-        CloseHandle(menu);
     } else if (action == MenuAction_Select) {
         char sInfo[64];
         GetMenuItem(menu, selectedId, sInfo, sizeof sInfo);

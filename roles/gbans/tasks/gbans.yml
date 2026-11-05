@@ -48,7 +48,7 @@
     port: "{{ gbans_log_port }}"
     proto: udp
     src: "{{ gbans_log_network }}"
-  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+  when: ansible_facts["distribution"] in ['Debian', 'Ubuntu']
 
 - name: Generate /gbans.conf
   ansible.builtin.template:

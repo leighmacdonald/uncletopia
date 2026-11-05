@@ -34,7 +34,7 @@
           loop: "{{ services }}"
           loop_control:
             index_var: loop0
-          when: ansible_distribution == 'Ubuntu'
+          when: ansible_facts["distribution"] == 'Ubuntu'
 
         - name: Allow RCON Port
           community.general.ufw:
@@ -46,7 +46,7 @@
           loop: "{{ services }}"
           loop_control:
             index_var: loop0
-          when: ansible_distribution == 'Ubuntu'
+          when: ansible_facts["distribution"] == 'Ubuntu'
 
         - name: Allow SourceTV
           community.general.ufw:
@@ -58,7 +58,7 @@
           loop: "{{ services }}"
           loop_control:
             index_var: loop0
-          when: ansible_distribution == 'Ubuntu'
+          when: ansible_facts["distribution"] == 'Ubuntu'
 
         - name: Allow SRCDS Logs
           community.general.ufw:
@@ -67,7 +67,7 @@
             proto: udp
             comment: srcds-stv
             from_ip: 0.0.0.0/0
-          when: ansible_distribution == 'Ubuntu'
+          when: ansible_facts["distribution"] == 'Ubuntu'
 
         - name: Allow SRCDS Postgres
           community.general.ufw:
@@ -76,7 +76,7 @@
             proto: tcp
             comment: srcds-postgres-client
             src: "{{ vpn_mask }}"
-          when: ansible_distribution == 'Ubuntu' and inventory_hostname == metrics_hostname
+          when: ansible_facts["distribution"] == 'Ubuntu' and inventory_hostname == metrics_hostname
 
         - name: Allow HTTP
           community.general.ufw:
@@ -88,7 +88,7 @@
           loop:
             - 80
             - 443
-          when: ansible_distribution == 'Ubuntu' and inventory_hostname == metrics_hostname
+          when: ansible_facts["distribution"] == 'Ubuntu' and inventory_hostname == metrics_hostname
 
         - name: Allow HTTP (QUIC)
           community.general.ufw:
@@ -97,7 +97,7 @@
             proto: udp
             comment: http-quic
             dest: "{{ http_ip }}"
-          when: ansible_distribution == 'Ubuntu' and inventory_hostname == metrics_hostname
+          when: ansible_facts["distribution"] == 'Ubuntu' and inventory_hostname == metrics_hostname
 
         - name: Allow node_exporter
           community.general.ufw:

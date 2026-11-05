@@ -28,7 +28,7 @@ void authenticateServer() {
     char passwd[40];
     gb_core_server_key.GetString(passwd, sizeof passwd);
 
-    JSONObject req = new JSONObject();
+    JSON_Object req = new JSON_Object();
     req.SetString("password", passwd);
 
     postHTTPRequest("/connect/sourcemod.v1.PluginService/SMAuthenticate", req, onAuthenticate);
@@ -36,21 +36,29 @@ void authenticateServer() {
 
 bool g_has_authed = false;
 
-void onAuthenticate(HTTPResponse response, any value) {
-    switch (response.Status) {
-    case HTTPStatus_OK: {
-        JSONObject data = view_as<JSONObject>(response.Data);
-        if (!data.GetString("token", gToken, sizeof gToken)) {
+void onAuthenticate(Handle request, bool failure, bool successful, EHTTPStatusCode status, any value1, any value2) {
+    switch (status) {
+    case k_EHTTPStatusCode200OK: {
+        JSON_Object data = GetResponseJSON(request);
+        if (data == null || !data.GetString("token", gToken, sizeof gToken)) {
             LogError("No token found");
+            json_cleanup_and_delete(data);
+            delete request;
+
             return;
         }
+
+        json_cleanup_and_delete(data);
+        delete request;
+
         LogMessage("Authenticated server successfully");
         if (!g_has_authed) {
             onAuthSuccess();
         }
     }
     default: {
-        PrintRPCError(response);
+        PrintRPCError(request, failure, status);
+        delete request;
     }
     }
 }
@@ -75,7 +83,7 @@ void checkPlayer(int clientId) {
     char clientAuth[64];
     GetClientAuthId(clientId, AuthId_SteamID64, clientAuth, sizeof clientAuth);
 
-    JSONObject obj = new JSONObject();
+    JSON_Object obj = new JSON_Object();
     obj.SetString("steamId", clientAuth);
     obj.SetInt("clientId", clientId);
     obj.SetString("ip", ip);
@@ -84,30 +92,46 @@ void checkPlayer(int clientId) {
     postHTTPRequest("/connect/sourcemod.v1.PluginService/SMCheck", obj, onCheckResp);
 }
 
-void onCheckResp(HTTPResponse response, any value) {
-    if (response.Status != HTTPStatus_OK) {
-        PrintRPCError(response);
+void onCheckResp(Handle request, bool failure, bool successful, EHTTPStatusCode status, any value1, any value2) {
+    if (status != k_EHTTPStatusCode200OK) {
+        PrintRPCError(request, failure, status);
+        delete request;
+
         return;
     }
 
-    JSONObject data = view_as<JSONObject>(response.Data);
-    if (!data.HasKey("clientId")) {
+    JSON_Object data = GetResponseJSON(request);
+    if (data == null || !data.HasKey("clientId")) {
         LogError("No client id in check resp");
+        json_cleanup_and_delete(data);
+        delete request;
+
         return;
     }
+
     int clientId = data.GetInt("clientId");
 
     char banType[48];
     if (!data.GetString("banType", banType, sizeof banType)) {
         LogError("Could not parse banType");
+        json_cleanup_and_delete(data);
+        delete request;
+
         return;
     }
 
     char msg[256];
     if (!data.GetString("msg", msg, sizeof msg)) {
         LogError("Could not parse message");
+        json_cleanup_and_delete(data);
+        delete request;
+
         return;
     }
+
+    json_cleanup_and_delete(data);
+    delete request;
+
     if (StrEqual(banType, "BAN_TYPE_NO_COMM")) {
         if (!BaseComm_IsClientMuted(clientId)) {
             BaseComm_SetClientMute(clientId, true);

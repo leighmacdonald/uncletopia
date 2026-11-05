@@ -1,0 +1,15 @@
+- name: Create cloudflared service (web)
+  community.docker.docker_container:
+    name: "{{ cloudflared_name }}"
+    image: "{{ cloudflared_image }}"
+    restart: true
+    recreate: true
+    pull: true
+    restart_policy: always
+    state: started
+    comparisons:
+      networks: strict
+    networks:
+      - name: caddy_net
+    volumes:
+      - /etc/cloudflared.yml:/app/cloudflared.yml

@@ -2,13 +2,14 @@
 #pragma tabsize 4
 #pragma newdecls required
 
+#include <SteamWorks>
 #include <admin>
 #include <adminmenu>
 #include <afk_manager>
 #include <autoexecconfig>
 #include <basecomm>
 #include <gbans>
-#include <ripext>
+#include <json>
 #include <sdktools>
 #include <sourcemod>
 #include <sourcetvmanager>
@@ -25,6 +26,7 @@
 #include "gbans/globals.sp"
 #include "gbans/report.sp"
 #include "gbans/stac.sp"
+#include "gbans/stats.sp"
 #include "gbans/stv.sp"
 
 public
@@ -48,6 +50,10 @@ void OnPluginStart() {
     RegConsoleCmd("seed", onCmdSeed, "Send a seed request to discord");
 
     RegConsoleCmd("report", onCmdReport, "Report a player");
+    // "stats" is a built-in TF2 server command. SourceMod only creates chat
+    // triggers for commands it owns, so register the sm_ form for /stats.
+    RegConsoleCmd("sm_stats", onCmdStats, "View your current stats");
+    RegConsoleCmd("stats", onCmdStats, "View your current stats");
     RegConsoleCmd("autoteam", onCmdAutoTeamAction);
 
     RegAdminCmd("gb_ban", onAdminCmdBan, ADMFLAG_BAN);

@@ -58,7 +58,7 @@ stock bool banAC(int targetId, const char[] reason) {
     char validUntil[32];
     FormatValidUntil(0, validUntil, sizeof validUntil);
 
-    JSONObject obj = new JSONObject();
+    JSON_Object obj = new JSON_Object();
     obj.SetString("targetId", targetSid);
     obj.SetString("note", reason);
     obj.SetString("reason", reasonStr);

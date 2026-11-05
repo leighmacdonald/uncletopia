@@ -8,7 +8,7 @@
         update_cache: true
         upgrade: true
         cache_valid_time: 0
-      when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+      when: ansible_facts["distribution"] in ['Debian', 'Ubuntu']
 
     - name: Create tf2 group
       become: true
@@ -35,7 +35,7 @@
 
     - name: Install ufw
       become: true
-      when: ansible_distribution == 'Ubuntu'
+      when: ansible_facts["distribution"] == 'Ubuntu'
       ansible.builtin.apt:
         state: present
         pkg:
@@ -47,7 +47,7 @@
         rule: allow
         port: "22"
         proto: tcp
-      when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+      when: ansible_facts["distribution"] in ['Debian', 'Ubuntu']
 
     - name: Enable ufw limit 22
       become: true
@@ -56,7 +56,7 @@
         rule: limit
         port: "22"
         proto: tcp
-      when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+      when: ansible_facts["distribution"] in ['Debian', 'Ubuntu']
 
     - name: Enable ufw
       become: true
@@ -64,7 +64,7 @@
         state: enabled
         policy: deny
         direction: incoming
-      when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+      when: ansible_facts["distribution"] in ['Debian', 'Ubuntu']
 
     - name: Create ssh keys
       become: true

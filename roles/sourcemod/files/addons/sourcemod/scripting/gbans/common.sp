@@ -8,41 +8,74 @@
 const TOKEN_LEN = 1024;
 
 /**
+ * Reads and decodes the JSON body of a completed SteamWorks HTTP request.
+ *
+ * Returns null when the response has no body or the body is not valid JSON.
+ * The caller owns the returned object and must free it with
+ * json_cleanup_and_delete().
+ */
+stock JSON_Object GetResponseJSON(Handle request) {
+    int size = 0;
+    if (!SteamWorks_GetHTTPResponseBodySize(request, size) || size <= 0) {
+        return null;
+    }
+
+    char[] body = new char[size + 1];
+    if (!SteamWorks_GetHTTPResponseBodyData(request, body, size)) {
+        return null;
+    }
+    body[size] = '\0';
+
+    return json_decode(body);
+}
+
+stock bool ResponseHasJSONContent(Handle request) {
+    char contentType[128];
+    if (!SteamWorks_GetHTTPResponseHeaderValue(request, "Content-Type", contentType, sizeof contentType)) {
+        return false;
+    }
+
+    return StrContains(contentType, "json", false) != -1;
+}
+
+/**
 Print out a formatted ConnectRPC error messages to the error log.
 
 https://connectrpc.com/docs/web/errors/
 */
-void PrintRPCError(HTTPResponse response) {
-    LogError("Invalid response code: %d", response.Status);
+void PrintRPCError(Handle request, bool failure, EHTTPStatusCode status) {
+    if (failure) {
+        LogError("HTTP request failed, no response received");
 
-    if (response.Status == HTTPStatus_Invalid) {
+        return;
+    }
+
+    LogError("Invalid response code: %d", status);
+
+    if (status == k_EHTTPStatusCodeInvalid) {
         return;
     }
 
     char contentType[128] = "unknown";
-    response.GetHeader("Content-Type", contentType, sizeof contentType);
-    if (StrContains(contentType, "json", false) == -1) {
+    if (!SteamWorks_GetHTTPResponseHeaderValue(request, "Content-Type", contentType, sizeof contentType)
+        || StrContains(contentType, "json", false) == -1) {
         LogError("Invalid response content type: %s", contentType);
 
         return;
     }
 
-    if (response.Data == null) {
+    JSON_Object err_obj = GetResponseJSON(request);
+    if (err_obj == null) {
         return;
     }
 
     char code[64];
     char message[1024];
-
-    JSONObject err_obj = view_as<JSONObject>(response.Data);
-    if (!err_obj.GetString("code", code, sizeof code)) {
-        return;
-    }
-    if (!err_obj.GetString("message", message, sizeof message)) {
-        return;
+    if (err_obj.GetString("code", code, sizeof code) && err_obj.GetString("message", message, sizeof message)) {
+        LogError("ConnectRPC Error code=%s message=%s", code, message);
     }
 
-    LogError("ConnectRPC Error code=%s message=%s", code, message);
+    json_cleanup_and_delete(err_obj);
 }
 
 /**
@@ -50,20 +83,20 @@ void PrintRPCError(HTTPResponse response) {
  *
  * Returns false when the response is not a JSON encoded ConnectRPC error.
  */
-stock bool GetRPCErrorMessage(HTTPResponse response, char[] message, int maxLen) {
-    if (response.Status == HTTPStatus_Invalid) {
+stock bool GetRPCErrorMessage(Handle request, EHTTPStatusCode status, char[] message, int maxLen) {
+    if (status == k_EHTTPStatusCodeInvalid || !ResponseHasJSONContent(request)) {
         return false;
     }
 
-    char contentType[128] = "unknown";
-    response.GetHeader("Content-Type", contentType, sizeof contentType);
-    if (StrContains(contentType, "json", false) == -1 || response.Data == null) {
+    JSON_Object err_obj = GetResponseJSON(request);
+    if (err_obj == null) {
         return false;
     }
 
-    JSONObject err_obj = view_as<JSONObject>(response.Data);
+    bool found = err_obj.GetString("message", message, maxLen);
+    json_cleanup_and_delete(err_obj);
 
-    return err_obj.GetString("message", message, maxLen);
+    return found;
 }
 
 public
@@ -217,21 +250,47 @@ stock void FormatValidUntil(int durationSeconds, char[] buffer, int maxlen) {
     FormatTime(buffer, maxlen, "%Y-%m-%dT%H:%M:%SZ", expiry);
 }
 
-void postHTTPRequest(const char[] path, JSON data, HTTPRequestCallback callback, any value = 0) {
+/**
+ * Sends a JSON POST request to the gbans backend using the SteamWorks HTTP
+ * client. The callback runs from the SteamWorks completion handler and must
+ * free the request handle once the response has been read.
+ *
+ * The request JSON object is owned by this function and freed before it
+ * returns.
+ */
+void postHTTPRequest(const char[] path, JSON_Object data, SteamWorksHTTPRequestCompleted callback, any value = 0) {
     char url[1024];
     makeURL(path, url, sizeof url);
 
-    HTTPRequest request = new HTTPRequest(url);
-    request.SetHeader("Content-Type", "application/json");
+    Handle request = SteamWorks_CreateHTTPRequest(k_EHTTPMethodPOST, url);
+    if (request == INVALID_HANDLE) {
+        LogError("Failed to create HTTP request to %s", url);
+        json_cleanup_and_delete(data);
+
+        return;
+    }
+
     if (gToken[0] != '\0') {
         char authHeader[1024] = "Bearer ";
         StrCat(authHeader, sizeof authHeader, gToken);
-        request.SetHeader("Authorization", authHeader);
+        SteamWorks_SetHTTPRequestHeaderValue(request, "Authorization", authHeader);
     }
 
-    request.Post(data, callback, value);
+    int bodyLen = data.EncodeSize();
+    char[] body = new char[bodyLen];
+    data.Encode(body, bodyLen);
 
-    CloseHandle(data);
+    SteamWorks_SetHTTPRequestRawPostBody(request, "application/json", body, strlen(body));
+    SteamWorks_SetHTTPRequestContextValue(request, value, 0);
+    SteamWorks_SetHTTPCallbacks(request, callback);
+    SteamWorks_SetHTTPRequestNetworkActivityTimeout(request, 30);
+
+    if (!SteamWorks_SendHTTPRequest(request)) {
+        LogError("Failed to send HTTP request to %s", url);
+        delete request;
+    }
+
+    json_cleanup_and_delete(data);
 }
 
 stock void makeURL(const char[] path, char[] outURL, int maxLen) {
@@ -239,7 +298,11 @@ stock void makeURL(const char[] path, char[] outURL, int maxLen) {
     GetConVarString(gb_core_host, serverHost, sizeof serverHost);
     int port = GetConVarInt(gb_core_port);
 
-    Format(outURL, maxLen, "%s:%d%s", serverHost, port, path);
+    if (StrContains(serverHost, "://", false) == -1) {
+        Format(outURL, maxLen, "http://%s:%d%s", serverHost, port, path);
+    } else {
+        Format(outURL, maxLen, "%s:%d%s", serverHost, port, path);
+    }
 }
 
 stock bool isValidClient(int client) {
