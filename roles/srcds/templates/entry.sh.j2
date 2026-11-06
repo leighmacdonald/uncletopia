@@ -35,12 +35,9 @@ bash "./srcds_run" -game "{{srcds_steam_app}}" -console \
   +maxplayers {{ item.srcds_max_players|default(srcds_max_players) }} \
   +map "{% if item.curated_pool|default("") == "" %}{{ srcds_map_rotation[item.config|default("all")] | random }}{% elif item.curated_pool == "247_badwater"  %}pl_badwater{% else %}{{ srcds_map_rotation[item.curated_pool|default("all")] | random }}{% endif %}" \
   +sv_setsteamaccount "{{ item.gslt }}" \
-  -auto_update \
-  -steam_dir ~/steamcmd/ \
-  -steamcmd_script ~/tf2_update.txt \
   +rcon_password "{{ item.srcds_rcon_password | default(srcds_rcon_password) }}" \
   +sv_password "{{ item.srcds_server_password | default(srcds_server_password) }}" \
   +sv_region "{{ srcds_region | quote }}" \
   {% if not item.srcds_use_sdr|default(srcds_use_sdr) and ip != "" %}+ip {{ ip }} {% endif %} \
   {% if item.srcds_use_sdr|default(srcds_use_sdr) %}-enablefakeip {% endif %} \
-  -authkey "{{ srcds_workshop_auth_key }}"
+  {% if srcds_workshop_auth_key %}-authkey "{{ srcds_workshop_auth_key }}"{% endif %}

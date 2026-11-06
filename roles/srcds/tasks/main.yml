@@ -12,22 +12,30 @@
     remote_src: true
     creates: ~/steamcmd/steamcmd.sh
 
-- name: Generate steamcmd update script
-  ansible.builtin.template:
-    src: tf2_ds.txt.j2
-    dest: ~/steamcmd/tf2_ds-{{ item.server_name_short }}.txt
-    mode: "0755"
+- name: Remove legacy per-instance steamcmd update scripts
+  ansible.builtin.file:
+    path: ~/steamcmd/tf2_ds-{{ item.server_name_short }}.txt
+    state: absent
   loop: "{{ services }}"
   loop_control:
     index_var: loop0
 
+- name: Generate steamcmd base update script
+  ansible.builtin.template:
+    src: tf2_ds.txt.j2
+    dest: ~/steamcmd/tf2_ds-base.txt
+    mode: "0755"
+
+# steamcmd can fail with transient errors (e.g. state 0x602 after an
+# interrupted run); retry once before giving up
 - name: Download TF2 Base
   ansible.builtin.command:
-    cmd: ./steamcmd.sh +runscript tf2_ds-{{ item.server_name_short }}.txt # noqa no-changed-when
+    cmd: ./steamcmd.sh +runscript tf2_ds-base.txt # noqa no-changed-when
     chdir: ~/steamcmd
-  loop: "{{ services }}"
-  loop_control:
-    index_var: loop0
+  register: srcds_base_download
+  retries: 2
+  delay: 10
+  until: srcds_base_download.rc == 0
   tags:
     - game_engine
 
@@ -92,6 +100,174 @@
       - libstdc++6:i386
       - libcurl4-gnutls-dev:i386
       - tmux
+
+# Instance directories are overlayfs mounts over the shared ~/srcds-base
+# install: ~/srcds-<name> is the merged mountpoint, all per-instance writes
+# (cfgs, sourcemod, logs, stv) land in ~/srcds-<name>-upper, with the kernel
+# workdir in ~/srcds-<name>-work. Existing directories that are not such
+# mounts (legacy full copies, foreign mounts) are removed and rebuilt.
+- name: Detect existing instance directories
+  ansible.builtin.stat:
+    path: /home/{{ srcds_user }}/srcds-{{ item.server_name_short }}
+  loop: "{{ services }}"
+  loop_control:
+    index_var: loop0
+  register: srcds_instance_stat
+
+- name: Detect existing instance mounts
+  ansible.builtin.command:
+    # --mountpoint (not --target): only match if the path itself is a
+    # mountpoint; --target would match the parent mount of a plain directory
+    cmd: findmnt --noheadings --mountpoint /home/{{ srcds_user }}/srcds-{{ item.server_name_short }}
+  loop: "{{ services }}"
+  loop_control:
+    index_var: loop0
+  register: srcds_instance_mount
+  changed_when: false
+  failed_when: false
+
+# Per-instance state used by the migration checks below; "is_overlay" means
+# the instance directory is already our overlayfs mount over srcds-base.
+# Note: the lowerdir pattern is built with ~; a {{ var }} inside a Jinja
+# string literal in an expression is NOT interpolated (it stays literal),
+# which would make is_overlay always false.
+- name: Compute instance overlay state
+  ansible.builtin.set_fact:
+    srcds_instance_state: >-
+      {{ srcds_instance_state | default({}) | combine({
+        item.server_name_short: {
+          "exists": srcds_instance_stat.results[loop0].stat.exists,
+          "is_mount": srcds_instance_mount.results[loop0].rc == 0,
+          "is_overlay": srcds_instance_mount.results[loop0].rc == 0
+            and srcds_instance_mount.results[loop0].stdout
+            is search("lowerdir=/home/" ~ srcds_user ~ "/srcds-base")
+        }
+      }) }}
+  loop: "{{ services }}"
+  loop_control:
+    index_var: loop0
+
+- name: Stop srcds instances with non-overlay instance directories
+  become: true
+  ansible.builtin.systemd:
+    name: "srcds-{{ item.server_name_short }}"
+    state: stopped
+  loop: "{{ services }}"
+  loop_control:
+    index_var: loop0
+  when:
+    - srcds_instance_state[item.server_name_short].exists
+    - not srcds_instance_state[item.server_name_short].is_overlay
+  ignore_errors: true  # noqa ignore-errors
+  # unit does not exist on fresh hosts
+
+- name: Unmount non-overlay instance mounts
+  become: true
+  ansible.builtin.command:
+    cmd: umount /home/{{ srcds_user }}/srcds-{{ item.server_name_short }}
+  loop: "{{ services }}"
+  loop_control:
+    index_var: loop0
+  when:
+    - srcds_instance_state[item.server_name_short].is_mount
+    - not srcds_instance_state[item.server_name_short].is_overlay
+  changed_when: true
+
+- name: Remove non-overlay instance directories
+  ansible.builtin.command:
+    cmd: >-
+      rm -rf
+      /home/{{ srcds_user }}/srcds-{{ item.server_name_short }}
+      /home/{{ srcds_user }}/srcds-{{ item.server_name_short }}-upper
+      /home/{{ srcds_user }}/srcds-{{ item.server_name_short }}-work
+  loop: "{{ services }}"
+  loop_control:
+    index_var: loop0
+  when:
+    - srcds_instance_state[item.server_name_short].exists
+    - not srcds_instance_state[item.server_name_short].is_overlay
+  changed_when: srcds_instance_state[item.server_name_short].exists
+
+- name: Create overlay instance directories
+  ansible.builtin.file:
+    path: "/home/{{ srcds_user }}/srcds-{{ item.0.server_name_short }}-{{ item.1 }}"
+    state: directory
+    mode: "0755"
+  loop: "{{ services | product(['upper', 'work']) | list }}"
+  loop_control:
+    label: "{{ item.0.server_name_short }}-{{ item.1 }}"
+
+- name: Create overlay instance mountpoints
+  ansible.builtin.file:
+    path: /home/{{ srcds_user }}/srcds-{{ item.server_name_short }}
+    state: directory
+    mode: "0755"
+  loop: "{{ services }}"
+  loop_control:
+    index_var: loop0
+
+# systemd requires mount unit names to match the escaped mountpoint path
+# (dashes in path components are escaped as \x2d), e.g. for
+# /home/tf2server/srcds-tst-1 the unit is home-tf2server-srcds\x2dtst\x2d1.mount
+# The name is computed with systemd-escape itself (backslashes don't survive
+# the set_fact template round-trip if built in Jinja)
+- name: Compute srcds mount unit names
+  ansible.builtin.command:
+    cmd: systemd-escape --path /home/{{ srcds_user }}/srcds-{{ item.server_name_short }}
+  register: srcds_unit_escape
+  changed_when: false
+  loop: "{{ services }}"
+  loop_control:
+    index_var: loop0
+
+- name: Set srcds mount unit names fact
+  ansible.builtin.set_fact:
+    srcds_mount_units: >-
+      {{ srcds_mount_units | default({}) | combine({
+        item.server_name_short: srcds_unit_escape.results[loop0].stdout ~ '.mount'
+      }) }}
+  loop: "{{ services }}"
+  loop_control:
+    index_var: loop0
+
+- name: Remove legacy named srcds mount units
+  become: true
+  ansible.builtin.file:
+    path: /etc/systemd/system/srcds-{{ item.server_name_short }}.mount
+    state: absent
+  loop: "{{ services }}"
+  loop_control:
+    index_var: loop0
+  register: srcds_legacy_mount_unit
+
+- name: Install srcds mount units
+  become: true
+  ansible.builtin.template:
+    src: srcds.mount.j2
+    dest: /etc/systemd/system/{{ srcds_mount_units[item.server_name_short] }}
+    mode: "0644"
+  loop: "{{ services }}"
+  loop_control:
+    index_var: loop0
+  register: srcds_mount_unit
+
+- name: Reload systemd for srcds mount units
+  become: true
+  ansible.builtin.systemd:
+    daemon_reload: true
+  when:
+    - (srcds_mount_unit.results | selectattr('changed') | list | length > 0)
+      or (srcds_legacy_mount_unit.results | selectattr('changed') | list | length > 0)
+
+- name: Mount and enable srcds overlays
+  become: true
+  ansible.builtin.systemd:
+    name: "{{ srcds_mount_units[item.server_name_short] }}"
+    state: started
+    enabled: true
+  loop: "{{ services }}"
+  loop_control:
+    index_var: loop0
 
 - name: Cleanup existing sourcemod plugins dif
   ansible.builtin.file:

@@ -1,0 +1,12 @@
+[Unit]
+Description=Overlay filesystem for srcds-{{ item.server_name_short }}
+After=local-fs.target
+
+[Mount]
+What=overlay
+Where=/home/{{ srcds_user }}/srcds-{{ item.server_name_short }}
+Type=overlay
+Options=lowerdir=/home/{{ srcds_user }}/srcds-base,upperdir=/home/{{ srcds_user }}/srcds-{{ item.server_name_short }}-upper,workdir=/home/{{ srcds_user }}/srcds-{{ item.server_name_short }}-work
+
+[Install]
+WantedBy=multi-user.target
