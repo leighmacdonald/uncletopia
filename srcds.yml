@@ -23,11 +23,26 @@
         - never
         - clean
 
-    - name: Clean existing deployed game instance
-      ansible.builtin.file:
-        path: /home/tf2server/srcds-{{ item.server_name_short }}/
-        state: absent
+    - name: Unmount existing game instances
+      become: true
+      ansible.builtin.command:
+        cmd: umount /home/tf2server/srcds-{{ item.server_name_short }}
       loop: "{{ services }}"
+      failed_when: false
+      changed_when: false
+      tags:
+        - never
+        - clean
+
+    - name: Clean existing deployed game instance
+      ansible.builtin.command:
+        cmd: >-
+          rm -rf
+          /home/tf2server/srcds-{{ item.server_name_short }}
+          /home/tf2server/srcds-{{ item.server_name_short }}-upper
+          /home/tf2server/srcds-{{ item.server_name_short }}-work
+      loop: "{{ services }}"
+      changed_when: true
       tags:
         - never
         - clean

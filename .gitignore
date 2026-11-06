@@ -21,3 +21,4 @@ roles/cloudalchemy.*
 AGENT*
 .zed/
 new/
+/*.md

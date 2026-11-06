@@ -1,7 +1,8 @@
 [Unit]
 Description=srcds-{{ item.server_name_short }}
 PartOf=srcds-master.service
-After=network.target
+After=network.target {{ srcds_mount_units[item.server_name_short] }}
+Requires={{ srcds_mount_units[item.server_name_short] }}
 
 [Service]
 Type=forking
