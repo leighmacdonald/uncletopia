@@ -18,29 +18,43 @@
       failed_when: result_i386_check.rc > 1
       when: ansible_facts["distribution"] in ['Debian', 'Ubuntu']
 
-    - name: Add liquorix PPA repository
+    # Liquorix is being retired across the fleet: strip the PPA and kernel
+    # packages if a host has them and fall back to the distro kernel.
+    - name: Remove liquorix PPA repository
       ansible.builtin.deb822_repository:
         name: damentz-liquorix
-        types:
-          - deb
-        uris: https://ppa.launchpadcontent.net/damentz/liquorix/ubuntu
-        suites: "{{ ansible_facts['distribution_release'] }}"
-        components:
-          - main
-        # PPA signing key (fingerprint of "Launchpad PPA for Steven Barrett")
-        signed_by: https://keyserver.ubuntu.com/pks/lookup?op=get&search=0xA7654D8BAB1824F4D8F4E9D19352A0B69B72E6DF
-        state: present
-      register: liquorix_ppa_added
+        state: absent
+      register: liquorix_ppa_removed
 
     - name: Remove legacy liquorix PPA .list file
       ansible.builtin.file:
         path: /etc/apt/sources.list.d/zen-repo.list
         state: absent
 
-    - name: Update apt cache after adding liquorix PPA
+    - name: Update apt cache after removing liquorix PPA
       ansible.builtin.apt:
         update_cache: true
-      when: liquorix_ppa_added is changed # noqa no-handler
+      when: liquorix_ppa_removed is changed # noqa no-handler
+
+    - name: Install stock kernel
+      when: ansible_facts["distribution"] in ['Debian', 'Ubuntu']
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 3600
+        pkg: "{{ ['linux-generic'] if ansible_facts['distribution'] == 'Ubuntu' else ['linux-image-amd64'] }}"
+
+    - name: Remove liquorix kernel packages
+      # purging the metas + autoremove takes the versioned liquorix kernels
+      # with them; grub falls back to the newest remaining (stock) kernel on
+      # the next reboot
+      when: ansible_facts["distribution"] in ['Debian', 'Ubuntu']
+      ansible.builtin.apt:
+        pkg:
+          - linux-image-liquorix-amd64
+          - linux-headers-liquorix-amd64
+        state: absent
+        purge: true
+        autoremove: true
 
     - name: Configure cpufrequtils
       become: true
@@ -92,8 +106,6 @@
         cache_valid_time: 3600
         state: present
         pkg:
-          - linux-image-liquorix-amd64
-          - linux-headers-liquorix-amd64
           - unzip
           - gpg
           - cpufrequtils
@@ -121,9 +133,8 @@
         state: present
         name: unattended-upgrades
 
-    # Installs security (and, via the override below, liquorix/docker) updates
-    # daily; the upgrade itself runs on the distro default timer (~06:00 local
-    # + randomized delay), the reboot is pinned to 07:00 local.
+    # Installs security (and docker) updates daily; the upgrade itself runs on
+    # the distro default timer (~06:00 local + randomized delay), the reboot is
     - name: Enable daily unattended-upgrades
       when: ansible_facts["distribution"] in ['Debian', 'Ubuntu']
       ansible.builtin.copy:
@@ -152,17 +163,16 @@
           // a pending security reboot.
           Unattended-Upgrade::Automatic-Reboot-WithUsers "true";
 
-          // Keep /boot from filling up with old liquorix kernels.
+          // Keep /boot from filling up with old kernels.
           Unattended-Upgrade::Remove-Unused-Kernel-Packages "true";
           Unattended-Upgrade::Remove-Unused-Dependencies "true";
 
           Unattended-Upgrade::SyslogEnable "true";
 
-          // Ubuntu's default origin list only covers *-security. Kernels come
-          // from the liquorix PPA and the container runtime from the Docker
-          // repo, so allow those to upgrade unattended as well.
+          // Ubuntu's default origin list only covers *-security. The container
+          // runtime comes from the Docker repo, so allow it to upgrade
+          // unattended as well.
           Unattended-Upgrade::Origins-Pattern {
-                  "origin=LP-PPA-damentz";
                   "origin=Docker";
           };
 

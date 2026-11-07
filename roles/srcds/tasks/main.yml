@@ -1,4 +1,8 @@
 ---
+# ~/steamcmd is kept unpacked only to provide linux32/steamclient.so for the
+# game server (~/.steam/sdk32 symlink below); steamcmd itself never runs.
+# The shared ~/srcds-base install is downloaded and updated with
+# DepotDownloader (Steam depots directly: no steamcmd process at all).
 - name: Create srcds root
   ansible.builtin.file:
     path: ~/steamcmd
@@ -20,18 +24,70 @@
   loop_control:
     index_var: loop0
 
-- name: Generate steamcmd base update script
-  ansible.builtin.template:
-    src: tf2_ds.txt.j2
-    dest: ~/steamcmd/tf2_ds-base.txt
-    mode: "0755"
+- name: Remove legacy steamcmd base update script
+  ansible.builtin.file:
+    path: ~/steamcmd/tf2_ds-base.txt
+    state: absent
 
-# steamcmd can fail with transient errors (e.g. state 0x602 after an
-# interrupted run); retry once before giving up
+# Release asset is an x64 zip (self-contained); arch is pinned explicitly to
+# 32 because that is what steamcmd would resolve for srcds (32-bit), while
+# DepotDownloader defaults to the host's arch (x86_64).
+- name: Remove stale DepotDownloader zip
+  ansible.builtin.file:
+    path: "~/bin/DepotDownloader-{{ srcds_depotdownloader_version }}.zip"
+    state: absent
+  tags:
+    - game_engine
+
+- name: Make DepotDownloader dir
+  ansible.builtin.file:
+    path: "~/bin/depotdownloader-{{ srcds_depotdownloader_version }}"
+    state: directory
+    mode: "0755"
+  tags:
+    - game_engine
+
+- name: Stat DepotDownloader
+  ansible.builtin.stat:
+    path: "~/bin/depotdownloader-{{ srcds_depotdownloader_version }}/DepotDownloader"
+  register: srcds_depotdownloader_bin
+  tags:
+    - game_engine
+
+- name: Download DepotDownloader
+  ansible.builtin.get_url:
+    url: "https://github.com/SteamRE/DepotDownloader/releases/download/DepotDownloader_{{ srcds_depotdownloader_version }}/DepotDownloader-linux-x64.zip"
+    dest: "~/bin/depotdownloader-{{ srcds_depotdownloader_version }}/DepotDownloader-linux-x64.zip"
+    mode: "0644"
+  when: not srcds_depotdownloader_bin.stat.exists
+  tags:
+    - game_engine
+
+- name: Extract DepotDownloader
+  ansible.builtin.unarchive:
+    src: "~/bin/depotdownloader-{{ srcds_depotdownloader_version }}/DepotDownloader-linux-x64.zip"
+    dest: "~/bin/depotdownloader-{{ srcds_depotdownloader_version }}"
+    remote_src: true
+  when: not srcds_depotdownloader_bin.stat.exists
+  tags:
+    - game_engine
+
+# DepotDownloader is incremental: it hashes existing files against the depot
+# manifest and only downloads missing/changed ones. -validate replicates
+# steamcmd's app_update behavior of repairing corrupt files already on disk.
+# Transient Steam CDN errors happen (steamcmd had them as state 0x602); retry
+# once before giving up.
 - name: Download TF2 Base
-  ansible.builtin.command:
-    cmd: ./steamcmd.sh +runscript tf2_ds-base.txt # noqa no-changed-when
-    chdir: ~/steamcmd
+  ansible.builtin.command: # noqa no-changed-when
+    cmd: >-
+      ./DepotDownloader
+      -app {{ srcds_steam_app_id }}
+      -os linux -osarch 32
+      -branch {{ srcds_base_branch }}
+      {{ '' if not srcds_base_manifest else "-manifest " ~ srcds_base_manifest }}
+      -validate
+      -dir {{ srcds_homedir }}/srcds-base
+    chdir: "~/bin/depotdownloader-{{ srcds_depotdownloader_version }}"
   register: srcds_base_download
   retries: 2
   delay: 10
@@ -57,6 +113,7 @@
   ansible.builtin.apt:
     pkg:
       - lib32z1
+      - unzip
       - libncurses5:i386
       - libbz2-1.0:i386
       - lib32gcc-s1
@@ -89,6 +146,7 @@
     update_cache: true
     pkg:
       - lib32z1
+      - unzip
       - libncurses5:i386
       - libbz2-1.0:i386
       - lib32gcc-s1

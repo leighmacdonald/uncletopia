@@ -11,6 +11,10 @@ srcds_server_password: ""
 srcds_region: 3
 srcds_hostname: "TF2 Server"
 srcds_use64Bit: false
+srcds_depotdownloader_version: "3.4.0"
+srcds_base_branch: "public"
+# empty = latest manifest on srcds_base_branch; set to a manifest id to pin
+srcds_base_manifest: ""
 srcds_whitelist_default: ""
 srcds_fastdl_url: ""
 srcds_sv_tags: "uncletopia,nocrits,nodmgspread"
