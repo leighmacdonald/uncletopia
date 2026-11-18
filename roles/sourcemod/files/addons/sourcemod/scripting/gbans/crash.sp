@@ -4,11 +4,13 @@
 #include <files>
 #include <sourcemod>
 
+#define CRASH_ID_LENGTH 14
+
 char g_accelerator_log_path[128];
 char g_crash_log_path[128];
 char g_crash_id[64];
-char g_stored_crash_id[15];
-char g_reported_crash_id[15];
+char g_stored_crash_id[CRASH_ID_LENGTH + 1];
+char g_reported_crash_id[CRASH_ID_LENGTH + 1];
 
 Handle g_accelerator_log_handle;
 Handle g_crash_log_handle;
@@ -16,20 +18,41 @@ Handle g_crash_log_handle;
 public
 void checkCrashStatus() {
     // Get last Crash id after restart
-    if (!g_accelerator_log_handle || !g_crash_log_handle) {
+    if (g_accelerator_log_handle == null || g_crash_log_handle == null) {
         return;
     }
 
-    FileSeek(g_accelerator_log_handle, -sizeof(g_crash_id), SEEK_END);
-    ReadFileString(g_accelerator_log_handle, g_crash_id, sizeof(g_crash_id));
+    int tailLength = sizeof(g_crash_id);
+    if (FileSize(g_accelerator_log_path) < tailLength) {
+        return;
+    }
+
+    if (!FileSeek(g_accelerator_log_handle, -tailLength, SEEK_END)) {
+        LogError("Failed to seek to the end of %s", g_accelerator_log_path);
+
+        return;
+    }
+
+    if (ReadFileString(g_accelerator_log_handle, g_crash_id, sizeof(g_crash_id)) == -1) {
+        return;
+    }
+
     int crash_id_index = StrContains(g_crash_id, "Crash ID: ");
     if (crash_id_index == -1) {
         return;
     }
 
-    g_crash_id[crash_id_index + 10 + 14] = '\0';
-    ReplaceString(g_crash_id[crash_id_index], sizeof(g_crash_id), "Crash ID: ", "", false);
-    TrimString(g_crash_id[crash_id_index]);
+    int crash_id_start = crash_id_index + 10;
+
+    // Accelerator crash ids are always CRASH_ID_LENGTH characters. Return when
+    // the log tail was truncated so the terminator is never written past the
+    // end of the buffer.
+    if (crash_id_start + CRASH_ID_LENGTH > strlen(g_crash_id)) {
+        return;
+    }
+
+    g_crash_id[crash_id_start + CRASH_ID_LENGTH] = '\0';
+    TrimString(g_crash_id[crash_id_start]);
 
     char sLine[128];
     while (!IsEndOfFile(g_crash_log_handle) && ReadFileLine(g_crash_log_handle, sLine, sizeof(sLine))) {
@@ -38,11 +61,11 @@ void checkCrashStatus() {
         TrimString(g_stored_crash_id);
     }
 
-    if (StrEqual(g_stored_crash_id, g_crash_id[crash_id_index])) {
+    if (StrEqual(g_stored_crash_id, g_crash_id[crash_id_start])) {
         return;
     }
 
-    strcopy(g_reported_crash_id, sizeof(g_reported_crash_id), g_crash_id[crash_id_index]);
+    strcopy(g_reported_crash_id, sizeof(g_reported_crash_id), g_crash_id[crash_id_start]);
 
     JSON_Object obj = new JSON_Object();
     obj.SetString("crashId", g_reported_crash_id);

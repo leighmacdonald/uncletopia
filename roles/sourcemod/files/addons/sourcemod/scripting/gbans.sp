@@ -76,9 +76,9 @@ void OnPluginStart() {
 
     // In Game Tweaks
     gb_disable_autoteam = AutoExecConfig_CreateConVar(
-        "gb_hide_connections", "1", "Dont allow the use of autoteam command", FCVAR_NONE, true, 0.0, true, 1.0);
+        "gb_disable_autoteam", "1", "Dont allow the use of autoteam command", FCVAR_NONE, true, 0.0, true, 1.0);
     gb_hide_connections = AutoExecConfig_CreateConVar(
-        "gb_disable_autoteam", "1", "Dont show the disconnect message to users", FCVAR_NONE, true, 0.0, true, 1.0);
+        "gb_hide_connections", "1", "Dont show the disconnect message to users", FCVAR_NONE, true, 0.0, true, 1.0);
     gb_seed_promo_minplayers = AutoExecConfig_CreateConVar(
         "gb_seed_promo_minplayers", "20",
         "Broadcast the /seed command when fewer than this many real players are online (0 disables)", FCVAR_NONE, true,
@@ -106,6 +106,15 @@ void OnPluginStart() {
 
     AutoExecConfig_ExecuteFile();
     AutoExecConfig_CleanFile();
+
+    gTimerCheckStatus    = CreateTimer(300.0, Timer_CheckStatus, _, TIMER_REPEAT);
+    gTimerCheckSeedPromo = CreateTimer(600.0, Timer_CheckSeedPromo, _, TIMER_REPEAT);
+
+    gb_stv_minplayers.AddChangeHook(OnConVarChanged);
+    gb_stv_ignorebots.AddChangeHook(OnConVarChanged);
+    gb_stv_timestart.AddChangeHook(OnConVarChanged);
+    gb_stv_timestop.AddChangeHook(OnConVarChanged);
+    gb_stv_path.AddChangeHook(OnConVarChanged);
 
     // Setup log files for crash reporting back to gbans
     BuildPath(Path_SM, g_accelerator_log_path, sizeof(g_accelerator_log_path), "/logs/accelerator.log");
@@ -136,12 +145,6 @@ stock void AccountForLateLoading() {
 
 public
 void OnConfigsExecuted() {
-    gb_stv_minplayers.AddChangeHook(OnConVarChanged);
-    gb_stv_ignorebots.AddChangeHook(OnConVarChanged);
-    gb_stv_timestart.AddChangeHook(OnConVarChanged);
-    gb_stv_timestop.AddChangeHook(OnConVarChanged);
-    gb_stv_path.AddChangeHook(OnConVarChanged);
-
     char sPath[PLATFORM_MAX_PATH];
 
     gb_stv_path.GetString(sPath, sizeof sPath);
@@ -154,9 +157,6 @@ void OnConfigsExecuted() {
     if (!DirExists(sPathComplete)) {
         initDirectory(sPathComplete);
     }
-
-    CreateTimer(300.0, Timer_CheckStatus, _, TIMER_REPEAT);
-    CreateTimer(600.0, Timer_CheckSeedPromo, _, TIMER_REPEAT);
 
     authenticateServer();
 
@@ -176,14 +176,34 @@ void OnMapEnd() {
 
 public
 void OnMapStart() {
-    reloadAdmins(true);
+    reloadAdmins(false);
     gSeedPromoSent = false;
+}
+
+public
+void OnPluginEnd() {
+    if (gTimerCheckStatus != null) {
+        KillTimer(gTimerCheckStatus);
+    }
+    if (gTimerCheckSeedPromo != null) {
+        KillTimer(gTimerCheckSeedPromo);
+    }
+
+    if (g_accelerator_log_handle != null) {
+        CloseHandle(g_accelerator_log_handle);
+        g_accelerator_log_handle = null;
+    }
+    if (g_crash_log_handle != null) {
+        CloseHandle(g_crash_log_handle);
+        g_crash_log_handle = null;
+    }
 }
 
 public
 APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max) {
     CreateNative("GB_BanClient", Native_GB_BanClient);
     CreateNative("GB_BanClientAC", Native_GB_BanClientAC);
+    CreateNative("GB_ScrambleTeams", Native_GB_ScrambleTeams);
 
     gLateLoaded = late;
 

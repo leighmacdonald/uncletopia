@@ -15,6 +15,10 @@ Ping the moderators through discord
 */
 public
 Action onCmdMod(int clientId, int argc) {
+    if (!isValidClient(clientId)) {
+        ReplyToCommand(clientId, "[GB] /mod can only be used by connected players");
+        return Plugin_Handled;
+    }
     if (argc < 1) {
         ReplyToCommand(clientId, "Must supply a reason message for pinging");
         return Plugin_Handled;
@@ -71,6 +75,11 @@ void onPingModRespReceived(Handle request, bool failure, bool successful, EHTTPS
 
 public
 Action onCmdSeed(int clientId, int argc) {
+    if (!isValidClient(clientId)) {
+        ReplyToCommand(clientId, "[GB] /seed can only be used by connected players");
+        return Plugin_Handled;
+    }
+
     char authId[32];
     if (!GetClientAuthId(clientId, AuthId_SteamID64, authId, sizeof authId)) {
         ReplyToCommand(clientId, "Failed to get auth_id of user: %d", clientId);
@@ -103,7 +112,7 @@ void onCmdSeedReceived(Handle request, bool failure, bool successful, EHTTPStatu
     }
     case k_EHTTPStatusCode200OK: {
         delete request;
-        PrintToChat(clientId, "Mods have been alerted, thanks!");
+        PrintToChat(clientId, "Seed request sent successfully");
         return;
     }
     case k_EHTTPStatusCode401Unauthorized: {
@@ -114,10 +123,8 @@ void onCmdSeedReceived(Handle request, bool failure, bool successful, EHTTPStatu
         return;
     }
     default: {
-        PrintRPCError(request, failure, status);
-
         char reason[256];
-        if (GetRPCErrorMessage(request, status, reason, sizeof reason)) {
+        if (LogRPCErrorAndGetMessage(request, failure, status, reason, sizeof reason)) {
             delete request;
             PrintToChat(clientId, "Seed request failed: %s", reason);
         } else {

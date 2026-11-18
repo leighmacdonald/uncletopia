@@ -128,7 +128,7 @@ void showStatsMenu(int clientId, JSON_Object data) {
         int rank  = readJsonUint64(bucket, "rank");
         int kills = readJsonUint64(bucket, "kills");
 
-        strcopy(gStatsBucket[clientId][i], sizeof gStatsBucket[clientId], bucketStr);
+        strcopy(gStatsBucket[clientId][i], sizeof gStatsBucket[clientId][i], bucketStr);
         gStatsRank[clientId][i]  = rank;
         gStatsKills[clientId][i] = kills;
 

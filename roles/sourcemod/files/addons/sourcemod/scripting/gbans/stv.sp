@@ -110,10 +110,16 @@ void StartRecord() {
 }
 
 void StopRecord() {
-    if (GetConVarBool(gb_stv_enable)) {
-        ServerCommand("tv_stoprecord");
-        gIsRecording = false;
+    if (!gIsRecording) {
+        return;
     }
+
+    gIsRecording = false;
+
+    // gb_stv_enable only gates starting a recording. Always stop one that is
+    // already running, otherwise disabling the convar mid-recording leaves the
+    // flag set forever and auto-recording never restarts.
+    ServerCommand("tv_stoprecord");
 }
 
 public
@@ -124,6 +130,11 @@ void SourceTV_OnStopRecording(int instance, const char[] filename, int recording
     GetConVarString(gb_stv_path_complete, outPath, sizeof outPath);
 
     int iNumPieces = ExplodeString(filename, "/", sPieces, sizeof sPieces, sizeof sPieces[]);
+    if (iNumPieces < 1) {
+        LogError("Failed to parse completed demo filename \"%s\"", filename);
+
+        return;
+    }
 
     Format(outPath, sizeof outPath, "%s/%s", outPath, sPieces[iNumPieces - 1]);
 
@@ -137,10 +148,13 @@ void SourceTV_OnStopRecording(int instance, const char[] filename, int recording
 void initDirectory(const char[] sDir) {
     char sPieces[32][PLATFORM_MAX_PATH];
     char sPath[PLATFORM_MAX_PATH];
+    char sNext[PLATFORM_MAX_PATH];
     int  iNumPieces = ExplodeString(sDir, "/", sPieces, sizeof sPieces, sizeof sPieces[]);
 
     for (int i = 0; i < iNumPieces; i++) {
-        Format(sPath, sizeof sPath, "%s/%s", sPath, sPieces[i]);
+        Format(sNext, sizeof sNext, "%s/%s", sPath, sPieces[i]);
+        strcopy(sPath, sizeof sPath, sNext);
+
         if (!DirExists(sPath)) {
             CreateDirectory(sPath, 509);
         }

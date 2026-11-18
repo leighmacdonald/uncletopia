@@ -2,7 +2,7 @@
 #pragma tabsize 4
 #pragma newdecls required
 
-#define PLUGIN_VERSION "0.8.7"
+#define PLUGIN_VERSION "0.8.10"
 
 #define MAX_SCORES 256
 
@@ -25,12 +25,16 @@ ConVar gb_stv_finishmap;
 ConVar gb_stv_path;
 ConVar gb_stv_path_complete;
 
+Handle gTimerCheckStatus;
+Handle gTimerCheckSeedPromo;
+
 // Reports command
 int          gReportSourceId         = -1;
 int          gReportTargetId         = -1;
 bool         gReportWaitingForReason = false;
 GB_BanReason gReportTargetReason;
 int          gReportStartedAtTime = -1;
+Handle       gReportTimeoutTimer;
 
 bool gIsRecording = false;
 bool gIsManual    = false;

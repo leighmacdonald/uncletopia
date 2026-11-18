@@ -72,3 +72,28 @@ GB_BanClient(int adminId, int targetId, GB_BanReason reason, int duration, int b
  * @return success status
  */
 native bool GB_BanClientAC(int targetId, const char[] reason);
+
+/**
+ * Callback for GB_ScrambleTeams. The arrays contain the client indexes that
+ * were moved to each team, plus the error text when success is false.
+ */
+typedef GB_ScrambleResultCallback = function void (
+    bool success, const int[] redClients, int redCount, const int[] bluClients, int bluCount,
+    const int[] waitingClients, int waitingCount, const char[] error);
+
+/**
+ * Ask the backend to balance the supplied players by their internal skill
+ * rating and have gbans perform the team changes itself.
+ *
+ * Bots, SourceTV and replay clients are ignored, as are clients without a
+ * valid SteamID64. Spectators and unassigned clients are included. The backend
+ * selects the stats bucket and balancer automatically. The callback fires
+ * exactly once, after team changes have been applied.
+ *
+ * @param clientIds Client indexes to include in the scramble
+ * @param numClients Number of entries in clientIds
+ * @param callback Called with the result when the scramble completes
+ * @param maxExact Maximum pool size for the exact solver, 0 for the default
+ */
+native void GB_ScrambleTeams(const int[] clientIds, int numClients, GB_ScrambleResultCallback callback,
+                             int maxExact = 32);

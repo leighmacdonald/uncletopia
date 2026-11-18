@@ -12,8 +12,28 @@ Action onCmdReport(int clientId, int argc) {
         return Plugin_Stop;
     }
     gReportStartedAtTime = GetTime();
+    startReportTimeout();
     ShowTargetMenu(clientId);
     return Plugin_Handled;
+}
+
+/**
+ * Restarts the inactivity timer for the interactive report flow. The flow is
+ * abandoned when the player does not advance it within reportTimeout seconds,
+ * which previously left gReportStartedAtTime set forever when a menu was
+ * closed by a disconnect or simply ignored.
+ */
+void startReportTimeout() {
+    stopReportTimeout();
+
+    gReportTimeoutTimer = CreateTimer(float(reportTimeout), Timer_checkReportState);
+}
+
+void stopReportTimeout() {
+    if (gReportTimeoutTimer != null) {
+        KillTimer(gReportTimeoutTimer);
+        gReportTimeoutTimer = null;
+    }
 }
 
 public
@@ -26,6 +46,8 @@ void ShowTargetMenu(int clientId) {
 }
 
 void resetReportStatus() {
+    stopReportTimeout();
+
     gReportSourceId         = -1;
     gReportTargetId         = -1;
     gReportStartedAtTime    = -1;
@@ -35,8 +57,7 @@ void resetReportStatus() {
 
 public
 Action OnClientSayCommand(int clientId, const char[] command, const char[] args) {
-    if (!gReportWaitingForReason || clientId != gReportSourceId && gReportSourceId == -1
-        || gReportTargetReason != custom) {
+    if (!gReportWaitingForReason || clientId != gReportSourceId || gReportTargetReason != custom) {
         return Plugin_Continue;
     } else if (StrEqual(args, "cancel", false)) {
         PrintToChat(gReportSourceId, "Report cancelled");
@@ -44,6 +65,7 @@ Action OnClientSayCommand(int clientId, const char[] command, const char[] args)
         return Plugin_Stop;
     } else if (strlen(args) < reportMinReasonLen) {
         PrintToChat(gReportSourceId, "Report reason too short, try again or type \"cancel\" to reset");
+        startReportTimeout();
         return Plugin_Continue;
     }
 
@@ -109,7 +131,16 @@ bool report(int sourceId, int targetId, GB_BanReason reason, const char[] reason
         }
     }
 
-    postHTTPRequest("/connect/ban.v1.ReportService/ReportCreate", obj, onReportRespReceived, sourceId);
+    if (!postHTTPRequest("/connect/ban.v1.ReportService/ReportCreate", obj, onReportRespReceived, sourceId)) {
+        PrintToChat(sourceId, "[Report] Failed to send the report to gbans, please try again later");
+        resetReportStatus();
+
+        return false;
+    }
+
+    // The response callback owns the report state from here; the request has
+    // its own transport timeout.
+    stopReportTimeout();
 
     return true;
 }
@@ -179,11 +210,20 @@ void ShowReasonMenu(int clientId) {
 }
 
 public
-Action Timer_checkReportState() {
-    if (gReportStartedAtTime - GetTime() > reportTimeout) {
-        return Plugin_Stop;
+void Timer_checkReportState(Handle timer) {
+    // This timer is one-shot and closes itself once the callback returns, so
+    // clear the handle instead of killing it.
+    gReportTimeoutTimer = null;
+
+    if (gReportStartedAtTime <= 0) {
+        return;
     }
-    return Plugin_Continue;
+
+    if (isValidClient(gReportSourceId)) {
+        PrintToChat(gReportSourceId, "[Report] Report timed out, please try again");
+    }
+
+    resetReportStatus();
 }
 
 public
@@ -191,6 +231,11 @@ int MenuHandler_Target(Menu menu, MenuAction action, int clientId, int selectedI
     if (action == MenuAction_Cancel) {
         resetReportStatus();
     } else if (action == MenuAction_Select) {
+        if (gReportStartedAtTime <= 0) {
+            PrintToChat(clientId, "[Report] Report timed out, please start again");
+            return 0;
+        }
+
         int  userId, targetId;
         char sTargetUserID[30];
         menu.GetItem(selectedId, sTargetUserID, sizeof sTargetUserID);
@@ -203,6 +248,7 @@ int MenuHandler_Target(Menu menu, MenuAction action, int clientId, int selectedI
         }
         gReportSourceId = clientId;
         gReportTargetId = targetId;
+        startReportTimeout();
         ShowReasonMenu(gReportSourceId);
     } else if (action == MenuAction_End) {
         delete menu;
@@ -215,6 +261,11 @@ int MenuHandler_Reason(Menu menu, MenuAction action, int clientId, int selectedI
     if (action == MenuAction_Cancel) {
         resetReportStatus();
     } else if (action == MenuAction_Select) {
+        if (gReportStartedAtTime <= 0) {
+            PrintToChat(clientId, "[Report] Report timed out, please start again");
+            return 0;
+        }
+
         char sInfo[64];
         GetMenuItem(menu, selectedId, sInfo, sizeof sInfo);
         if (StrEqual(sInfo, "cheating")) {
@@ -243,6 +294,7 @@ int MenuHandler_Reason(Menu menu, MenuAction action, int clientId, int selectedI
         if (gReportTargetReason == custom) {
             PrintToChat(gReportSourceId, "[Report] Enter your reason in chat, it will be hidden from other users");
             gReportWaitingForReason = true;
+            startReportTimeout();
             return 0;
         }
         return report(gReportSourceId, gReportTargetId, gReportTargetReason, "");

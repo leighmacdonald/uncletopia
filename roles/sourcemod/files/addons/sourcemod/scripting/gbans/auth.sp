@@ -4,15 +4,43 @@
 
 #include "common.sp"
 
+// Set once the current token has been used to trigger the post-auth setup.
+bool g_has_authed = false;
+
+// Admin data only changes on the website, not on map boundaries, so the map
+// start refresh is throttled to avoid three HTTP requests and a full cache
+// rebuild on every single map load.
+const adminReloadInterval = 900;
+int gLastAdminReloadAt    = 0;
+
 public
 Action onAdminCmdReload(int clientId, int argc) {
-    reloadAdmins(true);
+    // Drop the cached token so a rotated gb_core_server_key takes effect, and
+    // force the admin cache rebuild that runs after a successful auth.
+    gToken[0]    = '\0';
+    g_has_authed = false;
+
+    if (!authenticateServer()) {
+        reply(clientId, "[GB] Failed to send the authentication request to gbans");
+
+        return Plugin_Handled;
+    }
+
+    reply(clientId, "[GB] Re-authenticating with gbans");
 
     return Plugin_Handled;
 }
 
 public
-void reloadAdmins(bool force) { ServerCommand("sm_reloadadmins"); }
+void reloadAdmins(bool force) {
+    int now = GetTime();
+    if (!force && gLastAdminReloadAt > 0 && now - gLastAdminReloadAt < adminReloadInterval) {
+        return;
+    }
+
+    gLastAdminReloadAt = now;
+    ServerCommand("sm_reloadadmins");
+}
 
 public
 void OnClientPostAdminCheck(int clientId) {
@@ -24,17 +52,15 @@ void OnClientPostAdminCheck(int clientId) {
 }
 
 public
-void authenticateServer() {
+bool authenticateServer() {
     char passwd[40];
     gb_core_server_key.GetString(passwd, sizeof passwd);
 
     JSON_Object req = new JSON_Object();
     req.SetString("password", passwd);
 
-    postHTTPRequest("/connect/sourcemod.v1.PluginService/SMAuthenticate", req, onAuthenticate);
+    return postHTTPRequest("/connect/sourcemod.v1.PluginService/SMAuthenticate", req, onAuthenticate);
 }
-
-bool g_has_authed = false;
 
 void onAuthenticate(Handle request, bool failure, bool successful, EHTTPStatusCode status, any value1, any value2) {
     switch (status) {
@@ -89,10 +115,10 @@ void checkPlayer(int clientId) {
     obj.SetString("ip", ip);
     obj.SetString("name", name);
 
-    postHTTPRequest("/connect/sourcemod.v1.PluginService/SMCheck", obj, onCheckResp);
+    postHTTPRequest("/connect/sourcemod.v1.PluginService/SMCheck", obj, onCheckResp, GetClientUserId(clientId));
 }
 
-void onCheckResp(Handle request, bool failure, bool successful, EHTTPStatusCode status, any value1, any value2) {
+void onCheckResp(Handle request, bool failure, bool successful, EHTTPStatusCode status, any userId, any value2) {
     if (status != k_EHTTPStatusCode200OK) {
         PrintRPCError(request, failure, status);
         delete request;
@@ -100,16 +126,24 @@ void onCheckResp(Handle request, bool failure, bool successful, EHTTPStatusCode 
         return;
     }
 
-    JSON_Object data = GetResponseJSON(request);
-    if (data == null || !data.HasKey("clientId")) {
-        LogError("No client id in check resp");
-        json_cleanup_and_delete(data);
+    // The response echoes the client index that was sent with the request, but
+    // that slot may have been reused by another player while the request was
+    // in flight. Resolving the user id is the only reliable way back to the
+    // client that was checked.
+    int clientId = GetClientOfUserId(view_as<int>(userId));
+    if (!isValidClient(clientId)) {
         delete request;
 
         return;
     }
 
-    int clientId = data.GetInt("clientId");
+    JSON_Object data = GetResponseJSON(request);
+    if (data == null) {
+        LogError("Failed to parse check response");
+        delete request;
+
+        return;
+    }
 
     char banType[48];
     if (!data.GetString("banType", banType, sizeof banType)) {
@@ -144,12 +178,12 @@ void onCheckResp(Handle request, bool failure, bool successful, EHTTPStatusCode 
 
         return;
     } else if (StrEqual(banType, "BAN_TYPE_BANNED")) {
-        KickClient(clientId, msg);
+        KickClient(clientId, "%s", msg);
         LogAction(0, clientId, "Kicked \"%L\" for an unfinished ban.", clientId);
 
         return;
     } else if (StrEqual(banType, "BAN_TYPE_NETWORK")) {
-        KickClient(clientId, msg);
+        KickClient(clientId, "%s", msg);
         LogAction(0, clientId, "Kicked \"%L\" for a network block.", clientId);
 
         return;

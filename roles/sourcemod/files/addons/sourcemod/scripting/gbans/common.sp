@@ -29,31 +29,25 @@ stock JSON_Object GetResponseJSON(Handle request) {
     return json_decode(body);
 }
 
-stock bool ResponseHasJSONContent(Handle request) {
-    char contentType[128];
-    if (!SteamWorks_GetHTTPResponseHeaderValue(request, "Content-Type", contentType, sizeof contentType)) {
-        return false;
-    }
-
-    return StrContains(contentType, "json", false) != -1;
-}
-
 /**
-Print out a formatted ConnectRPC error messages to the error log.
-
-https://connectrpc.com/docs/web/errors/
-*/
-void PrintRPCError(Handle request, bool failure, EHTTPStatusCode status) {
+ * Logs a ConnectRPC error response to the error log, decoding the JSON body
+ * once. When `maxLen` is non-zero and the body carries a ConnectRPC "message",
+ * it is copied into `message` and true is returned, so a caller can derive both
+ * the log and a player-facing message from a single decode.
+ *
+ * https://connectrpc.com/docs/web/errors/
+ */
+stock bool LogRPCErrorAndGetMessage(Handle request, bool failure, EHTTPStatusCode status, char[] message, int maxLen) {
     if (failure) {
         LogError("HTTP request failed, no response received");
 
-        return;
+        return false;
     }
 
     LogError("Invalid response code: %d", status);
 
     if (status == k_EHTTPStatusCodeInvalid) {
-        return;
+        return false;
     }
 
     char contentType[128] = "unknown";
@@ -61,42 +55,39 @@ void PrintRPCError(Handle request, bool failure, EHTTPStatusCode status) {
         || StrContains(contentType, "json", false) == -1) {
         LogError("Invalid response content type: %s", contentType);
 
-        return;
+        return false;
     }
 
     JSON_Object err_obj = GetResponseJSON(request);
     if (err_obj == null) {
-        return;
+        return false;
     }
 
     char code[64];
-    char message[1024];
-    if (err_obj.GetString("code", code, sizeof code) && err_obj.GetString("message", message, sizeof message)) {
-        LogError("ConnectRPC Error code=%s message=%s", code, message);
+    char errMessage[1024];
+    bool hasCode    = err_obj.GetString("code", code, sizeof code);
+    bool hasMessage = err_obj.GetString("message", errMessage, sizeof errMessage);
+    if (hasCode && hasMessage) {
+        LogError("ConnectRPC Error code=%s message=%s", code, errMessage);
+    }
+
+    bool extracted = false;
+    if (maxLen > 0 && hasMessage) {
+        strcopy(message, maxLen, errMessage);
+        extracted = true;
     }
 
     json_cleanup_and_delete(err_obj);
+
+    return extracted;
 }
 
 /**
- * Extracts the message from a ConnectRPC JSON error response.
- *
- * Returns false when the response is not a JSON encoded ConnectRPC error.
+ * Prints a formatted ConnectRPC error message to the error log.
  */
-stock bool GetRPCErrorMessage(Handle request, EHTTPStatusCode status, char[] message, int maxLen) {
-    if (status == k_EHTTPStatusCodeInvalid || !ResponseHasJSONContent(request)) {
-        return false;
-    }
-
-    JSON_Object err_obj = GetResponseJSON(request);
-    if (err_obj == null) {
-        return false;
-    }
-
-    bool found = err_obj.GetString("message", message, maxLen);
-    json_cleanup_and_delete(err_obj);
-
-    return found;
+void PrintRPCError(Handle request, bool failure, EHTTPStatusCode status) {
+    char scratch[1];
+    LogRPCErrorAndGetMessage(request, failure, status, scratch, 0);
 }
 
 public
@@ -257,17 +248,21 @@ stock void FormatValidUntil(int durationSeconds, char[] buffer, int maxlen) {
  *
  * The request JSON object is owned by this function and freed before it
  * returns.
+ *
+ * Returns false if the request could not be created or sent. In that case the
+ * callback never runs, so the caller is responsible for resetting any state it
+ * set up in anticipation of the response.
  */
-void postHTTPRequest(const char[] path, JSON_Object data, SteamWorksHTTPRequestCompleted callback, any value = 0) {
+bool postHTTPRequest(const char[] path, JSON_Object data, SteamWorksHTTPRequestCompleted callback, any value = 0) {
     char url[1024];
     makeURL(path, url, sizeof url);
 
     Handle request = SteamWorks_CreateHTTPRequest(k_EHTTPMethodPOST, url);
-    if (request == INVALID_HANDLE) {
+    if (request == null || request == INVALID_HANDLE) {
         LogError("Failed to create HTTP request to %s", url);
         json_cleanup_and_delete(data);
 
-        return;
+        return false;
     }
 
     if (gToken[0] != '\0') {
@@ -279,6 +274,7 @@ void postHTTPRequest(const char[] path, JSON_Object data, SteamWorksHTTPRequestC
     int bodyLen = data.EncodeSize();
     char[] body = new char[bodyLen];
     data.Encode(body, bodyLen);
+    json_cleanup_and_delete(data);
 
     SteamWorks_SetHTTPRequestRawPostBody(request, "application/json", body, strlen(body));
     SteamWorks_SetHTTPRequestContextValue(request, value, 0);
@@ -288,9 +284,11 @@ void postHTTPRequest(const char[] path, JSON_Object data, SteamWorksHTTPRequestC
     if (!SteamWorks_SendHTTPRequest(request)) {
         LogError("Failed to send HTTP request to %s", url);
         delete request;
+
+        return false;
     }
 
-    json_cleanup_and_delete(data);
+    return true;
 }
 
 stock void makeURL(const char[] path, char[] outURL, int maxLen) {
@@ -337,8 +335,8 @@ stock int GetAllClientCount() {
 
 stock void reply(int clientId, const char[] message) {
     if (clientId > 0) {
-        ReplyToCommand(clientId, message);
+        ReplyToCommand(clientId, "%s", message);
     } else {
-        LogMessage(message);
+        LogMessage("%s", message);
     }
 }

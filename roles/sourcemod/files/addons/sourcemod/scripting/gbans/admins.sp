@@ -162,11 +162,13 @@ void OnRebuildAdminCache(AdminCachePart part) {
     }
 
     gQueuedAdminUpdate = true;
-    RebuildGroups();
+    if (!RebuildGroups()) {
+        gQueuedAdminUpdate = false;
+    }
 }
 
-void RebuildGroups() {
-    postHTTPRequest("/connect/sourcemod.v1.PluginService/SMGroups", new JSON_Object(), onRebuildGroups);
+bool RebuildGroups() {
+    return postHTTPRequest("/connect/sourcemod.v1.PluginService/SMGroups", new JSON_Object(), onRebuildGroups);
 }
 
 void onRebuildGroups(Handle request, bool failure, bool successful, EHTTPStatusCode status, any value1, any value2) {
@@ -254,11 +256,13 @@ void onRebuildGroups(Handle request, bool failure, bool successful, EHTTPStatusC
 
     LogMessage("Loaded %d groups", numGroups);
 
-    RebuildUsers();
+    if (!RebuildUsers()) {
+        gQueuedAdminUpdate = false;
+    }
 }
 
-void RebuildUsers() {
-    postHTTPRequest("/connect/sourcemod.v1.PluginService/SMUsers", new JSON_Object(), onRebuildUsers);
+bool RebuildUsers() {
+    return postHTTPRequest("/connect/sourcemod.v1.PluginService/SMUsers", new JSON_Object(), onRebuildUsers);
 }
 
 void onRebuildUsers(Handle request, bool failure, bool successful, EHTTPStatusCode status, any value1, any value2) {
@@ -369,13 +373,15 @@ void onRebuildUsers(Handle request, bool failure, bool successful, EHTTPStatusCo
     json_cleanup_and_delete(usersObj);
     delete request;
 
-    LogMessage("Loaded %d users into %d groups", numUsers, numUserGroups);
+    LogMessage("Loaded %d users, %d group links", numUsers, numUserGroups);
 
-    RebuildOverrides();
+    if (!RebuildOverrides()) {
+        gQueuedAdminUpdate = false;
+    }
 }
 
-void RebuildOverrides() {
-    postHTTPRequest("/connect/sourcemod.v1.PluginService/SMOverrides", new JSON_Object(), onRebuildOverrides);
+bool RebuildOverrides() {
+    return postHTTPRequest("/connect/sourcemod.v1.PluginService/SMOverrides", new JSON_Object(), onRebuildOverrides);
 }
 
 void onRebuildOverrides(Handle request, bool failure, bool successful, EHTTPStatusCode status, any value1, any value2) {
