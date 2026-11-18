@@ -2,12 +2,14 @@
 #pragma tabsize 4
 #pragma newdecls required
 
-#define PLUGIN_AUTHOR "Nanochip, viora, raspy"
-#define PLUGIN_VERSION "1.5"
+#define PLUGIN_AUTHOR "Nanochip, viora, raspy, leighmacdonald"
+#define PLUGIN_VERSION "2.0"
 
 #include <sourcemod>
 #include <sdktools>
 #include <nativevotes>
+// gbans is optional - when its include isn't present the plugin falls back to mp_scrambleteams.
+#tryinclude <gbans>
 
 public Plugin myinfo =
 {
@@ -27,6 +29,11 @@ ConVar cvarMinimumVotesNeeded;
 ConVar cvarSkipSecondVote;
 ConVar cvarMaxRounds;
 ConVar cvarWinLimit;
+
+#if defined _gbans_included
+ConVar cvarUseGbans;
+bool g_bGbansAvailable;
+#endif
 
 int g_iVoters;
 int g_iVotes;
@@ -81,14 +88,17 @@ public void OnPluginStart()
 	cvarVoteMenuPercent = CreateConVar("nano_votescramble_menu_percentage", "0.60", "How many players are required for the menu vote to pass? 0.60 = 60%.", 0, true, 0.05, true, 1.0);
 	cvarMinimumVotesNeeded = CreateConVar("nano_votescramble_minimum", "3", "What are the minimum number of votes needed to initiate a chat vote?", 0);
 	cvarSkipSecondVote = CreateConVar("nano_votescramble_skip_second_vote", "0", "Should the second vote be skipped?", 0, true, 0.0, true, 1.0);
+#if defined _gbans_included
+	cvarUseGbans = CreateConVar("nano_votescramble_use_gbans", "1", "Use gbans' balanced scramble instead of mp_scrambleteams when gbans is loaded.", 0, true, 0.0, true, 1.0);
+#endif
 
 	cvarTimeLimit = FindConVar("mp_timelimit");
 	cvarMaxRounds = FindConVar("mp_maxrounds");
 	cvarWinLimit = FindConVar("mp_winlimit");
 
-	RegConsoleCmd("sm_votescramble", Cmd_VoteScramble, "Initiate a vote to scramble teams!");
-	RegConsoleCmd("sm_vscramble", Cmd_VoteScramble, "Initiate a vote to scramble teams!");
-	RegConsoleCmd("sm_scramble", Cmd_VoteScramble, "Initiate a vote to scramble teams!");
+	RegConsoleCmd("sm_votescramble", Cmd_VoteScramble, "Initiate a vote to scramble teams");
+	RegConsoleCmd("sm_vscramble", Cmd_VoteScramble, "Initiate a vote to scramble teams");
+	RegConsoleCmd("sm_scramble", Cmd_VoteScramble, "Initiate a vote to scramble teams");
 	RegAdminCmd("sm_forcescramble", Cmd_ForceScramble, ADMFLAG_VOTE, "Force a team scramble vote.");
 
 	HookEvent("teamplay_win_panel", Event_RoundWin);
@@ -96,6 +106,29 @@ public void OnPluginStart()
 
 	CreateTimer(60.0, Timer_CountMinutes, _, TIMER_REPEAT);
 }
+
+#if defined _gbans_included
+public void OnAllPluginsLoaded()
+{
+	UpdateGbansAvailability();
+}
+
+public void OnLibraryAdded(const char[] name)
+{
+	if (strcmp(name, "gbans") == 0) UpdateGbansAvailability();
+}
+
+public void OnLibraryRemoved(const char[] name)
+{
+	if (strcmp(name, "gbans") == 0) UpdateGbansAvailability();
+}
+
+void UpdateGbansAvailability()
+{
+	g_bGbansAvailable = LibraryExists("gbans") &&
+		GetFeatureStatus(FeatureType_Native, "GB_ScrambleTeams") == FeatureStatus_Available;
+}
+#endif
 
 public void OnMapStart()
 {
@@ -276,16 +309,53 @@ public Action Timer_CountMinutes(Handle timer) {
 }
 
 public Action Timer_Scramble(Handle timer) {
+#if defined _gbans_included
+	if (cvarUseGbans.BoolValue && g_bGbansAvailable) {
+		int clients[64];
+		int count = 0;
+		for (int i = 1; i <= MaxClients && count < sizeof(clients); i++)
+		{
+			if (IsClientInGame(i) && !IsFakeClient(i)) clients[count++] = i;
+		}
+
+		GB_ScrambleTeams(clients, count, GB_Scramble_OnResult);
+	}
+	else {
+		ScrambleStandard();
+	}
+#else
+	ScrambleStandard();
+#endif
+
+	PrintToChatAll("Scrambling the teams due to vote.");
+	return Plugin_Continue;
+}
+
+void ScrambleStandard()
+{
 	ServerCommand("mp_scrambleteams");
 
 	g_bScrambleTeams = true;
 	if (g_bBonusRoundTime) {
 		g_bScrambleDuringBRT = true;
 	}
-
-	PrintToChatAll("Scrambling the teams due to vote.");
-	return Plugin_Continue;
 }
+
+#if defined _gbans_included
+public void GB_Scramble_OnResult(bool success, const int[] redClients, int redCount, const int[] bluClients, int bluCount, const int[] waitingClients, int waitingCount, const char[] error)
+{
+	if (!success)
+	{
+		LogError("gbans balanced scramble failed: %s", error);
+		PrintToChatAll("Balanced scramble failed (%s); using a standard scramble instead.", error);
+		ScrambleStandard();
+		return;
+	}
+
+	// gbans applies the team changes immediately, so update map limits here rather than waiting for round start.
+	CreateTimer(1.0, Timer_DelayLimitsUpdate);
+}
+#endif
 
 public Action Timer_DelayLimitsUpdate(Handle timer) {
 	// subtract from maxrounds/winlimit after scramble to prevent artificial superextension of maps
