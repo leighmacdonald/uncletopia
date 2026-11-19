@@ -30,16 +30,24 @@
   ansible.posix.synchronize:
     src: "{{ role_path }}/files/"
     dest: ~/build_sourcemod/
+    # Locally compiled .smx files must never leave the controller: plugins
+    # are compiled on the server by build.sh below.
+    rsync_opts:
+      - "--exclude=*.smx"
   tags:
     - game_config
 
 - name: Copy extensions & plugin sources [local]
-  # TODO rsync doesn't work properly for local?
   when: inventory_hostname == "localhost"
-  ansible.builtin.copy:
+  ansible.posix.synchronize:
     src: "{{ role_path }}/files/"
     dest: ~/build_sourcemod/
-    mode: "0775"
+    rsync_opts:
+      - "--exclude=*.smx"
+  delegate_to: localhost
+  # Without this, delegate_to: localhost can still try SSH to that host.
+  vars:
+    ansible_connection: local
   tags:
     - game_config
 
