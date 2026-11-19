@@ -1,6 +1,9 @@
 [Unit]
 Description=Overlay filesystem for srcds-{{ item.server_name_short }}
-After=local-fs.target
+# Do not add After=local-fs.target here: systemd already orders mount units
+# before local-fs.target, and the explicit reverse ordering creates a cycle at
+# boot which makes systemd drop the mount jobs (and the srcds services that
+# Require= them never start).
 
 [Mount]
 What=overlay
