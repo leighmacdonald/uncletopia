@@ -30,6 +30,12 @@ srcds_stv_password: "changemetoo"
 srcds_stv_name: "Level 3 Sentry"
 srcds_restart_notice: true
 
+# Pin each game instance to a physical CPU core (both SMT threads where
+# available). Instances are assigned cores 1..N; core 0 and any cores beyond
+# those used by games are reserved for the OS/kernel, system services and IRQs.
+# Requires tune.yml to apply the kernel/IRQ isolation boot parameters.
+srcds_pin_cpus: true
+
 srcds_mini_dump_steamid:
 srcds_mini_dump_url: "http://crash.limetech.org"
 

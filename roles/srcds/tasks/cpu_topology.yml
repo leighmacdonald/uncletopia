@@ -1,0 +1,124 @@
+---
+# Discover physical core / SMT sibling topology on the target host and derive
+# the CPU sets used for game-server pinning and system-process isolation.
+#
+# This file is included from both the srcds role (so `just srcds` is
+# self-contained) and tune.yml (which configures the kernel boot parameters).
+# Role defaults are not loaded when tune.yml runs, hence the `default(false)`.
+#
+# Allocation, for N instances on L physical cores:
+#   instances 0 .. N-1  -> cores C1 .. CN (up to 2 SMT threads each)
+#   housekeeping        -> C0 plus every unused core C(N+1) .. C(L-1), for the
+#                          OS/kernel, system services and IRQs
+
+- name: Discover physical CPU core topology
+  ansible.builtin.shell: |
+    python3 - <<'PY'
+    import glob
+    import json
+
+
+    def expand(spec):
+        cpus = []
+        for part in spec.strip().split(','):
+            if not part:
+                continue
+            if '-' in part:
+                first, last = part.split('-', 1)
+                cpus.extend(range(int(first), int(last) + 1))
+            else:
+                cpus.append(int(part))
+        return set(cpus)
+
+
+    online = set()
+    with open('/sys/devices/system/cpu/online') as handle:
+        online = expand(handle.read())
+
+    cores = {}
+    pattern = '/sys/devices/system/cpu/cpu[0-9]*/topology/thread_siblings_list'
+    for path in glob.glob(pattern):
+        with open(path) as handle:
+            siblings = tuple(sorted(c for c in expand(handle.read()) if c in online))
+        if siblings:
+            cores[siblings] = True
+
+    # Cap each physical core at two logical CPUs, order by first logical CPU.
+    result = [list(core[:2]) for core in sorted(cores, key=lambda c: c[0])]
+    print(json.dumps(result))
+    PY
+  register: srcds_cpu_topology_raw
+  changed_when: false
+  # Read-only discovery must still run so --check/--diff can render the units.
+  check_mode: false
+  when: srcds_pin_cpus | default(false) | bool
+
+- name: Record detected CPU topology
+  ansible.builtin.set_fact:
+    srcds_cpu_cores: "{{ srcds_cpu_topology_raw.stdout | from_json }}"
+  when: srcds_pin_cpus | default(false) | bool
+
+- name: Check there is a housekeeping core for every game instance
+  ansible.builtin.assert:
+    that:
+      - srcds_cpu_cores | length > services | length
+    fail_msg: >-
+      srcds_pin_cpus requires one housekeeping core for the OS plus one core
+      per game instance. Detected {{ srcds_cpu_cores | length }} physical
+      core(s) for {{ services | length }} instance(s).
+    success_msg: >-
+      CPU pinning: {{ services | length }} instance(s) on cores
+      C1..C{{ services | length }}; C0 plus all remaining cores are
+      housekeeping.
+  when: srcds_pin_cpus | default(false) | bool
+
+- name: Derive game cores
+  ansible.builtin.set_fact:
+    srcds_game_cores: "{{ srcds_cpu_cores[1 : services | length + 1] }}"
+  when: srcds_pin_cpus | default(false) | bool
+
+- name: Derive isolated CPU list
+  ansible.builtin.set_fact:
+    srcds_game_cpus: "{{ srcds_game_cores | flatten }}"
+  when: srcds_pin_cpus | default(false) | bool
+
+- name: Derive housekeeping cores (C0 plus all unused cores)
+  ansible.builtin.set_fact:
+    srcds_housekeeping_cores: "{{ srcds_cpu_cores[:1] + srcds_cpu_cores[1 + services | length :] }}"
+  when: srcds_pin_cpus | default(false) | bool
+
+- name: Derive housekeeping CPU list
+  ansible.builtin.set_fact:
+    srcds_housekeeping_cpus: "{{ srcds_housekeeping_cores | flatten }}"
+  when: srcds_pin_cpus | default(false) | bool
+
+# The kernel normalises cpulists (e.g. 0,3,4,5,6,7 -> 0,3-7), so feed it the
+# compressed form to keep sysctl comparisons idempotent.
+- name: Compress housekeeping CPUs into kernel cpulist format
+  ansible.builtin.shell: |
+    python3 - <<'PY'
+    import json
+    import os
+
+    cpus = sorted(json.loads(os.environ['SRCDS_HOUSEKEEPING_CPUS']))
+    groups = []
+    start = previous = cpus[0]
+    for cpu in cpus[1:]:
+        if cpu == previous + 1:
+            previous = cpu
+            continue
+        groups.append(str(start) if start == previous else f'{start}-{previous}')
+        start = previous = cpu
+    groups.append(str(start) if start == previous else f'{start}-{previous}')
+    print(','.join(groups))
+    PY
+  environment:
+    SRCDS_HOUSEKEEPING_CPUS: "{{ srcds_housekeeping_cpus | to_json }}"
+  register: srcds_housekeeping_cpulist_raw
+  changed_when: false
+  when: srcds_pin_cpus | default(false) | bool
+
+- name: Record compressed housekeeping cpulist
+  ansible.builtin.set_fact:
+    srcds_housekeeping_cpulist: "{{ srcds_housekeeping_cpulist_raw.stdout }}"
+  when: srcds_pin_cpus | default(false) | bool

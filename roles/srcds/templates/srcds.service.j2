@@ -8,11 +8,10 @@ Requires={{ srcds_mount_units[item.server_name_short] }}
 Type=forking
 User={{ srcds_user }}
 Group=tf2
+Nice=-5
 
-{% if enable_threads|default(false) %}
-CPUAffinity={{ loop0 * 2 }},{{ (loop0 * 2 ) + 1 }}
-{% else %}
-CPUAffinity={{ loop0 }}
+{% if srcds_pin_cpus | default(false) | bool %}
+CPUAffinity={{ srcds_game_cores[loop0] | join(',') }}
 {% endif %}
 
 WorkingDirectory=/home/{{ srcds_user }}/srcds-{{ item.server_name_short }}

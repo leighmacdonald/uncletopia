@@ -36,8 +36,12 @@ stv_enable: true
 stv_password: "your_global_stv_password"
 stv_name: "Level 3 Sentry"
 
-# When true allocate 2 threads to the game process instead of one.
-enable_threads: true
+# Pin game servers to physical CPU cores (both SMT threads where available).
+# Instances are assigned cores 1..N in `services` order; core 0 and any unused
+# cores are reserved for the OS/kernel, system services and IRQs. Requires
+# tune.yml (or `just site`) to apply the kernel isolation boot parameters,
+# then a reboot.
+srcds_pin_cpus: false
 
 sm_download: "https://sm.alliedmods.net/smdrop/1.12/sourcemod-1.12.0-git7125-linux.tar.gz"
 metamod_download: "https://mms.alliedmods.net/mmsdrop/1.12/mmsource-1.12.0-git1192-linux.tar.gz"

@@ -39,6 +39,9 @@ web:
 system:
     @ansible-playbook -u {{ user }} -i {{ inventory }} --forks {{ forks }} {{ playbook_path }}/system.yml
 
+tune:
+    @ansible-playbook -u {{ user }} -i {{ inventory }} --forks {{ forks }} {{ playbook_path }}/tune.yml
+
 site:
     ansible-playbook -u {{ user }} -i {{ inventory }} --forks {{ forks }} site.yml
 

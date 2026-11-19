@@ -3,6 +3,9 @@
 # game server (~/.steam/sdk32 symlink below); steamcmd itself never runs.
 # The shared ~/srcds-base install is downloaded and updated with
 # DepotDownloader (Steam depots directly: no steamcmd process at all).
+- name: Discover CPU topology for game-server pinning
+  ansible.builtin.include_tasks: cpu_topology.yml
+
 - name: Create srcds root
   ansible.builtin.file:
     path: ~/steamcmd

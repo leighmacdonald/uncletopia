@@ -3,10 +3,25 @@
   hosts: tf2
   become: true
   tasks:
+    - name: Discover CPU topology for game-server pinning
+      ansible.builtin.import_tasks: roles/srcds/tasks/cpu_topology.yml
+      when: srcds_pin_cpus | default(false) | bool
+      tags: cpu_pinning
+
+    # tuned's latency-performance profile was applied after (and could override)
+    # the explicit sysctls below, and restoring its saved values on shutdown
+    # undoes them. Everything relevant is now managed directly; the CPU
+    # governor is handled by system.yml via cpufrequtils. Remove it first.
+    - name: Remove tuned (its profile overrides explicit sysctls)
+      ansible.builtin.apt:
+        name: tuned
+        state: absent
+        purge: true
+
     - name: Install sysfsutils
       ansible.builtin.package:
         name: sysfsutils
-        state: latest # noqa package-latest
+        state: present
 
     - name: Enable transparent_hugepage Forever
       ansible.builtin.lineinfile:
@@ -16,97 +31,184 @@
         line: "kernel/mm/transparent_hugepage/enabled = never"
         mode: "0755"
 
-    - name: Enable transparent_hugepage  # noqa no-changed-when
-      ansible.builtin.command:
-        cmd: echo never {{ ">" }} /sys/kernel/mm/transparent_hugepage/enabled
+    - name: Disable transparent hugepages at runtime
+      ansible.builtin.shell: |
+        f=/sys/kernel/mm/transparent_hugepage/enabled
+        [ -w "$f" ] || exit 0
+        if ! grep -q '\[never\]' "$f"; then
+          echo never > "$f"
+          echo changed
+        fi
+      register: thp_runtime_state
+      changed_when: "'changed' in thp_runtime_state.stdout"
+
+    # Some kernels expose kernel.nmi_watchdog but reject writes to it. A stale
+    # sysctl.conf entry then breaks every later task that uses reload: true, so
+    # detect support first and remove the entry on kernels that reject it.
+    - name: Check whether kernel.nmi_watchdog can be written
+      ansible.builtin.command: sysctl -w kernel.nmi_watchdog=0
+      register: nmi_watchdog_write
+      changed_when: false
+      failed_when: false
+
+    - name: Drop kernel.nmi_watchdog setting on kernels that reject it
+      ansible.posix.sysctl:
+        sysctl_file: /etc/sysctl.d/99-uncletopia.conf
+        name: kernel.nmi_watchdog
+        state: absent
+        reload: false
+      when: nmi_watchdog_write.rc != 0
+
+    # Newer systemd releases only read /etc/sysctl.d/, so move all of our
+    # settings there and drop the stale entries from /etc/sysctl.conf.
+    - name: Remove legacy sysctl entries from /etc/sysctl.conf
+      ansible.builtin.lineinfile:
+        path: /etc/sysctl.conf
+        regexp: '^{{ item | regex_escape }}\s*='
+        state: absent
+      loop:
+        - vm.swappiness
+        - vm.dirty_ratio
+        - vm.dirty_background_ratio
+        - vm.zone_reclaim_mode
+        - kernel.sched_rt_runtime_us
+        - kernel.hung_task_timeout_secs
+        - kernel.nmi_watchdog
+        - kernel.numa_balancing
+        - vm.stat_interval
+        - vm.min_free_kbytes
+        - net.core.rmem_default
+        - net.core.rmem_max
+        - net.core.busy_read
+        - net.core.busy_poll
+        - net.ipv4.udp_mem
+        - net.core.netdev_max_backlog
+        - kernel.watchdog_cpumask
 
     - name: Set vm.swappiness
       ansible.posix.sysctl:
+        sysctl_file: /etc/sysctl.d/99-uncletopia.conf
         name: vm.swappiness
-        value: '10'
+        value: "10"
+        state: present
+        reload: true
+
+    - name: Set vm.dirty_ratio
+      ansible.posix.sysctl:
+        sysctl_file: /etc/sysctl.d/99-uncletopia.conf
+        name: vm.dirty_ratio
+        value: "10"
+        state: present
+        reload: true
+
+    - name: Set vm.dirty_background_ratio
+      ansible.posix.sysctl:
+        sysctl_file: /etc/sysctl.d/99-uncletopia.conf
+        name: vm.dirty_background_ratio
+        value: "3"
         state: present
         reload: true
 
     - name: Set vm.zone_reclaim_mode
       ansible.posix.sysctl:
+        sysctl_file: /etc/sysctl.d/99-uncletopia.conf
         name: vm.zone_reclaim_mode
-        value: '0'
+        value: "0"
         state: present
         reload: true
 
-    - name: Set kernel.sched_rt_runtime_us
+    - name: Disable proactive compaction
       ansible.posix.sysctl:
-        name: kernel.sched_rt_runtime_us
-        value: '1000000'
+        sysctl_file: /etc/sysctl.d/99-uncletopia.conf
+        name: vm.compaction_proactiveness
+        value: "0"
         state: present
         reload: true
 
     - name: Set kernel.hung_task_timeout_secs
       ansible.posix.sysctl:
+        sysctl_file: /etc/sysctl.d/99-uncletopia.conf
         name: kernel.hung_task_timeout_secs
-        value: '600'
+        value: "600"
         state: present
         reload: true
+
     - name: Set kernel.nmi_watchdog
       ansible.posix.sysctl:
+        sysctl_file: /etc/sysctl.d/99-uncletopia.conf
         name: kernel.nmi_watchdog
-        value: '0'
+        value: "0"
         state: present
         reload: true
+      when: nmi_watchdog_write.rc == 0
+
     - name: Set kernel.numa_balancing
       ansible.posix.sysctl:
+        sysctl_file: /etc/sysctl.d/99-uncletopia.conf
         name: kernel.numa_balancing
-        value: '0'
+        value: "0"
         state: present
         reload: true
+
     - name: Set vm.stat_interval
       ansible.posix.sysctl:
+        sysctl_file: /etc/sysctl.d/99-uncletopia.conf
         name: vm.stat_interval
-        value: '10'
+        value: "10"
         state: present
         reload: true
+
     - name: Set vm.min_free_kbytes
       ansible.posix.sysctl:
+        sysctl_file: /etc/sysctl.d/99-uncletopia.conf
         name: vm.min_free_kbytes
-        value: '1024000'
+        value: "524288"
         state: present
         reload: true
+
     - name: Set net.core.rmem_default
       ansible.posix.sysctl:
+        sysctl_file: /etc/sysctl.d/99-uncletopia.conf
         name: net.core.rmem_default
-        value: '851968'
+        value: "851968"
         state: present
         reload: true
+
     - name: Set net.core.rmem_max
       ansible.posix.sysctl:
+        sysctl_file: /etc/sysctl.d/99-uncletopia.conf
         name: net.core.rmem_max
-        value: '851968'
+        value: "851968"
         state: present
         reload: true
 
     - name: Set net.core.busy_read
       ansible.posix.sysctl:
+        sysctl_file: /etc/sysctl.d/99-uncletopia.conf
         name: net.core.busy_read
-        value: '50'
+        value: "50"
         state: present
         reload: true
 
     - name: Set net.core.busy_poll
       ansible.posix.sysctl:
+        sysctl_file: /etc/sysctl.d/99-uncletopia.conf
         name: net.core.busy_poll
-        value: '50'
+        value: "50"
         state: present
         reload: true
 
     - name: Set net.ipv4.udp_mem
       ansible.posix.sysctl:
+        sysctl_file: /etc/sysctl.d/99-uncletopia.conf
         name: net.ipv4.udp_mem
-        value: '1445727 1927636 2891454'
+        value: "1445727 1927636 2891454"
         state: present
         reload: true
 
     - name: Set net.core.netdev_max_backlog
       ansible.posix.sysctl:
+        sysctl_file: /etc/sysctl.d/99-uncletopia.conf
         name: net.core.netdev_max_backlog
         value: "2000"
         state: present
@@ -118,14 +220,187 @@
         name: irqbalance
         state: stopped
 
-    - name: Install Tuned
-      ansible.builtin.apt:
-        update_cache: true
-        cache_valid_time: 0
-        state: present
-        pkg:
-          - tuned
+    # Hardware-level performance settings formerly enforced by tuned's
+    # latency-performance profile. sysfs writes are runtime-only, so this
+    # playbook must run after each boot (the persistent parts are the cpufreq
+    # governor via system.yml and the C-state boot params below).
+    - name: Set CPU scaling governor to performance
+      ansible.builtin.shell: |
+        for f in /sys/devices/system/cpu/cpu[0-9]*/cpufreq/scaling_governor; do
+          [ -w "$f" ] || continue
+          if [ "$(cat "$f")" != "performance" ]; then
+            echo performance > "$f"
+            echo "$f"
+          fi
+        done
+      register: cpu_governor_write
+      changed_when: cpu_governor_write.stdout_lines | length > 0
 
-    - name: Tune Adm  # noqa no-changed-when
-      ansible.builtin.command:
-        cmd: tuned-adm profile latency-performance
+    - name: Set CPU energy performance preference to performance
+      ansible.builtin.shell: |
+        for f in /sys/devices/system/cpu/cpu[0-9]*/cpufreq/energy_performance_preference; do
+          [ -w "$f" ] || continue
+          if [ "$(cat "$f")" != "performance" ]; then
+            echo performance > "$f"
+            echo "$f"
+          fi
+        done
+      register: cpu_energy_pref_write
+      changed_when: cpu_energy_pref_write.stdout_lines | length > 0
+
+    - name: Set minimum Intel P-state performance to 100%
+      ansible.builtin.shell: |
+        f=/sys/devices/system/cpu/intel_pstate/min_perf_pct
+        if [ -w "$f" ] && [ "$(cat "$f")" != "100" ]; then
+          echo 100 > "$f"
+          echo "$f"
+        fi
+      register: cpu_min_perf_write
+      changed_when: cpu_min_perf_write.stdout | length > 0
+
+    - name: Set ACPI platform profile to performance
+      ansible.builtin.shell: |
+        f=/sys/firmware/acpi/platform_profile
+        if [ -w "$f" ] && [ "$(cat "$f")" != "performance" ]; then
+          echo performance > "$f"
+          echo "$f"
+        fi
+      register: platform_profile_write
+      changed_when: platform_profile_write.stdout | length > 0
+
+    # Game-server CPU pinning. Role defaults are not loaded when this playbook
+    # runs before the srcds role, hence the explicit default(false) everywhere.
+    - name: Ensure config drop-in directories exist
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        mode: "0755"
+      loop:
+        - /etc/systemd/system.conf.d
+        - /etc/default/grub.d
+      tags: cpu_pinning
+
+    # Keep the hard/soft lockup watchdog off isolated game cores. The kernel
+    # usually excludes nohz_full CPUs already, but set it explicitly so the
+    # housekeeping set is authoritative (and clean it up when pinning is off).
+    - name: Check watchdog_cpumask support
+      ansible.builtin.stat:
+        path: /proc/sys/kernel/watchdog_cpumask
+      register: watchdog_cpumask_stat
+      when: srcds_pin_cpus | default(false) | bool
+      tags: cpu_pinning
+
+    - name: Keep lockup watchdogs on housekeeping cores
+      ansible.posix.sysctl:
+        sysctl_file: /etc/sysctl.d/99-uncletopia.conf
+        name: kernel.watchdog_cpumask
+        value: "{{ srcds_housekeeping_cpulist }}"
+        state: present
+        reload: true
+      when:
+        - srcds_pin_cpus | default(false) | bool
+        - watchdog_cpumask_stat.stat.exists
+      tags: cpu_pinning
+
+    - name: Remove watchdog_cpumask setting when pinning is disabled
+      ansible.posix.sysctl:
+        sysctl_file: /etc/sysctl.d/99-uncletopia.conf
+        name: kernel.watchdog_cpumask
+        state: absent
+        reload: false
+      when: not (srcds_pin_cpus | default(false) | bool)
+      tags: cpu_pinning
+
+    - name: Confine non-game systemd services to the housekeeping cores
+      ansible.builtin.copy:
+        dest: /etc/systemd/system.conf.d/10-srcds-cpu-affinity.conf
+        content: |
+          # Managed by Ansible (uncletopia) - do not edit.
+          [Manager]
+          DefaultCPUAffinity={{ srcds_housekeeping_cpus | join(',') }}
+        mode: "0644"
+        directory_mode: "0755"
+      when: srcds_pin_cpus | default(false) | bool
+      register: srcds_default_cpu_affinity
+      tags: cpu_pinning
+
+    - name: Remove non-game systemd CPU affinity drop-in
+      ansible.builtin.file:
+        path: /etc/systemd/system.conf.d/10-srcds-cpu-affinity.conf
+        state: absent
+      when: not (srcds_pin_cpus | default(false) | bool)
+      register: srcds_default_cpu_affinity_removed
+      tags: cpu_pinning
+
+    # There is no systemd module action for daemon-reexec; a plain command is
+    # required here (daemon-reload does not re-read system.conf).
+    - name: Re-exec systemd to apply DefaultCPUAffinity # noqa command-instead-of-module
+      ansible.builtin.command: systemctl daemon-reexec
+      when: (srcds_default_cpu_affinity | default({})).changed or (srcds_default_cpu_affinity_removed | default({})).changed
+      changed_when: false
+      tags: cpu_pinning
+
+    # Unbound kernel threads are already confined to the housekeeping CPUs by
+    # nohz_full on the stock kernel; kthread_cpus= is a real-time-kernel-only
+    # parameter and is rejected here, so it is deliberately not used.
+    - name: Build kernel isolation cmdline
+      ansible.builtin.set_fact:
+        srcds_isolation_cmdline: >-
+          GRUB_CMDLINE_LINUX_DEFAULT="$GRUB_CMDLINE_LINUX_DEFAULT
+          isolcpus=domain,managed_irq,{{ srcds_game_cpus | join(',') }}
+          nohz_full={{ srcds_game_cpus | join(',') }}
+          rcu_nocbs={{ srcds_game_cpus | join(',') }}
+          irqaffinity={{ srcds_housekeeping_cpus | join(',') }}
+          tsc=reliable tsc=nowatchdog
+          intel_idle.max_cstate=1 processor.max_cstate=1"
+      when:
+        - srcds_pin_cpus | default(false) | bool
+        - srcds_game_cpus | length > 0
+      tags: cpu_pinning
+
+    - name: Add kernel CPU isolation boot parameters
+      ansible.builtin.copy:
+        dest: /etc/default/grub.d/99-srcds-cpu-isolation.cfg
+        content: |
+          # Managed by Ansible (uncletopia) - do not edit.
+          {{ srcds_isolation_cmdline }}
+        mode: "0644"
+        directory_mode: "0755"
+      when:
+        - srcds_pin_cpus | default(false) | bool
+        - srcds_game_cpus | length > 0
+      register: srcds_grub_isolation
+      tags: cpu_pinning
+
+    - name: Remove kernel CPU isolation boot parameters
+      ansible.builtin.file:
+        path: /etc/default/grub.d/99-srcds-cpu-isolation.cfg
+        state: absent
+      when: not (srcds_pin_cpus | default(false) | bool) or (srcds_game_cpus is defined and srcds_game_cpus | length == 0)
+      register: srcds_grub_isolation_removed
+      tags: cpu_pinning
+
+    - name: Regenerate grub configuration
+      ansible.builtin.command: update-grub
+      when: (srcds_grub_isolation | default({})).changed or (srcds_grub_isolation_removed | default({})).changed
+      changed_when: true
+      tags: cpu_pinning
+
+    - name: Move IRQs to the housekeeping cores immediately # noqa no-handler
+      ansible.builtin.shell: |
+        for irq in /proc/irq/[0-9]*/smp_affinity_list; do
+          if [ -w "$irq" ]; then
+            printf '%s' '{{ srcds_housekeeping_cpus | join(',') }}' > "$irq" 2>/dev/null || true
+          fi
+        done
+      when: (srcds_grub_isolation | default({})).changed
+      changed_when: false
+      tags: cpu_pinning
+
+    - name: Flag pending reboot for kernel isolation changes
+      ansible.builtin.file:
+        path: /var/run/reboot-required
+        state: touch
+        mode: "0644"
+      when: (srcds_grub_isolation | default({})).changed or (srcds_grub_isolation_removed | default({})).changed
+      tags: cpu_pinning
