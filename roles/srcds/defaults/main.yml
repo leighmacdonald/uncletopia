@@ -37,12 +37,12 @@ srcds_restart_notice: true
 # a2scache answers A2S queries in the kernel. Requires `srcds_ip_public` in
 # the host's inventory: the real address clients query, never 0.0.0.0/127/8.
 srcds_query_cache: false
-a2scache_rev: "master"
+a2scache_version: "v3"
+# sha256 of the release binary, verified by get_url on download.
+a2scache_binary_sha256: "002ff4310c710ed35a008b71e1633bc94ce762a6c036fff4cdb4e814b4152064"
 a2scache_interface: "{{ ansible_facts['default_ipv4']['interface'] }}"
 a2scache_pin_dir: "/sys/fs/bpf/a2scache"
 a2scache_metrics_port: 9103
-# Built once on the controller (the upstream repo ships no release binary).
-a2scache_local_build_dir: "{{ playbook_dir }}/.tmp/a2scache"
 a2scache_ttl_secs: 30
 a2scache_interval_secs: 10
 a2scache_timeout_ms: 2000

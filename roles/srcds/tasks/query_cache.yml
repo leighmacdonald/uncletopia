@@ -14,35 +14,14 @@
     quiet: true
   tags: query_cache
 
-- name: Create local a2scache build directory
-  ansible.builtin.file:
-    path: "{{ a2scache_local_build_dir }}"
-    state: directory
-    mode: "0755"
-  delegate_to: localhost
-  become: false
-  tags: query_cache
-
-# The upstream repo has no release artifacts; build the static binary once on
-# the controller with its pinned nix flake, then copy it to the hosts.
-- name: Build a2scache on the controller
-  ansible.builtin.command:
-    argv:
-      - nix
-      - build
-      - "github:leighmacdonald/ebpf-query-cache/{{ a2scache_rev }}#a2scache"
-      - --out-link
-      - "{{ a2scache_local_build_dir }}/a2scache"
-    creates: "{{ a2scache_local_build_dir }}/a2scache/bin/a2scache"
-  delegate_to: localhost
-  become: false
-  tags: query_cache
-
+# Upstream publishes a fully static musl binary with the BPF ELF embedded, so
+# there is no nix/Rust toolchain dependency on the controller or the host.
 - name: Install a2scache binary
-  ansible.builtin.copy:
-    src: "{{ a2scache_local_build_dir }}/a2scache/bin/a2scache"
+  ansible.builtin.get_url:
+    url: "https://github.com/leighmacdonald/ebpf-query-cache/releases/download/{{ a2scache_version }}/a2scache"
     dest: /usr/local/bin/a2scache
     mode: "0755"
+    checksum: "sha256:{{ a2scache_binary_sha256 }}"
   become: true
   tags: query_cache
 
