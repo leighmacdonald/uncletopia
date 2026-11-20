@@ -14,6 +14,10 @@ srcds_client_port: ""
 srcds_workshop_auth_key: ""
 srcds_use_sdr: false
 
+# eBPF A2S query cache. Enable per host in host_vars and set srcds_ip_public.
+srcds_query_cache: false
+a2scache_metrics_port: 9103
+
 fastdl_url: ""
 sv_tags: "kittyland,nodogs"
 sv_pure: 1

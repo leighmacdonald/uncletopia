@@ -2,6 +2,11 @@ timezone: "America/New_York"
 srcds_region: 0
 # external ip
 ip: "1.2.3.4"
+# Public address clients query for A2S; required by srcds_query_cache.
+# Must be a real IP, never 0.0.0.0 or 127.0.0.1.
+srcds_ip_public: "1.2.3.4"
+# Answer A2S queries in the kernel with the eBPF query cache daemon.
+srcds_query_cache: false
 srcds_use_sdr: false
 wireguard_addresses:
   - "10.20.30.10/24"

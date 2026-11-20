@@ -30,6 +30,25 @@ srcds_stv_password: "changemetoo"
 srcds_stv_name: "Level 3 Sentry"
 srcds_restart_notice: true
 
+# eBPF A2S query cache (https://github.com/leighmacdonald/ebpf-query-cache).
+# When enabled, one [[server]] entry is generated per `services` entry and
+# a2scache answers A2S queries in the kernel. Requires `srcds_ip_public` in
+# the host's inventory: the real address clients query, never 0.0.0.0/127/8.
+srcds_query_cache: false
+a2scache_rev: "master"
+a2scache_interface: "{{ ansible_facts['default_ipv4']['interface'] }}"
+a2scache_pin_dir: "/sys/fs/bpf/a2scache"
+a2scache_metrics_port: 9103
+# Built once on the controller (the upstream repo ships no release binary).
+a2scache_local_build_dir: "{{ playbook_dir }}/.tmp/a2scache"
+a2scache_ttl_secs: 30
+a2scache_interval_secs: 10
+a2scache_timeout_ms: 2000
+a2scache_per_ip_capacity: 10000
+a2scache_per_ip_refill_per_s: 2000
+a2scache_global_capacity: 200000
+a2scache_global_refill_per_s: 50000
+
 # Pin each game instance to a physical CPU core (both SMT threads where
 # available). Instances are assigned cores 1..N; core 0 and any cores beyond
 # those used by games are reserved for the OS/kernel, system services and IRQs.

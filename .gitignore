@@ -18,6 +18,7 @@ roles/cloudalchemy.*
 .direnv
 .sourcemod
 .venv
+.tmp/
 AGENT*
 .zed/
 new/

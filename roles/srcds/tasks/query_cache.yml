@@ -1,0 +1,124 @@
+---
+# eBPF A2S query cache (https://github.com/leighmacdonald/ebpf-query-cache).
+# Every `services` entry gets one [[server]] entry so A2S queries are answered
+# in the kernel; the userspace daemon only keeps the cache warm.
+
+- name: Assert public IP is usable by a2scache
+  ansible.builtin.assert:
+    that:
+      - srcds_ip_public is defined
+      - srcds_ip_public not in ["", "0.0.0.0", "127.0.0.1"]
+    fail_msg: >-
+      srcds_ip_public must be the real address clients query (never 0.0.0.0
+      or 127.0.0.1) when srcds_query_cache is enabled.
+    quiet: true
+  tags: query_cache
+
+- name: Create local a2scache build directory
+  ansible.builtin.file:
+    path: "{{ a2scache_local_build_dir }}"
+    state: directory
+    mode: "0755"
+  delegate_to: localhost
+  become: false
+  tags: query_cache
+
+# The upstream repo has no release artifacts; build the static binary once on
+# the controller with its pinned nix flake, then copy it to the hosts.
+- name: Build a2scache on the controller
+  ansible.builtin.command:
+    argv:
+      - nix
+      - build
+      - "github:leighmacdonald/ebpf-query-cache/{{ a2scache_rev }}#a2scache"
+      - --out-link
+      - "{{ a2scache_local_build_dir }}/a2scache"
+    creates: "{{ a2scache_local_build_dir }}/a2scache/bin/a2scache"
+  delegate_to: localhost
+  become: false
+  tags: query_cache
+
+- name: Install a2scache binary
+  ansible.builtin.copy:
+    src: "{{ a2scache_local_build_dir }}/a2scache/bin/a2scache"
+    dest: /usr/local/bin/a2scache
+    mode: "0755"
+  become: true
+  tags: query_cache
+
+- name: Install a2scache systemd units
+  ansible.builtin.copy:
+    src: "a2scache/{{ item }}"
+    dest: "/etc/systemd/system/{{ item }}"
+    mode: "0644"
+  loop:
+    - a2scache-attach@.service
+    - a2scache-daemon.service
+  become: true
+  tags: query_cache
+
+- name: Reload systemd for a2scache units
+  ansible.builtin.systemd:
+    daemon_reload: true
+  become: true
+  tags: query_cache
+
+- name: Ensure bpffs is mounted for a2scache pins
+  ansible.posix.mount:
+    path: /sys/fs/bpf
+    src: bpf
+    fstype: bpf
+    opts: nodev,noexec,nosuid
+    dump: "0"
+    passno: "0"
+    state: mounted
+  become: true
+  tags: query_cache
+
+- name: Generate a2scache config
+  ansible.builtin.template:
+    src: a2scache.toml.j2
+    dest: /etc/a2scache.toml
+    mode: "0644"
+  become: true
+  notify: Restart a2scache daemon
+  tags:
+    - query_cache
+    - game_config
+
+- name: Gather service facts for a2scache attach units
+  ansible.builtin.service_facts:
+  become: true
+  tags: query_cache
+
+- name: Detach a2scache from stale interfaces
+  ansible.builtin.systemd:
+    name: "{{ item }}"
+    enabled: false
+    state: stopped
+  loop: >-
+    {{ ansible_facts.services | dict2items
+       | selectattr('key', 'match', '^a2scache-attach@.+\.service$')
+       | map(attribute='key') | list }}
+  when: item != 'a2scache-attach@' ~ a2scache_interface ~ '.service'
+  become: true
+  tags: query_cache
+
+# Always re-attach: the pinned BPF program must match the installed binary's
+# map layouts, and a oneshot unit reporting active does not prove it does.
+- name: Attach a2scache to the query-facing interface
+  ansible.builtin.systemd:
+    name: "a2scache-attach@{{ a2scache_interface }}"
+    enabled: true
+    state: restarted
+  become: true
+  notify: Restart a2scache daemon
+  tags: query_cache
+
+- name: Enable and start a2scache daemon
+  ansible.builtin.systemd:
+    name: a2scache-daemon
+    enabled: true
+    state: started
+  become: true
+  tags: query_cache

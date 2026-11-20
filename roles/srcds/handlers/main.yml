@@ -4,3 +4,9 @@
     name: srcds-{{ item }}
     state: restarted
   loop: "{{ srcds_services }}"
+
+- name: Restart a2scache daemon
+  become: true
+  ansible.builtin.systemd:
+    name: a2scache-daemon
+    state: restarted

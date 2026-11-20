@@ -107,6 +107,15 @@
             comment: node_exporter
             src: "{{ vpn_mask }}"
 
+        - name: Allow a2scache metrics
+          community.general.ufw:
+            rule: allow
+            port: "{{ a2scache_metrics_port | default(9103) }}"
+            proto: tcp
+            comment: a2scache
+            src: "{{ vpn_mask }}"
+          when: srcds_query_cache | default(false) | bool
+
       always:
         - name: Grant ssh access
           community.general.ufw:

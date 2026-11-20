@@ -50,6 +50,19 @@ scrape_configs:
     static_configs:
       - targets: ['srcds_watch:{{ srcds_watch.port|default(8899) }}']
 
+{# Targets come from tf2 hosts that opted into the eBPF query cache. #}
+{% set a2scache_targets = [] %}
+{% for hostname, conf in vpn_hosts.items() %}
+{% if conf in hostvars and hostvars[conf]['srcds_query_cache'] | default(false) | bool %}
+{% set _ = a2scache_targets.append({'targets': [conf ~ ':' ~ (metrics_a2scache_port | string)], 'labels': {'instance': hostname}}) %}
+{% endif %}
+{% endfor %}
+{% if a2scache_targets | length > 0 %}
+  - job_name: 'a2scache'
+    scrape_interval: 15s
+    static_configs: {{ a2scache_targets | to_json }}
+{% endif %}
+
 #  - job_name: srcds-proxy
 #    scrape_interval: 10s
 #    metrics_path: /metrics

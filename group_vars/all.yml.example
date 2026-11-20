@@ -8,6 +8,8 @@ ssh_allowed_hosts:
   #- 12.34.56.78/32
 
 vpn_mask: 10.20.30.0/24
+# Prometheus port exposed by the optional a2scache daemon on tf2 hosts.
+a2scache_metrics_port: 9103
 vpn_hosts:
   host-1.kittyland.com:
     ip: 10.0.0.1

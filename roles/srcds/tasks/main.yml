@@ -859,3 +859,8 @@
     index_var: loop0
   when: ansible_facts["distribution"] == 'Ubuntu'
   tags: cron
+
+- name: Configure eBPF A2S query cache
+  ansible.builtin.include_tasks: query_cache.yml
+  when: srcds_query_cache | default(false) | bool
+  tags: query_cache

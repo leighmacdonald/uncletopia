@@ -1,0 +1,24 @@
+# Managed by Ansible — roles/srcds/templates/a2scache.toml.j2
+# https://github.com/leighmacdonald/ebpf-query-cache
+
+[bpf]
+pin_dir = "{{ a2scache_pin_dir }}"
+
+[defaults]
+ttl_secs = {{ a2scache_ttl_secs }}
+interval_secs = {{ a2scache_interval_secs }}
+timeout_ms = {{ a2scache_timeout_ms }}
+per_ip_capacity = {{ a2scache_per_ip_capacity }}
+per_ip_refill_per_s = {{ a2scache_per_ip_refill_per_s }}
+global_capacity = {{ a2scache_global_capacity }}
+global_refill_per_s = {{ a2scache_global_refill_per_s }}
+
+[metrics]
+listen = "0.0.0.0:{{ a2scache_metrics_port }}"
+
+{% for svc in services %}
+# {{ svc.name | default('instance-' ~ loop.index0) }}
+[[server]]
+ip = "{{ srcds_ip_public }}"
+port = {{ srcds_base_port + (loop.index0 * 10) }}
+{% endfor %}

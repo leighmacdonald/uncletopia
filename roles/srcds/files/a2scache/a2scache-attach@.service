@@ -1,0 +1,27 @@
+[Unit]
+Description=a2scache eBPF A2S query cache: TC ingress attach on %i
+Documentation=man:a2scache(8)
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+# The refresh daemon starts automatically (WantedBy below is not needed;
+# the daemon unit is independent and retries until the pins exist).
+ExecStart=/usr/local/bin/a2scache attach %i
+ExecStop=/usr/local/bin/a2scache detach %i
+# attach: clsact qdisc (NET_ADMIN) + BPF program load/attach (BPF).
+# CAP_SYS_ADMIN is required for the verifier load: the program does
+# stack-pointer arithmetic the verifier only accepts from root
+# ("pointer arithmetic with it prohibited for !root").
+AmbientCapabilities=CAP_BPF CAP_NET_ADMIN CAP_SYS_ADMIN
+CapabilityBoundingSet=CAP_BPF CAP_NET_ADMIN CAP_SYS_ADMIN
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+ReadWritePaths=/sys/fs/bpf
+
+[Install]
+WantedBy=multi-user.target
