@@ -81,3 +81,8 @@ scrape_configs:
       - targets: ['gbans-service:{{ gbans_web.http_port|default(6006) }}']
         labels:
           instance: {{ metrics_hostname }}
+
+{# Optional user-supplied scrape configs (metrics_custom_scrape_configs). #}
+{% for scrape_config in metrics_custom_scrape_configs | default([]) %}
+{{ [scrape_config] | to_nice_yaml(indent=2, width=1000) | trim | indent(2, true) }}
+{% endfor %}
