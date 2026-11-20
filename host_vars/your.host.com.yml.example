@@ -17,6 +17,8 @@ services:
     gbans_key: "yyyyyyyyyyyyyyyyyyyy"
     log_secret: 111111111
     rotation: "all"
+    # Appended to sv_tags (or srcds_sv_tags when unset); string or list.
+    # sv_tags_extra: "customtag,anothertag"
     pve_mode: true
     srcds_rcon_password: aaaaaaaaaaa
   - name: "Kittyland | 2 | Community"

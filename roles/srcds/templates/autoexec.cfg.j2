@@ -13,7 +13,10 @@ tf_autobalance_dead_candidates_maxtime 0
 tf_autobalance_force_candidates_maxtime 0
 tf_autobalance_xp_bonus 0
 
-sv_tags "{{ item.sv_tags|default(srcds_sv_tags) }}"
+{% set base_tags = item.sv_tags|default(srcds_sv_tags) %}
+{% set extra_tags = item.sv_tags_extra|default([]) %}
+{% set extra_tags = extra_tags if extra_tags is not string else [extra_tags] %}
+sv_tags "{{ ([base_tags] + extra_tags) | select | list | join(',') }}"
 
 sv_rcon_banpenalty 1440
 sv_rcon_minfailures 5

@@ -18,6 +18,8 @@ srcds_base_manifest: ""
 srcds_whitelist_default: ""
 srcds_fastdl_url: ""
 srcds_sv_tags: "uncletopia,nocrits,nodmgspread"
+# Per service: `sv_tags` replaces the above; `sv_tags_extra` (string or list)
+# appends to it instead.
 srcds_sv_pure: 1
 srcds_start_map: "pl_badwater"
 srcds_log_file_enable: false
