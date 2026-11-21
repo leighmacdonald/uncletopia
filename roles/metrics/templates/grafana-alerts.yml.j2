@@ -1,0 +1,86 @@
+---
+apiVersion: 1
+
+groups:
+  - orgId: 1
+    name: a2scache
+    folder: a2scache
+    interval: 1m
+    rules:
+      - uid: a2scache-high-drop-rate
+        title: A2SCacheHighDropRate
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              datasource:
+                type: prometheus
+                uid: prometheus
+              editorMode: code
+              expr: sum by (instance) (rate(a2scache_bpf_events_total{job="a2scache",stat=~"dropped_.*"}[5m]))
+              instant: true
+              interval: ""
+              intervalMs: 15000
+              legendFormat: __auto
+              maxDataPoints: 43200
+              range: false
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - {{ metrics_a2scache_drop_rate_limit }}
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: threshold
+        noDataState: NoData
+        execErrState: Error
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "a2scache drop rate >{{ metrics_a2scache_drop_rate_limit }} req/s on {% raw %}{{ $labels.instance }}{% endraw %}"
+          description: "The eBPF A2S query cache has been dropping more than {{ metrics_a2scache_drop_rate_limit }} queries/s for 2m. Check for an A2S query flood or cache/backend health issues."
+
+{# No contact point or policy is provisioned when the webhook is empty, leaving Grafana's defaults. #}
+{% if metrics_discord_alert_webhook | default('') | trim | length > 0 %}
+contactPoints:
+  - orgId: 1
+    name: discord
+    receivers:
+      - uid: discord
+        type: discord
+        settings:
+          url: {{ metrics_discord_alert_webhook }}
+
+policies:
+  - orgId: 1
+    receiver: discord
+    group_by: ['alertname', 'instance']
+    group_wait: 30s
+    group_interval: 5m
+    repeat_interval: 4h
+{% endif %}

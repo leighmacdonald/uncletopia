@@ -28,20 +28,6 @@ datasources:
     version: 2
     editable: true
 
-  # P7647F508D5F54FCB
-  - name: Alertmanager
-    type: alertmanager
-    url: http://alertmanager:9093
-    access: proxy
-    uid: alertmanager
-    jsonData:
-      # Valid options for implementation include mimir, cortex and prometheus
-      implementation: prometheus
-      # Whether or not Grafana should send alert instances to this Alertmanager
-      handleGrafanaManagedAlerts: true
-    # optionally
-    basicAuth: false
-
   # P4349FF6A225D1394
   - name: "PostgresSQL (bd-api)"
     type: postgres

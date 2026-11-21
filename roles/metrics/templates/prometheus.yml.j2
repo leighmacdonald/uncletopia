@@ -1,12 +1,6 @@
 global:
   scrape_interval:     15s # By default, scrape targets every 15 seconds.
 
-alerting:
-  alertmanagers:
-    - static_configs:
-        - targets:
-          - "alertmanager:{{ alertmanager.port }}"
-
 scrape_configs:
   - job_name: 'prometheus'
     honor_labels: true

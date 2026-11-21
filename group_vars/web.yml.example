@@ -19,6 +19,9 @@ node_exporter:
 prometheus:
   port: 9090
 
+# Alertmanager Discord contact. Leave empty to disable provisioning it.
+metrics_discord_alert_webhook: ""
+
 # Optional extra scrape configs appended to the generated prometheus.yml.
 # Each entry is a full scrape config mapping.
 #metrics_custom_scrape_configs:

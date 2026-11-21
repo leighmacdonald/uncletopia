@@ -1,7 +1,7 @@
 ---
 galaxy_info:
   author: uncletopia
-  description: Monitoring stack (Prometheus, Grafana, Alertmanager)
+  description: Monitoring stack (Prometheus, Grafana)
   company: uncletopia.com
   license: MIT
   min_ansible_version: "2.14"
@@ -16,6 +16,5 @@ galaxy_info:
     - monitoring
     - prometheus
     - grafana
-    - alertmanager
 
 dependencies: []

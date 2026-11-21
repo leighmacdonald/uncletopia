@@ -1,7 +1,6 @@
 ---
 metrics_port: 9090
 metrics_ip: 127.0.0.1
-metrics_alertmanager_port: 9093
 metrics_grafana_port: 3000
 metrics_grafana_allow_sign_up: false
 metrics_node_exporter_port: 9100
@@ -10,3 +9,9 @@ metrics_a2scache_port: 9103
 # Optional extra Prometheus scrape configs, appended to the generated
 # scrape_configs. Each entry is a full scrape config mapping.
 metrics_custom_scrape_configs: []
+
+# Alertmanager Discord contact point. Leave empty to disable provisioning it.
+metrics_discord_alert_webhook: ""
+
+# Fire A2SCacheHighDropRate when dropped A2S queries/s per instance exceed this.
+metrics_a2scache_drop_rate_limit: 15
