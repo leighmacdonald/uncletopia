@@ -23470,8 +23470,8 @@
       },
       {
         "current": {
-          "text": "atl-1.us.uncletopia.com",
-          "value": "atl-1.us.uncletopia.com"
+          "text": "mtl-1.ca.uncletopia.com",
+          "value": "mtl-1.ca.uncletopia.com"
         },
         "datasource": {
           "type": "prometheus",

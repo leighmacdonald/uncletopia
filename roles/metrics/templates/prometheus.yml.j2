@@ -34,9 +34,14 @@ scrape_configs:
   - job_name: 'node'
     static_configs:
 {% for hostname, conf in vpn_hosts.items() %}
-      - targets: ['{{ conf }}:{{ node_exporter.port|default(9100) }}']
+{# Prometheus cannot reach the local host VPN IP from inside Docker; use the #}
+{# container name on caddy_net for the metrics host itself. #}
+      - targets: ['{% if conf == metrics_hostname %}node_exporter{% else %}{{ conf }}{% endif %}:{{ node_exporter.port|default(9100) }}']
         labels:
           instance: {{ hostname }}
+{% endfor %}
+{% for target in metrics_node_extra_targets | default([]) %}
+{{ [target] | to_nice_yaml(indent=2, width=1000) | trim | indent(6, true) }}
 {% endfor %}
 
   - job_name: 'srcds'
@@ -75,6 +80,20 @@ scrape_configs:
       - targets: ['gbans-service:{{ gbans_web.http_port|default(6006) }}']
         labels:
           instance: {{ metrics_hostname }}
+
+  - job_name: process_exporter
+    scrape_interval: 15s
+    static_configs:
+{% for host in groups.get('tf2', []) %}
+{# Use the same public instance label as the node job so dashboards can join them. #}
+{% set ns = namespace(public=host) %}
+{% for public_name, internal in vpn_hosts.items() %}
+{% if internal == host %}{% set ns.public = public_name %}{% endif %}
+{% endfor %}
+      - targets: ['{% if host == metrics_hostname %}process_exporter{% else %}{{ vpn_ip[host] }}{% endif %}:9256']
+        labels:
+          instance: {{ ns.public }}
+{% endfor %}
 
 {# Optional user-supplied scrape configs (metrics_custom_scrape_configs). #}
 {% for scrape_config in metrics_custom_scrape_configs | default([]) %}

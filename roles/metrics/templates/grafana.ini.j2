@@ -47,9 +47,10 @@ domain = {{ metrics_hostname_external }}
 # Prevents DNS rebinding attacks
 enforce_domain = true
 
-# The full public facing url you use in browser, used for redirects and emails
-# If you use reverse proxy and sub path specify full url (with sub path)
-root_url = %(protocol)s://%(domain)s/
+# The full public facing url you use in browser, used for redirects, emails
+# and alert notifications. Grafana sits behind Caddy, so use the public HTTPS
+# URL rather than the default http://localhost:3000.
+root_url = https://{{ metrics_hostname_external }}/
 
 # Serve Grafana from subpath specified in `root_url` setting. By default it is set to `false` for compatibility reasons.
 ;serve_from_sub_path = false
@@ -281,10 +282,12 @@ reporting_enabled = false
 ;disable_initial_admin_creation = false
 
 # default admin user, created on startup
-;admin_user = admin
+admin_user = {{ metrics_grafana_admin_user }}
 
-# default admin password, can be changed before first start of grafana,  or in profile settings
-;admin_password = admin
+# default admin password, can be changed before first start of grafana, or in profile settings
+{% if metrics_grafana_admin_password | default('') | length > 0 %}
+admin_password = {{ metrics_grafana_admin_password }}
+{% endif %}
 
 # default admin email, created on startup
 ;admin_email = admin@localhost
@@ -1157,7 +1160,8 @@ server_url = http://grafana_image_renderer:8081/render
 # If the remote HTTP image renderer service runs on a different server than the Grafana server you may have to configure this to a URL where Grafana is reachable, e.g. http://grafana.domain/.
 callback_url = http://grafana:3000/
 # An auth token that will be sent to and verified by the renderer. The renderer will deny any request without an auth token matching the one configured on the renderer side.
-;renderer_token = -
+# Grafana 13+ uses JWT renderer auth and requires a non-default token.
+renderer_token = {{ metrics_grafana_renderer_token }}
 # Concurrent render request limit affects when the /render HTTP endpoint is used. Rendering many images at the same time can overload the server,
 # which this setting can help protect against by only allowing a certain amount of concurrent requests.
 ;concurrent_render_request_limit = 30
@@ -1174,6 +1178,9 @@ callback_url = http://grafana:3000/
 [plugins]
 ;enable_alpha = false
 ;app_tls_skip_verify_insecure = false
+# Grafana 13.2+ auto-updates preinstalled plugins (including the PostgreSQL
+# datasource) on startup. Keep startup offline-safe.
+preinstall_auto_update = false
 # Enter a comma-separated list of plugin identifiers to identify plugins to load even if they are unsigned. Plugins with modified signatures are never loaded.
 ;allow_loading_unsigned_plugins =
 # Enable or disable installing / uninstalling / updating plugins directly from within Grafana.

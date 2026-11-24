@@ -71,6 +71,15 @@
   tags:
     - grafana
 
+- name: Remove dashboard sources that are no longer provisioned
+  become: true
+  ansible.builtin.file:
+    path: "/etc/grafana_dashboards/dashboards/{{ item }}"
+    state: absent
+  loop: "{{ metrics_grafana_removed_dashboards }}"
+  tags:
+    - grafana
+
 - name: Create grafana_data volume
   community.docker.docker_volume:
     name: grafana_data
@@ -78,16 +87,52 @@
   tags:
     - grafana
 
+# Older Grafana schemas left unique guid indexes that 10.4 cannot satisfy.
+- name: Get grafana_data volume mountpoint
+  community.docker.docker_volume_info:
+    name: grafana_data
+  register: metrics_grafana_volume_info
+  tags:
+    - grafana
+    - grafana-db-fix
+
+- name: Drop stale Grafana alert rule indexes
+  ansible.builtin.script:
+    cmd: "{{ role_path }}/scripts/fix_alert_indexes.py {{ metrics_grafana_volume_info.volume.Mountpoint }}/grafana.db"
+    executable: python3
+  become: true
+  register: metrics_grafana_index_fix
+  changed_when: metrics_grafana_index_fix.stdout | trim == 'changed'
+  tags:
+    - grafana
+    - grafana-db-fix
+
+# Grafana 13 migrates folders/dashboards to unified storage on first start.
+# Keep a one-time pre-upgrade copy of the SQLite database for rollback.
+- name: Back up Grafana database before the 13.x migration
+  become: true
+  ansible.builtin.copy:
+    src: "{{ metrics_grafana_volume_info.volume.Mountpoint }}/grafana.db"
+    dest: "{{ metrics_grafana_volume_info.volume.Mountpoint }}/grafana.db.pre13-backup"
+    remote_src: true
+    mode: "0600"
+    force: false
+  tags:
+    - grafana
+    - grafana-db-fix
+
 - name: Create grafana_image_renderer container
   community.docker.docker_container:
     name: grafana_image_renderer
-    image: grafana/grafana-image-renderer
+    image: grafana/grafana-image-renderer:v5.12.11
     restart: true
     recreate: true
     restart_policy: unless-stopped
     networks:
       - name: caddy_net
     pull: true
+    env:
+      AUTH_TOKEN: "{{ metrics_grafana_renderer_token }}"
     ports:
       - 127.0.0.1:8081:8081
   tags:
@@ -96,7 +141,8 @@
 - name: Create grafana container
   community.docker.docker_container:
     name: grafana
-    image: grafana/grafana-oss:10.4.0-ubuntu
+    # grafana-oss image was retired after 13.0; grafana/grafana is the OSS build.
+    image: grafana/grafana:13.3.1-ubuntu
     restart: true
     recreate: true
     restart_policy: unless-stopped

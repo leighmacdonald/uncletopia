@@ -10,8 +10,46 @@ metrics_a2scache_port: 9103
 # scrape_configs. Each entry is a full scrape config mapping.
 metrics_custom_scrape_configs: []
 
+# Extra static_configs entries appended to the `node` scrape job. Each entry
+# is a mapping with a `targets` list and optional `labels`.
+metrics_node_extra_targets: []
+
 # Alertmanager Discord contact point. Leave empty to disable provisioning it.
 metrics_discord_alert_webhook: ""
 
 # Fire A2SCacheHighDropRate when dropped A2S queries/s per instance exceed this.
 metrics_a2scache_drop_rate_limit: 15
+
+# Disk usage thresholds (percent) for the Grafana node-disk alerts.
+metrics_disk_warning_percent: 90
+metrics_disk_critical_percent: 95
+
+# CPU core 0 usage (percent) above which NodeCPU0Saturated fires.
+metrics_cpu0_full_percent: 99
+
+# Runqueue length per non-isolated CPU above which NodeRunqueueHigh fires.
+metrics_runqueue_per_cpu_limit: 5
+
+# Available memory (percent) thresholds for the node memory alerts.
+metrics_memory_free_warning_percent: 10
+metrics_memory_free_critical_percent: 5
+
+# Network drop/error rates (packets per second, summed over a physical NIC).
+metrics_network_drop_rate_limit: 10
+metrics_network_error_rate_limit: 5
+
+# srcds is a 32-bit process; alert before it reaches the ~4 GiB address limit.
+metrics_srcds_memory_limit_bytes: 3221225472
+
+# Grafana admin credentials. Applied on first install.
+metrics_grafana_admin_user: admin
+metrics_grafana_admin_password: ""
+
+# Grafana 13+ image renderer token (JWT auth). Set a secret in group_vars/web.yml.
+metrics_grafana_renderer_token: ""
+
+# Dashboard JSON files removed from roles/metrics/files/dashboards. Stale copies
+# are deleted on the host so Grafana stops provisioning them; with
+# disableDeletion: false it also removes them from its database.
+metrics_grafana_removed_dashboards:
+  - cpu_freq.json

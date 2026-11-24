@@ -1,12 +1,11 @@
 apiVersion: 1
 prune: true
 
+# Only remove datasources that are no longer provisioned below. Listing a
+# datasource here and in `datasources` can leave it missing after a reload.
 deleteDatasources:
-  - name: "PostgresSQL"
-    uid: gbans-postgres
-  - name: "PostgresSQL (bd-api)"
-    uid: bdapi
-  - name: "Prometheus"
+  - name: Alertmanager
+    uid: alertmanager
 
 datasources:
   - name: "PostgresSQL"

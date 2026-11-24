@@ -80,16 +80,16 @@ public void Event_RoundStart(Event event, const char[] name, bool dontBroadcast)
 
 public void OnPluginStart()
 {
-	CreateConVar("nano_votescramble_version", PLUGIN_VERSION, "Vote Scramble Version", FCVAR_DONTRECORD);
+	CreateConVar("votescramble_version", PLUGIN_VERSION, "Vote Scramble Version", FCVAR_DONTRECORD);
 
-	cvarVoteTime = CreateConVar("nano_votescramble_time", "20.0", "Time in seconds the vote menu should last.", 0);
-	cvarVoteTimeDelay = CreateConVar("nano_votescramble_delay", "180.0", "Time in seconds before players can initiate another team scramble vote.", 0);
-	cvarVoteChatPercent = CreateConVar("nano_votescramble_chat_percentage", "0.20", "How many players are required for the chat vote to pass? 0.20 = 20%.", 0, true, 0.05, true, 1.0);
-	cvarVoteMenuPercent = CreateConVar("nano_votescramble_menu_percentage", "0.60", "How many players are required for the menu vote to pass? 0.60 = 60%.", 0, true, 0.05, true, 1.0);
-	cvarMinimumVotesNeeded = CreateConVar("nano_votescramble_minimum", "3", "What are the minimum number of votes needed to initiate a chat vote?", 0);
-	cvarSkipSecondVote = CreateConVar("nano_votescramble_skip_second_vote", "0", "Should the second vote be skipped?", 0, true, 0.0, true, 1.0);
+	cvarVoteTime = CreateConVar("votescramble_time", "20.0", "Time in seconds the vote menu should last.", 0);
+	cvarVoteTimeDelay = CreateConVar("votescramble_delay", "180.0", "Time in seconds before players can initiate another team scramble vote.", 0);
+	cvarVoteChatPercent = CreateConVar("votescramble_chat_percentage", "0.20", "How many players are required for the chat vote to pass? 0.20 = 20%.", 0, true, 0.05, true, 1.0);
+	cvarVoteMenuPercent = CreateConVar("votescramble_menu_percentage", "0.60", "How many players are required for the menu vote to pass? 0.60 = 60%.", 0, true, 0.05, true, 1.0);
+	cvarMinimumVotesNeeded = CreateConVar("votescramble_minimum", "3", "What are the minimum number of votes needed to initiate a chat vote?", 0);
+	cvarSkipSecondVote = CreateConVar("votescramble_skip_second_vote", "0", "Should the second vote be skipped?", 0, true, 0.0, true, 1.0);
 #if defined _gbans_included
-	cvarUseGbans = CreateConVar("nano_votescramble_use_gbans", "1", "Use gbans' balanced scramble instead of mp_scrambleteams when gbans is loaded.", 0, true, 0.0, true, 1.0);
+	cvarUseGbans = CreateConVar("votescramble_use_gbans", "1", "Use gbans' balanced scramble instead of mp_scrambleteams when gbans is loaded.", 0, true, 0.0, true, 1.0);
 #endif
 
 	cvarTimeLimit = FindConVar("mp_timelimit");

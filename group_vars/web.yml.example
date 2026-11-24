@@ -19,8 +19,21 @@ node_exporter:
 prometheus:
   port: 9090
 
+# Grafana admin credentials. Applied on first install.
+metrics_grafana_admin_user: admin
+metrics_grafana_admin_password: ""
+# Grafana 13+ requires a non-default renderer token (JWT auth). Must match the
+# AUTH_TOKEN set on the grafana_image_renderer container. Generate a secret.
+metrics_grafana_renderer_token: ""
+
 # Alertmanager Discord contact. Leave empty to disable provisioning it.
 metrics_discord_alert_webhook: ""
+
+# Extra static_configs entries appended to the `node` scrape job. Each entry
+# has a targets list and optional labels.
+#metrics_node_extra_targets:
+#  - targets: ["host:9100"]
+#    labels: { instance: myhost }
 
 # Optional extra scrape configs appended to the generated prometheus.yml.
 # Each entry is a full scrape config mapping.

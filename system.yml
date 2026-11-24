@@ -233,10 +233,15 @@
     - name: Create node_exporter container
       community.docker.docker_container:
         name: node_exporter
-        image: prom/node-exporter:v1.7.0
+        image: prom/node-exporter:v1.13.1
         restart_policy: unless-stopped
         restart: true
         pull: true
+        # On the metrics host, Prometheus runs in Docker and cannot reach the
+        # host VPN IP (UFW only allows the VPN subnet to port 9100). Share
+        # caddy_net so it can scrape this container by name instead.
+        comparisons: "{{ {'networks': 'strict'} if inventory_hostname == metrics_hostname else omit }}"
+        networks: "{{ [{'name': 'caddy_net'}] if inventory_hostname == metrics_hostname else omit }}"
         volumes:
           - "/:/host:ro,rslave"
         command:
@@ -246,3 +251,44 @@
       tags:
         - metrics-client
         - node_exporter
+
+    # node_exporter has no per-process RSS metric; process-exporter provides
+    # namedprocess_namegroup_memory_bytes used by the srcds memory alert.
+    - name: Create process exporter config
+      become: true
+      ansible.builtin.copy:
+        dest: /etc/process-exporter.yml
+        content: |
+          process_names:
+            - name: "srcds_{% raw %}{{.PID}}{% endraw %}"
+              comm:
+                - srcds_linux
+        mode: "0644"
+      when: inventory_hostname in groups.get('tf2', [])
+      tags:
+        - metrics-client
+        - process_exporter
+
+    - name: Create process_exporter container
+      community.docker.docker_container:
+        name: process_exporter
+        image: ncabatoff/process-exporter:latest
+        restart_policy: unless-stopped
+        restart: true
+        pull: true
+        comparisons: "{{ {'networks': 'strict'} if inventory_hostname == metrics_hostname else omit }}"
+        networks: "{{ [{'name': 'caddy_net'}] if inventory_hostname == metrics_hostname else omit }}"
+        volumes:
+          - "/:/host:ro,rslave"
+          - /etc/process-exporter.yml:/config/process-exporter.yml:ro
+        command:
+          - --procfs=/host/proc
+          - --config.path=/config/process-exporter.yml
+          # Re-evaluate process names so newly launched srcds processes appear.
+          - --recheck
+        ports:
+          - "{{ vpn_ip[inventory_hostname] }}:9256:9256"
+      when: inventory_hostname in groups.get('tf2', [])
+      tags:
+        - metrics-client
+        - process_exporter

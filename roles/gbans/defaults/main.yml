@@ -12,6 +12,8 @@ gbans_web_cors_origins: []
 gbans_web_client_timeout: 10
 gbans_database_dsn: postgresql://gbans:gbans@gbans-postgres/gbans
 gbans_database_log_queries: false
+# SourceMod clients need headroom; keep this at or above 100.
+gbans_postgres_max_connections: 125
 gbans_general_steam_key: "{{ steam_key }}"
 gbans_stv_enable: 1
 gbans_stv_finishmap: "1"

@@ -32,6 +32,10 @@ srcds:
 web:
     ansible-playbook -u {{ user }} -i {{ inventory }} --forks {{ forks }} {{ playbook_path }}/web.yml --limit metrics
 
+# Apply only the metrics role (prometheus + grafana), skipping caddy and gbans.
+metrics:
+    @ansible-playbook -u {{ user }} -i {{ inventory }} --forks {{ forks }} --tags metrics-server {{ playbook_path }}/web.yml
+
 # vpn:
 #     @ansible-playbook -u {{ user }} -i {{ inventory }} --forks {{ forks }} {{ playbook_path }}/vpn.yml
 # Note: vpn.yml does not exist. Remove or implement the vpn playbook.

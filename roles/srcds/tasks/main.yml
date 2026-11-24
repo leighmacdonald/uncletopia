@@ -280,6 +280,11 @@
   loop: "{{ services }}"
   loop_control:
     index_var: loop0
+  # "Generate srcds services" is tagged game_engine; it needs this fact when
+  # that tag is used on its own, so include it in the same tag sets.
+  tags:
+    - game_engine
+    - game_config
 
 - name: Set srcds mount unit names fact
   ansible.builtin.set_fact:
@@ -290,6 +295,9 @@
   loop: "{{ services }}"
   loop_control:
     index_var: loop0
+  tags:
+    - game_engine
+    - game_config
 
 - name: Remove legacy named srcds mount units
   become: true
