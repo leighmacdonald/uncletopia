@@ -6,9 +6,10 @@
 		{
 			"GiveNamedItem"
 			{
-				"windows"	"472"
-				"linux"	"479"
-				"mac"	"479"
+				"windows64" "487"
+				"windows"   "487"
+				"linux"     "494"
+				"linux64"   "494"
 			}
 		}
 	}

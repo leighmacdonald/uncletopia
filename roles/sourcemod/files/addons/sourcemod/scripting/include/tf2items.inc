@@ -6,15 +6,15 @@
 #include <tf2>
 
 // ====[ CONSTANTS ]===========================================================
-#define OVERRIDE_CLASSNAME		(1 << 0)	// Item will override the entity's classname.
-#define OVERRIDE_ITEM_DEF			(1 << 1)	// Item will override the item's definition index.
-#define OVERRIDE_ITEM_LEVEL		(1 << 2)	// Item will override the entity's level.
-#define OVERRIDE_ITEM_QUALITY		(1 << 3)	// Item will override the entity's quality.
-#define OVERRIDE_ATTRIBUTES		(1 << 4)	// Item will override the attributes for the item with the given ones.
-#define OVERRIDE_ALL				(0b11111)	// Magically enables all the other flags.
+#define OVERRIDE_CLASSNAME      (1 << 0)    // Item will override the entity's classname.
+#define OVERRIDE_ITEM_DEF       (1 << 1)    // Item will override the item's definition index.
+#define OVERRIDE_ITEM_LEVEL     (1 << 2)    // Item will override the entity's level.
+#define OVERRIDE_ITEM_QUALITY   (1 << 3)    // Item will override the entity's quality.
+#define OVERRIDE_ATTRIBUTES     (1 << 4)    // Item will override the attributes for the item with the given ones.
+#define OVERRIDE_ALL            (0b11111)   // Magically enables all the other flags.
 
-#define PRESERVE_ATTRIBUTES		(1 << 5)
-#define FORCE_GENERATION		(1 << 6)
+#define PRESERVE_ATTRIBUTES     (1 << 5)
+#define FORCE_GENERATION        (1 << 6)
 
 // ====[ NATIVES ]=============================================================
 
@@ -34,222 +34,218 @@
  * so please make sure you fill out everything: Classname, item definition index,
  * quality, level and attributes.
  * 
- * @param iClient	Client that the item will be generated for.
- * @param hItem		Handle to the TF2Items object that we'll be operating with.
- * @return			Entity index of the newly created item.
+ * @param client          Client that the item will be generated for.
+ * @param item            Handle to the TF2Items object that we'll be operating with.
+ * @return                Entity index of the newly created item.
  */
-native TF2Items_GiveNamedItem(iClient, Handle:hItem);
+native int TF2Items_GiveNamedItem(int client, Handle item);
 
 /**
  * Creates a TF2Items object, wich can be used to override the parameters of an
  * item before it's given to the client, or to create a new completely new one
  * with GiveNamedItem. Remember to free the object with CloseHandle()
  *
- * @param iFlags		Flags used to specify what to override.
- * @return				Handle to the TFItems object.
+ * @param flags           Flags used to specify what to override.
+ * @return                Handle to the TFItems object.
  */
-native Handle:TF2Items_CreateItem(iFlags);
+native Handle TF2Items_CreateItem(int flags);
 
 /**
  * Sets the flags to determine what the item will override on the GiveNamedItem.
  * Use the OVERRIDE_ defines to set what you will be changing.
  *
- * @param hItem			Handle to the TF2Items object that we'll be operating with.
- * @param iFlags		Flags used to specify what to override.
- * @noreturn
+ * @param item            Handle to the TF2Items object that we'll be operating with.
+ * @param flags           Flags used to specify what to override.
  */
-native TF2Items_SetFlags(Handle:hItem, iFlags);
+native void TF2Items_SetFlags(Handle item, int flags);
 
 /**
  * Sets the new entity classname used for the item's entity.
  *
- * @param hItem				Handle to the TF2Items object that we'll be operating with.
- * @param strClassName		New classname to use for the entity.
- * @noreturn
+ * @param item            Handle to the TF2Items object that we'll be operating with.
+ * @param classname       New classname to use for the entity.
  */
-native TF2Items_SetClassname(Handle:hItemOverride, String:strClassName[]);
+native void TF2Items_SetClassname(Handle item, char[] classname);
 
 /**
  * Sets the item's Definition Index, wich tells the game what item it is. Each
  * weapon/hat/item has an unique definition index. Find these out in the
  * game_items.txt
  * 
- * @param hItem				Handle to the TF2Items object that we'll be operating with.
- * @param iItemDefIndex		New definition index.
- * @noreturn
+ * @param item            Handle to the TF2Items object that we'll be operating with.
+ * @param itemDefIndex    New definition index.
  */
-native TF2Items_SetItemIndex(Handle:hItem, iItemDefIndex);
+native void TF2Items_SetItemIndex(Handle item, int itemDefIndex);
 
 /**
  * Sets the item's quality value, wich determines what color will be used for
  * the item name. Valid values are from 0 to 9.
  * 
- * @param hItem					Handle to the TF2Items object that we'll be operating with.
- * @param iEntityQuality		New item quality.
- * @noreturn
+ * @param item            Handle to the TF2Items object that we'll be operating with.
+ * @param quality         New item quality.
  */
-native TF2Items_SetQuality(Handle:hItem, iEntityQuality);
+native void TF2Items_SetQuality(Handle item, int quality);
 
 /**
  * Sets the item's level value. This value can range from 0 to 127.
  * 
- * @param hItem				Handle to the TF2Items object that we'll be operating with.
- * @param iEntityLevel		New item level.
- * @noreturn
+ * @param item            Handle to the TF2Items object that we'll be operating with.
+ * @param level           New item level.
  */
-native TF2Items_SetLevel(Handle:hItem, iEntityLevel);
+native void TF2Items_SetLevel(Handle item, int level);
 
 /**
- * Sets the number of attributes that will be used on the item. The maximum
- * number of attributes that can be allocated ranges from 0 to 15.
+ * Sets the number of attributes that will be used on the item, from 0 to 20.
  * 
- * @param hItem					Handle to the TF2Items object that we'll be operating with.
- * @param iNumAttributes		Number of attributes.
- * @noreturn
+ * @param item            Handle to the TF2Items object that we'll be operating with.
+ * @param attributes      Number of attributes.
  */
-native TF2Items_SetNumAttributes(Handle:hItem, iNumAttributes);
+native void TF2Items_SetNumAttributes(Handle item, int attributes);
 
 /**
  * Setups the given attribute index to use the attribute and values specified
- * with iAttribDefIndex and flValue. Remember the iSlotIndex ranges from 0 to 15.
+ * with iAttribDefIndex and flValue. Remember the iSlotIndex ranges from 0 to 19.
  * 
- * @param hItem					Handle to the TF2Items object that we'll be operating with.
- * @param iSlotIndex			The attribute slot index, ranges from 0 to 15.
- * @param iAttribDefIndex		The attribute definition index, as it appears on game_items.txt.
- * @param flValue				The value assigned to the attribute (how much health, damage, etc.).
- * @noreturn
+ * @param item            Handle to the TF2Items object that we'll be operating with.
+ * @param slot            The attribute slot index, ranges from 0 to 19.
+ * @param attribute       The attribute definition index, as it appears on game_items.txt.
+ * @param value           The value assigned to the attribute (how much health, damage, etc.).
  */
-native TF2Items_SetAttribute(Handle:hItem, iSlotIndex, iAttribDefIndex, Float:flValue);
+native void TF2Items_SetAttribute(Handle item, int slot, int attribute, float value);
 
 /**
  * Retrieves the flags used to determine what the item will override on the
  * GiveNamedItem call.
  *
- * @param hItem		Handle to the TF2Items object that we'll be operating with.
- * @return			Returns the flags used by the item.
+ * @param item            Handle to the TF2Items object that we'll be operating with.
+ * @return                Returns the flags used by the item.
  */
-native TF2Items_GetFlags(Handle:hItem);
+native int TF2Items_GetFlags(Handle item);
 
 /**
  * Gets the entity classname we'll use for the item.
  *
- * @param hItem		Handle to the TF2Items object that we'll be operating with.
- * @return			New classname to use for the entity.
+ * @param item            Handle to the TF2Items object that we'll be operating with.
+ * @return                Size of entity classname string
  */
-native TF2Items_GetClassname(Handle:hItem, String:strDest[], iDestSize);
+native int TF2Items_GetClassname(Handle item, char[] dest, int size);
 
 /**
  * Gets the new item definition index we'll use to override.
  *
- * @param hItem		Handle to the TF2Items object that we'll be operating with.
- * @return			New definition index.
+ * @param item            Handle to the TF2Items object that we'll be operating with.
+ * @return                New definition index.
  */
-native TF2Items_GetItemIndex(Handle:hItem); 
+native int TF2Items_GetItemIndex(Handle item); 
 
 /**
  * Gets the item's quality value, wich determines what color will be used for
  * the item name. Valid values are from 0 to 9. But if set to 0 and attributes
  * are also changed, this value will be overridden to 9
  *
- * @param hItem		Handle to the TF2Items object that we'll be operating with.
- * @return			New entity quality.
+ * @param item            Handle to the TF2Items object that we'll be operating with.
+ * @return                New entity quality.
  */
-native TF2Items_GetQuality(Handle:hItem); 
+native int TF2Items_GetQuality(Handle item); 
 
 /**
  * Gets the item's level value. This value can range from 0 to 127.
  *
- * @param hItem		Handle to the TF2Items object that we'll be operating with.
- * @return			New entity level.
+ * @param item            Handle to the TF2Items object that we'll be operating with.
+ * @return                New entity level.
  */
-native TF2Items_GetLevel(Handle:hItem);
+native int TF2Items_GetLevel(Handle item);
 
 /**
- * Gets the number of attributes that will be used on the item. The maximum
- * number of attributes that can be allocated ranges from 0 to 15.
+ * Gets the number of attributes used on the item, from 0 to 20.
  *
- * @param hItem		Handle to the TF2Items object that we'll be operating with.
- * @return			Number of attributes.
+ * @param item            Handle to the TF2Items object that we'll be operating with.
+ * @return                Number of attributes.
  */
-native TF2Items_GetNumAttributes(Handle:hItem);
+native int TF2Items_GetNumAttributes(Handle item);
 
 /**
  * Retrieves the attribute definition index used at the specified index on the
- * item object. Remember the iSlotIndex ranges from 0 to 15.
+ * item object. Remember the iSlotIndex ranges from 0 to 19.
  *
- * @param hItem		Handle to the TF2Items object that we'll be operating with.
- * @return			The attribute definition index to use.
+ * @param item            Handle to the TF2Items object that we'll be operating with.
+ * @return                The attribute definition index to use.
  */
-native TF2Items_GetAttributeId(Handle:hItem, iSlotIndex);
+native int TF2Items_GetAttributeId(Handle item, int slot);
 
 /**
  * Retrieves the value used for the attribute at the specified index on the item
- * object. Remember the iSlotIndex ranges from 0 to 15.
+ * object. Remember the iSlotIndex ranges from 0 to 19.
  *
- * @param hItem		Handle to the TF2Items object that we'll be operating with.
- * @return			The attribute value to use.
+ * @param item            Handle to the TF2Items object that we'll be operating with.
+ * @return                The attribute value to use.
  */
-native Float:TF2Items_GetAttributeValue(Handle:hItem, iSlotIndex); 
+native float TF2Items_GetAttributeValue(Handle item, int slot); 
 
 // ====[ FORWARDS ]============================================================
 /**
  * Called when an item is about to be given to a client.
- * Return Plugin_Changed to override the item to use the configuration of the hItem object.
+ * Return Plugin_Changed to override the item to use the configuration of the item object.
  * Return Plugin_Continue to keep them intact.
  * Return Plugin_Handled to stop the item being given to the player.
  * Make sure the client gets atleast one weapon.
  *
- * @param client				Client Index.
- * @param classname				The classname of the entity that will be generated.
- * @param iItemDefinitionIndex	Item definition index.
- * @param hItem					Handle to a TF2Item object wich describes what values will be overriden.
+ * @param client          Client Index.
+ * @param classname       The classname of the entity that will be generated.
+ * @param itemDefIndex    Item definition index.
+ * @param item            Handle to a TF2Item object wich describes what values will be overriden.
  */
-forward Action:TF2Items_OnGiveNamedItem(client, String:classname[], iItemDefinitionIndex, &Handle:hItem);
+forward Action TF2Items_OnGiveNamedItem(int client, char[] classname, int itemDefIndex, Handle &item);
 
-forward TF2Items_OnGiveNamedItem_Post(client, String:classname[], itemDefinitionIndex, itemLevel, itemQuality, entityIndex);
+forward void TF2Items_OnGiveNamedItem_Post(int client, char[] classname, int itemDefIndex, int level, int quality, int entity);
 
 /**
  * Do not edit below this line!
  */
-public Extension:__ext_tf2items = 
+public Extension __ext_tf2items = 
 {
 	name = "TF2Items",
-	file = "tf2items.ext.2.ep2v",
+	// Match SourceMod's name for tf2items.autoload.
+	file = "tf2items.ext",
+#if defined AUTOLOAD_EXTENSIONS
+	autoload = 1,
+#else
 	autoload = 0,
-	#if defined REQUIRE_EXTENSIONS
-		required = 1,
-	#else
-		required = 0,
-	#endif
+#endif
+#if defined REQUIRE_EXTENSIONS
+	required = 1,
+#else
+	required = 0,
+#endif
 }
 	
 /**
 * I'll just leave this here...
 * 
-* _(º< _(º< _(º< _(º< _(º< _(º< _(º< _(º< _(º< 
+* _(Âº< _(Âº< _(Âº< _(Âº< _(Âº< _(Âº< _(Âº< _(Âº< _(Âº< 
 * \__) \__) \__) \__) \__) \__) \__) \__) \__) 
 *                     .  .
 *                    // //  __
-*         __  ______||_//_.´.´
-*       _/__`´            ¯ `
+*         __  ______||_//_.Â´.Â´
+*       _/__`Â´            Â¯ `
 *      /  / _          _     \
-*     /  /( · )      ( · )    |
-*    /  |   ¯     __   ¯    _/\/|
-*   |    \  ___.-´  `-.___  \   /
-*    \    \(     ` ´      `)|   \
+*     /  /( Â· )      ( Â· )    |
+*    /  |   Â¯     __   Â¯    _/\/|
+*   |    \  ___.-Â´  `-.___  \   /
+*    \    \(     ` Â´      `)|   \
 *     \     )              //     \
 *      \/  /              | |     |
 *     /   /               | |     |
-*    ·   |                |  \___/
+*    Â·   |                |  \___/
 *    |    \_            _/      \  ____
-*    ·      `----------´         |´    \
-*     \                         /    _·´
-*      \                       /  _-´ 
-*        `-._               _·´-´
-*        _.-´`---________--´ \ 
-*       ´-.-. _--·   / .   ._ \
-*            ´       `´ `·´  `´
-* >º)_ >º)_ >º)_ >º)_ >º)_ >º)_ >º)_ >º)_ >º)_ 
+*    Â·      `----------Â´         |Â´    \
+*     \                         /    _Â·Â´
+*      \                       /  _-Â´ 
+*        `-._               _Â·Â´-Â´
+*        _.-Â´`---________--Â´ \ 
+*       Â´-.-. _--Â·   / .   ._ \
+*            Â´       `Â´ `Â·Â´  `Â´
+* >Âº)_ >Âº)_ >Âº)_ >Âº)_ >Âº)_ >Âº)_ >Âº)_ >Âº)_ >Âº)_ 
 * (__/ (__/ (__/ (__/ (__/ (__/ (__/ (__/ (__/ 
 * 
 */

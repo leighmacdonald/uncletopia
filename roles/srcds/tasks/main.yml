@@ -104,6 +104,20 @@
   tags:
     - game_engine
 
+# DepotDownloader does not restore the executable bit on the srcds binaries.
+# With overlays rebuilt from scratch there is no longer a chmod'd copy left in
+# an instance's upper layer to mask this. srcds_run execs srcds_linux directly,
+# so set +x on the shared base (all instances inherit it via the lowerdir).
+- name: Make srcds binaries executable
+  ansible.builtin.file:
+    path: "{{ srcds_homedir }}/srcds-base/{{ item }}"
+    mode: "0755"
+  loop:
+    - srcds_linux
+    - srcds_run
+  tags:
+    - game_engine
+
 # Each instance is an overlayfs mount: lowerdir=~/srcds-base, upperdir=~/srcds-<name>-upper.
 # overlayfs gives the upper copy priority, so if a base file was ever copied up
 # into an instance's upper layer (e.g. tf/steam.inf, whose PatchVersion is the
