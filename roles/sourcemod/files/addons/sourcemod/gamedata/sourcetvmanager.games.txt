@@ -398,7 +398,7 @@
 				"linux"
 				{
 					"signature" "CHLTVServer::Shutdown"
-					"read"      "12"
+					"read"      "24"
 				}
 				"windows64"
 				{
