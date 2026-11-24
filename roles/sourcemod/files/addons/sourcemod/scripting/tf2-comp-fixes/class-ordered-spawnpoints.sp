@@ -1,5 +1,3 @@
-static ConVar g_convar;
-
 #define ORDER_LEN 11
 static const TFClassType ORDER[ORDER_LEN] = {
     TFClass_DemoMan,
@@ -15,10 +13,20 @@ static const TFClassType ORDER[ORDER_LEN] = {
     TFClass_Spy,
 };
 
+#define COLLISION_GROUP_PLAYER 5
+#define COLLISION_GROUP_IN_VEHICLE 10
+
+#define MAX_LAST_SPAWNS 64
+
+static ConVar g_convar;
+
+static int g_labels[MAX_LAST_SPAWNS * 2];
+static int g_label_count = 0;
+
 void ClassOrderedSpawnpoints_Setup() {
     g_convar = CreateBoolConVar("sm_class_ordered_spawnpoints", WhenConVarChange);
-    HookEvent("game_start", WhenGameStart);
-    HookEvent("player_team", WhenPlayerTeam);
+    CreateBoolConVar("cf_spawn_order", WhenDebugConVarChange);
+    HookEvent("recalculate_holidays", WhenRoundSetup, EventHookMode_Pre);
 }
 
 static void WhenConVarChange(ConVar cvar, const char[] before, const char[] after) {
@@ -33,36 +41,20 @@ static void WhenConVarChange(ConVar cvar, const char[] before, const char[] afte
     }
 }
 
-static void WhenGameStart(Event event, const char[] name, bool dontBroadcast) {
-    if (g_convar.BoolValue) {
-        PresetBase();
-    }
-}
-
-static void WhenPlayerTeam(Event event, const char[] name, bool dontBroadcast) {
+static void WhenRoundSetup(Event event, const char[] name, bool dontBroadcast) {
     if (!g_convar.BoolValue) {
         return;
     }
 
-    // TODO: This seems to happen too soon
-    if (AllUnset()) {
-        LogDebug("Found that none of the spawns had class filters, reapplying");
-        PresetBase();
-    } else {
-        LogDebug("OK");
-    }
-}
+    PresetBase();
 
-static bool AllUnset() {
-    int entity;
-
-    while ((entity = FindEntityByClassname(entity, "info_player_teamspawn")) != -1) {
-        if (0x1ff != GetEntProp(entity, Prop_Data, "m_spawnflags")) {
-            return false;
+    for (int client = 1; client <= MaxClients; client++) {
+        if (IsClientInGame(client) && IsPlayerAlive(client)) {
+            SetEntityCollisionGroup(client, COLLISION_GROUP_IN_VEHICLE);
         }
     }
 
-    return true;
+    RequestFrame(RestoreCollisionGroups);
 }
 
 static void UnsetAll() {
@@ -85,6 +77,10 @@ static void PresetBase() {
 
     while ((entity = FindEntityByClassname(entity, "info_player_teamspawn")) != -1) {
         int team = GetEntProp(entity, Prop_Data, "m_iTeamNum");
+
+        if (team == 0) {
+            team = GetEntProp(entity, Prop_Data, "m_iInitialTeamNum");
+        }
 
         if (team != 2 && team != 3) continue;
 
@@ -168,4 +164,119 @@ static void SetSpawnClass(int entity, TFClassType cls) {
     int old = GetEntProp(entity, Prop_Data, "m_spawnflags");
     LogDebug("- It was %d before", old);
     SetEntProp(entity, Prop_Data, "m_spawnflags", flags);
+}
+
+static void RestoreCollisionGroups() {
+    for (int client = 1; client <= MaxClients; client++) {
+        if (IsClientInGame(client)
+            && GetEntProp(client, Prop_Send, "m_CollisionGroup") == COLLISION_GROUP_IN_VEHICLE) {
+            SetEntityCollisionGroup(client, COLLISION_GROUP_PLAYER);
+        }
+    }
+}
+
+static void WhenDebugConVarChange(ConVar cvar, const char[] before, const char[] after) {
+    if (cvar.BoolValue == TruthyConVar(before)) {
+        return;
+    }
+
+    if (cvar.BoolValue) {
+        CreateLabels();
+    } else {
+        DestroyLabels();
+    }
+}
+
+static void CreateLabels() {
+    char red_last[64] = "";
+    char blu_last[64] = "";
+
+    int entity;
+    int red = 0;
+    int blu = 0;
+
+    while ((entity = FindEntityByClassname(entity, "info_player_teamspawn")) != -1) {
+        int team = GetEntProp(entity, Prop_Data, "m_iTeamNum");
+
+        if (team == 0) {
+            team = GetEntProp(entity, Prop_Data, "m_iInitialTeamNum");
+        }
+
+        if (team != 2 && team != 3) continue;
+
+        int wrote = 0;
+        char control_point_name[64];
+        if (HasEntProp(entity, Prop_Data, "m_iszControlPointName")) {
+            wrote = GetEntPropString(entity, Prop_Data, "m_iszControlPointName", control_point_name, sizeof(control_point_name));
+        }
+
+        if (wrote == 0) {
+        } else if (team == 2 && StrEqual(control_point_name, red_last)) {
+        } else if (team == 3 && StrEqual(control_point_name, blu_last)) {
+        } else {
+            int control_point = FindControlPointByName(control_point_name);
+            if (control_point == -1) {
+                continue;
+            }
+
+            int index = GetEntProp(control_point, Prop_Data, "m_iPointIndex");
+
+            if (index == 4) {
+                red_last = control_point_name;
+            } else if (index == 0) {
+                blu_last = control_point_name;
+            } else {
+                continue;
+            }
+        }
+
+        if (team == 2) {
+            CreateLabel(entity, team, red);
+            red += 1;
+        } else if (team == 3) {
+            CreateLabel(entity, team, blu);
+            blu += 1;
+        }
+    }
+}
+
+static void CreateLabel(int spawn, int team, int slot) {
+    if (g_label_count == sizeof(g_labels)) {
+        return;
+    }
+
+    int label = CreateEntityByName("point_worldtext");
+
+    if (label == -1) {
+        LogDebug("Failed to create point_worldtext");
+        return;
+    }
+
+    char text[4];
+    Format(text, sizeof(text), "%d", slot);
+
+    float origin[3];
+    GetEntPropVector(spawn, Prop_Data, "m_vecAbsOrigin", origin);
+    origin[2] += 10.0;
+
+    DispatchKeyValue(label, "message", text);
+    DispatchKeyValue(label, "color", team == 2 ? "255 100 100 255" : "120 170 255 255");
+    DispatchKeyValue(label, "textsize", "12");
+    DispatchKeyValue(label, "orientation", "2");
+    DispatchKeyValueVector(label, "origin", origin);
+    DispatchSpawn(label);
+
+    g_labels[g_label_count++] = EntIndexToEntRef(label);
+}
+
+void DestroyLabels() {
+    for (int i = 0; i < g_label_count; i++) {
+        int label = EntRefToEntIndex(g_labels[i]);
+
+        if (label != INVALID_ENT_REFERENCE) {
+            RemoveEntity(label);
+        }
+    }
+
+    g_label_count = 0;
 }

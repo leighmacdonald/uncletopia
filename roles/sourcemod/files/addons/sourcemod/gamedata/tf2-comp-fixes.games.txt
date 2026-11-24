@@ -280,13 +280,13 @@
 			}
 
 			"CTeamplayRoundBasedRules::RestartTournament" {
-				"linux" "214"
-				"windows" "212"
+				"linux" "215"
+				"windows" "213"
 			}
 
 			"CTeamplayRules::SetWinningTeam" {
-				"linux" "166"
-				"windows" "165"
+				"linux" "167"
+				"windows" "166"
 			}
 
 			"CTFFlameThrower::DeflectEntity" {
