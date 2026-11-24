@@ -201,6 +201,7 @@ void OnPluginEnd() {
 
 public
 APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max) {
+    RegPluginLibrary("gbans");
     CreateNative("GB_BanClient", Native_GB_BanClient);
     CreateNative("GB_BanClientAC", Native_GB_BanClientAC);
     CreateNative("GB_ScrambleTeams", Native_GB_ScrambleTeams);

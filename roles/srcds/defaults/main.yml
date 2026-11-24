@@ -62,7 +62,7 @@ srcds_mini_dump_url: "http://crash.limetech.org"
 
 srcds_config:
   all:
-    extensions_disabled: ["tf2items.autoload", "tf2items.ext.2.ep2v.so", "sourcescramble.ext.so"]
+    extensions_disabled: ["tf2items.autoload", "tf2items.ext.2.ep2v.so", "sourcescramble.ext.so", "accelerator.ext.so", "accelerator.autoload"]
     plugins_enabled: []
     plugins_disabled:
       [
@@ -93,7 +93,7 @@ srcds_config:
       ]
 
   247_odyssey:
-    extensions_disabled: ["tf2items.autoload", "tf2items.ext.2.ep2v.so", "sourcescramble.ext.so"]
+    extensions_disabled: ["tf2items.autoload", "tf2items.ext.2.ep2v.so", "sourcescramble.ext.so", "accelerator.ext.so", "accelerator.autoload"]
     plugins_enabled: []
     plugins_disabled:
       [
@@ -130,7 +130,7 @@ srcds_config:
       ]
 
   247_upward:
-    extensions_disabled: ["tf2items.autoload", "tf2items.ext.2.ep2v.so", "sourcescramble.ext.so"]
+    extensions_disabled: ["tf2items.autoload", "tf2items.ext.2.ep2v.so", "sourcescramble.ext.so", "accelerator.ext.so", "accelerator.autoload"]
     plugins_enabled: []
     plugins_disabled:
       [
@@ -167,7 +167,7 @@ srcds_config:
       ]
 
   247_badwater:
-    extensions_disabled: ["tf2items.autoload", "tf2items.ext.2.ep2v.so", "sourcescramble.ext.so"]
+    extensions_disabled: ["tf2items.autoload", "tf2items.ext.2.ep2v.so", "sourcescramble.ext.so", "accelerator.ext.so", "accelerator.autoload"]
     plugins_enabled: []
     plugins_disabled:
       [
@@ -204,7 +204,7 @@ srcds_config:
       ]
 
   247_dustbowl:
-    extensions_disabled: ["tf2items.autoload", "tf2items.ext.2.ep2v.so", "sourcescramble.ext.so"]
+    extensions_disabled: ["tf2items.autoload", "tf2items.ext.2.ep2v.so", "sourcescramble.ext.so", "accelerator.ext.so", "accelerator.autoload"]
     plugins_enabled: []
     plugins_disabled:
       [
@@ -241,7 +241,7 @@ srcds_config:
       ]
 
   pve:
-    extensions_disabled: []
+    extensions_disabled: ["accelerator.ext.so", "accelerator.autoload"]
     plugins_enabled: []
     plugins_disabled:
       [
@@ -276,7 +276,7 @@ srcds_config:
       ]
 
   mge:
-    extensions_disabled: ["tf2items.autoload", "tf2items.ext.2.ep2v.so", "sourcescramble.ext.so"]
+    extensions_disabled: ["tf2items.autoload", "tf2items.ext.2.ep2v.so", "sourcescramble.ext.so", "accelerator.ext.so", "accelerator.autoload"]
     plugins_enabled: ["mge.smx"]
     plugins_disabled:
       [

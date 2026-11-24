@@ -8,8 +8,12 @@
 #include <sourcemod>
 #include <sdktools>
 #include <nativevotes>
-// gbans is optional - when its include isn't present the plugin falls back to mp_scrambleteams.
+// gbans is optional - when it (or its include) isn't present the plugin falls
+// back to mp_scrambleteams. REQUIRE_PLUGIN is defined by default in SourceMod,
+// so it must be undefined around the include to avoid a hard dependency.
+#undef REQUIRE_PLUGIN
 #tryinclude <gbans>
+#define REQUIRE_PLUGIN
 
 public Plugin myinfo =
 {
