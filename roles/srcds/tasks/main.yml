@@ -441,6 +441,50 @@
   tags:
     - game_config
 
+# The layout task below matches allowlist entries against exact filenames, so
+# a typo silently leaves the real binary disabled. Reject unknown names before
+# anything is moved. One shell script keeps the per-service overrides in the
+# same Jinja context as the layout task.
+- name: Validate sourcemod addon allowlists
+  ansible.builtin.shell: |
+    set -uo pipefail
+    root=/home/{{ srcds_user }}/build_sourcemod/addons/sourcemod
+    invalid=()
+    invalid_count=0
+    for kind in plugins extensions; do
+      if [ ! -d "$root/$kind" ]; then
+        printf 'Missing build tree directory: %s/%s\n' "$root" "$kind" >&2
+        exit 1
+      fi
+    done
+    check() {
+      local service=$1 kind=$2 file=$3
+      if [ ! -f "$root/$kind/$file" ]; then
+        invalid+=("$service $kind: $file")
+        invalid_count=$((invalid_count + 1))
+      fi
+    }
+    {% for svc in services %}
+    {% set prof = srcds_config[svc.config] %}
+    service={{ svc.server_name_short | quote }}
+    for f in {{ svc.plugins_enabled | default(prof.plugins_enabled) | map('quote') | join(' ') }}; do
+      check "$service" plugins "$f"
+    done
+    for f in {{ svc.extensions_enabled | default(prof.extensions_enabled) | map('quote') | join(' ') }}; do
+      check "$service" extensions "$f"
+    done
+    {% endfor %}
+    if [ "$invalid_count" -gt 0 ]; then
+      printf 'Invalid sourcemod allowlist entries (not found under %s):\n' "$root" >&2
+      printf '  %s\n' "${invalid[@]}" >&2
+      exit 1
+    fi
+  args:
+    executable: /bin/bash
+  changed_when: false
+  tags:
+    - game_config
+
 - name: Copy sourcemod distribution to /tf
   ansible.posix.synchronize:
     src: /home/tf2server/build_sourcemod/
@@ -449,6 +493,75 @@
   loop: "{{ services }}"
   # Perform the copy from the *remote* sourcemod build output
   delegate_to: "{{ inventory_hostname }}"
+  tags:
+    - game_config
+
+# The host build tree installs every plugin/extension. Each instance gets a
+# pristine copy: restore anything previously disabled, then move everything
+# not in the (exact-filename) allowlist into the matching disabled/ subdir.
+# Per-service plugins_enabled/extensions_enabled override the config profile.
+- name: Apply pristine sourcemod addons layout
+  ansible.builtin.shell: |
+    set -uo pipefail
+    home=/home/{{ srcds_user }}
+    keep_file() {
+      local f=$1
+      shift
+      local k
+      for k in "$@"; do
+        [ "$k" = "$f" ] && return 0
+      done
+      return 1
+    }
+    {% for svc in services %}
+    {% set prof = srcds_config[svc.config] %}
+    name={{ svc.server_name_short | quote }}
+    pdir="$home/srcds-$name/tf/addons/sourcemod/plugins"
+    edir="$home/srcds-$name/tf/addons/sourcemod/extensions"
+    if [ -d "$pdir" ] && [ -d "$edir" ]; then
+      mkdir -p "$pdir/disabled" "$edir/disabled"
+      plugins_keep=({{ svc.plugins_enabled | default(prof.plugins_enabled) | map('quote') | join(' ') }})
+      extensions_keep=({{ svc.extensions_enabled | default(prof.extensions_enabled) | map('quote') | join(' ') }})
+      # Only restore files that should now be enabled; anything staying
+      # disabled is left untouched so re-runs are a no-op.
+      for f in "$pdir"/disabled/*; do
+        [ -f "$f" ] || continue
+        b=$(basename "$f")
+        if keep_file "$b" "${plugins_keep[@]}"; then
+          mv -f "$f" "$pdir/$b"
+          printf '%s: enabled plugin %s\n' "$name" "$b"
+        fi
+      done
+      for f in "$edir"/disabled/*; do
+        [ -f "$f" ] || continue
+        b=$(basename "$f")
+        if keep_file "$b" "${extensions_keep[@]}"; then
+          mv -f "$f" "$edir/$b"
+          printf '%s: enabled extension %s\n' "$name" "$b"
+        fi
+      done
+      for f in "$pdir"/*; do
+        [ -f "$f" ] || continue
+        b=$(basename "$f")
+        if ! keep_file "$b" "${plugins_keep[@]}"; then
+          mv -f "$f" "$pdir/disabled/$b"
+          printf '%s: disabled plugin %s\n' "$name" "$b"
+        fi
+      done
+      for f in "$edir"/*; do
+        [ -f "$f" ] || continue
+        b=$(basename "$f")
+        if ! keep_file "$b" "${extensions_keep[@]}"; then
+          mv -f "$f" "$edir/disabled/$b"
+          printf '%s: disabled extension %s\n' "$name" "$b"
+        fi
+      done
+    fi
+    {% endfor %}
+  args:
+    executable: /bin/bash
+  register: srcds_addons_layout
+  changed_when: srcds_addons_layout.stdout | length > 0
   tags:
     - game_config
 

@@ -8,7 +8,7 @@
 #include <tf_econ_data>
 #include <dhooks>
 
-#define PLUGIN_VERSION       "0.9.2"
+#define PLUGIN_VERSION       "0.9.3"
 
 #define PVE_TEAM_HUMANS_NAME "blue"
 #define PVE_TEAM_BOTS_NAME   "red"
@@ -810,7 +810,9 @@ public Action teamplay_setup_finished(Event event, const char[] name, bool dontB
 
     if (g_bIsMultiStageMap)
     {
-        g_flRoundStartTime = g_flCurrentMapTime;
+        g_flRoundStartTime = GetGameTime() - g_flCurrentMapTime;
+        // slightly hacky: do not change start time twice (the map would have to have reset anyways)
+        g_bIsMultiStageMap = false;
     }
     g_eTeamRoundTimer  = FindEntityByClassname(-1, "team_round_timer");
 
@@ -842,12 +844,22 @@ public Action teamplay_round_win(Event event, const char[] name, bool dontBroadc
             g_flCurrentMapTime = GetEntPropFloat(g_eTeamRoundTimer, Prop_Send, "m_flTimeRemaining");
         }
     }
+    else
+    {
+        g_bIsMultiStageMap = false;
+    }
 
     return Plugin_Continue;
 }
 
 public Action teamplay_round_start(Event event, const char[] name, bool dontBroadcast)
 {
+    int FullReset = event.GetInt("full_reset");
+    if (FullReset > 0) {
+        g_bIsMultiStageMap = false;
+        g_flCurrentMapTime = 0.0;
+    }
+
     g_bIsRoundEnd    = false;
     g_bIsRoundActive = false;
 

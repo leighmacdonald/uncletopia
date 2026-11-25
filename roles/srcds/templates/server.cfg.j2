@@ -111,7 +111,7 @@ ut_rtv_nag_timer 2400.0
 
 // Ask autobalance
 mp_autoteambalance 0
-mp_teams_unbalance_limit 1
+mp_teams_unbalance_limit {{ 0 if item.config == 'pve' else 1 }}
 tf_autobalance_ask_candidates_maxtime 10
 tf_autobalance_dead_candidates_maxtime 0
 tf_autobalance_force_candidates_maxtime 0

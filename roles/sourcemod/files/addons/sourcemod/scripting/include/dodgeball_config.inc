@@ -269,7 +269,7 @@ public Action CmdShockwave(int args)
 	float position[3];
 	int damage;
 	float pushStrength, radius, falloffRadius;
-
+	
 	GetCmdArg(1, buffer, sizeof(buffer)); client       = StringToInt(buffer);
 	GetCmdArg(2, buffer, sizeof(buffer)); damage       = StringToInt(buffer);
 	GetCmdArg(3, buffer, sizeof(buffer)); pushStrength = StringToFloat(buffer);
@@ -277,14 +277,14 @@ public Action CmdShockwave(int args)
 	GetCmdArg(5, buffer, sizeof(buffer)); falloffRadius = StringToFloat(buffer);
 
 	if (!IsValidClient(client)) return Plugin_Handled;
-
+	
 	team = GetClientTeam(client);
 	GetClientAbsOrigin(client, position);
 
 	for (client = 1; client <= MaxClients; client++)
 	{
 		if (!(IsValidClientEx(client, true) && (GetClientTeam(client) == team))) continue;
-
+		
 		float playerPosition[3];
 		GetClientEyePosition(client, playerPosition);
 		float distanceToShockwave = GetVectorDistance(position, playerPosition);
@@ -298,7 +298,7 @@ public Action CmdShockwave(int args)
 		impulse[1] = playerPosition[1] - position[1];
 		impulse[2] = playerPosition[2] - position[2];
 		NormalizeVector(impulse, impulse);
-
+		
 		if (impulse[2] < 0.4) { impulse[2] = 0.4; NormalizeVector(impulse, impulse); }
 
 		if (distanceToShockwave < falloffRadius)
@@ -460,10 +460,10 @@ void ParseGeneral(KeyValues config)
 
 	UseWebPlayer = view_as<bool>(config.GetNum("use web player", 0));
 	config.GetString("web player url", WebPlayerUrl, sizeof(WebPlayerUrl));
-	// Music[Music_RoundStart] = config.GetString("round start",      MusicPath[Music_RoundStart], PLATFORM_MAX_PATH) && MusicPath[Music_RoundStart][0];
-	// Music[Music_RoundWin]   = config.GetString("round end (win)",  MusicPath[Music_RoundWin],   PLATFORM_MAX_PATH) && MusicPath[Music_RoundWin][0];
-	// Music[Music_RoundLose]  = config.GetString("round end (lose)", MusicPath[Music_RoundLose],  PLATFORM_MAX_PATH) && MusicPath[Music_RoundLose][0];
-	// Music[Music_Gameplay]   = config.GetString("gameplay",         MusicPath[Music_Gameplay],   PLATFORM_MAX_PATH) && MusicPath[Music_Gameplay][0];
+	Music[Music_RoundStart] = config.GetString("round start",      MusicPath[Music_RoundStart], PLATFORM_MAX_PATH) && MusicPath[Music_RoundStart][0];
+	Music[Music_RoundWin]   = config.GetString("round end (win)",  MusicPath[Music_RoundWin],   PLATFORM_MAX_PATH) && MusicPath[Music_RoundWin][0];
+	Music[Music_RoundLose]  = config.GetString("round end (lose)", MusicPath[Music_RoundLose],  PLATFORM_MAX_PATH) && MusicPath[Music_RoundLose][0];
+	Music[Music_Gameplay]   = config.GetString("gameplay",         MusicPath[Music_Gameplay],   PLATFORM_MAX_PATH) && MusicPath[Music_Gameplay][0];
 }
 
 /** Parses the "classes" section of the config (rocket class definitions). */
@@ -494,16 +494,16 @@ void ParseClasses(KeyValues config)
 
 		strcopy(RocketClassName[index], 16, name);
 		config.GetString("name", buffer, sizeof(buffer)); strcopy(RocketClassLongName[index], 32, buffer);
-
-		// if (config.GetString("model", buffer, sizeof(buffer)))
-		// {
-		// 	strcopy(RocketClassModel[index], PLATFORM_MAX_PATH, buffer);
-		// 	if (RocketClassModel[index][0])
-		// 	{
-		// 		flags |= RocketFlag_CustomModel;
-		// 		if (config.GetNum("is animated", 0)) flags |= RocketFlag_IsAnimated;
-		// 	}
-		// }
+		
+		if (config.GetString("model", buffer, sizeof(buffer)))
+		{
+			strcopy(RocketClassModel[index], PLATFORM_MAX_PATH, buffer);
+			if (RocketClassModel[index][0])
+			{
+				flags |= RocketFlag_CustomModel;
+				if (config.GetNum("is animated", 0)) flags |= RocketFlag_IsAnimated;
+			}
+		}
 
 		config.GetString("behaviour", buffer, sizeof(buffer), "homing");
 		if (StrEqual(buffer, "homing")) RocketClassBehaviour[index] = Behaviour_Homing;
@@ -513,29 +513,29 @@ void ParseClasses(KeyValues config)
 		if (config.GetNum("play spawn sound", 0) == 1)
 		{
 			flags |= RocketFlag_PlaySpawnSound;
-			// if (config.GetString("spawn sound", RocketClassSpawnSound[index], PLATFORM_MAX_PATH) && RocketClassSpawnSound[index][0])
-			// {
-			// 	flags |= RocketFlag_CustomSpawnSound;
-			// }
+			if (config.GetString("spawn sound", RocketClassSpawnSound[index], PLATFORM_MAX_PATH) && RocketClassSpawnSound[index][0])
+			{
+				flags |= RocketFlag_CustomSpawnSound;
+			}
 		}
 
 		if (config.GetNum("play beep sound", 0) == 1)
 		{
 			flags |= RocketFlag_PlayBeepSound;
 			RocketClassBeepInterval[index] = config.GetFloat("beep interval", 0.5);
-			// if (config.GetString("beep sound", RocketClassBeepSound[index], PLATFORM_MAX_PATH) && RocketClassBeepSound[index][0])
-			// {
-			// 	flags |= RocketFlag_CustomBeepSound;
-			// }
+			if (config.GetString("beep sound", RocketClassBeepSound[index], PLATFORM_MAX_PATH) && RocketClassBeepSound[index][0])
+			{
+				flags |= RocketFlag_CustomBeepSound;
+			}
 		}
 
 		if (config.GetNum("play alert sound", 0) == 1)
 		{
 			flags |= RocketFlag_PlayAlertSound;
-			// if (config.GetString("alert sound", RocketClassAlertSound[index], PLATFORM_MAX_PATH) && RocketClassAlertSound[index][0])
-			// {
-			// 	flags |= RocketFlag_CustomAlertSound;
-			// }
+			if (config.GetString("alert sound", RocketClassAlertSound[index], PLATFORM_MAX_PATH) && RocketClassAlertSound[index][0])
+			{
+				flags |= RocketFlag_CustomAlertSound;
+			}
 		}
 
 		if (config.GetNum("elevate on deflect", 0) == 1) flags |= RocketFlag_ElevateOnDeflect;
@@ -620,7 +620,7 @@ void ParseClasses(KeyValues config)
 		DataPack cmds = null;
 		config.GetString("on spawn", buffer, sizeof(buffer));
 		if ((cmds = ParseCommands(buffer)) != null) { flags |= RocketFlag_OnSpawnCmd; RocketClassCmdsOnSpawn[index] = cmds; }
-
+		
 		config.GetString("on deflect", buffer, sizeof(buffer));
 		if ((cmds = ParseCommands(buffer)) != null) { flags |= RocketFlag_OnDeflectCmd; RocketClassCmdsOnDeflect[index] = cmds; }
 
@@ -731,7 +731,7 @@ DataPack ParseCommands(char[] line)
     // This prevents "Not enough space on the heap" when parsing many rocket classes
     static char parts[32][256];
     int numParts = ExplodeString(line, ";", parts, 32, 256);
-
+    
     ArrayList commands = new ArrayList(ByteCountToCells(256));
     char buffer[256];
 
@@ -740,7 +740,7 @@ DataPack ParseCommands(char[] line)
         TrimString(parts[i]);
         if (parts[i][0]) commands.PushString(parts[i]);
     }
-
+    
     int numCommands = commands.Length;
     if (numCommands == 0)
     {

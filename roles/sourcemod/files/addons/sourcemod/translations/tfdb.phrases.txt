@@ -5,9 +5,9 @@
 		"en"		"[{olive}TFDB{default}] This command is disabled."
 	}
 	
-	"Command_DBExplosion_Usage"
+	"Command_NoAccess"
 	{
-		"en"		"Usage : tf_dodgeball_explosion <client index>"
+		"en"		"[{olive}TFDB{default}] You do not have permission to use this command."
 	}
 	
 	"Command_DBShockwave_Usage"
@@ -31,6 +31,11 @@
 		"en"		"[{olive}TFDB{default}] Custom rocket {darkorange}particle{default} trails are now {steelblue}visible{default}."
 	}
 	
+	"Command_DBHideParticles_Usage"
+	{
+		"en"		"[{olive}TFDB{default}] Usage: {darkorange}sm_rockettrails{default} — toggles custom particle trails."
+	}
+	
 	"Command_DBHideSprites_Hidden"
 	{
 		"en"		"[{olive}TFDB{default}] Custom rocket {darkorange}sprite{default} trails are now {steelblue}hidden{default}."
@@ -39,6 +44,11 @@
 	"Command_DBHideSprites_Visible"
 	{
 		"en"		"[{olive}TFDB{default}] Custom rocket {darkorange}sprite{default} trails are now {steelblue}visible{default}."
+	}
+	
+	"Command_DBHideSprites_Usage"
+	{
+		"en"		"[{olive}TFDB{default}] Usage: {darkorange}sm_rocketspritetrails{default} — toggles custom sprite trails."
 	}
 	
 	"DBSteal_Warning_Client"
@@ -124,12 +134,6 @@
 		"en"		"[{olive}TFDB{default}] The bot(s) left. {darkmagenta}FFA{default} is now {community}enabled{default}."
 	}
 	
-	"Dodgeball_Death_Message"
-	{
-		"#format"	"{1:N},{2:i}"
-		"en"		"[{olive}TFDB{default}] {burlywood}{1}{default} died to a rocket travelling {red}{2}{default} MpH"
-	}
-	
 	"Dodgeball_Disabled"
 	{
 		"en"		"[{olive}TFDB{default}] Dodgeball is disabled."
@@ -212,7 +216,13 @@
 		"#format"	"{1:s},{2:s}"
 		"en"		"[{olive}TFDB{default}] Changed the class of a rocket from {darkorange}{1}{default} to {steelblue}{2}{default}."
 	}
-	
+
+	"Menu_Admin_AppliedPreset"
+	{
+		"#format"	"{1:N},{2:s}"
+		"en"		"[{olive}TFDB{default}] {darkorange}{1}{default} applied preset: {community}{2}{default}"
+	}
+
 	"Menu_Reset"
 	{
 		"en"		"[{olive}TFDB{default}] Type -1 to reset it."
@@ -347,18 +357,6 @@
 		"en"		"[{olive}TFDB{default}] Type in chat the new control delay within {darkorange}{1}{default} seconds."
 	}
 	
-	"Menu_DragTimeMin"
-	{
-		"#format"	"{1:i}"
-		"en"		"[{olive}TFDB{default}] Type in chat the new drag time start within {darkorange}{1}{default} seconds."
-	}
-	
-	"Menu_DragTimeMax"
-	{
-		"#format"	"{1:i}"
-		"en"		"[{olive}TFDB{default}] Type in chat the new drag time end within {darkorange}{1}{default} seconds."
-	}
-	
 	"Menu_TargetWeight"
 	{
 		"#format"	"{1:i}"
@@ -371,12 +369,36 @@
 		"en"		"[{olive}TFDB{default}] Type in chat the new maximum bounces within {darkorange}{1}{default} seconds."
 	}
 	
-	"Menu_BounceScale"
+	"Menu_SteeringControl"
 	{
 		"#format"	"{1:i}"
-		"en"		"[{olive}TFDB{default}] Type in chat the new bounce scale within {darkorange}{1}{default} seconds."
+		"en"		"[{olive}TFDB{default}] Type in chat the new steering control (seconds, e.g. 0.045) within {darkorange}{1}{default} seconds."
 	}
-	
+
+	"Menu_BounceControl"
+	{
+		"#format"	"{1:i}"
+		"en"		"[{olive}TFDB{default}] Type in chat the new bounce control (seconds, e.g. 0.045) within {darkorange}{1}{default} seconds."
+	}
+
+	"Menu_ThinkInterval"
+	{
+		"#format"	"{1:i}"
+		"en"		"[{olive}TFDB{default}] Type in chat the new think interval (seconds, 0 = per-tick) within {darkorange}{1}{default} seconds."
+	}
+
+	"Menu_BounceCeiling"
+	{
+		"#format"	"{1:i}"
+		"en"		"[{olive}TFDB{default}] Type in chat the new bounce ceiling (HU, 0 = disabled) within {darkorange}{1}{default} seconds."
+	}
+
+	"Menu_CritGlowStack"
+	{
+		"#format"	"{1:i}"
+		"en"		"[{olive}TFDB{default}] Type in chat the new crit glow stack (1-10) within {darkorange}{1}{default} seconds."
+	}
+
 	"Menu_MaxRockets"
 	{
 		"#format"	"{1:i}"
@@ -517,18 +539,6 @@
 		"en"		"[{olive}TFDB{default}] Changed rocket class control delay to {darkorange}{1}{default}."
 	}
 	
-	"Menu_ChangedDragTimeMin"
-	{
-		"#format"	"{1:.2f}"
-		"en"		"[{olive}TFDB{default}] Changed rocket class drag time start to {darkorange}{1}{default}."
-	}
-	
-	"Menu_ChangedDragTimeMax"
-	{
-		"#format"	"{1:.2f}"
-		"en"		"[{olive}TFDB{default}] Changed rocket class drag time end to {darkorange}{1}{default}."
-	}
-	
 	"Menu_ChangedTargetWeight"
 	{
 		"#format"	"{1:.2f}"
@@ -541,10 +551,61 @@
 		"en"		"[{olive}TFDB{default}] Changed rocket class maximum bounces to {darkorange}{1}{default}."
 	}
 	
-	"Menu_ChangedBounceScale"
+	"Menu_ChangedSteeringControl"
 	{
-		"#format"	"{1:.2f}"
-		"en"		"[{olive}TFDB{default}] Changed rocket class bounce scale to {darkorange}{1}{default}."
+		"#format"	"{1:.3f}"
+		"en"		"[{olive}TFDB{default}] Changed rocket class steering control to {darkorange}{1}{default}s."
+	}
+
+	"Menu_ChangedBounceControl"
+	{
+		"#format"	"{1:.3f}"
+		"en"		"[{olive}TFDB{default}] Changed rocket class bounce control to {darkorange}{1}{default}s."
+	}
+
+	"Menu_ChangedThinkInterval"
+	{
+		"#format"	"{1:.3f}"
+		"en"		"[{olive}TFDB{default}] Changed rocket class think interval to {darkorange}{1}{default}s."
+	}
+
+	"Menu_ChangedBounceCeiling"
+	{
+		"#format"	"{1:.0f}"
+		"en"		"[{olive}TFDB{default}] Changed rocket class bounce ceiling to {darkorange}{1}{default} HU."
+	}
+
+	"Menu_ChangedCritGlowStack"
+	{
+		"#format"	"{1:i}"
+		"en"		"[{olive}TFDB{default}] Changed rocket class crit glow stack to {darkorange}{1}{default}."
+	}
+
+	"Guardian_CmdBlocked"
+	{
+		"#format"	"{1:s}"
+		"en"		"{red}[TFDB] You cannot use '{1}' while you are the Guardian!"
+	}
+
+	"Guardian_MovedToRed"
+	{
+		"en"		"{olive}[TFDB]{default} Guardian round active. Moving you to {red}RED{default}."
+	}
+
+	"Guardian_OptedOutMin"
+	{
+		"#format"	"{1:d}"
+		"en"		"{olive}[TFDB]{default} You have {red}opted out{default} of being Guardian. (Ignored if fewer than {1} players)"
+	}
+
+	"Guardian_OptedOut"
+	{
+		"en"		"{olive}[TFDB]{default} You have {red}opted out{default} of being Guardian."
+	}
+
+	"Guardian_OptedIn"
+	{
+		"en"		"{olive}[TFDB]{default} You have {green}opted in{default} to being Guardian."
 	}
 	
 	"Menu_ChangedMaxRockets"
@@ -565,6 +626,11 @@
 		"en"		"[{olive}TFDB{default}] Changed spawners rocket class chances to {darkorange}{1}{default}."
 	}
 	
+	"Dodgeball_Vote_MustBeOnTeam"
+	{
+		"en"		"[{olive}TFDB{default}] You must be on RED or BLU to call a vote."
+	}
+
 	"Dodgeball_BounceVote_Cooldown"
 	{
 		"#format"	"{1:i}"
@@ -619,4 +685,701 @@
 		"#format"	"{1:i}"
 		"en"		"[{olive}TFDB{default}] The rockets count has been changed to {community}{1}{default}."
 	}
+	
+	"Dodgeball_PresetVote_Cooldown"
+	{
+		"#format"	"{1:i}"
+		"en"		"[{olive}TFDB{default}] Voting for presets is in cooldown for {darkorange}{1}{default} seconds."
+	}
+	
+	"Dodgeball_PresetVote_NoPresets"
+	{
+		"en"		"[{olive}TFDB{default}] No presets are configured."
+	}
+	
+	"Dodgeball_PresetVote_Applied"
+	{
+		"#format"	"{1:s}"
+		"en"		"[{olive}TFDB{default}] Preset changed to {community}{1}{default}."
+	}
+	
+	// ---- Guardian subplugin phrases ----
+	
+	"Guardian_Disabled"
+	{
+		"en"		"[{olive}TFDB{default}] Guardian mode is {red}disabled{default}."
+	}
+	
+	"Guardian_Selected"
+	{
+		"#format"	"{1:N},{2:s}"
+		"en"		"[{olive}TFDB{default}] {red}{1}{default} is now the {darkmagenta}Guardian{default} ({community}{2}{default})!"
+	}
+	
+	"Guardian_Died"
+	{
+		"#format"	"{1:N}"
+		"en"		"[{olive}TFDB{default}] The {darkmagenta}Guardian{default} {red}{1}{default} has fallen!"
+	}
+	
+	"Guardian_Disconnected"
+	{
+		"#format"	"{1:N}"
+		"en"		"[{olive}TFDB{default}] The {darkmagenta}Guardian{default} {red}{1}{default} has disconnected."
+	}
+	
+	"Guardian_Removed"
+	{
+		"#format"	"{1:N}"
+		"en"		"[{olive}TFDB{default}] The {darkmagenta}Guardian{default} {red}{1}{default} has been removed by an admin."
+	}
+	
+	"Guardian_Forced"
+	{
+		"#format"	"{1:N}"
+		"en"		"[{olive}TFDB{default}] {darkorange}{1}{default} will be the {darkmagenta}Guardian{default} next round."
+	}
+	
+	"Guardian_ClassForced"
+	{
+		"#format"	"{1:s}"
+		"en"		"[{olive}TFDB{default}] Guardian class set to {community}{1}{default} for next round."
+	}
+	
+	"Guardian_NextRoundWarning"
+	{
+		"en"		"[{olive}TFDB{default}] The {darkmagenta}Guardian{default} will awaken next round! Prepare yourselves!"
+	}
+	
+	"Guardian_TeamBlocked"
+	{
+		"en"		"[{olive}TFDB{default}] You cannot join the {steelblue}Guardian{default}'s team."
+	}
+	
+	"Guardian_RageActivated"
+	{
+		"#format"	"{1:N}"
+		"en"		"[{olive}TFDB{default}] {red}{1}{default} activated {darkmagenta}RAGE{default}! Airblast powered up!"
+	}
+	
+	"Guardian_SprintActivated"
+	{
+		"#format"	"{1:N}"
+		"en"		"[{olive}TFDB{default}] {red}{1}{default} activated {community}SPRINT{default}! Speed boosted!"
+	}
+	
+	"Guardian_PounceActivated"
+	{
+		"#format"	"{1:N}"
+		"en"		"[{olive}TFDB{default}] {red}{1}{default} activated {darkmagenta}POUNCE{default}! They leaped forward!"
+	}
+	
+	"Guardian_ChargeActivated"
+	{
+		"#format"	"{1:N}"
+		"en"		"[{olive}TFDB{default}] {red}{1}{default} activated {community}CHARGE{default}! Massive speed boost!"
+	}
+	
+	"Guardian_SlowActivated"
+	{
+		"#format"	"{1:N}"
+		"en"		"[{olive}TFDB{default}] {red}{1}{default} activated {darkorange}SLOW{default}! Slowed down nearby enemies!"
+	}
+	
+	"Guardian_BlockedBot"
+	{
+		"en"		"[{olive}TFDB{default}] {red}Guardian mode unavailable{default} — bots are active."
+	}
+	
+	"Guardian_BlockedFFA"
+	{
+		"en"		"[{olive}TFDB{default}] {red}Guardian mode unavailable{default} — FFA is active."
+	}
+	
+	"Guardian_BotJoined"
+	{
+		"en"		"[{olive}TFDB{default}] {red}Guardian disabled{default} — a bot joined the server."
+	}
+
+	// ---- Anti-Cheat subplugin phrases ----
+
+	"AC_Admin_Flagged"
+	{
+		"#format"	"{1:N},{2:i}"
+		"en"		"[{olive}TFDB{default}] {darkorange}{1}{default} flagged with suspicion score {red}{2}{default}."
+	}
+
+	"AC_Admin_Kicked"
+	{
+		"#format"	"{1:N},{2:i}"
+		"en"		"[{olive}TFDB{default}] {darkorange}{1}{default} was kicked. Score: {red}{2}{default}."
+	}
+
+	"AC_Admin_Banned"
+	{
+		"#format"	"{1:N},{2:i}"
+		"en"		"[{olive}TFDB{default}] {darkorange}{1}{default} was banned. Score: {red}{2}{default}."
+	}
+
+	"AC_Kick_Reason"
+	{
+		"en"		"Suspicious activity detected."
+	}
+
+	"AC_Ban_Reason"
+	{
+		"en"		"Auto-airblast cheat detected."
+	}
+
+	"AC_Status_Header"
+	{
+		"en"		"[{olive}TFDB{default}] --- Anti-Cheat Status ---"
+	}
+
+	"AC_Status_Player"
+	{
+		"#format"	"{1:N},{2:i},{3:i},{4:i},{5:i},{6:i},{7:i},{8:i},{9:i}"
+		"en"		"{darkorange}{1}{default} | Score:{red}{2}{default} AA:{3} AF:{4} DS:{5} PT:{6} CT:{7} Str:{8}({9})"
+	}
+
+	"AC_Status_Clean"
+	{
+		"en"		"[{olive}TFDB{default}] All players are clean."
+	}
+
+	"AC_Reset_Done"
+	{
+		"#format"	"{1:N}"
+		"en"		"[{olive}TFDB{default}] Reset anti-cheat counters for {darkorange}{1}{default}."
+	}
+
+	"AC_Reset_Usage"
+	{
+		"en"		"[{olive}TFDB{default}] Usage: sm_ac_reset <target>"
+	}
+
+	// =========================================================================
+	// Player vs Bot (PvB) Subplugin
+	// =========================================================================
+
+	"PvB_Entered"
+	{
+		"#format"	"{1:s}"
+		"en"		"[{olive}TFDB{default}] {darkorange}{1}{default} has entered the arena."
+	}
+
+	"PvB_Left"
+	{
+		"#format"	"{1:s}"
+		"en"		"[{olive}TFDB{default}] {darkorange}{1}{default} has left the arena."
+	}
+
+	"PvB_Training_AlreadyActive"
+	{
+		"en"		"[{olive}TFDB{default}] Training mode is already active! Use {darkorange}sm_stoptraining{default} to end."
+	}
+
+	"PvB_Training_Started"
+	{
+		"en"		"[{olive}TFDB{default}] Training mode started! All bot types spawned on both teams."
+	}
+
+	"PvB_Training_Capped"
+	{
+		"#format"	"{1:d},{2:d}"
+		"en"		"[{olive}TFDB{default}] {darkorange}Note:{default} max_training_bots={steelblue}{1}{default} capped training to first {steelblue}{2}{default} classes."
+	}
+
+	"PvB_Training_Spawned"
+	{
+		"#format"	"{1:d},{2:d}"
+		"en"		"[{olive}TFDB{default}] {darkorange}TRAINING MODE:{default} {steelblue}{1}{default} bots spawned ({steelblue}{2}{default} per team). They will learn from each other!"
+	}
+
+	"PvB_Training_HowToStop"
+	{
+		"en"		"[{olive}TFDB{default}] Use {darkorange}sm_stoptraining{default} to end training."
+	}
+
+	"PvB_Training_NotActive"
+	{
+		"en"		"[{olive}TFDB{default}] Training mode is not active."
+	}
+
+	"PvB_Training_Ended_Admin"
+	{
+		"en"		"[{olive}TFDB{default}] Training mode ended. All bots kicked."
+	}
+
+	"PvB_Training_Ended"
+	{
+		"en"		"[{olive}TFDB{default}] Training mode ended."
+	}
+
+	"PvB_ConsoleOnly_Admin"
+	{
+		"en"		"[SM] This command is for in-game admins only."
+	}
+
+	"PvB_ConsoleOnly_Player"
+	{
+		"en"		"[SM] This command is for players only."
+	}
+
+	"PvB_ConsoleOnly_Stats"
+	{
+		"en"		"[SM] Console cannot view stats. Join the server!"
+	}
+
+	"PvB_ConfigReloaded"
+	{
+		"en"		"[{olive}TFDB{default}] Config reloaded!"
+	}
+
+	"PvB_Admin_TypeChanged"
+	{
+		"#format"	"{1:s}"
+		"en"		"[{olive}TFDB{default}] Admin changed bot type to {darkorange}{1}{default}"
+	}
+
+	"PvB_Brain_RequiresRoot"
+	{
+		"en"		"[{olive}TFDB{default}] Brain reset requires ROOT access."
+	}
+
+	"PvB_Brain_ResetAll"
+	{
+		"en"		"[{olive}TFDB{default}] ALL brain data has been reset!"
+	}
+
+	"PvB_Brain_ResetType"
+	{
+		"#format"	"{1:s}"
+		"en"		"[{olive}TFDB{default}] Brain data reset for type: {darkorange}{1}{default}"
+	}
+
+	"PvB_Speech_Toggled"
+	{
+		"#format"	"{1:s}"
+		"en"		"[{olive}TFDB{default}] Speech {darkorange}{1}{default}"
+	}
+
+	"PvB_SetBotType_Usage"
+	{
+		"#format"	"{1:d}"
+		"en"		"[{olive}TFDB{default}] Usage: sm_setbottype <index|name>  (have {steelblue}{1}{default} classes)"
+	}
+
+	"PvB_SetBotType_Unknown"
+	{
+		"#format"	"{1:s},{2:d}"
+		"en"		"[{olive}TFDB{default}] Unknown class '{darkorange}{1}{default}'. Have {steelblue}{2}{default} classes."
+	}
+
+	"PvB_BotType_Set"
+	{
+		"#format"	"{1:s}"
+		"en"		"[{olive}TFDB{default}] Bot type set to {darkorange}{1}{default}"
+	}
+
+	"PvB_Disabled"
+	{
+		"en"		"[{olive}TFDB{default}] Plugin is disabled."
+	}
+
+	"PvB_Bot_NotActive"
+	{
+		"en"		"[{olive}TFDB{default}] Bot is not currently active."
+	}
+
+	"PvB_Bot_NoActive"
+	{
+		"en"		"[{olive}TFDB{default}] No bot active."
+	}
+
+	"PvB_Stats_Header"
+	{
+		"en"		"{olive}========== {darkorange}PvB Bot Stats {olive}=========="
+	}
+
+	"PvB_Stats_Type"
+	{
+		"#format"	"{1:s}"
+		"en"		"{darkorange}Type: {community}{1}"
+	}
+
+	"PvB_Stats_Rounds"
+	{
+		"#format"	"{1:d},{2:d},{3:d}"
+		"en"		"{darkorange}Rounds: {community}{1} {default}(W: {olive}{2} {default}| L: {red}{3}{default})"
+	}
+
+	"PvB_Stats_WinRate"
+	{
+		"#format"	"{1:.1f}"
+		"en"		"{darkorange}Win Rate: {community}{1}%%"
+	}
+
+	"PvB_Stats_Deflects"
+	{
+		"#format"	"{1:d},{2:d}"
+		"en"		"{darkorange}Total Deflects: {community}{1} {default}(This round: {community}{2}{default})"
+	}
+
+	"PvB_Stats_Kills"
+	{
+		"#format"	"{1:d}"
+		"en"		"{darkorange}Total Kills: {community}{1}"
+	}
+
+	"PvB_Stats_Deaths"
+	{
+		"#format"	"{1:d}"
+		"en"		"{darkorange}Total Deaths: {community}{1}"
+	}
+
+	"PvB_Stats_Brain"
+	{
+		"#format"	"{1:d}"
+		"en"		"{darkorange}Brain Entries: {community}{1}"
+	}
+
+	"PvB_Stats_Footer"
+	{
+		"en"		"{olive}========================================="
+	}
+
+	"PvB_Vote_InProgress"
+	{
+		"en"		"[{olive}TFDB{default}] A vote is already in progress!"
+	}
+
+	"PvB_Vote_TrainingBlock"
+	{
+		"en"		"[{olive}TFDB{default}] Cannot vote during training mode. Ask a ROOT admin."
+	}
+
+	"PvB_Vote_TooManyPlayers"
+	{
+		"#format"	"{1:d},{2:d}"
+		"en"		"[{olive}TFDB{default}] Vote blocked! Too many players ({steelblue}{1}{default} > {steelblue}{2}{default})."
+	}
+
+	"PvB_Vote_AbovePvBLimit"
+	{
+		"#format"	"{1:d},{2:d}"
+		"en"		"[{olive}TFDB{default}] Bot can't run with this many players ({steelblue}{1}{default} on server, max {steelblue}{2}{default} for PvB). Wait until some leave or have an admin force it with {community}!pvb{default}."
+	}
+
+	"PvB_TooManyPlayers_DeferredDisable"
+	{
+		"#format"	"{1:d},{2:d}"
+		"en"		"[{olive}TFDB{default}] {steelblue}{1}{default} players exceeds PvB max ({steelblue}{2}{default}). Bot will leave at end of this round."
+	}
+
+	"PvB_Vote_MustBeOnTeam"
+	{
+		"en"		"[{olive}TFDB{default}] You must be on {red}RED{default} or {blue}BLU{default} to vote for the bot."
+	}
+
+	"PvB_HotSwap_Deferred"
+	{
+		"#format"	"{1:s}"
+		"en"		"[{olive}TFDB{default}] Vote passed: bot will switch to {community}{1}{default} at end of this round."
+	}
+
+	"PvB_Vote_StartClass"
+	{
+		"#format"	"{1:N}"
+		"en"		"[{olive}TFDB{default}] {darkorange}{1}{default} started a bot class vote!"
+	}
+
+	"PvB_PlayerJoined_BotDisabled"
+	{
+		"en"		"[{olive}TFDB{default}] Another player joined. Bot disabled."
+	}
+
+	"PvB_PlayerJoined_Cancelled"
+	{
+		"en"		"[{olive}TFDB{default}] Another player joined - selection cancelled."
+	}
+
+	"PvB_PvB_Starting"
+	{
+		"#format"	"{1:s}"
+		"en"		"[{olive}TFDB{default}] Starting PvB with {darkorange}{1}{default} bot!"
+	}
+
+	"PvB_ClassVote_Start"
+	{
+		"en"		"[{olive}TFDB{default}] Vote for bot type! You have 20 seconds."
+	}
+
+	"PvB_ClassVote_Voted"
+	{
+		"#format"	"{1:N},{2:s}"
+		"en"		"[{olive}TFDB{default}] {darkorange}{1}{default} voted for {community}{2}{default}"
+	}
+
+	"PvB_ClassVote_Abstained"
+	{
+		"#format"	"{1:N}"
+		"en"		"[{olive}TFDB{default}] {darkorange}{1}{default} cancelled their vote."
+	}
+
+	"PvB_ClassVote_NoVotes"
+	{
+		"en"		"[{olive}TFDB{default}] No votes cast. Vote cancelled — bot state unchanged."
+	}
+
+	"PvB_ClassVote_Result"
+	{
+		"#format"	"{1:s},{2:d}"
+		"en"		"[{olive}TFDB{default}] Vote result: {darkorange}{1}{default} wins! ({steelblue}{2}{default} votes)"
+	}
+
+	"PvB_Bot_AlreadyActive"
+	{
+		"en"		"[{olive}TFDB{default}] Bot is already active!"
+	}
+
+	"PvB_Bot_AlreadyDisabled"
+	{
+		"en"		"[{olive}TFDB{default}] Bot is already disabled!"
+	}
+
+	"Menu_OrbitTightness"
+	{
+		"en"		"[{olive}TFDB{default}] Type new orbit tightness (seconds-like coefficient)."
+	}
+
+	"Menu_MaxSpeed"
+	{
+		"en"		"[{olive}TFDB{default}] Type new max speed (HU/s)."
+	}
+
+	"Menu_MaxDeflections"
+	{
+		"en"		"[{olive}TFDB{default}] Type new max deflections."
+	}
+
+	// ========================================================================
+	//  DeathMatch (NER + Solo)
+	// ========================================================================
+
+	"DeathMatch_NER_Enabled"
+	{
+		"en"		"[{olive}TFDB{default}] {darkmagenta}DeathMatch{default} is now {community}enabled{default}."
+	}
+
+	"DeathMatch_NER_Disabled"
+	{
+		"en"		"[{olive}TFDB{default}] {darkmagenta}DeathMatch{default} is now {red}disabled{default}."
+	}
+
+	"DeathMatch_NER_Disabled_Not_Enough_Players"
+	{
+		"en"		"[{olive}TFDB{default}] {darkmagenta}DeathMatch{default} is now {red}disabled{default} (not enough players)."
+	}
+
+	"DeathMatch_NER_Disabled_Conflict"
+	{
+		"en"		"[{olive}TFDB{default}] {darkmagenta}DeathMatch{default} was {red}disabled{default} (Guardian or PvB became active)."
+	}
+
+	"DeathMatch_NER_Not_Allowed"
+	{
+		"en"		"[{olive}TFDB{default}] {darkmagenta}DeathMatch{default} is currently {red}disabled{default}."
+	}
+
+	"DeathMatch_MustBeOnTeam"
+	{
+		"en"		"[{olive}TFDB{default}] You must be on {red}RED{default} or {blue}BLU{default} to use this command."
+	}
+
+	"DeathMatch_NERVote_Cooldown"
+	{
+		"#format"	"{1:.0f}"
+		"en"		"[{olive}TFDB{default}] {darkmagenta}DeathMatch{default} vote is on cooldown for {darkorange}{1}{default} more seconds."
+	}
+
+	"DeathMatch_NERVote_Failed"
+	{
+		"en"		"[{olive}TFDB{default}] {darkmagenta}DeathMatch{default} vote {red}failed{default}."
+	}
+
+	"DeathMatch_Blocked_Conflict"
+	{
+		"en"		"[{olive}TFDB{default}] {darkmagenta}DeathMatch{default} cannot activate while Guardian or PvB is running."
+	}
+
+	"DeathMatch_Vote_Conflict"
+	{
+		"en"		"[{olive}TFDB{default}] Another vote is already in progress."
+	}
+
+	"DeathMatch_Solo_Toggled_On"
+	{
+		"en"		"[{olive}TFDB{default}] {darkmagenta}Solo{default} is now {community}enabled{default}."
+	}
+
+	"DeathMatch_Solo_Toggled_Off"
+	{
+		"en"		"[{olive}TFDB{default}] {darkmagenta}Solo{default} is now {red}disabled{default}."
+	}
+
+	"DeathMatch_Solo_Not_Allowed"
+	{
+		"en"		"[{olive}TFDB{default}] {darkmagenta}Solo{default} is currently {red}disabled{default}."
+	}
+
+	"DeathMatch_Solo_Not_Possible_Last_Alive"
+	{
+		"en"		"[{olive}TFDB{default}] {darkmagenta}Solo{default} can {red}not{default} be enabled — you are the last player alive."
+	}
+
+	"DeathMatch_Solo_Not_Possible_No_Teammates"
+	{
+		"en"		"[{olive}TFDB{default}] Your {darkmagenta}solo{default} was {red}disabled{default} — no alive teammates."
+	}
+
+	"DeathMatch_Solo_Not_Possible_NER_Would_End"
+	{
+		"en"		"[{olive}TFDB{default}] Your {darkmagenta}solo{default} was {red}disabled{default} — DeathMatch would have ended otherwise."
+	}
+
+	"DeathMatch_Solo_Disabled_By_Config"
+	{
+		"en"		"[{olive}TFDB{default}] Your {darkmagenta}solo{default} was {red}disabled{default} by a config change."
+	}
+
+	"DeathMatch_Solo_Notify_Not_Respawned"
+	{
+		"en"		"[{olive}TFDB{default}] You'll be respawned at the end of the round ({darkmagenta}solo{default} enabled)."
+	}
+
+	"DeathMatch_Solo_Notify_Not_Respawned_Mid_Round"
+	{
+		"en"		"[{olive}TFDB{default}] You'll be respawned when one team empties ({darkmagenta}solo{default} enabled)."
+	}
+
+	"DeathMatch_Solo_Announce_Soloers"
+	{
+		"#format"	"{1:s}"
+		"en"		"[{olive}TFDB{default}] {darkmagenta}Soloers{default}: {darkorange}{1}{default}"
+	}
+
+	"DeathMatch_Vote_Menu_Title_Enable"
+	{
+		"en"		"Enable DeathMatch mode?"
+	}
+
+	"DeathMatch_Vote_Menu_Title_Disable"
+	{
+		"en"		"Disable DeathMatch mode?"
+	}
+
+	"Menu_Title_WhatChange"
+	{
+		"en"		"What would you like to change?"
+	}
+
+	"Menu_Title_ActiveRockets"
+	{
+		"en"		"Active rockets :"
+	}
+
+	"Menu_Title_NewRocketTarget"
+	{
+		"en"		"New rocket target :"
+	}
+
+	"Menu_Title_NewRocketClass"
+	{
+		"en"		"New rocket class :"
+	}
+
+	"Menu_Title_RocketClasses"
+	{
+		"en"		"Rocket classes :"
+	}
+
+	"Menu_Title_SpawnersOptions"
+	{
+		"en"		"Spawners options :"
+	}
+
+	"Menu_Title_SpawnChances"
+	{
+		"en"		"Rocket classes spawn chances :"
+	}
+
+	"Menu_Title_ApplyPreset"
+	{
+		"en"		"Apply preset:"
+	}
+
+	// ========================================================================
+	//  PvB admin menu titles
+	// ========================================================================
+
+	"PvB_Menu_Admin_Panel"
+	{
+		"#format"	"{1:s},{2:s}"
+		"en"		"=== PvB Admin Panel ===\nStatus: {1} | Type: {2}"
+	}
+
+	"PvB_Menu_Choose_Type"
+	{
+		"#format"	"{1:s}"
+		"en"		"Choose Bot Type\nCurrent: {1}"
+	}
+
+	"PvB_Menu_Brain_Mgmt"
+	{
+		"en"		"Brain Management"
+	}
+
+	"PvB_Menu_Speech"
+	{
+		"#format"	"{1:s}"
+		"en"		"Speech Settings\nSpeech: {1}"
+	}
+
+	"PvB_Menu_Choose_Opponent"
+	{
+		"en"		"Choose your opponent:"
+	}
+
+	"PvB_Menu_Vote_Type"
+	{
+		"en"		"Vote: Which bot type?"
+	}
+
+	"PvB_Menu_Vote_Disable_Option"
+	{
+		"en"		"Disable bot"
+	}
+
+	"PvB_Menu_Info_Active"
+	{
+		"#format"	"{1:s},{2:d}"
+		"en"		"PvB Bot Info\nStatus: ACTIVE\nType: {1}\nRound Deflects: {2}"
+	}
+
+	"PvB_Menu_Info_Inactive"
+	{
+		"en"		"PvB Bot Info\nStatus: INACTIVE"
+	}
+
+	"FFA_Vote_Menu_Title_Enable"
+	{
+		"en"		"Enable FFA mode?"
+	}
+
+	"FFA_Vote_Menu_Title_Disable"
+	{
+		"en"		"Disable FFA mode?"
+	}
+
 }
