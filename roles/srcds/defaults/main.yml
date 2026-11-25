@@ -26,6 +26,7 @@ srcds_log_file_enable: false
 srcds_log_net_enable: true
 srcds_log_net_hosts: ["127.0.0.1:27015"]
 srcds_use_sdr: false
+srcds_rubikon: false
 srcds_workshop_auth_key: ""
 srcds_stv_enable: true
 srcds_stv_password: "changemetoo"

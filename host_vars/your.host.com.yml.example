@@ -8,6 +8,8 @@ srcds_ip_public: "1.2.3.4"
 # Answer A2S queries in the kernel with the eBPF query cache daemon.
 srcds_query_cache: false
 srcds_use_sdr: false
+# Enable the TF2 Rubikon physics engine test flag (-rubikon) at server launch.
+srcds_rubikon: false
 wireguard_addresses:
   - "10.20.30.10/24"
 services:

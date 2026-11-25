@@ -13,6 +13,8 @@ srcds_hostname: "TF2"
 srcds_client_port: ""
 srcds_workshop_auth_key: ""
 srcds_use_sdr: false
+# Enable the TF2 Rubikon physics engine test flag (-rubikon) at server launch.
+srcds_rubikon: false
 
 # eBPF A2S query cache. Enable per host in host_vars and set srcds_ip_public.
 srcds_query_cache: false

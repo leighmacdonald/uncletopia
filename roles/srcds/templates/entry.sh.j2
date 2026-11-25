@@ -7,6 +7,7 @@ bash "./srcds_run" -game "{{srcds_steam_app}}" -console \
   -strictportbind \
   -usercon \
   -secured \
+  {% if item.srcds_rubikon|default(srcds_rubikon) %}-rubikon {% endif %} \
   -port "{{ srcds_base_port + (loop0 * 10) }}" \
   +tv_port "{{ srcds_base_port + (loop0 * 10) + 1 }}" \
   +clientport "{{ srcds_base_port + (loop0 * 10) + 2 }}" \
