@@ -290,7 +290,7 @@
 			}
 
 			"CTFFlameThrower::DeflectEntity" {
-				"linux" "430"
+				"linux" "431"
 				"windows" "423"
 			}
 
