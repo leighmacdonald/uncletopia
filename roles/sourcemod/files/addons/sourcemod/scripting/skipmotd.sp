@@ -5,7 +5,7 @@
 
 #pragma newdecls required
 #pragma semicolon 1
-#define PLUGIN_VERSION  "1.3"
+#define PLUGIN_VERSION  "1.4"
 
 public Plugin myinfo = {
   name = "No MOTD",
@@ -16,6 +16,8 @@ public Plugin myinfo = {
 };
 
 bool clientMOTDBlocked[MAXPLAYERS + 1];
+bool settingsMenusRegistered = false;
+bool lateLoad = false;
 
 ConVar enableNoMotdCvar = null;
 ConVar alwaysNoMotdCvar = null;
@@ -52,6 +54,12 @@ bool CookieEnabled(int client, Cookie cookie) {
   return StrEqual(value, "1");
 }
 
+public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
+{
+  lateLoad = late;
+  return APLRes_Success;
+}
+
 public void OnPluginStart()
 {
   enableNoMotdCvar = CreateConVar("sm_nomotd", "", "If 1, allow clients to opt into skipping the MOTD.");
@@ -73,20 +81,10 @@ public void OnPluginStart()
   randomClassCookie = RegClientCookie("random_class", "Random Class", CookieAccess_Protected);
   rememberClassCookie = RegClientCookie("remember_class", "Remember Class", CookieAccess_Protected);
 
-  // Register sm_settings menus. These can't be unregistered(?) so if
-  // cvars are changed after server startpu, the menu will be out of
-  // sync until the plugin is reloaded.
-  if (CvarEnabled(enableNoMotdCvar) && !CvarEnabled(alwaysNoMotdCvar)) {
-    SetCookiePrefabMenu(noMotdCookie, CookieMenu_OnOff_Int, "Skip MOTD");
-  }
-  if (CvarEnabled(enableRandomTeamCvar) && !CvarEnabled(alwaysRandomTeamCvar)) {
-    SetCookiePrefabMenu(randomTeamCookie, CookieMenu_OnOff_Int, "Auto join random team");
-  }
-  if (CvarEnabled(enableRandomClassCvar) && !CvarEnabled(alwaysRandomClassCvar)) {
-    SetCookiePrefabMenu(randomClassCookie, CookieMenu_OnOff_Int, "Auto join random class");
-  }
-  if (CvarEnabled(enableRememberClassCvar) && !CvarEnabled(alwaysRememberClassCvar)) {
-    SetCookiePrefabMenu(rememberClassCookie, CookieMenu_OnOff_Int, "Auto join latest class");
+  // On a late load, configs have already run, so register the menus now.
+  // Otherwise wait for OnConfigsExecuted (server.cfg sets the gate cvars).
+  if (lateLoad) {
+    RegisterSettingsMenus();
   }
 
   // Cookie for storing the player's most recently played class.
@@ -98,6 +96,44 @@ public void OnPluginStart()
 
   HookEvent("player_changeclass", Event_ChangeClass);
   HookUserMessage(GetUserMessageId("Train"), UserMessageHook, true);
+}
+
+// The extension keeps menu items per plugin and only removes them on unload,
+// while OnConfigsExecuted fires every map, so only register once.
+void RegisterSettingsMenus()
+{
+  if (settingsMenusRegistered) {
+    return;
+  }
+  int registered = 0;
+
+  if (CvarEnabled(enableNoMotdCvar) && !CvarEnabled(alwaysNoMotdCvar)) {
+    SetCookiePrefabMenu(noMotdCookie, CookieMenu_OnOff_Int, "Skip MOTD");
+    registered++;
+  }
+  if (CvarEnabled(enableRandomTeamCvar) && !CvarEnabled(alwaysRandomTeamCvar)) {
+    SetCookiePrefabMenu(randomTeamCookie, CookieMenu_OnOff_Int, "Auto join random team");
+    registered++;
+  }
+  if (CvarEnabled(enableRandomClassCvar) && !CvarEnabled(alwaysRandomClassCvar)) {
+    SetCookiePrefabMenu(randomClassCookie, CookieMenu_OnOff_Int, "Auto join random class");
+    registered++;
+  }
+  if (CvarEnabled(enableRememberClassCvar) && !CvarEnabled(alwaysRememberClassCvar)) {
+    SetCookiePrefabMenu(rememberClassCookie, CookieMenu_OnOff_Int, "Auto join latest class");
+    registered++;
+  }
+
+  // If no cvar was enabled (e.g. a manual load before configs ran), leave the
+  // guard clear so OnConfigsExecuted can register once the real values are set.
+  if (registered > 0) {
+    settingsMenusRegistered = true;
+  }
+}
+
+public void OnConfigsExecuted()
+{
+  RegisterSettingsMenus();
 }
 
 void JoinClassName(TFClassType id, char[] name) {
