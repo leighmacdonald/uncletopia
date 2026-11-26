@@ -8,12 +8,8 @@
 #include <sourcemod>
 #include <sdktools>
 #include <nativevotes>
-// gbans is optional - when it (or its include) isn't present the plugin falls
-// back to mp_scrambleteams. REQUIRE_PLUGIN is defined by default in SourceMod,
-// so it must be undefined around the include to avoid a hard dependency.
-#undef REQUIRE_PLUGIN
+// gbans is optional - when its include isn't present the plugin falls back to mp_scrambleteams.
 #tryinclude <gbans>
-#define REQUIRE_PLUGIN
 
 public Plugin myinfo =
 {
@@ -180,7 +176,7 @@ public Action Cmd_VoteScramble(int client, int args)
 
 public void OnClientSayCommand_Post(int client, const char[] command, const char[] sArgs)
 {
-	if (strcmp(sArgs, "votescramble", false) == 0 || strcmp(sArgs, "vscramble", false) == 0 || strcmp(sArgs, "scramble", false) == 0 || strcmp(sArgs, "scrimblo", false) == 0 )
+	if (strcmp(sArgs, "votescramble", false) == 0 || strcmp(sArgs, "vscramble", false) == 0 || strcmp(sArgs, "scramble", false) == 0 || strcmp(sArgs, "scrimblo", false) == 0 || strcmp(sArgs, "scrabble", false) == 0 || strcmp(sArgs, "skibidi", false) == 0 || strcmp(sArgs, "mulligan", false) == 0 || strcmp(sArgs, "shuffle", false) == 0 || strcmp(sArgs, "giveup", false) == 0)
 	{
 		ReplySource old = SetCmdReplySource(SM_REPLY_TO_CHAT);
 
