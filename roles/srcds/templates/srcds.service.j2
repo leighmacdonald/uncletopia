@@ -20,14 +20,17 @@ Environment=
 RemainAfterExit=yes
 User={{ srcds_user }}
 ExecStart=/usr/bin/tmux -S ./tmux.sock new-session -s {{ item.server_name_short }} -d ./entry.sh
+{% if item.srcds_restart_notice | default(srcds_restart_notice) | bool %}
 ExecStop=/usr/bin/bash ./stop.sh
+{% else %}
+ExecStop=/usr/bin/tmux -S ./tmux.sock send -t {{ item.server_name_short }} "quit" ENTER
+{% endif %}
 
 KillSignal=SIGCONT
 
 TimeoutStartSec=0
 
-# Use larger timeouts since we have a restart script that notifies
-# users and winds the game down in a couple mins.
+# Larger timeout for the optional restart-notice sequence in stop.sh.
 TimeoutStopSec=300
 TimeoutSec=300
 

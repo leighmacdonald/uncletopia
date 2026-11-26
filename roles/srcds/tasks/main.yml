@@ -121,6 +121,32 @@
   tags:
     - game_engine
 
+# A 64-bit server looks for ~/.steam/sdk64/steamclient.so. Without it, it falls
+# back to the 32-bit steamclient.so next to srcds_run and fails with
+# ELFCLASS32. steamcmd ships the matching 64-bit library.
+- name: Provide 64-bit Steam client library
+  when: srcds_any_64bit | bool
+  vars:
+    srcds_any_64bit: >-
+      {{ srcds_use64Bit | default(false) or
+         (services | default([]) | selectattr('srcds_use64Bit', 'defined') | selectattr('srcds_use64Bit') | list | length > 0) }}
+  tags:
+    - game_engine
+    - game_config
+  block:
+    - name: Create sdk64 directory
+      ansible.builtin.file:
+        path: "{{ srcds_homedir }}/.steam/sdk64"
+        state: directory
+        mode: "0775"
+
+    - name: Link 64-bit steamclient.so
+      ansible.builtin.file:
+        src: "{{ srcds_homedir }}/steamcmd/linux64/steamclient.so"
+        dest: "{{ srcds_homedir }}/.steam/sdk64/steamclient.so"
+        state: link
+        force: true
+
 # Each instance is an overlayfs mount: lowerdir=~/srcds-base, upperdir=~/srcds-<name>-upper.
 # overlayfs gives the upper copy priority, so if a base file was ever copied up
 # into an instance's upper layer (e.g. tf/steam.inf, whose PatchVersion is the

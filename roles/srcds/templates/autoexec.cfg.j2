@@ -33,8 +33,8 @@ sv_downloadurl "{{ srcds_fastdl_url }}"
 sv_allowupload 0
 sv_allowdownload 0
 
-// Reenable wallbugs
-sv_wallbug {{ sv_wallbug|default(1) }}
+// Reenable wallbugs; Rubikon physics requires them enabled
+sv_wallbug {{ 1 if (item.srcds_rubikon | default(srcds_rubikon) | bool) else (sv_wallbug | default(1)) }}
 // No longer broken
 sv_parallel_sendsnapshot {{ sv_parallel_sendsnapshot|default(1) }}
 
