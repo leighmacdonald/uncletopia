@@ -38,19 +38,6 @@ srcds_restart_notice: true
 # a2scache answers A2S queries in the kernel. Requires `srcds_ip_public` in
 # the host's inventory: the real address clients query, never 0.0.0.0/127/8.
 srcds_query_cache: false
-a2scache_version: "v3"
-# sha256 of the release binary, verified by get_url on download.
-a2scache_binary_sha256: "002ff4310c710ed35a008b71e1633bc94ce762a6c036fff4cdb4e814b4152064"
-a2scache_interface: "{{ ansible_facts['default_ipv4']['interface'] }}"
-a2scache_pin_dir: "/sys/fs/bpf/a2scache"
-a2scache_metrics_port: 9103
-a2scache_ttl_secs: 30
-a2scache_interval_secs: 10
-a2scache_timeout_ms: 2000
-a2scache_per_ip_capacity: 10000
-a2scache_per_ip_refill_per_s: 2000
-a2scache_global_capacity: 200000
-a2scache_global_refill_per_s: 50000
 
 # Pin each game instance to a physical CPU core (both SMT threads where
 # available). Instances are assigned cores 1..N; core 0 and any cores beyond
@@ -125,6 +112,78 @@ srcds_config:
         "tf2-comp-fixes.smx",
         "tf2attributes.smx",
         "tf2centerprojectiles.smx",
+        "tf_econ_data.smx",
+        "tidychat.smx",
+        "uncletopia-nags.smx",
+        "unusedvoicelines.smx",
+        "votedelay_changelevel.smx",
+        "votefailed.smx",
+        "votescramble.smx",
+        "waitingdoors.smx",
+      ]
+  all_rubikon:
+    extensions_enabled:
+      [
+        "SteamWorks.ext.so",
+        "accelerator.autoload",
+        "accelerator.ext.so",
+        "bintools.ext.so",
+        "clientprefs.ext.so",
+        "connect.ext.2.tf2.so",
+        "conplex.ext.so",
+        "ctferrorlogger.autoload",
+        "ctferrorlogger.ext.so",
+        "dhooks.ext.so",
+        "dbi.pgsql.ext.so",
+        "dbi.sqlite.ext.so", 
+        "game.tf2.ext.2.tf2.so",
+        "regex.ext.so",
+        "sdkhooks.ext.2.tf2.so",
+        "sdktools.ext.2.tf2.so",
+        "smjansson.ext.so",
+        "sourcetvmanager.ext.2.tf2.so",
+        "topmenus.ext.so",
+        "updater.ext.so",
+        "webternet.ext.so"
+      ]
+    plugins_enabled:
+      [
+        "NetworkTools.smx",
+        "adminhelp.smx",
+        "adminmenu.smx",
+        "afk_manager.smx",
+        "antiflood.smx",
+        "basebans.smx",
+        "basechat.smx",
+        "basecomm.smx",
+        "basecommands.smx",
+        "basetriggers.smx",
+        "classrestrict.smx",
+        "clientprefs.smx",
+        "disableautokick.smx",
+        "discord.smx",
+        "extendedmapconfig.smx",
+        "funcommands.smx",
+        "funvotes.smx",
+        "gbans.smx",
+        "nativevotes-basecommands.smx",
+        "nativevotes-basevotes.smx",
+        "nativevotes.smx",
+        "nativevotes_kickvote_immunity.smx",
+        "nativevotes_mapchooser.smx",
+        "nativevotes_nominations.smx",
+        "nativevotes_rockthevote.smx",
+        "nextmap.smx",
+        "playercommands.smx",
+        "randomcycle.smx",
+        "skipmotd.smx",
+        "sm_hidehud.smx",
+        # "sm_nocontracker.smx",
+        "sounds.smx",
+        # "stac.smx",
+        # "tf2-comp-fixes.smx",
+        # "tf2attributes.smx",
+        # "tf2centerprojectiles.smx",
         "tf_econ_data.smx",
         "tidychat.smx",
         "uncletopia-nags.smx",
@@ -1544,3 +1603,17 @@ srcds_pve:
     - Uncle Explain
     - Uncle Strange
     - Uncle Lil Wayne
+
+a2scache_version: "v3"
+# sha256 of the release binary, verified by get_url on download.
+a2scache_binary_sha256: "002ff4310c710ed35a008b71e1633bc94ce762a6c036fff4cdb4e814b4152064"
+a2scache_interface: "{{ ansible_facts['default_ipv4']['interface'] }}"
+a2scache_pin_dir: "/sys/fs/bpf/a2scache"
+a2scache_metrics_port: 9103
+a2scache_ttl_secs: 30
+a2scache_interval_secs: 10
+a2scache_timeout_ms: 2000
+a2scache_per_ip_capacity: 10000
+a2scache_per_ip_refill_per_s: 2000
+a2scache_global_capacity: 200000
+a2scache_global_refill_per_s: 50000

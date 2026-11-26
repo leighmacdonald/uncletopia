@@ -3,7 +3,7 @@
 # Plugin/extension selection is applied at deploy time by the pristine-layout
 # task in roles/srcds/tasks/main.yml; nothing is toggled on startup here.
 
-bash "./srcds_run" -game "{{srcds_steam_app}}" -console \
+bash "./srcds_run{% if item.srcds_use64Bit|default(srcds_use64Bit) %}_64{% endif %}" -game "{{srcds_steam_app}}" -console \
   -strictportbind \
   -usercon \
   -secured \

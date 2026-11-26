@@ -106,15 +106,18 @@
 
 # DepotDownloader does not restore the executable bit on the srcds binaries.
 # With overlays rebuilt from scratch there is no longer a chmod'd copy left in
-# an instance's upper layer to mask this. srcds_run execs srcds_linux directly,
-# so set +x on the shared base (all instances inherit it via the lowerdir).
+# an instance's upper layer to mask this. srcds_run(_64) execs srcds_linux(_64)
+# directly, so set +x on the shared base (all instances inherit it via the
+# lowerdir). Include the 64-bit pair when the host or any service uses it.
 - name: Make srcds binaries executable
   ansible.builtin.file:
     path: "{{ srcds_homedir }}/srcds-base/{{ item }}"
     mode: "0755"
-  loop:
-    - srcds_linux
-    - srcds_run
+  vars:
+    srcds_any_64bit: >-
+      {{ srcds_use64Bit | default(false) or
+         (services | default([]) | selectattr('srcds_use64Bit', 'defined') | selectattr('srcds_use64Bit') | list | length > 0) }}
+  loop: "{{ ['srcds_linux', 'srcds_run'] + (['srcds_linux64', 'srcds_run_64'] if srcds_any_64bit | bool else []) }}"
   tags:
     - game_engine
 
@@ -493,6 +496,28 @@
   loop: "{{ services }}"
   # Perform the copy from the *remote* sourcemod build output
   delegate_to: "{{ inventory_hostname }}"
+  tags:
+    - game_config
+
+# A 64-bit server needs the x64 extension binaries. The build tree ships them
+# under extensions/x64/; overlay them onto the active extensions/ directory so
+# the allowlist layout below enables the correct architecture.
+- name: Use x64 extensions for 64-bit instances
+  ansible.builtin.shell: |
+    set -uo pipefail
+    home=/home/{{ srcds_user }}
+    {% for svc in services %}
+    {% if svc.srcds_use64Bit | default(srcds_use64Bit) %}
+    edir="$home/srcds-{{ svc.server_name_short }}/tf/addons/sourcemod/extensions"
+    if [ -d "$edir/x64" ]; then
+      rsync -aci --exclude='disabled/' --out-format='%n' "$edir/x64/" "$edir/"
+    fi
+    {% endif %}
+    {% endfor %}
+  args:
+    executable: /bin/bash
+  register: srcds_x64_extensions
+  changed_when: srcds_x64_extensions.stdout | length > 0
   tags:
     - game_config
 
