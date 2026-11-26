@@ -5,8 +5,8 @@ tf_classlimit {{ item.tf_classlimit|default(3) }}
 sv_vote_issue_classlimits_allowed 0
 sv_vote_issue_classlimits_max 3
 
-// Ask autobalance
-mp_autoteambalance 0
+// Ask autobalance (PVE keeps teams fixed: bots RED, humans BLU)
+mp_autoteambalance {{ 0 if item.config == 'pve' else 1 }}
 mp_teams_unbalance_limit {{ 0 if item.config == 'pve' else 1 }}
 tf_autobalance_ask_candidates_maxtime 10
 tf_autobalance_dead_candidates_maxtime 0

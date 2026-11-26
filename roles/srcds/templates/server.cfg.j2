@@ -109,8 +109,8 @@ sv_vote_kick_ban_duration 20
 ut_scramble_nag_timer 300.0
 ut_rtv_nag_timer 2400.0
 
-// Ask autobalance
-mp_autoteambalance 0
+// Ask autobalance (PVE keeps teams fixed: bots RED, humans BLU)
+mp_autoteambalance {{ 0 if item.config == 'pve' else 1 }}
 mp_teams_unbalance_limit {{ 0 if item.config == 'pve' else 1 }}
 tf_autobalance_ask_candidates_maxtime 10
 tf_autobalance_dead_candidates_maxtime 0
